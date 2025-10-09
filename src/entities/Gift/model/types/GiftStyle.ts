@@ -1,4 +1,4 @@
 export interface GiftStyle {
-    id: number;
-    name: string;
+ id: number;
+ name: string;
 }

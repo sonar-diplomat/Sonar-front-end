@@ -1,0 +1,16 @@
+import type { UserPrivacyGroup } from '../../../User';
+import type { Settings } from './Settings';
+
+export interface UserPrivacySettings {
+ id: number;
+ settingsId: number;
+ whichCanViewProfileId: number;
+ whichCanMessageId: number;
+ /*
+ *
+ *
+ */
+ settings?: Settings;
+ whichCanViewProfile?: UserPrivacyGroup; //Так и задумано???
+ whichCanMessage?: UserPrivacyGroup;
+}

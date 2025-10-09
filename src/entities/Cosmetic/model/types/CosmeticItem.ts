@@ -1,16 +1,16 @@
-import {CosmeticItemType} from "./CosmeticItemType.ts";
-import {Inventory} from "./Inventory.ts";
+import type { CosmeticItemType } from './CosmeticItemType';
+import type { Inventory } from '../../../Inventory';
 
 export interface CosmeticItem {
-    id: number;
-    price: number;
-    typeId: number;
-    fileId: number;
-    /*
-    *
-    *
-    */
-    type?: CosmeticItemType;
-    file?: File;
-    inventories?: Inventory[];
+ id: number;
+ price: number;
+ typeId: number;
+ fileId: number;
+ /*
+ *
+ *
+ */
+ type?: CosmeticItemType;
+ file?: File;
+ inventories?: Inventory[];
 }

@@ -1,6 +1,8 @@
-export interface ReportableEntityType {
-    id: number;
-    name: string;
+import type { Report } from './Report';
 
-    reports?: Report[];
+export interface ReportableEntityType {
+ id: number;
+ name: string;
+
+ reports?: Report[];
 }

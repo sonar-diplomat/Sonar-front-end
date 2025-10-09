@@ -1,0 +1,14 @@
+import type { User} from '../../../User';
+
+export interface Chat {
+ id: number;
+ name: string;
+ isGroup: boolean;
+ coverId: number;
+ /*
+ *
+ *
+ */
+ cover?: File;
+ users?: User[];
+}

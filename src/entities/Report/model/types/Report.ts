@@ -1,20 +1,20 @@
-import {User} from "../User/User";
-import {Suspension} from "./Suspension.ts";
-import {ReportableEntityType} from "./ReportableEntityType.ts";
-import {ReportReasonType} from "./ReportReasonType.ts";
+import type {User} from '../../../User';
+import type { ReportableEntityType } from './ReportableEntityType';
+import type { ReportReasonType } from './ReportReasonType';
+import type {Suspension} from "../../../Access";
 
 export interface Report {
-    id: number;
-    isClosed: boolean;
-    entityIdentifier: number;
-    reportableEntityTypeId: number;
-    reporterId: number;
-    /*
-    *
-    *
-    */
-    reportableEntityType?: ReportableEntityType;
-    reporter?: User;
-    reportReasonType?: ReportReasonType[];
-    suspensions?: Suspension[];
+ id: number;
+ isClosed: boolean;
+ entityIdentifier: number;
+ reportableEntityTypeId: number;
+ reporterId: number;
+ /*
+ *
+ *
+ */
+ reportableEntityType?: ReportableEntityType;
+ reporter?: User;
+ reportReasonTypes?: ReportReasonType[];
+ suspensions?: Suspension[];
 }

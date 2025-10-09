@@ -1,13 +1,13 @@
-import {SubscriptionPack} from "./SubscriptionPack.ts";
+import type { SubscriptionPack } from './SubscriptionPack';
 
 export interface SubscriptionFeature {
-    id: number;
-    name: string;
-    description: string;
-    price: number; // decimal(18,2)
-    /*
-    *
-    *
-    */
-    subscriptionPacks?: SubscriptionPack[];
+ id: number;
+ name: string;
+ description: string;
+ price: number; // decimal(18,2)
+ /*
+ *
+ *
+ */
+ subscriptionPacks?: SubscriptionPack[];
 }
