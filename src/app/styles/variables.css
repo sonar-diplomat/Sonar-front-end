@@ -1,3 +1,9 @@
 :root{
     --font-family-base: 'Sora', sans-serif;
+    --Tab-bar-bg-color: rgba(24, 24, 24, 0.90);
+    --Tab-bar-icon-color: #EAEAEA;
+    --Tab-bar-icon-color-active: #1F1F1F;
+    --Tab-bar-item-bg-color-active: #EAEAEA;
+    --Tab-bar-item-color-active: #1F1F1F;
+
 }
