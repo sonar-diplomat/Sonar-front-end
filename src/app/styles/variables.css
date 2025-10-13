@@ -1,3 +1,9 @@
 :root{
     --font-family-base: 'Sora', sans-serif;
+    --button-bg-color-light: #FFF;
+    --button-bg-color-pressed-light: #D8D8D8;
+    --button-bg-color-disable-light: #AEAEAE;
+    --button-text-color-light: #1F1F1F;
+    --button-text-color-hover-light: #4C4C4C;
+    --button-text-color-disable-light: #6A6A6A;
 }
