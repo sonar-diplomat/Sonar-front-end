@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './Button.module.css';
 
-export type ButtonVariant = 'primary';
+export type ButtonVariant = 'light' | 'dark';
 export type ButtonSize = 'small' | 'medium' | 'large';
 export type ButtonShape = 'cr-16' | 'cr-20' | 'cr-24' | 'cr-32';
 
