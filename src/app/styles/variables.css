@@ -1,0 +1,16 @@
+:root{
+    --font-family-base: 'Sora', sans-serif;
+
+    /*Buttons*/
+    --button-bg-color-light: #FFF;
+    --button-bg-color-dark: #1F1F1F;;
+    --button-bg-color-pressed-light: #D8D8D8;
+    --button-bg-color-pressed-dark: #1F1F1F;
+    --button-bg-color-disable: #AEAEAE;
+    --button-text-color-light: #1F1F1F;
+    --button-text-color-dark: #EAEAEA;
+    --button-text-color-hover-light: #4C4C4C;
+    --button-text-color-hover-dark: #C8C8C8;
+    --button-text-color-disable: #6A6A6A;
+
+}
