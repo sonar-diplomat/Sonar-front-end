@@ -18,9 +18,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 export const Button: React.FC<ButtonProps> = ({
-  variant = 'primary',
+  variant = 'light',
   size = 'medium',
-  shape = 'rounded',
+  shape = 'cr-20',
   iconOnly = false,
   icon,
   children,
