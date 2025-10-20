@@ -1,6 +1,6 @@
-import type { VisibilityState} from '../../../Access';
-import type { Collection} from "./Collection";
-import type { Artist} from '../../../Distribution';
+import type { VisibilityState } from '@entities/Access';
+import type { Collection } from "./Collection";
+import type { Artist } from '@entities/Distribution';
 
 export interface Track {
  id: number;

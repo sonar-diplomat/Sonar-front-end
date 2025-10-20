@@ -1,13 +1,13 @@
 import type { UserSession } from './UserSession';
 import type { UserState } from './UserState';
-import type { SubscriptionPack } from '../../../Subscription';
-import type { Inventory } from '../../../Inventory';
-import type { AchievementProgress } from '../../../Achievement';
-import type {AccessFeature, VisibilityState} from "../../../Access";
-import type {Artist, License, Post} from "../../../Distribution";
-import type {Settings} from "../../../ClientSettings";
-import type {Chat, Message} from "../../../Chat";
-import type {Collection, Track} from "../../../Music";
+import type { SubscriptionPack } from '@entities/Subscription';
+import type { Inventory } from '@entities/Inventory';
+import type { AchievementProgress } from '@entities/Achievement';
+import type { AccessFeature, VisibilityState } from '@entities/Access';
+import type { Artist, License, Post } from '@entities/Distribution';
+import type { Settings } from '@entities/ClientSettings';
+import type { Chat, Message } from '@entities/Chat';
+import type { Collection, Track } from '@entities/Music';
 
 export interface User {
  id: number;

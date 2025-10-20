@@ -3,3 +3,6 @@ export type { UserSession } from './model/types/UserSession';
 export type { UserState } from './model/types/UserState';
 export type { UserStatus } from './model/types/UserStatus';
 export type { UserPrivacyGroup } from './model/types/UserPrivacyGroup';
+export type { UserRegisterDTO } from './model/types/UserRegisterDTO';
+export type { UserRegisterDTO } from './model/types/UserRegisterDTO';
+export type { UserRegisterDTO } from './model/types/UserRegisterDTO';

@@ -1,5 +1,5 @@
 import type { Library } from './Library';
-import type { Collection } from '../../../Music';
+import type { Collection } from '@entities/Music';
 
 export interface Folder {
  id: number;
