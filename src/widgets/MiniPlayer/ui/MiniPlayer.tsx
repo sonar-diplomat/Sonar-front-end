@@ -4,6 +4,7 @@ import { PlayerActions } from './PlayerActions';
 import type { MiniPlayerProps } from '../model/types';
 import styles from './MiniPlayer.module.css';
 import React from "react";
+import {formatTime, getArtistNames, getCoverUrl} from "@widgets/MiniPlayer/lib/utils.ts";
 
 export const MiniPlayer = ({
   currentTrack,
@@ -20,36 +21,39 @@ export const MiniPlayer = ({
   const hasTrack = currentTrack !== null;
 
   return (
-    <div className={styles.miniPlayer}>
-      <div className={styles.container}>
-        <div className={styles.topSection}>
-          <div className={styles.progressSection}>
-            <ProgressBar
+    <div className={styles.player}>
+      <div className={styles.header}>
+        <div className={styles.albumCover}>
+          {currentTrack && (
+              <img src={getCoverUrl(currentTrack)} alt={currentTrack.title || 'Album cover'}/>
+          )}
+        </div>
+        <div className={styles.info}>
+          <div className={styles.infoHeader}>
+            <div className={styles.songMeta}>
+              <h2 className={styles.title}>{currentTrack?.title}</h2>
+              <p className={styles.artist}>{getArtistNames(currentTrack)}</p>
+            </div>
+            <PlayerActions isLiked={isLiked} onLike={onLike}/>
+          </div>
+          <ProgressBar
               currentTime={currentTime}
               duration={duration}
               onSeek={onSeek}
-            />
-            {currentTrack && (
-              <div className={styles.trackDetails}>
-                <div className={styles.trackTitle}>{currentTrack.title}</div>
-                <div className={styles.artistName}>
-                  {currentTrack.artists?.map(a => a.name).join(', ') || 'Unknown Artist'}
-                </div>
-              </div>
-            )}
+          />
+          <div className={styles.duration}>
+            <p className={styles.current}>{formatTime(currentTime)}</p>
+            <p className={styles.total}>{formatTime(currentTrack?.duration as number)}</p>
           </div>
-
-          <PlayerActions isLiked={isLiked} onLike={onLike} />
         </div>
-
-        <PlayerControls
+      </div>
+      <PlayerControls
           isPlaying={isPlaying}
           onPlayPause={onPlayPause}
           onNext={onNext}
           onPrevious={onPrevious}
           disabled={!hasTrack}
-        />
-      </div>
+      />
     </div>
   );
 };

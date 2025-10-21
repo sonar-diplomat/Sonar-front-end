@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback } from 'react';
-import { formatTime } from '../lib/utils';
 import type { ProgressBarProps } from '../model/types';
 import styles from './MiniPlayer.module.css';
 import React from "react";
@@ -43,7 +42,7 @@ export const ProgressBar = ({ currentTime, duration, onSeek }: ProgressBarProps)
     setDragTime(time);
   };
   
-  useState(() => {
+  useState(() => {``
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
@@ -84,11 +83,6 @@ export const ProgressBar = ({ currentTime, duration, onSeek }: ProgressBarProps)
             style={{ left: `${progress}%` }}
           />
         </div>
-      </div>
-
-      <div className={styles.timeLabels}>
-        <span className={styles.timeLabel}>{formatTime(displayTime)}</span>
-        <span className={styles.timeLabel}>{formatTime(duration)}</span>
       </div>
     </div>
   );
