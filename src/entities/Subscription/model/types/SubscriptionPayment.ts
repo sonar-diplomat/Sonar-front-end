@@ -1,4 +1,4 @@
-import type { User } from '@entities/User';
+import type { User } from '../../../User';
 import type { SubscriptionPack } from './SubscriptionPack';
 
 export interface SubscriptionPayment {
