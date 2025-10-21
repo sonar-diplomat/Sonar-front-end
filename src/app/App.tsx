@@ -1,5 +1,5 @@
 import React from "react";
-import './styles/index.css';
+
 import {TabBar} from "../widgets";
 
 function App() {
