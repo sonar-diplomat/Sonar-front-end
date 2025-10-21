@@ -31,6 +31,7 @@ export const ProgressBar = ({ currentTime, duration, onSeek }: ProgressBarProps)
       console.log("Handle seek");
       const time = calculateTime(e as unknown as React.MouseEvent);
       setDragTime(time);
+      onSeek(time);
     },
     [calculateTime]
   );
@@ -43,7 +44,7 @@ export const ProgressBar = ({ currentTime, duration, onSeek }: ProgressBarProps)
       setIsDragging(false);
       const time = calculateTime(e as unknown as React.MouseEvent);
       setDragTime(time);
-      onSeek(time); // Pass the final time to parent
+      onSeek(time);
     },
     [calculateTime, onSeek]
   );
