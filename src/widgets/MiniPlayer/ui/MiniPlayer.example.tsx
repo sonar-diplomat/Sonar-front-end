@@ -1,8 +1,10 @@
-import React from "react"
+import React, { useState } from "react"
 import {MiniPlayer} from "@widgets/MiniPlayer";
 import type {Track} from "@entities/Music";
 
 const MiniPlayerExample = () => {
+    const [currentTime, setCurrentTime] = useState(45);
+    const [isLiked, setIsLiked] = useState(false);
     const mockTrack: Track = {
         id: "1",
         title: "Bathroom",
@@ -51,9 +53,11 @@ const MiniPlayerExample = () => {
 
     const handleSeek = (time: number) => {
         console.log("Seek to:", time);
+        setCurrentTime(time);
     };
 
     const handleLike = () => {
+        setIsLiked(!isLiked);
         console.log("Like toggled");
     };
 
@@ -61,9 +65,9 @@ const MiniPlayerExample = () => {
         <MiniPlayer
             currentTrack={mockTrack}
             isPlaying={false}
-            currentTime={45}
+            currentTime={currentTime}
             duration={mockTrack.duration}
-            isLiked={false}
+            isLiked={isLiked}
             onPlayPause={handlePlayPause}
             onNext={handleNext}
             onPrevious={handlePrevious}
