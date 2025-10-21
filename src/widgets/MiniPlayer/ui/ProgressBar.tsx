@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
-import type { ProgressBarProps } from '../model/types';
+import {useState, useRef, useCallback, useEffect} from 'react';
+import type { ProgressBarProps } from '@widgets/MiniPlayer';
 import styles from './MiniPlayer.module.css';
 import React from "react";
 
@@ -7,55 +7,57 @@ export const ProgressBar = ({ currentTime, duration, onSeek }: ProgressBarProps)
   const [isDragging, setIsDragging] = useState(false);
   const [dragTime, setDragTime] = useState(0);
   const progressRef = useRef<HTMLDivElement>(null);
+  const isDraggingRef = useRef(false);
+
+  const calculateTime = useCallback((e: React.MouseEvent | MouseEvent): number => {
+    if (!progressRef.current) return 0;
+    const rect = progressRef.current.getBoundingClientRect();
+    const x = (e as MouseEvent).clientX - rect.left;
+    const percentage = Math.max(0, Math.min(1, x / rect.width));
+    return percentage * duration;
+  }, [duration]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    console.log("MouseDown");
+    isDraggingRef.current = true;
     setIsDragging(true);
-    handleSeek(e);
-  }, []);
+    const time = calculateTime(e);
+    setDragTime(time);
+  }, [calculateTime]);
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
-      if (!isDragging) return;
-      handleSeek(e as unknown as React.MouseEvent);
+      if (!isDraggingRef.current) return;
+      console.log("Handle seek");
+      const time = calculateTime(e as unknown as React.MouseEvent);
+      setDragTime(time);
     },
-    [isDragging]
+    [calculateTime]
   );
 
   const handleMouseUp = useCallback(
     (e: MouseEvent) => {
-      if (!isDragging) return;
+      console.log("Mouse up");
+      if (!isDraggingRef.current) return;
+      isDraggingRef.current = false;
       setIsDragging(false);
-      handleSeek(e as unknown as React.MouseEvent);
-      onSeek(dragTime);
+      const time = calculateTime(e as unknown as React.MouseEvent);
+      setDragTime(time);
+      onSeek(time); // Pass the final time to parent
     },
-    [isDragging, dragTime, onSeek]
+    [calculateTime, onSeek]
   );
 
-  const handleSeek = (e: React.MouseEvent | MouseEvent) => {
-    if (!progressRef.current) return;
-
-    const rect = progressRef.current.getBoundingClientRect();
-    const x = (e as MouseEvent).clientX - rect.left;
-    const percentage = Math.max(0, Math.min(1, x / rect.width));
-    const time = percentage * duration;
-
-    setDragTime(time);
-  };
-  
-  useState(() => {``
+  useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
-    } else {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
     }
-
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  });
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   const displayTime = isDragging ? dragTime : currentTime;
   const progress = duration > 0 ? (displayTime / duration) * 100 : 0;

@@ -31,4 +31,19 @@
     --input-bg-disabled: #0D0D0D;
     --input-text-disabled: #4A4A4A;
     --input-placeholder-disabled: #3A3A3A;
+
+    /*MiniPlayer*/
+    --miniplayer-bg: #EAEAEA;
+    --miniplayer-cover: rgba(203, 199, 199, 1);
+    --miniplayer-proggres-bar: rgba(31, 31, 31, 0.20);
+    --miniplayer-proggres-bar-fill: #1F1F1F;
+    --miniplayer-proggres-bar-thumb: #1F1F1F;
+    --miniplayer-controls: #1F1F1F;
+    --miniplayer-primary-text: rgba(31, 31, 31, 0.80);
+    --miniplayer-secondary-text: rgba(31, 31, 31, 0.60);
+    --miniplayer-action: rgba(31, 31, 31, 0.40);
+    --miniplayer-action-liked: #ff3b5c;
+    --miniplayer-action-liked-hover: #ff1744;
+
+
 }
