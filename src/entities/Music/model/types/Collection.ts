@@ -1,6 +1,6 @@
-import { VisibilityState} from '../../../Access';
-import { User} from '../../../User';
-import { Track} from "./Track";
+import type { VisibilityState } from '@entities/Access';
+import type { User } from '@entities/User';
+import type { Track } from "./Track";
 
 export interface Collection {
  id: number;

@@ -1,5 +1,5 @@
-import type { Chat} from "./Chat";
-import type { User} from '../../../User';
+import type { Chat } from "./Chat";
+import type { User } from '@entities/User';
 
 export interface Message {
  id: number;

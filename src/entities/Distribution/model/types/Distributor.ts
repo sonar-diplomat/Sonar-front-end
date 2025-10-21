@@ -1,4 +1,4 @@
-import type { Album } from '../../../Music';
+import type { Album } from '@entities/Music';
 import type { DistributorSession } from './DistributorSession';
 import type { License } from './License';
 

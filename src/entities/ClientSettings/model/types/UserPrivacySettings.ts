@@ -1,4 +1,4 @@
-import type { UserPrivacyGroup } from '../../../User';
+import type { UserPrivacyGroup } from '@entities/User';
 import type { Settings } from './Settings';
 
 export interface UserPrivacySettings {
