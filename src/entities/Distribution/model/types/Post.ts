@@ -1,5 +1,5 @@
-import type { User} from '../../../User';
-import type { VisibilityState} from '../../../Access';
+import type { User } from '@entities/User';
+import type { VisibilityState } from '@entities/Access';
 
 export interface Post {
  id: number;

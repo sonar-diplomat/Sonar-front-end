@@ -1,7 +1,7 @@
-import type {User} from '../../../User';
+import type { User } from '@entities/User';
 import type { ReportableEntityType } from './ReportableEntityType';
 import type { ReportReasonType } from './ReportReasonType';
-import type {Suspension} from "../../../Access";
+import type { Suspension } from '@entities/Access';
 
 export interface Report {
  id: number;
