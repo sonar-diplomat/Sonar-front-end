@@ -1,5 +1,5 @@
-import type { Achievement } from './Achievement';
-import type { User } from '@entities/User';
+import { Achievement } from './Achievement';
+import { User } from '../../../User';
 
 export interface AchievementProgress {
  id: number;

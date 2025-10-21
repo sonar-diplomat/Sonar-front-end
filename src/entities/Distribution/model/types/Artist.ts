@@ -1,5 +1,6 @@
-import type { User } from '@entities/User';
-import type { Track, Album } from '@entities/Music';
+import type { User } from '../../../User';
+import type { Track } from '../../../Music';
+import type { Album } from '../../../Music';
 
 export interface Artist {
  id: number;

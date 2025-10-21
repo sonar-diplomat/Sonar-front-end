@@ -1,5 +1,5 @@
 import type { CosmeticItemType } from './CosmeticItemType';
-import type { Inventory } from '@entities/Inventory';
+import type { Inventory } from '../../../Inventory';
 
 export interface CosmeticItem {
  id: number;

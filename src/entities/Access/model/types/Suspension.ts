@@ -1,5 +1,5 @@
-import type { User } from '@entities/User';
-import type { Report } from '@entities/Report';
+import type { User } from '../../../User';
+import type { Report } from '../../../Report';
 
 export interface Suspension {
  id: number;

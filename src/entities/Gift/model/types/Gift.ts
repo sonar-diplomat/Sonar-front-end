@@ -1,6 +1,6 @@
 import type { GiftStyle } from './GiftStyle';
-import type { User } from '@entities/User';
-import type { SubscriptionPayment } from '@entities/Subscription';
+import type { User } from '../../../User';
+import type { SubscriptionPayment } from '../../../Subscription';
 
 export interface Gift {
  id: number;
