@@ -1,18 +1,18 @@
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5205';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5205/api/';
 
 export const API_ENDPOINTS = {
   auth: {
-    register: '/api/auth/register',
-    login: '/api/Auth/login',
-    verify2FA: '/api/Auth/verify-2fa',
-    refreshToken: '/api/Auth/refresh-token',
-    changePassword: '/api/Auth/change-password',
-    requestPasswordChange: '/api/Auth/RequestPasswordChange',
-    confirmEmailChange: '/api/Auth/confirm-email-change',
-    getMailChangeToken: '/api/Auth/GetMailChangeToken',
-    getSessions: '/api/Auth/sessions',
+    register: 'auth/register',
+    login: 'auth/login',
+    verify2FA: 'auth/verify-2fa',
+    refreshToken: 'auth/refresh-token',
+    changePassword: 'auth/change-password',
+    requestPasswordChange: 'auth/RequestPasswordChange',
+    confirmEmailChange: 'auth/confirm-email-change',
+    getMailChangeToken: 'auth/GetMailChangeToken',
+    getSessions: 'auth/sessions',
     revokeSession: (sessionId: number) => `/api/Auth/${sessionId}/revoke`,
-    revokeAllSessions: '/api/Auth/sessions/revoke-all',
+    revokeAllSessions: 'auth/sessions/revoke-all',
   },
 } as const;

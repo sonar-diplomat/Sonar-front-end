@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient } from '@shared/api/client.ts';
 import { API_ENDPOINTS } from '@shared/config';
 import type { BaseResponse } from '@shared/types';
 import type { UserRegisterDTO } from '@entities/User';
