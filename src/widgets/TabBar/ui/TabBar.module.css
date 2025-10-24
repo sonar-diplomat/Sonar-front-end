@@ -1,15 +1,22 @@
 .tabBar {
+  --navbar-height: 64px;
+  --icon-size: calc(var(--navbar-height) / 2.6);
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  align-self: stretch;
+  width: calc(100vw - 32px);
+  height: var(--navbar-height);
   gap: 8px;
-  padding: 12px 16px;
-  background-color: #2a2a2a;
-  border-radius: 9999px;
-  max-width: 400px;
-  margin: 0 auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+  padding: 8px;
+  box-sizing: border-box;
+  border-radius: 32px;
+  background: var(--Tab-bar-bg-color, rgba(24, 24, 24, 0.90));
+
+  /* Tab-bar/Tab-bar-bg-effect */
+  box-shadow: 0 1px 1px 0 rgba(255, 255, 255, 0.40) inset;
+  backdrop-filter: blur(5px);
 }
 
 .tabItem {
@@ -23,8 +30,7 @@
   color: #ffffff;
   cursor: pointer;
   border-radius: 24px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: nowrap;
+  transition: all 0.3s cubic-bezier(0.3, 0.8, 0.3, 2.3);
   min-width: 48px;
   position: relative;
   overflow: hidden;
@@ -40,8 +46,8 @@
 }
 
 .tabItemActive {
-  background-color: #f5f5f5;
-  color: #1a1a1a;
+  background-color: var(--Tab-bar-item-bg-color-active);
+  color: var(--Tab-bar-item-color-active);
   padding: 12px 20px;
 }
 
@@ -50,19 +56,16 @@
 }
 
 .tabIcon {
-  display: flex;
-  width: 24px;
-  height: 24px;
-  padding: 3px;
-  justify-content: center;
-  align-items: center;
-  transition: transform 0.2s ease;
-  fill: #EAEAEA;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  flex-shrink: 0;
+  aspect-ratio: 1/1;
+  fill: var(--Tab-bar-icon-color);
 }
 
 .tabItemActive .tabIcon {
   transform: scale(1.05);
-  fill: #1F1F1F;
+  fill: var(--Tab-bar-icon-color-active);
 }
 
 .tabLabel {
@@ -82,31 +85,5 @@
   to {
     opacity: 1;
     transform: translateX(0);
-  }
-}
-
-/* Responsive adjustments */
-@media (max-width: 480px) {
-  .tabBar {
-    max-width: 100%;
-    border-radius: 24px;
-  }
-
-  .tabItem {
-    padding: 10px 12px;
-    min-width: 40px;
-  }
-
-  .tabItemActive {
-    padding: 10px 16px;
-  }
-
-  .tabIcon {
-    width: 20px;
-    height: 20px;
-  }
-
-  .tabLabel {
-    font-size: 13px;
   }
 }
