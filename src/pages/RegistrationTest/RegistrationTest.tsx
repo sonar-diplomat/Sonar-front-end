@@ -1,18 +1,18 @@
-import React, { useState, FormEvent } from 'react';
-import { authApi } from '@shared/api';
-import type { UserRegisterDTO } from '@entities/User';
+import React, { useState, type FormEvent } from 'react';
+import type { UserRegisterDTO } from '@features/auth';
 import styles from './RegistrationTest.module.css';
+import { useRegister } from "@features/auth";
 
 export const RegistrationTest: React.FC = () => {
   const [formData, setFormData] = useState<UserRegisterDTO>({
     username: 'john_doe',
     login: 'johndoe',
     email: 'johndoe@gmail.com',
-    password: '88888888',
+    password: 'securePassword123!',
     firstName: 'john',
     lastName: 'doe',
     dateOfBirth: '23-01-1990',
-    locale: 'en-US',
+    locale: 'eng',
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +37,7 @@ export const RegistrationTest: React.FC = () => {
     setSuccess(null);
 
     try {
-      const response = await authApi.register(formData);
+      const response = await useRegister(formData);
 
       if (response.success) {
         setSuccess(response.message || 'Registration successful!');

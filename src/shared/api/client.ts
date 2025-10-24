@@ -95,6 +95,7 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+
 }
 
 export const apiClient = new ApiClient();
