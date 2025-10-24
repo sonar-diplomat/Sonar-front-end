@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import  React, { useState } from "react"
 import {MiniPlayer} from "@widgets/MiniPlayer";
 import type {Track} from "@entities/Music";
 

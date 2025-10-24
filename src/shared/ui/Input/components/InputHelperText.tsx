@@ -36,8 +36,8 @@ export const InputHelperText: React.FC<InputHelperTextProps> = ({
             id={`${inputId}-helper`}
             className={`${styles.helper_text} ${isError ? styles.error_text : ''}`}
         >
-            {icon && <span className={styles.helper_icon}>{icon}</span>}
             {text}
+            {icon && <span className={styles.helper_icon}>{icon}</span>}
             {action && !isError && (
                 <a
                     className={styles.helper_action}

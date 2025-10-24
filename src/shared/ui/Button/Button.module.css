@@ -108,6 +108,10 @@
   cursor: wait;
 }
 
+.fullWidth {
+  width: 100%;
+}
+
 
 /* Icon and Text */
 .icon {
