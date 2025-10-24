@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import styles from './RegistrationForm.module.css';
 import { Button, Input, RightArrow, Info, Checkbox, Form } from '@shared/ui';
+
+const DATE_OPTIONS = [
+  { value: 'day', label: 'Day' },
+  { value: 'month', label: 'Month' },
+  { value: 'year', label: 'Year' }
+] as const;
 
 export interface RegistrationFormData {
   email: string;
@@ -13,6 +19,8 @@ export interface RegistrationFormProps {
   onSubmit?: (data: RegistrationFormData) => void;
 }
 
+type FormField = keyof RegistrationFormData;
+
 export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit }) => {
   const [isAgreed, setIsAgreed] = useState(false);
   const [formData, setFormData] = useState<RegistrationFormData>({
@@ -22,24 +30,27 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit }) 
     dateOfBirth: ''
   });
 
-  const dateOptions = [
-    { value: 'day', label: 'Day' },
-    { value: 'month', label: 'Month' },
-    { value: 'year', label: 'Year' },
-  ];
+  const updateField = useCallback((field: FormField, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (!isAgreed) {
       alert('Please agree to the terms before continuing');
       return;
     }
 
-    if (onSubmit) {
-      onSubmit(formData);
-    } else {
-      console.log('Form submitted:', formData);
-    }
-  };
+    onSubmit?.(formData);
+  }, [isAgreed, formData, onSubmit]);
+
+  const consentLabel = useMemo(() => (
+    <>
+      I consent to the{' '}
+      <a href="/terms" className={styles.link}>
+        processing and storage of my personal data.
+      </a>
+    </>
+  ), []);
 
   return (
     <Form onSubmit={handleSubmit} className={styles.form}>
@@ -49,59 +60,56 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit }) 
       </div>
 
       <Input
-        label={"Email"}
-        placeholder={"vanessa_sonar@gmail.com"}
+        label="Email"
+        placeholder="vanessa_sonar@gmail.com"
         value={formData.email}
-        onChange={(e) => setFormData({...formData, email: e.target.value})}
+        onChange={(e) => updateField('email', e.target.value)}
       />
 
       <Input
-        label={"Username"}
-        placeholder={"vanessa_ortiz"}
-        helperText={"Why is needed and requirements"}
-        helperIcon={<Info/>}
+        label="Username"
+        placeholder="vanessa_ortiz"
+        helperText="Why is needed and requirements"
+        helperIcon={<Info />}
         value={formData.username}
-        onChange={(e) => setFormData({...formData, username: e.target.value})}
+        onChange={(e) => updateField('username', e.target.value)}
       />
 
       <Input
-        label={"Name"}
-        placeholder={"Vanessa"}
-        helperText={"Why is this necessary and requirements"}
-        helperIcon={<Info/>}
+        label="Name"
+        placeholder="Vanessa"
+        helperText="Why is this necessary and requirements"
+        helperIcon={<Info />}
         value={formData.name}
-        onChange={(e) => setFormData({...formData, name: e.target.value})}
+        onChange={(e) => updateField('name', e.target.value)}
       />
 
       <Input
-        label={"Date of birth"}
-        placeholder={"dd/mm/yy"}
-        dropdownText={"Select"}
-        dropdownOptions={dateOptions}
-        iconPosition={"prefix"}
+        label="Date of birth"
+        placeholder="dd/mm/yy"
+        dropdownText="Select"
+        dropdownOptions={DATE_OPTIONS}
+        iconPosition="prefix"
         value={formData.dateOfBirth}
-        onChange={(e) => setFormData({...formData, dateOfBirth: e.target.value})}
+        onChange={(e) => updateField('dateOfBirth', e.target.value)}
       />
 
       <div className={styles.submits}>
         <Checkbox
           checked={isAgreed}
           onChange={setIsAgreed}
-          label={
-            <>
-              I consent to the <a href="/terms" className={styles.link}>processing and storage of my personal data.</a>
-            </>
-          }
+          label={consentLabel}
         />
 
         <Button
-          icon={<RightArrow/>}
-          children={"Continue"}
-          variant={"light"}
-          size={"large"}
-          fullWidth={true}
+          icon={<RightArrow />}
+          variant="light"
+          size="large"
+          fullWidth
           type="submit"
-        />
+        >
+          Continue
+        </Button>
       </div>
     </Form>
   );

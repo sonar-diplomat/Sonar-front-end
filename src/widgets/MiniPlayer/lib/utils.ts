@@ -15,13 +15,25 @@ export const formatTime = (seconds: number): string => {
 /**
  * Gets artist names from track data
  */
-export const getArtistNames = (track: { artist?: { name?: string } }): string => {
-  return track.artist?.name || 'Unknown Artist';
+export const getArtistNames = (track: { artists?: Array<{ user?: { firstName?: string; lastName?: string } }> } | null): string => {
+  if (!track || !track.artists || track.artists.length === 0) {
+    return 'Unknown Artist';
+  }
+  const names = track.artists
+    .map(artist => {
+      if (artist.user?.firstName && artist.user?.lastName) {
+        return `${artist.user.firstName} ${artist.user.lastName}`;
+      }
+      return null;
+    })
+    .filter(Boolean);
+
+  return names.length > 0 ? names.join(', ') : 'Unknown Artist';
 };
 
 /**
  * Gets cover URL with fallback
  */
-export const getCoverUrl = (track: { coverUrl?: string }): string | undefined => {
-  return track.coverUrl;
+export const getCoverUrl = (track: { cover?: File }): string | undefined => {
+  return track.cover ? URL.createObjectURL(track.cover) : undefined;
 };

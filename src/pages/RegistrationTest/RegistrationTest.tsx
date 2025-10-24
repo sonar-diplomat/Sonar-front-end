@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, {type FormEvent, useState} from 'react';
 import { authApi } from '@shared/api';
 import type { UserRegisterDTO } from '@entities/User';
 import styles from './RegistrationTest.module.css';
