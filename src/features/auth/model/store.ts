@@ -18,6 +18,7 @@ export const useRegister = () => {
     const [state, setState] = useState<State<void>>({ loading: false })
     const mutate = useCallback(async (dto: UserRegisterDTO) => {
         setState({ loading: true })
+        //dto.dateOfBirth = dto.dateOfBirth.replace('/','-');
         const res = await Api.register(dto)
         setState({ loading: false, error: res.success ? undefined : res.errors?.[0] || res.details?.[0] || res.message })
         return res

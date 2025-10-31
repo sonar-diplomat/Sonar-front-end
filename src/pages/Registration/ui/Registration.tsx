@@ -10,61 +10,72 @@ import {
 } from '@features/registration'
 import type { UserRegisterDTO } from "@features/auth";
 import {getBrowserLangCode} from "@shared/lib";
+import {useRegister} from "@features/auth/model/store.ts";
 
 
 type RegistrationStep = 'registration' | 'password' | 'confirmation';
 
+
+
 export const Registration: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<RegistrationStep>('registration');
-  const [email, setEmail] = useState<string>('');
+
   const [showModal, setShowModal] = useState<boolean>(false);
   const [registerDTO, setRegisterDTO] = useState<Partial<UserRegisterDTO>>({});
-  const [registrationData, setRegistrationData] = useState<RegistrationFormData>({
-    email: 'лрполпролпро',
-    username: 'лропалорпролппрол',
-    login: 'лроплроп',
-    dateOfBirth: '567657657'
-  });
-
+  const [registrationData, setRegistrationData] = useState<RegistrationFormData>();
+  const { loading, error, mutate } = useRegister();
 
   const handleRegistrationSubmit = (data: RegistrationFormData) => {
     console.log('Registration submitted:', data);
-    setEmail(data.email);
-    setCurrentStep('password');
-      setRegisterDTO({
-        userName: data.username,
-        login: data.login,
-        email: data.email,
-        firstName: "Linus",
-        lastName: "Palamarchuk",
-        dateOfBirth: data.dateOfBirth,
-        locale: getBrowserLangCode()
+    setRegisterDTO({
+          userName: data.username,
+          login: data.login,
+          email: data.email,
+          firstName: "Linus",
+          lastName: "Palamarchuk",
+          dateOfBirth: data.dateOfBirth,
+          locale: getBrowserLangCode()
       });
+    setCurrentStep('password');
+
   };
 
-  const handlePasswordSubmit = (data: PasswordFormData) => {
-    console.log('Password submitted:', data);
-    setCurrentStep('confirmation');
-    setRegisterDTO({
-      password: data.password,
-    });
-    setShowModal(true);
+  const handlePasswordSubmit = async (data: PasswordFormData) => {
+      const dto: UserRegisterDTO = {
+          ...(registerDTO as UserRegisterDTO),
+          password: data.password,
+      };
+
+      setRegisterDTO(dto);
+
+      const res = await mutate(dto);
+      console.log('mutate result:', res);
+
+      if (res.success) {
+          setCurrentStep('confirmation');
+          setShowModal(true);
+      } else {
+          // тут можно показать ошибку/тост
+          console.error('registration failed');
+      }
   };
 
   const handleEmailConfirm = (code: string) => {
     console.log('Email confirmed with code:', code);
     setShowModal(false);
+
     // Navigate to next page or show success message
   };
 
   const handleResendCode = () => {
-    console.log('Resending verification code to:', email);
+    console.log('Resending verification code to:', registerDTO.email);
     // API call to resend code
   };
 
   const handleBack = () => {
     if (showModal) {
       setShowModal(false);
+      setCurrentStep('password');
       return;
     }
 
@@ -99,7 +110,7 @@ export const Registration: React.FC = () => {
 
       {currentStep === 'confirmation' && (
         <EmailConfirmationModal
-          email={email || 'user@example.com'}
+          email={registerDTO.email || 'user@example.com'}
           isOpen={showModal}
           onClose={() => setShowModal(false)}
           onConfirm={handleEmailConfirm}

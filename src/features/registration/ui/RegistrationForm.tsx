@@ -1,7 +1,7 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, {useState, useCallback, useMemo, useEffect} from 'react';
 import styles from './RegistrationForm.module.css';
 import { Button, Input, RightArrow, Info, Checkbox, Form } from '@shared/ui';
-import type {RegistrationFormData} from "@features/registration";
+import type { RegistrationFormData } from "@features/registration";
 
 const DATE_OPTIONS = [
   { value: 'day', label: 'Day' },
@@ -13,14 +13,15 @@ const DATE_OPTIONS = [
 
 export interface RegistrationFormProps {
   onSubmit?: (data: RegistrationFormData) => void;
-  data: RegistrationFormData | undefined;
+  data?: RegistrationFormData | undefined;
+  onDataChange: (newData: any) => void;
 }
 
 type FormField = keyof RegistrationFormData;
 
-export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, data }) => {
+export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, data, onDataChange }) => {
   const [isAgreed, setIsAgreed] = useState(false);
-  const [formData, setFormData] = useState<RegistrationFormData>(data ??  {
+  const [formData, setFormData] = useState<RegistrationFormData>(data ?? {
     email: '',
     username: '',
     login: '',
@@ -30,6 +31,10 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
   const updateField = useCallback((field: FormField, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   }, []);
+
+  useEffect(() => {
+        onDataChange(formData);
+    }, [formData, onDataChange]);
 
   const handleSubmit = useCallback(() => {
     if (!isAgreed) {
