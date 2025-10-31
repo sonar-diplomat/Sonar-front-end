@@ -51,7 +51,8 @@
 }
 
 .input_wrapper:has(.dropdown_prefix) .input {
-    padding-left: 70px;
+
+    padding-left: 100px;
 }
 
 .input_wrapper:has(.dropdown_suffix) .input {
@@ -109,6 +110,7 @@
     width: 12px;
     height: 12px;
     color: var(--input-icon-color);
+
 }
 
 .icon_prefix {
@@ -310,6 +312,7 @@
     width: 16px;
     height: 16px;
     color: var(--input-helper-icon);
+    fill: var(--input-helper-icon);
     flex-shrink: 0;
 }
 

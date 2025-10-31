@@ -1,7 +1,7 @@
 import React from 'react';
 
-export const useClickOutside = (
-    ref: React.RefObject<HTMLElement>,
+export const useClickOutside = <T extends HTMLElement = HTMLElement>(
+    ref: React.RefObject<T | null>,
     handler: () => void,
     isActive: boolean
 ) => {
