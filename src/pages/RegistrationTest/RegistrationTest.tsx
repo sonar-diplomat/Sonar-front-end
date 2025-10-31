@@ -1,11 +1,12 @@
 import React, { useState, type FormEvent } from 'react';
 import type { UserRegisterDTO } from '@features/auth';
 import styles from './RegistrationTest.module.css';
-import { useRegister } from "@features/auth";
+import {Api} from "@features/auth/api/api.ts";
+
 
 export const RegistrationTest: React.FC = () => {
   const [formData, setFormData] = useState<UserRegisterDTO>({
-    username: 'john_doe',
+    userName: 'john_doe',
     login: 'johndoe',
     email: 'johndoe@gmail.com',
     password: 'securePassword123!',
@@ -37,13 +38,13 @@ export const RegistrationTest: React.FC = () => {
     setSuccess(null);
 
     try {
-      const response = await useRegister(formData);
+      const response = await Api.register(formData);
 
       if (response.success) {
         setSuccess(response.message || 'Registration successful!');
         // Clear form on success
         setFormData({
-          username: '',
+          userName: '',
           login: '',
           email: '',
           password: '',
@@ -71,7 +72,7 @@ export const RegistrationTest: React.FC = () => {
               type="text"
               id="username"
               name="username"
-              value={formData.username}
+              value={formData.userName}
               onChange={handleChange}
               required
               className={styles.input}

@@ -2,7 +2,7 @@ import type { PlaybackQuality } from "./PlaybackQuality";
 import type { Language } from "./Language";
 import type { Theme } from "./Theme";
 import type { NotificationType } from "./NotificationType";
-import type { User } from '@entities/User';
+import type { Types } from '@entities/User';
 import type { UserPrivacySettings } from "./UserPrivacySettings";
 
 export interface Settings {
@@ -24,6 +24,6 @@ export interface Settings {
  language?: Language;
  theme?: Theme;
  notificationType?: NotificationType;
- user?: User;
+ user?: Types;
  userPrivacy?: UserPrivacySettings;
 }
