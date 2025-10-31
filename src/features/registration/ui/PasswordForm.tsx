@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import styles from './RegistrationForm.module.css';
 import { Button, Input, RightArrow, Info, Checkbox, Form } from '@shared/ui';
+import type {FormErrors, PasswordFormData} from "@features/registration/model/types.ts";
 
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_VALIDATION_RULES = {
@@ -18,19 +19,13 @@ const PASSWORD_ERROR_MESSAGES = {
   mismatch: 'Passwords do not match'
 };
 
-export interface PasswordFormData {
-  password: string;
-  confirmPassword: string;
-}
+
 
 export interface PasswordFormProps {
   onSubmit?: (data: PasswordFormData) => void;
 }
 
-interface FormErrors {
-  password?: string;
-  confirmPassword?: string;
-}
+
 
 const validatePassword = (password: string): string | undefined => {
   if (!PASSWORD_VALIDATION_RULES.minLength(password)) {

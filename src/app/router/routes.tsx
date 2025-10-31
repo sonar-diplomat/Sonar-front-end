@@ -2,9 +2,10 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { RegistrationTest } from '@pages/RegistrationTest';
 import { MiniPlayerExample }from "@widgets/MiniPlayer";
-import App from "@app/App.tsx";
+import { App }  from "@app/App.tsx";
 import React from "react";
-// Опционально, для обработки ошибок
+import {Registration} from "@pages/Registration";
+
 
 export const router = createBrowserRouter([
     {
@@ -17,6 +18,10 @@ export const router = createBrowserRouter([
             },
             {
                 path: '/register',
+                element: <Registration />,
+            },
+            {
+                path: '/test/register',
                 element: <RegistrationTest />,
             },
             // Другие маршруты добавляй сюда

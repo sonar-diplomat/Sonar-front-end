@@ -7,7 +7,10 @@ import {
   EmailConfirmationModal,
   type RegistrationFormData,
   type PasswordFormData
-} from '@features/registration';
+} from '@features/registration'
+import type { UserRegisterDTO } from "@features/auth";
+import {getBrowserLangCode} from "@shared/lib";
+
 
 type RegistrationStep = 'registration' | 'password' | 'confirmation';
 
@@ -15,16 +18,36 @@ export const Registration: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<RegistrationStep>('registration');
   const [email, setEmail] = useState<string>('');
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [registerDTO, setRegisterDTO] = useState<Partial<UserRegisterDTO>>({});
+  const [registrationData, setRegistrationData] = useState<RegistrationFormData>({
+    email: 'лрполпролпро',
+    username: 'лропалорпролппрол',
+    login: 'лроплроп',
+    dateOfBirth: '567657657'
+  });
+
 
   const handleRegistrationSubmit = (data: RegistrationFormData) => {
     console.log('Registration submitted:', data);
     setEmail(data.email);
     setCurrentStep('password');
+      setRegisterDTO({
+        userName: data.username,
+        login: data.login,
+        email: data.email,
+        firstName: "Linus",
+        lastName: "Palamarchuk",
+        dateOfBirth: data.dateOfBirth,
+        locale: getBrowserLangCode()
+      });
   };
 
   const handlePasswordSubmit = (data: PasswordFormData) => {
     console.log('Password submitted:', data);
     setCurrentStep('confirmation');
+    setRegisterDTO({
+      password: data.password,
+    });
     setShowModal(true);
   };
 
@@ -64,7 +87,10 @@ export const Registration: React.FC = () => {
       />
 
       {currentStep === 'registration' && (
-        <RegistrationForm onSubmit={handleRegistrationSubmit} />
+        <RegistrationForm
+            data={registrationData}
+            onDataChange={setRegistrationData}
+            onSubmit={handleRegistrationSubmit} />
       )}
 
       {currentStep === 'password' && (

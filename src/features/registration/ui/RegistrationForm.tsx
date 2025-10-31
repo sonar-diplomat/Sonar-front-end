@@ -1,32 +1,29 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import styles from './RegistrationForm.module.css';
 import { Button, Input, RightArrow, Info, Checkbox, Form } from '@shared/ui';
+import type {RegistrationFormData} from "@features/registration";
 
 const DATE_OPTIONS = [
   { value: 'day', label: 'Day' },
   { value: 'month', label: 'Month' },
   { value: 'year', label: 'Year' }
-] as const;
+];
 
-export interface RegistrationFormData {
-  email: string;
-  username: string;
-  name: string;
-  dateOfBirth: string;
-}
+
 
 export interface RegistrationFormProps {
   onSubmit?: (data: RegistrationFormData) => void;
+  data: RegistrationFormData | undefined;
 }
 
 type FormField = keyof RegistrationFormData;
 
-export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit }) => {
+export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, data }) => {
   const [isAgreed, setIsAgreed] = useState(false);
-  const [formData, setFormData] = useState<RegistrationFormData>({
+  const [formData, setFormData] = useState<RegistrationFormData>(data ??  {
     email: '',
     username: '',
-    name: '',
+    login: '',
     dateOfBirth: ''
   });
 
@@ -80,8 +77,8 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit }) 
         placeholder="Vanessa"
         helperText="Why is this necessary and requirements"
         helperIcon={<Info />}
-        value={formData.name}
-        onChange={(e) => updateField('name', e.target.value)}
+        value={formData.login}
+        onChange={(e) => updateField('login', e.target.value)}
       />
 
       <Input
