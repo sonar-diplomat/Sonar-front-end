@@ -1,0 +1,42 @@
+.form {
+    width: 100%;
+}
+
+.welcome {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.welcome h2 {
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.welcome p {
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.submits {
+    width: 100%;
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+    gap: 16px;
+    margin-top: 87px;
+}
+
+.link {
+    color: #ffffff;
+    text-decoration: underline;
+    transition: opacity 0.2s ease;
+}
+
+.link:hover {
+    opacity: 0.8;
+}

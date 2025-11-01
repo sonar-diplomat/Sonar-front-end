@@ -1,2 +1,2 @@
-export type { File } from './model/types/File';
-export type { FileType } from './model/types/FileType';
+//export type * from './model/types.ts';
+//export * from './model/store.ts';

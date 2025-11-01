@@ -1,1 +1,2 @@
-// Features exports
+export type * from './auth';
+export type * from './registration';

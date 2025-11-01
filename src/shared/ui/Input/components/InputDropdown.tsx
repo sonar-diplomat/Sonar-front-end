@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from '../Input.module.css';
 import type { DropdownOption } from '../Input.types';
-import {DownArrow} from "../../icons.tsx";
+import {DropDown} from "@shared/ui/icons.tsx";
 
 interface InputDropdownProps {
     text: string;
@@ -46,7 +46,7 @@ export const InputDropdown: React.FC<InputDropdownProps> = ({
                 tabIndex={-1}
             >
                 {text}
-                <DownArrow/>
+                <DropDown/>
             </button>
             {isOpen && options.length > 0 && (
                 <div className={menuClassName}>

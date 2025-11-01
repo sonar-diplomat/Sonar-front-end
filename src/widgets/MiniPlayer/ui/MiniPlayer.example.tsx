@@ -1,12 +1,12 @@
-import React, { useState } from "react"
+import  React, { useState } from "react"
 import {MiniPlayer} from "@widgets/MiniPlayer";
 import type {Track} from "@entities/Music";
 
-const MiniPlayerExample = () => {
+export const MiniPlayerExample = () => {
     const [currentTime, setCurrentTime] = useState(45);
     const [isLiked, setIsLiked] = useState(false);
     const mockTrack: Track = {
-        id: "1",
+        id: 1,
         title: "Bathroom",
         duration: 175,
         artistId: "artist-1",
@@ -76,4 +76,3 @@ const MiniPlayerExample = () => {
         />
     );
 }
-export default MiniPlayerExample

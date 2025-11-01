@@ -1,1 +1,2 @@
-export type { Inventory } from './model/types/Inventory';
+//export type * from './model/types.ts';
+//export * from './model/store.ts';
