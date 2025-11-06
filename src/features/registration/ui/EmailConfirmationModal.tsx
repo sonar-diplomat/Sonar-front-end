@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './EmailConfirmationModal.module.css';
-import { Button, RightArrow, LeftArrow } from '@shared/ui';
+import { Button, RightArrow, LeftArrow, SendRight } from '@shared/ui';
 import { useClickOutside } from '@shared/ui/Input/hooks/useClickOutside';
 
 const CODE_LENGTH = 6;
@@ -137,10 +137,7 @@ export const EmailConfirmationModal: React.FC<EmailConfirmationModalProps> = ({
             </Button>
 
             <button className={styles.resendButton} onClick={handleResend}>
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 6L5.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                <path d="M1 6H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
+              <SendRight/>
               <span>Send again</span>
             </button>
           </div>
