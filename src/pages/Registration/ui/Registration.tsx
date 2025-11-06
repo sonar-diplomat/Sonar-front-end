@@ -4,7 +4,7 @@ import { Button, LeftArrow } from '@shared/ui';
 import {
   RegistrationForm,
   PasswordForm,
-  EmailConfirmationModal,
+  EmailConfirmation,
   type RegistrationFormData,
   type PasswordFormData
 } from '@features/registration';
@@ -14,7 +14,6 @@ type RegistrationStep = 'registration' | 'password' | 'confirmation';
 export const Registration: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<RegistrationStep>('registration');
   const [email, setEmail] = useState<string>('');
-  const [showModal, setShowModal] = useState<boolean>(false);
 
   const handleRegistrationSubmit = (data: RegistrationFormData) => {
     console.log('Registration submitted:', data);
@@ -25,12 +24,10 @@ export const Registration: React.FC = () => {
   const handlePasswordSubmit = (data: PasswordFormData) => {
     console.log('Password submitted:', data);
     setCurrentStep('confirmation');
-    setShowModal(true);
   };
 
   const handleEmailConfirm = (code: string) => {
     console.log('Email confirmed with code:', code);
-    setShowModal(false);
     // Navigate to next page or show success message
   };
 
@@ -40,16 +37,10 @@ export const Registration: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (showModal) {
-      setShowModal(false);
-      return;
-    }
-
     if (currentStep === 'password') {
       setCurrentStep('registration');
     } else if (currentStep === 'confirmation') {
       setCurrentStep('password');
-      setShowModal(false);
     }
   };
 
@@ -72,10 +63,8 @@ export const Registration: React.FC = () => {
       )}
 
       {currentStep === 'confirmation' && (
-        <EmailConfirmationModal
+        <EmailConfirmation
           email={email || 'user@example.com'}
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
           onConfirm={handleEmailConfirm}
           onResend={handleResendCode}
         />

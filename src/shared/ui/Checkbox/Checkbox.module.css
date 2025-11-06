@@ -1,6 +1,6 @@
 .container {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     cursor: pointer;
     position: relative;
     user-select: none;
