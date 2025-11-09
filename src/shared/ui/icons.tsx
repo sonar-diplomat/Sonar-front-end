@@ -80,4 +80,18 @@ export const SendRight: React.FC<IconProps> = ({ className }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M0.554244 6.46464L0.198505 8.99698C-0.0109475 10.488 -0.115673 11.2335 0.241308 11.6396C0.351532 11.7651 0.493122 11.8686 0.645092 11.935C1.13728 12.1501 1.79007 11.8167 3.09567 11.1498C3.8944 10.7418 4.71453 10.3099 5.41297 9.9153C6.39764 9.359 7.80832 8.54121 9.08266 7.79788C10.2727 7.1037 10.8678 6.7566 10.975 6.24551C11.0083 6.08652 11.0083 5.91661 10.975 5.75761C10.868 5.24648 10.2766 4.90128 9.09384 4.21089C8.01437 3.58079 6.73631 2.84675 5.41297 2.11271C4.51329 1.61367 3.69731 1.17846 2.98109 0.807091C1.75366 0.170656 1.13995 -0.147562 0.645436 0.0663399C0.495363 0.131254 0.348638 0.237908 0.239665 0.361295C-0.119419 0.767872 -0.0196888 1.47781 0.179774 2.89769L0.554245 5.56337C0.574926 5.5604 0.59606 5.55886 0.617549 5.55886H4.77358C5.02077 5.55886 5.22115 5.76263 5.22115 6.01401C5.22115 6.26538 5.02077 6.46916 4.77358 6.46916H0.617549C0.59606 6.46916 0.574925 6.46762 0.554244 6.46464Z" fill="currentColor"/>
     </svg>
-    )
+)
+
+export const QRCode: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M1 1H7V7H1V1Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M9 1H15V7H9V1Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M1 9H7V15H1V9Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M13 9H15V11H13V9Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M9 13H11V15H9V13Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M13 13H15V15H13V13Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M3.5 3.5H4.5V4.5H3.5V3.5Z" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M11.5 3.5H12.5V4.5H11.5V3.5Z" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M3.5 11.5H4.5V12.5H3.5V11.5Z" stroke="currentColor" strokeWidth="1.5"/>
+    </svg>
+)
