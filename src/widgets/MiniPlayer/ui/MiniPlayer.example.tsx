@@ -2,7 +2,7 @@ import  React, { useState } from "react"
 import {MiniPlayer} from "@widgets/MiniPlayer";
 import type {Track} from "@entities/Music";
 
-const MiniPlayerExample = () => {
+export const MiniPlayerExample = () => {
     const [currentTime, setCurrentTime] = useState(45);
     const [isLiked, setIsLiked] = useState(false);
     const mockTrack: Track = {
@@ -76,4 +76,3 @@ const MiniPlayerExample = () => {
         />
     );
 }
-export default MiniPlayerExample

@@ -1,12 +1,11 @@
 import React from "react";
-import {Registration} from "@pages/Registration";
+import {Outlet} from "react-router-dom";
 
-function App() {
+
+export function App() {
     return (
         <div className="app">
-            <Registration/>
+            <Outlet />
         </div>
     );
 }
-
-export default App;

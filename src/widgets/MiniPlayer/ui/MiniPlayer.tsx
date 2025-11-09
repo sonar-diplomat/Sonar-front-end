@@ -48,14 +48,14 @@ export const MiniPlayer = ({
               <img src={coverUrl} alt={currentTrack.title || 'Album cover'}/>
           )}
         </div>
-        <div className={styles.info}>
+        <div className={`${styles.info} no-select`}>
           <TrackInfo currentTrack={currentTrack} isLiked={isLiked} onLike={onLike} />
           <ProgressBar
               currentTime={currentTime}
               duration={duration}
               onSeek={onSeek}
           />
-          <div className={styles.duration}>
+          <div className={`${styles.duration} no-select`}>
             <p className={styles.current}>{formattedCurrentTime}</p>
             <p className={styles.total}>{formattedDuration}</p>
           </div>

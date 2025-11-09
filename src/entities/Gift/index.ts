@@ -1,2 +1,2 @@
-export type { Gift } from './model/types/Gift';
-export type { GiftStyle } from './model/types/GiftStyle';
+//export type * from './model/types.ts';
+//export * from './model/store.ts';
