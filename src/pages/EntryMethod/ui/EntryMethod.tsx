@@ -57,7 +57,7 @@ export const EntryMethod: React.FC = () => {
                     size="large"
                     shape="cr-16"
                     fullWidth
-                    icon={<QRCode />}
+                    icon={<QRCode className={styles.qrIcon}/>}
                 >
                     Or scan Qr-code
                 </Button>
