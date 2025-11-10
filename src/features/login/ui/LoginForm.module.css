@@ -1,52 +1,56 @@
 .container {
-  padding: 1rem;
-  min-height: 100vh;
-  background-color: #000;
   color: white;
   display: flex;
   flex-direction: column;
 }
 
 .header {
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
 }
 
 .header h2 {
-  margin: 0 0 0.5rem 0;
-  font-size: 2rem;
-  font-weight: 600;
+  margin-bottom: 12px;
+  font-family: 'Philosopher', sans-serif;
+  font-size: 36px;
+  font-weight: 400;
   color: white;
 }
 
 .header p {
   margin: 0;
-  color: #888;
-  font-size: 1rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
 }
-
-.form {
+.inputContainer{
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  flex: 1;
+  flex-flow: column;
+  gap: 24px;
+  width: 100%;
 }
-
 .submits{
   display: flex;
   flex-flow: column wrap;
-  align-items: center;
   gap: 16px;
-  margin-top: 111px;
+  align-items: center;
+  margin-top: 107px;
+  width: 100%;
 }
+
 
 .createAccount {
   background: none;
   border: none;
-  color: white;
-  font-size: 1rem;
+  color: #EAEAEA;
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: -0.23px;
   text-align: center;
   cursor: pointer;
-  padding: 1rem;
-  margin-top: 1rem;
-  text-decoration: underline;
+  margin-top: 16px;
+  padding: 8px 10px;
+  text-decoration: none;
 }

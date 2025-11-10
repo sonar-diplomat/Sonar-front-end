@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import styles from './LoginForm.module.css';
-import {Button, Input, RightArrow, Form, EyeIcon, EyeOffIcon} from '@shared/ui';
+import {Button, Input, RightArrow, Form, EyeIcon, EyeOffIcon, GoogleIcon, AppleIcon} from '@shared/ui';
 import type { LoginFormData, LoginFormProps } from '../model/types';
 
 type FormField = keyof LoginFormData;
@@ -35,46 +35,48 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             </div>
 
             <Form onSubmit={handleSubmit} className={styles.form}>
-                <Input
-                    label="Email or Username"
-                    placeholder="vanessa_sonar@gmail.com"
-                    value={formData.emailOrUsername}
-                    onChange={(e) => updateField('emailOrUsername', e.target.value)}
-                    helperText="Enter your email or @username"
-                />
+                <div className={styles.inputContainer}>
+                    <Input
+                        label="Email or Username"
+                        placeholder="vanessa_sonar@gmail.com"
+                        value={formData.emailOrUsername}
+                        onChange={(e) => updateField('emailOrUsername', e.target.value)}
+                        helperText="Enter your email or @username"
+                    />
 
-                <Input
-                    label="Password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Vanessa1234"
-                    value={formData.password}
-                    onChange={(e) => updateField('password', e.target.value)}
-                    icon={showPassword ? <EyeIcon/> : <EyeOffIcon/>}
-                    onIconClick={() => setShowPassword(!showPassword)}
-                    iconPosition={"suffix"}
-                    helperText={"Forgot Password?"}
-                    helperTextAction={{
-                        text: 'Recover',
-                        onClick: () => onForgotPassword,
-                    }}
-                />
+                    <Input
+                        label="Password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Vanessa1234"
+                        value={formData.password}
+                        onChange={(e) => updateField('password', e.target.value)}
+                        icon={showPassword ? <EyeIcon/> : <EyeOffIcon/>}
+                        onIconClick={() => setShowPassword(!showPassword)}
+                        iconPosition={"suffix"}
+                        helperText={"Forgot Password?"}
+                        helperTextAction={{
+                            text: 'Recover',
+                            onClick: () => onForgotPassword,
+                        }}
+                    />
+                </div>
                 <div className={styles.submits}>
                     <Button icon={<RightArrow/>} children={"Continue"} variant={"light"} size={"large"}
                             fullWidth/>
-                    <Button icon={<RightArrow/>} children={"Continue with Google"} variant={"dark"} size={"large"}
+                    <Button icon={<GoogleIcon/>} children={"Continue with Google"} variant={"dark"} size={"large"}
                             onClick={onContinueWithGoogle}
                             fullWidth/>
-                    <Button icon={<RightArrow/>} children={"Continue with Apple"} variant={"dark"} size={"large"}
+                    <Button icon={<AppleIcon/>} children={"Continue with Apple"} variant={"dark"} size={"large"}
                             onClick={onContinueWithApple}
                             fullWidth/>
-                    <button
-                        type="button"
-                        className={styles.createAccount}
-                        onClick={onCreateAccount}
-                    >
-                        Create account in one touch
-                    </button>
                 </div>
+                <button
+                    type="button"
+                    className={styles.createAccount}
+                    onClick={onCreateAccount}
+                >
+                    Create account in one touch
+                </button>
             </Form>
         </div>
 );

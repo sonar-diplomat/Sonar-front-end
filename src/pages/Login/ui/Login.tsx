@@ -43,6 +43,7 @@ export const Login: React.FC = () =>{
                 size={'small'}
                 variant={'dark'}
                 onClick={handleBack}
+                className={styles.backButton}
             />
 
             <LoginForm 
