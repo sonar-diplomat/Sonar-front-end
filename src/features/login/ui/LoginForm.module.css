@@ -1,0 +1,52 @@
+.container {
+  padding: 1rem;
+  min-height: 100vh;
+  background-color: #000;
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.header h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  font-weight: 600;
+  color: white;
+}
+
+.header p {
+  margin: 0;
+  color: #888;
+  font-size: 1rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1;
+}
+
+.submits{
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  gap: 16px;
+  margin-top: 111px;
+}
+
+.createAccount {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  text-align: center;
+  cursor: pointer;
+  padding: 1rem;
+  margin-top: 1rem;
+  text-decoration: underline;
+}

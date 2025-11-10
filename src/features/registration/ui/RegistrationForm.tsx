@@ -14,7 +14,7 @@ const DATE_OPTIONS = [
 export interface RegistrationFormProps {
   onSubmit?: (data: RegistrationFormData) => void;
   data?: RegistrationFormData | undefined;
-  onDataChange: (newData: any) => void;
+  onDataChange?: (newData: RegistrationFormData) => void;
 }
 
 type FormField = keyof RegistrationFormData;
@@ -33,7 +33,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
   }, []);
 
   useEffect(() => {
-        onDataChange(formData);
+        onDataChange?.(formData);
     }, [formData, onDataChange]);
 
   const handleSubmit = useCallback(() => {
