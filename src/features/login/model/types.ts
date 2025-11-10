@@ -10,3 +10,9 @@ export interface LoginFormProps {
     onContinueWithApple?: () => void;
     onCreateAccount?: () => void;
 }
+
+export interface TwoFactorVerificationProps {
+    email: string;
+    onVerify: (code: string) => void;
+    onResend?: () => void;
+}

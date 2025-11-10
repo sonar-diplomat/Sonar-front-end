@@ -1,2 +1,3 @@
 export { LoginForm } from './ui/LoginForm';
-export type { LoginFormData, LoginFormProps } from './model/types';
+export { TwoFactorVerification } from './ui/TwoFactorVerification';
+export type { LoginFormData, LoginFormProps, TwoFactorVerificationProps } from './model/types';
