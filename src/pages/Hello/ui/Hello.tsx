@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {Button, RightArrow} from "@shared/ui";
+import { CarouselDots } from "@widgets/CarouselDots";
 import styles from "./Hello.module.css";
 
 export const Hello: React.FC = () => {
@@ -46,7 +47,9 @@ export const Hello: React.FC = () => {
                 <p className={styles.mainPrimaryText}>{textPage[currentPage].primary}</p>
                 <p className={styles.mainSecondaryText}>{textPage[currentPage].secondary}</p>
             </div>
-            <div className={styles.step}>Page {currentPage + 1} of {textPage.length}</div>
+            <div className={styles.step}>
+                <CarouselDots total={textPage.length} currentIndex={currentPage} />
+            </div>
             <Button onClick={handleNext} children={textPage[currentPage].buttonText} icon={<RightArrow/>} shape={"cr-16"} size={"large"} fullWidth />
         </div>
     );
