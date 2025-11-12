@@ -3,17 +3,19 @@ import styles from './Login.module.css';
 import {Button, LeftArrow} from "@shared/ui";
 import {LoginForm, TwoFactorVerification} from "@features/login";
 import type { LoginFormData } from "@features/login";
+import {useNavigate} from "react-router-dom";
 
 export const Login: React.FC = () =>{
     const [showTwoFactor, setShowTwoFactor] = useState(false);
     const [userEmail, setUserEmail] = useState('');
+    const navigate = useNavigate();
 
     const handleBack = () => {
         // Navigate back logic
         if (showTwoFactor) {
             setShowTwoFactor(false);
         } else {
-            window.history.back();
+            navigate("/entry");
         }
     };
 
@@ -23,7 +25,7 @@ export const Login: React.FC = () =>{
 
         // Simulate 2FA requirement - replace with actual API response
         // If API returns that 2FA is required, show the 2FA screen
-        setUserEmail(data.emailOrUsername);
+        setUserEmail(data.emailOrLogin);
         setShowTwoFactor(true);
     };
 
@@ -56,8 +58,7 @@ export const Login: React.FC = () =>{
     };
 
     const handleCreateAccount = () => {
-        // Navigate to registration
-        console.log('Create account clicked');
+        navigate("/register");
     };
 
     return(

@@ -14,7 +14,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState<LoginFormData>({
-        emailOrUsername: '',
+        emailOrLogin: '',
         password: ''
     });
 
@@ -37,11 +37,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             <Form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.inputContainer}>
                     <Input
-                        label="Email or Username"
+                        label="Email or Login"
                         placeholder="vanessa_sonar@gmail.com"
-                        value={formData.emailOrUsername}
-                        onChange={(e) => updateField('emailOrUsername', e.target.value)}
-                        helperText="Enter your email or @username"
+                        value={formData.emailOrLogin}
+                        onChange={(e) => updateField('emailOrLogin', e.target.value)}
+                        helperText="Enter your email or login"
+                        required={true}
                     />
 
                     <Input
@@ -54,30 +55,34 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                         onIconClick={() => setShowPassword(!showPassword)}
                         iconPosition={"suffix"}
                         helperText={"Forgot Password?"}
+                        required={true}
                         helperTextAction={{
                             text: 'Recover',
                             onClick: () => onForgotPassword,
                         }}
                     />
                 </div>
-                <div className={styles.submits}>
-                    <Button icon={<RightArrow/>} children={"Continue"} variant={"light"} size={"large"}
-                            fullWidth/>
-                    <Button icon={<GoogleIcon/>} children={"Continue with Google"} variant={"dark"} size={"large"}
-                            onClick={onContinueWithGoogle}
-                            fullWidth/>
-                    <Button icon={<AppleIcon/>} children={"Continue with Apple"} variant={"dark"} size={"large"}
-                            onClick={onContinueWithApple}
-                            fullWidth/>
+
+                <div className={styles.actions}>
+                    <div className={styles.submits}>
+                        <Button icon={<RightArrow/>} children={"Continue"} variant={"light"} size={"large"}
+                                fullWidth/>
+                        <Button icon={<GoogleIcon/>} children={"Continue with Google"} variant={"dark"} size={"large"}
+                                onClick={onContinueWithGoogle}
+                                fullWidth/>
+                        <Button icon={<AppleIcon/>} children={"Continue with Apple"} variant={"dark"} size={"large"}
+                                onClick={onContinueWithApple}
+                                fullWidth/>
+                    </div>
+                    <button
+                        type="button"
+                        className={styles.createAccount}
+                        onClick={onCreateAccount}
+                    >
+                        Create an account
+                    </button>
                 </div>
-                <button
-                    type="button"
-                    className={styles.createAccount}
-                    onClick={onCreateAccount}
-                >
-                    Create account in one touch
-                </button>
             </Form>
         </div>
-);
+    );
 };
