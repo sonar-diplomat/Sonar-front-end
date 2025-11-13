@@ -24,5 +24,8 @@ export {
     ShareIcon,
     ProfileIcon,
     UnfollowIcon,
-    WarningIcon
+    WarningIcon,
+    LibraryIcon,
+    SearchIcon,
+    HomeIcon
 } from './icons';
