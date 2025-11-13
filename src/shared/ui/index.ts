@@ -6,4 +6,4 @@ export { Form } from './Form/Form';
 export type { ButtonProps, ButtonVariant, ButtonSize, ButtonShape } from './Button/Button';
 export type { CheckboxProps } from './Checkbox/Checkbox';
 export type { FormProps } from './Form/Form';
-export { PlayIcon, EyeIcon, EyeOffIcon, LeftArrow, RightArrow, DropDown, Info, CheckMark, SendRight} from './icons';
+export { PlayIcon, EyeIcon, EyeOffIcon, LeftArrow, RightArrow, DropDown, Info, CheckMark, SendRight, QRCode} from './icons';
