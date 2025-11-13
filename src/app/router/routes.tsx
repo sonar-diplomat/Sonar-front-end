@@ -2,7 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { MiniPlayerExample }from "@widgets/MiniPlayer";
 import { App }  from "@app/App.tsx";
 import React from "react";
-import {Hello, EntryMethod, Registration, TestPage} from "@pages";
+import {Hello, EntryMethod, Registration, TestPage, PasswordRecovery, AssignNewPassword} from "@pages";
 import {Login} from "@pages/Login";
 
 
@@ -26,6 +26,14 @@ export const router = createBrowserRouter([
             {
                 path: '/login',
                 element: <Login/>
+            },
+            {
+                path: '/password-recovery',
+                element: <PasswordRecovery/>
+            },
+            {
+                path: '/assign-new-password',
+                element: <AssignNewPassword/>
             },
             {
                 path: '/',
