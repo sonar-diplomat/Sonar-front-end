@@ -1,4 +1,3 @@
-// Shared UI components will be exported here
 export { Button } from './Button/Button';
 export { Input } from './Input/Input';
 export { Checkbox } from './Checkbox/Checkbox';
@@ -8,4 +7,22 @@ export type { ButtonProps, ButtonVariant, ButtonSize, ButtonShape } from './Butt
 export type { CheckboxProps } from './Checkbox/Checkbox';
 export type { FormProps } from './Form/Form';
 export type { CodeVerificationProps } from './CodeVerification/CodeVerification';
-export { PlayIcon, EyeIcon, EyeOffIcon, LeftArrow, RightArrow, DropDown, Info, CheckMark, SendRight, QRCode, GoogleIcon, AppleIcon} from './icons';
+export {
+    PlayIcon,
+    EyeIcon,
+    EyeOffIcon,
+    LeftArrow,
+    RightArrow,
+    DropDown,
+    Info,
+    CheckMark,
+    SendRight,
+    QRCode,
+    GoogleIcon,
+    AppleIcon,
+    PremiumShapeIcon,
+    ShareIcon,
+    ProfileIcon,
+    UnfollowIcon,
+    WarningIcon
+} from './icons';

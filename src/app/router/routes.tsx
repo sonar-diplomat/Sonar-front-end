@@ -1,9 +1,8 @@
-// src/app/router/routes.tsx
 import { createBrowserRouter } from 'react-router-dom';
 import { MiniPlayerExample }from "@widgets/MiniPlayer";
 import { App }  from "@app/App.tsx";
 import React from "react";
-import {Hello, EntryMethod, Registration, RegistrationTest} from "@pages";
+import {Hello, EntryMethod, Registration, TestPage} from "@pages";
 import {Login} from "@pages/Login";
 
 
@@ -33,8 +32,8 @@ export const router = createBrowserRouter([
                 element: <MiniPlayerExample />,
             },
             {
-                path: '/test/register',
-                element: <RegistrationTest />,
+                path: '/test',
+                element: <TestPage />,
             }
 
             // Другие маршруты добавляй сюда

@@ -1,5 +1,5 @@
 // Pages exports
-export { RegistrationTest } from './RegistrationTest';
+export { TestPage } from './TestPage';
 export { Registration } from './Registration';
 export { Hello } from './Hello';
 export { EntryMethod } from './EntryMethod';
