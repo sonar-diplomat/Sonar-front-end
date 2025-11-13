@@ -4,6 +4,7 @@ import { MiniPlayerExample }from "@widgets/MiniPlayer";
 import { App }  from "@app/App.tsx";
 import React from "react";
 import {Hello, EntryMethod, Registration, RegistrationTest} from "@pages";
+import {Login} from "@pages/Login";
 
 
 export const router = createBrowserRouter([
@@ -22,6 +23,10 @@ export const router = createBrowserRouter([
             {
                 path: '/register',
                 element: <Registration />,
+            },
+            {
+                path: '/login',
+                element: <Login/>
             },
             {
                 path: '/',

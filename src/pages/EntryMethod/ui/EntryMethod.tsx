@@ -1,21 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import {Button, RightArrow, QRCode} from "@shared/ui";
+import { Button, RightArrow } from "@shared/ui";
 import styles from "./EntryMethod.module.css";
 
 export const EntryMethod: React.FC = () => {
     const navigate = useNavigate();
 
     const handleSignIn = () => {
-        console.log("Sign in quickly");
+        navigate('/login');
     };
 
     const handleCreateAccount = () => {
         navigate('/register');
-    };
-
-    const handleQRScan = () => {
-        console.log("QR scan");
     };
 
     const handleGuest = () => {
@@ -26,7 +22,7 @@ export const EntryMethod: React.FC = () => {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h1 className={styles.title}>Get started</h1>
-                <p className={styles.subtitle}>Please select the method that is convenient for you to continue.</p>
+                <p className={styles.subtitle}>Please choose whether you want to sign-in or create a new account</p>
             </div>
 
             <div className={styles.buttonGroup}>
@@ -38,7 +34,7 @@ export const EntryMethod: React.FC = () => {
                     fullWidth
                     icon={<RightArrow />}
                 >
-                    Sign in quickly
+                    Sign in
                 </Button>
 
                 <Button
@@ -48,18 +44,7 @@ export const EntryMethod: React.FC = () => {
                     shape="cr-16"
                     fullWidth
                 >
-                    Create account in one touch
-                </Button>
-
-                <Button
-                    onClick={handleQRScan}
-                    variant="dark"
-                    size="large"
-                    shape="cr-16"
-                    fullWidth
-                    icon={<QRCode className={styles.qrIcon}/>}
-                >
-                    Or scan Qr-code
+                    Create an account
                 </Button>
 
                 <button className={styles.guestLink} onClick={handleGuest}>

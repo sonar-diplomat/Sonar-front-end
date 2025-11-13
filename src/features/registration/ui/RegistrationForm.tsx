@@ -9,12 +9,10 @@ const DATE_OPTIONS = [
   { value: 'year', label: 'Year' }
 ];
 
-
-
 export interface RegistrationFormProps {
   onSubmit?: (data: RegistrationFormData) => void;
   data?: RegistrationFormData | undefined;
-  onDataChange: (newData: any) => void;
+  onDataChange?: (newData: RegistrationFormData) => void;
 }
 
 type FormField = keyof RegistrationFormData;
@@ -33,11 +31,12 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
   }, []);
 
   useEffect(() => {
-        onDataChange(formData);
+        onDataChange?.(formData);
     }, [formData, onDataChange]);
 
   const handleSubmit = useCallback(() => {
     if (!isAgreed) {
+        // TODO: No alert, use proper UI feedback
       alert('Please agree to the terms before continuing');
       return;
     }
@@ -65,24 +64,27 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
         label="Email"
         placeholder="vanessa_sonar@gmail.com"
         value={formData.email}
+        required={true}
         onChange={(e) => updateField('email', e.target.value)}
       />
 
       <Input
         label="Username"
         placeholder="vanessa_ortiz"
-        helperText="Why is needed and requirements"
+        helperText="Why is this needed and requirements"
         helperIcon={<Info />}
         value={formData.username}
+        required={true}
         onChange={(e) => updateField('username', e.target.value)}
       />
 
       <Input
-        label="Name"
+        label="Login"
         placeholder="Vanessa"
-        helperText="Why is this necessary and requirements"
+        helperText="Why is this needed and requirements"
         helperIcon={<Info />}
         value={formData.login}
+        required={true}
         onChange={(e) => updateField('login', e.target.value)}
       />
 
@@ -93,6 +95,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
         dropdownOptions={DATE_OPTIONS}
         iconPosition="prefix"
         value={formData.dateOfBirth}
+        required={true}
         onChange={(e) => updateField('dateOfBirth', e.target.value)}
       />
 

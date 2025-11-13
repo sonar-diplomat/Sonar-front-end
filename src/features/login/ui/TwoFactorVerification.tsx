@@ -1,30 +1,30 @@
 import React from 'react';
 import { CodeVerification, RightArrow } from '@shared/ui';
-import styles from './EmailConfirmation.module.css';
+import styles from './TwoFactorVerification.module.css';
 
-export interface EmailConfirmationModalProps {
+export interface TwoFactorVerificationProps {
   email: string;
-  onConfirm: (code: string) => void;
+  onVerify: (code: string) => void;
   onResend?: () => void;
 }
 
-export const EmailConfirmation: React.FC<EmailConfirmationModalProps> = ({
+export const TwoFactorVerification: React.FC<TwoFactorVerificationProps> = ({
   email,
-  onConfirm,
+  onVerify,
   onResend
 }) => {
   return (
     <CodeVerification
-      title="Confirm E-mail"
+      title="Verify code"
       description={
         <>
           Enter the 6-digit code you received via email at{' '}
           <span className={styles.email}>{email}</span> to verify your account.
         </>
       }
-      buttonText="Confirm"
+      buttonText="Sign in"
       buttonIcon={<RightArrow />}
-      onConfirm={onConfirm}
+      onConfirm={onVerify}
       onResend={onResend}
     />
   );

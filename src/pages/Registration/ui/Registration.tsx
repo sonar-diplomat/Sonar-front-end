@@ -8,12 +8,14 @@ import {
   type RegistrationFormData,
   type PasswordFormData
 } from '@features/registration';
+import {useNavigate} from "react-router-dom";
 
 type RegistrationStep = 'registration' | 'password' | 'confirmation';
 
 export const Registration: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<RegistrationStep>('registration');
   const [email, setEmail] = useState<string>('');
+    const navigate = useNavigate();
 
   const handleRegistrationSubmit = (data: RegistrationFormData) => {
     console.log('Registration submitted:', data);
@@ -37,13 +39,15 @@ export const Registration: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (currentStep === 'password') {
+    if (currentStep === 'registration') {
+      navigate('/entry');
+    }
+    else if (currentStep === 'password') {
       setCurrentStep('registration');
     } else if (currentStep === 'confirmation') {
       setCurrentStep('password');
     }
   };
-
   return (
     <div className={styles.container}>
       <Button
