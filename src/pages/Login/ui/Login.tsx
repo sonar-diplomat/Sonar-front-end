@@ -45,6 +45,7 @@ export const Login: React.FC = () =>{
     const handleForgotPassword = () => {
         // Handle forgot password
         console.log('Forgot password clicked');
+        navigate("/password-recovery");
     };
 
     const handleContinueWithGoogle = () => {

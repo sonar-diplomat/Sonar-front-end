@@ -1,9 +1,8 @@
-// src/app/router/routes.tsx
 import { createBrowserRouter } from 'react-router-dom';
 import { MiniPlayerExample }from "@widgets/MiniPlayer";
 import { App }  from "@app/App.tsx";
 import React from "react";
-import {Hello, EntryMethod, Registration, RegistrationTest} from "@pages";
+import {Hello, EntryMethod, Registration, TestPage, PasswordRecovery, AssignNewPassword} from "@pages";
 import {Login} from "@pages/Login";
 
 
@@ -29,12 +28,20 @@ export const router = createBrowserRouter([
                 element: <Login/>
             },
             {
+                path: '/password-recovery',
+                element: <PasswordRecovery/>
+            },
+            {
+                path: '/assign-new-password',
+                element: <AssignNewPassword/>
+            },
+            {
                 path: '/',
                 element: <MiniPlayerExample />,
             },
             {
-                path: '/test/register',
-                element: <RegistrationTest />,
+                path: '/test',
+                element: <TestPage />,
             }
 
             // Другие маршруты добавляй сюда

@@ -58,7 +58,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                         required={true}
                         helperTextAction={{
                             text: 'Recover',
-                            onClick: () => onForgotPassword,
+                            onClick: onForgotPassword,
                         }}
                     />
                 </div>
