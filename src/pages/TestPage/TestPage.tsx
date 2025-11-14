@@ -11,7 +11,7 @@ export const TestPage: React.FC = () => {
 
 
     return (
-        <>
+        <div style={{ padding: '16px', overflowY: 'scroll' }}>
             <GetPremiumCard onClick={() => setPopup(Math.random() > 0.5 ? "links" : "actions")} />
 
             {popup === "links" && (
@@ -21,6 +21,6 @@ export const TestPage: React.FC = () => {
             {popup === "actions" && (
                 <CreatorActionsPopup onClose={() => setPopup(null)} />
             )}
-        </>
+        </div>
     );
 }
