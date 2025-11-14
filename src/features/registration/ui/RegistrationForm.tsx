@@ -1,13 +1,8 @@
 import React, {useState, useCallback, useMemo, useEffect} from 'react';
 import styles from './RegistrationForm.module.css';
-import { Button, Input, RightArrow, Info, Checkbox, Form } from '@shared/ui';
+import {Button, Input, RightArrow, Info, Checkbox, Form, DropDown} from '@shared/ui';
 import type { RegistrationFormData } from "@features/registration";
-
-const DATE_OPTIONS = [
-  { value: 'day', label: 'Day' },
-  { value: 'month', label: 'Month' },
-  { value: 'year', label: 'Year' }
-];
+import ModalDatePicker from "@widgets/ModalDatePicker/ui/ModalDatePicker.tsx";
 
 export interface RegistrationFormProps {
   onSubmit?: (data: RegistrationFormData) => void;
@@ -25,6 +20,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
     login: '',
     dateOfBirth: ''
   });
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const updateField = useCallback((field: FormField, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -43,7 +39,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
 
     onSubmit?.(formData);
   }, [isAgreed, formData, onSubmit]);
-
   const consentLabel = useMemo(() => (
     <>
       I consent to the{' '}
@@ -91,14 +86,14 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
       <Input
         label="Date of birth"
         placeholder="dd/mm/yy"
-        dropdownText="Select"
-        dropdownOptions={DATE_OPTIONS}
+        icon={<DropDown/>}
         iconPosition="prefix"
+        iconClickable={true}
         value={formData.dateOfBirth}
         required={true}
         onChange={(e) => updateField('dateOfBirth', e.target.value)}
-      />
-
+        onIconClick={()=>{setIsDatePickerOpen(true)}}
+      /><ModalDatePicker isOpen={isDatePickerOpen} onClose={() => setIsDatePickerOpen(false)} />
       <div className={styles.submits}>
         <Checkbox
           checked={isAgreed}
@@ -119,3 +114,4 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
     </Form>
   );
 };
+//TODO Fix dropdown text with icon, refactor if dropdown don't need at all
