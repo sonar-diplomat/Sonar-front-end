@@ -4,6 +4,7 @@ export { Checkbox } from './Checkbox/Checkbox';
 export { Form } from './Form/Form';
 export { CodeVerification } from './CodeVerification/CodeVerification';
 export { ItemCard, ItemCardContainer } from './ItemCard';
+export { FolderCard} from './FolderCard';
 export type { ButtonProps, ButtonVariant, ButtonSize, ButtonShape } from './Button/Button';
 export type { CheckboxProps } from './Checkbox/Checkbox';
 export type { FormProps } from './Form/Form';
@@ -29,5 +30,6 @@ export {
     WarningIcon,
     LibraryIcon,
     SearchIcon,
-    HomeIcon
+    HomeIcon,
+    FolderCoverIcon
 } from './icons';

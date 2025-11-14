@@ -186,3 +186,11 @@ export const SubtractIcon: React.FC<IconProps> = ({ className }) => (
     </svg>
 );
 
+export const FolderCoverIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="123" height="89" viewBox="0 0 123 89" fill="none">
+        <foreignObject x="-16" y="-16" width="155" height="121"></foreignObject><path data-figma-bg-blur-radius="16" d="M46 5C46 7.76142 48.2386 10 51 10H115C119.418 10 123 13.5817 123 18V65C123 78.2548 112.255 89 99 89H24C10.7452 89 0 78.2548 0 65V8C0 3.58172 3.58172 0 8 0H41C43.7614 0 46 2.23858 46 5Z" fill="#3C3C3C"/>
+        <defs>
+            <clipPath id="bgblur_0_281_652_clip_path" transform="translate(16 16)"><path d="M46 5C46 7.76142 48.2386 10 51 10H115C119.418 10 123 13.5817 123 18V65C123 78.2548 112.255 89 99 89H24C10.7452 89 0 78.2548 0 65V8C0 3.58172 3.58172 0 8 0H41C43.7614 0 46 2.23858 46 5Z"/>
+            </clipPath></defs>
+    </svg>
+)

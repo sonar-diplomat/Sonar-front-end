@@ -34,9 +34,15 @@
 
 .mainCard {
     position: absolute;
-    z-index: 4;
+    z-index: 0;
     left: 0;
     top: 0;
+}
+.folderIcon{
+    position: absolute;
+    width: 100%;
+    z-index: 4;
+    left: 0;
 }
 
 .label {
@@ -60,25 +66,28 @@
 }
 
 .small .layer1 {
-    width: 56px;
-    height: 56px;
-    top: 0px;
+    width: 74px;
+    height: 74px;
 }
 
 .small .layer2 {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     top: 6px;
 }
 
 .small .layer3 {
-    width: 66px;
-    height: 66px;
+    width: 88px;
+    height: 88px;
     top: 12px;
 }
 
 .small .mainCard {
+}
+
+.small .folderIcon {
     top: 19px;
+    height: 150px;
 }
 
 .small .label {
@@ -111,6 +120,11 @@
 
 .medium .mainCard {
     top: 34px;
+}
+
+.medium .folderIcon {
+    top: 34px;
+    height: 200px;
 }
 
 .medium .label {

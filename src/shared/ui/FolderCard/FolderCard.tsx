@@ -2,8 +2,9 @@ import React from 'react';
 import styles from './FolderCard.module.css';
 import { ItemCard } from '@shared/ui/ItemCard/ItemCard.tsx';
 import type { FolderCardProps } from './FolderCard.types.ts';
+import {FolderCoverIcon} from "@shared/ui";
 
-export const FolderCard: React.FC<FolderCardProps> = ({ label, size = 'medium', onClick, className = '' }) => {
+export const FolderCard: React.FC<FolderCardProps> = ({ label, size = 'small', onClick, className = '' }) => {
     const wrapperClasses = [
         styles.folderWrapper,
         styles[size],
@@ -13,7 +14,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({ label, size = 'medium', 
     return (
         <div className={wrapperClasses}>
             <div className={styles.layersContainer}>
-                <div className={`${styles.layer} ${styles.layer1}`} />I
+                <div className={`${styles.layer} ${styles.layer1}`} />
                 <div className={`${styles.layer} ${styles.layer2}`} />
                 <div className={`${styles.layer} ${styles.layer3}`} />
                 <div className={styles.mainCard}>
@@ -23,6 +24,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({ label, size = 'medium', 
                         onClick={onClick}
                     />
                 </div>
+                <FolderCoverIcon className={styles.folderIcon}/>
             </div>
             <p className={styles.label}>{label}</p>
         </div>
