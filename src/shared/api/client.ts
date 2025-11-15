@@ -7,6 +7,7 @@ import type {
     ClientOptions,
 } from '@shared/types/api';
 import { normalizeResponse } from '@shared/types/api';
+import { authManager } from '@shared/lib/auth/auth-manager';
 
 const isDate = (v: unknown): v is Date => v instanceof Date;
 const isPlainObject = (v: unknown): v is Record<string, unknown> =>
@@ -244,4 +245,10 @@ class ApiClient {
     }
 }
 
-export const apiClient = new ApiClient();
+export const apiClient = new ApiClient(API_BASE_URL, {
+  retries: 0,
+  getToken: () => authManager.getAccessToken(),
+  onUnauthorized: async () => {
+    await authManager.handleUnauthorized();
+  },
+});

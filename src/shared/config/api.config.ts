@@ -1,4 +1,4 @@
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5205/api/';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
 
 export const API_ENDPOINTS = {
     auth: {
@@ -56,6 +56,8 @@ export const API_ENDPOINTS = {
         delete: (trackId: number) => `Track/${trackId}`,
         updateFile: (trackId: number) => `Track/${trackId}/audio-file`,
         stream: (trackId: number) => `Track/${trackId}/stream`,
+        updateVisibility: (trackId: number) => `Track/${trackId}/visibility`,
+        toggleFavorite: (trackId: number) => `Track/${trackId}/toggle-favorite`,
     },
     playlist: {
         create: 'Playlist/create',
@@ -95,5 +97,8 @@ export const API_ENDPOINTS = {
         update: (id: number) => `Distributor/${id}`,
         delete: (id: number) => `Distributor/${id}`,
         updateKey: (id: number) => `Distributor/update-key/${id}`,
+    },
+    blob: {
+        image: (id: number) => `blob/${id}`,
     },
 } as const;

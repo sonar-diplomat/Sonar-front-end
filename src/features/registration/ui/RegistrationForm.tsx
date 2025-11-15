@@ -2,7 +2,7 @@ import React, {useState, useCallback, useMemo, useEffect} from 'react';
 import styles from './RegistrationForm.module.css';
 import {Button, Input, RightArrow, Info, Checkbox, Form, DropDown} from '@shared/ui';
 import type { RegistrationFormData } from "@features/registration";
-import ModalDatePicker from "@widgets/ModalDatePicker/ui/ModalDatePicker.tsx";
+import { ModalDatePicker } from "@widgets/ModalDatePicker/ui/ModalDatePicker.tsx";
 
 export interface RegistrationFormProps {
   onSubmit?: (data: RegistrationFormData) => void;

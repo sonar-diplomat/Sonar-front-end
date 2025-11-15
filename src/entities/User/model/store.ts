@@ -2,16 +2,20 @@ import { useCallback, useMemo, useState } from 'react'
 import { Api } from '../api/api.ts'
 import type { NonSensetiveUserDTO, User, UserUpdateDTO } from '@entities/User'
 import type { State } from '@shared/types/store'
+import type { RequestConfig } from '@shared/types'
+
+const pickError = (res: any) =>
+    res?.success ? undefined : res?.errors?.[0] || res?.details?.[0] || res?.message
 
 export const useGetUsers = () => {
     const [state, setState] = useState<State<User[]>>({ loading: false })
-    const refetch = useCallback(async () => {
+    const refetch = useCallback(async (cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }))
-        const res = await Api.list()
+        const res = await Api.list(cfg)
         setState({
             loading: false,
             data: res.data,
-            error: res.success ? undefined : res.errors?.[0] || res.details?.[0] || res.message,
+            error: pickError(res),
         })
         return res
     }, [])
@@ -20,13 +24,13 @@ export const useGetUsers = () => {
 
 export const useGetUserById = () => {
     const [state, setState] = useState<State<NonSensetiveUserDTO>>({ loading: false })
-    const refetch = useCallback(async (id: number) => {
+    const refetch = useCallback(async (id: number, cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }))
-        const res = await Api.byId(id)
+        const res = await Api.byId(id, cfg)
         setState({
             loading: false,
             data: res.data,
-            error: res.success ? undefined : res.errors?.[0] || res.details?.[0] || res.message,
+            error: pickError(res),
         })
         return res
     }, [])
@@ -35,13 +39,13 @@ export const useGetUserById = () => {
 
 export const useUpdateUser = () => {
     const [state, setState] = useState<State<User>>({ loading: false })
-    const mutate = useCallback(async (dto: UserUpdateDTO) => {
+    const mutate = useCallback(async (dto: UserUpdateDTO, cfg?: RequestConfig) => {
         setState({ loading: true })
-        const res = await Api.update(dto)
+        const res = await Api.update(dto, cfg)
         setState({
             loading: false,
             data: res.data,
-            error: res.success ? undefined : res.errors?.[0] || res.details?.[0] || res.message,
+            error: pickError(res),
         })
         return res
     }, [])
@@ -50,10 +54,10 @@ export const useUpdateUser = () => {
 
 export const useUpdateAvatar = () => {
     const [state, setState] = useState<State<void>>({ loading: false })
-    const mutate = useCallback(async (file: File) => {
+    const mutate = useCallback(async (file: File, cfg?: RequestConfig) => {
         setState({ loading: true })
-        const res = await Api.updateAvatar(file)
-        setState({ loading: false, error: res.success ? undefined : res.errors?.[0] || res.details?.[0] || res.message })
+        const res = await Api.updateAvatar(file, cfg)
+        setState({ loading: false, error: pickError(res) })
         return res
     }, [])
     return useMemo(() => ({ ...state, mutate }), [state, mutate])
