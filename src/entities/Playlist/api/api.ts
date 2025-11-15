@@ -14,10 +14,9 @@ export const Api = {
     delete: (playlistId: number, config?: RequestConfig) =>
         apiClient.delete<void>(API_ENDPOINTS.playlist.delete(playlistId), config),
     updateName: (playlistId: number, newName: string, config?: RequestConfig) =>
-        apiClient.put<PlaylistDTO>(API_ENDPOINTS.playlist.updateName(playlistId), newName, {
+        apiClient.put<PlaylistDTO>(API_ENDPOINTS.playlist.updateName(playlistId), undefined, {
             ...config,
-            bodyType: 'raw',
-            headers: { ...(config?.headers ?? {}), 'content-type': 'text/plain' },
+            params: { ...(config?.params ?? {}), newName },
         }),
     updateCover: (playlistId: number, coverFile: File, config?: RequestConfig) => {
         const fd = new FormData();
@@ -40,16 +39,18 @@ export const Api = {
             ...config,
             params: { ...(config?.params ?? {}), ...(args?.after ? { after: args.after } : {}), ...(args?.limit ? { limit: args.limit } : {}) },
         }),
-    byId: (playlistId: number, config?: RequestConfig) =>
-        apiClient.get<PlaylistDTO>(API_ENDPOINTS.playlist.byId(playlistId), config),
+    // Закомментировано: используйте useGetPlaylistQuery из @shared/api/rtkApi
+    // byId: (playlistId: number, config?: RequestConfig) =>
+    //     apiClient.get<PlaylistDTO>(API_ENDPOINTS.playlist.byId(playlistId), config),
     importCollection: (playlistId: number, collection: string, collectionId: number, config?: RequestConfig) =>
         apiClient.post<void>(
             API_ENDPOINTS.playlist.importCollection(playlistId, collection, collectionId),
             undefined,
             config
         ),
-    shareLink: (playlistId: number, config?: RequestConfig) =>
-        apiClient.get<ShareLinkDTO>(API_ENDPOINTS.playlist.shareLink(playlistId), config),
+    // Закомментировано: используйте useGetPlaylistShareLinkQuery из @shared/api/rtkApi
+    // shareLink: (playlistId: number, config?: RequestConfig) =>
+    //     apiClient.get<ShareLinkDTO>(API_ENDPOINTS.playlist.shareLink(playlistId), config),
     shareQr: (playlistId: number, config?: RequestConfig) =>
         apiClient.download(API_ENDPOINTS.playlist.shareQr(playlistId), { ...config }),
     updateVisibility: (playlistId: number, visibilityStatusId: number, config?: RequestConfig) =>

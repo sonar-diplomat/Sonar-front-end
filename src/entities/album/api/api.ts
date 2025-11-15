@@ -30,8 +30,9 @@ export const AlbumApi = {
             bodyType: 'form',
         });
     },
-    shareLink: (albumId: number, config?: RequestConfig) =>
-        apiClient.get<ShareLinkDTO>(API_ENDPOINTS.album.shareLink(albumId), config),
+    // Закомментировано: используйте useGetAlbumShareLinkQuery из @shared/api/rtkApi
+    // shareLink: (albumId: number, config?: RequestConfig) =>
+    //     apiClient.get<ShareLinkDTO>(API_ENDPOINTS.album.shareLink(albumId), config),
     shareQr: (albumId: number, config?: RequestConfig) =>
         apiClient.download(API_ENDPOINTS.album.shareQr(albumId), { ...config }),
     updateVisibility: (albumId: number, visibilityStatusId: number, config?: RequestConfig) =>

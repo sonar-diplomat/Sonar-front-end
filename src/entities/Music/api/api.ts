@@ -7,8 +7,9 @@ import { shouldRefreshToken } from '@shared/lib/auth/jwt-utils';
 
 
 export const Api = {
-    getById: (trackId: number, config?: RequestConfig) =>
-        apiClient.get<TrackDTO>(API_ENDPOINTS.track.byId(trackId), config),
+    // Закомментировано: используйте useGetTrackQuery из @shared/api/rtkApi
+    // getById: (trackId: number, config?: RequestConfig) =>
+    //     apiClient.get<TrackDTO>(API_ENDPOINTS.track.byId(trackId), config),
     updateInfo: (trackId: number, body: UpdateTrackDTO, config?: RequestConfig) =>
         apiClient.put<TrackDTO>(API_ENDPOINTS.track.update(trackId), body, {
             ...config,

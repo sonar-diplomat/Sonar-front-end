@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 import {MiniPlayer} from "@widgets/MiniPlayer";
-import type {Track, TrackDTO} from "@entities/Music";
+import type {Track} from "@entities/Music";
 import { useAuth } from "@shared/lib/auth";
-import { useTrack } from "@entities/Music/model/store";
+import { useGetTrackQuery } from "@shared/api/rtkApi";
 import { Api as MusicApi } from "@entities/Music/api/api";
 
 export const MiniPlayerExample = () => {
@@ -10,11 +10,18 @@ export const MiniPlayerExample = () => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
     const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+    const [currentTrackId, setCurrentTrackId] = useState<number>(4);
+    const [requestedTrackId, setRequestedTrackId] = useState<number | null>(null);
     const [audioUrl, setAudioUrl] = useState<string | null>(null);
     const [duration, setDuration] = useState(0);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const { login } = useAuth();
-    const { refetch: fetchTrack } = useTrack();
+    
+    // RTK Query для получения трека (skip: true для ручной загрузки)
+    const { data: trackData, error: trackError } = useGetTrackQuery(
+        requestedTrackId ?? 0, 
+        { skip: requestedTrackId === null }
+    );
 
     // Initialize audio element
     useEffect(() => {
@@ -67,16 +74,92 @@ export const MiniPlayerExample = () => {
         }
     }, [isPlaying]);
 
-    const handlePlayPause = () => {
-        setIsPlaying(prev => !prev);
-    };
+    // Обработка загруженных данных трека
+    useEffect(() => {
+        if (!trackData || requestedTrackId === null) return;
+
+        const trackId = requestedTrackId;
+        console.log("Track model received:", trackData);
+        setCurrentTrack(trackData as Track);
+        setCurrentTrackId(trackId);
+
+        // Останавливаем текущее воспроизведение
+        if (audioRef.current) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+        }
+
+        // Освобождаем старый URL
+        setAudioUrl(prevUrl => {
+            if (prevUrl) {
+                URL.revokeObjectURL(prevUrl);
+            }
+            return null;
+        });
+
+        // Загружаем stream трека
+        const loadStream = async () => {
+            try {
+                const streamResponse = await MusicApi.stream(trackId);
+                console.log("Stream response status:", streamResponse.status);
+
+                if (streamResponse.ok) {
+                    const blob = await streamResponse.blob();
+                    const blobUrl = URL.createObjectURL(blob);
+                    console.log("Audio blob created, URL:", blobUrl);
+                    setAudioUrl(blobUrl);
+
+                    // Устанавливаем длительность из данных трека, если доступна
+                    if (trackData.durationInSeconds) {
+                        setDuration(trackData.durationInSeconds);
+                    }
+                } else {
+                    console.error("Stream failed with status:", streamResponse.status);
+                }
+            } catch (error) {
+                console.error("Error streaming track:", error);
+            }
+        };
+
+        loadStream();
+    }, [trackData, requestedTrackId]);
+
+    // Обработка ошибок загрузки трека
+    useEffect(() => {
+        if (trackError) {
+            console.error("Failed to get track:", trackError);
+        }
+    }, [trackError]);
+
+    // Функция для загрузки трека по ID
+    const loadTrack = useCallback((trackId: number) => {
+        if (trackId < 1) {
+            console.warn("Track ID must be greater than 0");
+            return;
+        }
+
+        // Устанавливаем requestedTrackId, что запустит RTK Query запрос
+        setRequestedTrackId(trackId);
+    }, []);
 
     const handleNext = () => {
-        console.log("Next track");
+        const nextTrackId = currentTrackId + 1;
+        console.log("Next track, loading ID:", nextTrackId);
+        loadTrack(nextTrackId);
     };
 
     const handlePrevious = () => {
-        console.log("Previous track");
+        const prevTrackId = currentTrackId - 1;
+        if (prevTrackId < 1) {
+            console.warn("Cannot go to previous track, ID would be less than 1");
+            return;
+        }
+        console.log("Previous track, loading ID:", prevTrackId);
+        loadTrack(prevTrackId);
+    };
+
+    const handlePlayPause = () => {
+        setIsPlaying(prev => !prev);
     };
 
     const handleSeek = (time: number) => {
@@ -105,41 +188,8 @@ export const MiniPlayerExample = () => {
                 // Теперь хуки автоматически проверяют авторизацию
                 // Если токена нет, они автоматически логинят используя сохраненные credentials
                 
-                // Get track model by id 4 - авторизация проверяется автоматически в хуке
-                try {
-                    const trackResponse = await fetchTrack(4);
-                    if (trackResponse.success && trackResponse.data) {
-                        const trackData = trackResponse.data;
-                        console.log("Track model received:", trackData);
-                        setCurrentTrack(trackData as Track);
-                        
-                        // Stream track - авторизация проверяется автоматически
-                        try {
-                            const streamResponse = await MusicApi.stream(4);
-                            console.log("Stream response status:", streamResponse.status);
-                            
-                            if (streamResponse.ok) {
-                                const blob = await streamResponse.blob();
-                                const blobUrl = URL.createObjectURL(blob);
-                                console.log("Audio blob created, URL:", blobUrl);
-                                setAudioUrl(blobUrl);
-                                
-                                // Set duration from track data if available
-                                if (trackData.durationInSeconds) {
-                                    setDuration(trackData.durationInSeconds);
-                                }
-                            } else {
-                                console.error("Stream failed with status:", streamResponse.status);
-                            }
-                        } catch (error) {
-                            console.error("Error streaming track:", error);
-                        }
-                    } else {
-                        console.error("Failed to get track:", trackResponse.errors?.[0] || trackResponse.details?.[0] || trackResponse.message);
-                    }
-                } catch (error) {
-                    console.error("Error getting track:", error);
-                }
+                // Загружаем начальный трек с ID 4
+                await loadTrack(4);
             } else {
                 console.error("Login failed");
             }
@@ -149,7 +199,7 @@ export const MiniPlayerExample = () => {
         return () => {
             controller.abort();
         };
-    }, [login, fetchTrack]);
+    }, [login, loadTrack]);
 
     // Cleanup audio URL on unmount
     useEffect(() => {

@@ -3,8 +3,10 @@ import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
 import { setCredentials, logout as logoutAction, setLoading } from '@shared/store/features/auth/authSlice';
 import { useLogin as useLoginApi } from '@features/auth/model/store';
 import { authManager } from './auth-manager';
-import type { LoginResponseDTO } from '@features/auth';
-import type { AuthCredentials } from './auth-storage';
+import { useClientSettings } from '@shared/store/features/clientSettings/useClientSettings';
+import { useAccess } from '@shared/store/features/access/useAccess';
+import { useUserState } from '@shared/store/features/userState/useUserState';
+import { decodeJWT } from './jwt-utils';
 
 /**
  * Хук для работы с авторизацией
@@ -14,6 +16,9 @@ export const useAuth = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated, accessToken, sessionId, isLoading: authLoading } = useAppSelector((state) => state.auth);
   const { mutate: loginApi, loading: loginLoading } = useLoginApi();
+  const { loadSettings, clear: clearSettings } = useClientSettings();
+  const { loadUserAccessFeatures, loadAllAccessFeatures, clear: clearAccess } = useAccess();
+  const { clear: clearUserState } = useUserState();
   
   const login = useCallback(async (
     userIdentifier: string,
@@ -37,6 +42,35 @@ export const useAuth = () => {
           });
         }
         
+        // Загружаем данные пользователя после успешного логина
+        try {
+          // Загружаем настройки клиента
+          await loadSettings();
+          
+          // Загружаем все доступные функции доступа (справочник)
+          await loadAllAccessFeatures();
+          
+          // Загружаем функции доступа текущего пользователя
+          // Пытаемся получить userId из JWT токена
+          const decoded = decodeJWT(res.data.accessToken);
+          if (decoded) {
+            // Обычно в JWT есть sub, nameid, userId или подобное поле
+            const userId = decoded.sub || decoded.nameid || decoded.userId || decoded.id;
+            if (userId && typeof userId === 'number') {
+              await loadUserAccessFeatures(userId);
+            } else if (userId && typeof userId === 'string') {
+              // Если userId строка, пытаемся преобразовать в число
+              const userIdNum = parseInt(userId, 10);
+              if (!isNaN(userIdNum)) {
+                await loadUserAccessFeatures(userIdNum);
+              }
+            }
+          }
+        } catch (error) {
+          // Не блокируем логин, если загрузка данных не удалась
+          console.error('Failed to load user data after login:', error);
+        }
+        
         return true;
       }
       
@@ -44,13 +78,20 @@ export const useAuth = () => {
     } finally {
       dispatch(setLoading(false));
     }
-  }, [loginApi, dispatch]);
+  }, [loginApi, dispatch, loadSettings, loadAllAccessFeatures, loadUserAccessFeatures]);
   
   const logout = useCallback(() => {
     // Удаляем credentials при выходе
     authManager.clearCredentials();
+    
+    // Очищаем все слайсы
+    clearSettings();
+    clearAccess();
+    clearUserState();
+    
+    // Очищаем auth
     dispatch(logoutAction());
-  }, [dispatch]);
+  }, [dispatch, clearSettings, clearAccess, clearUserState]);
 
   const refreshToken = useCallback(async (): Promise<string | null> => {
     return await authManager.refreshAccessToken();
