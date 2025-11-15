@@ -24,9 +24,9 @@ export const FolderCard: React.FC<FolderCardProps> = ({ label, size = 'small', o
                         onClick={onClick}
                     />
                 </div>
+                <div className={styles.label}>{label}</div>
                 <FolderCoverIcon className={styles.folderIcon}/>
             </div>
-            <p className={styles.label}>{label}</p>
         </div>
     );
 };

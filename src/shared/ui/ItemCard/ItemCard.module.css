@@ -19,13 +19,16 @@
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
-
 .small {
+  width: 123px;
+  height: 123px;
+}
+.medium {
   width: 150px;
   height: 150px;
 }
 
-.medium {
+.large {
   width: 200px;
   height: 200px;
 }

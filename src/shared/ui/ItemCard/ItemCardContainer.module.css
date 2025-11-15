@@ -61,7 +61,7 @@
 
 .cardsRow {
   display: flex;
-  gap: 16px;
+  gap: 4px;
   padding-bottom: 8px;
 }
 

@@ -1,4 +1,4 @@
-export type ItemCardSize = 'small' | 'medium';
+export type ItemCardSize = 'small' | 'medium' | 'large';
 
 export interface ItemCardProps {
     className?: string;
