@@ -112,6 +112,11 @@
   width: 100%;
 }
 
+.selected {
+  flex: 1 0 0;
+  min-width: 0;
+}
+
 
 /* Icon and Text */
 .icon {
