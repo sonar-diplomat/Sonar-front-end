@@ -5,7 +5,7 @@ export interface LoginFormData {
 
 export interface LoginFormProps {
     onSubmit?: (data: LoginFormData) => void;
-    onForgotPassword?: () => void;
+    onForgotPassword: () => void;
     onContinueWithGoogle?: () => void;
     onContinueWithApple?: () => void;
     onCreateAccount?: () => void;

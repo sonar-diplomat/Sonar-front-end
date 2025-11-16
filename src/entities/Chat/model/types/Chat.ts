@@ -1,4 +1,4 @@
-import type { Types } from '@entities/User';
+import type { User } from '@entities/User';
 
 export interface Chat {
  id: number;
@@ -10,5 +10,5 @@ export interface Chat {
  *
  */
  cover?: File;
- users?: Types[];
+ users?: User[];
 }

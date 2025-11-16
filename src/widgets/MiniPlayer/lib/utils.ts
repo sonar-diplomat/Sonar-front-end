@@ -15,7 +15,7 @@ export const formatTime = (seconds: number): string => {
 /**
  * Gets artist names from track data
  */
-export const getArtistNames = (track: { artists?: Array<{ user?: { firstName?: string; lastName?: string } }> } | null): string => {
+export const getArtistNames = (track: { artists?: Array<{ user?: { firstName?: string; lastName?: string } }> }): string => {
   if (!track || !track.artists || track.artists.length === 0) {
     return 'Unknown Artist';
   }

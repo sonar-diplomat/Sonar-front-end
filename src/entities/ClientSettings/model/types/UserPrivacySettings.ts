@@ -1,4 +1,4 @@
-import type { UserPrivacyGroup } from '@entities/User';
+//import type { UserPrivacyGroup } from '@entities/User';
 import type { Settings } from './Settings';
 
 export interface UserPrivacySettings {
@@ -11,6 +11,6 @@ export interface UserPrivacySettings {
  *
  */
  settings?: Settings;
- whichCanViewProfile?: UserPrivacyGroup; //Так и задумано???
- whichCanMessage?: UserPrivacyGroup;
+ // whichCanViewProfile?: UserPrivacyGroup;
+ // whichCanMessage?: UserPrivacyGroup;
 }

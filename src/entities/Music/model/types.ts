@@ -1,10 +1,12 @@
 export interface AudioFileDTO {
     id: number;
+    url: string;
     // extend if needed
 }
 
 export interface ImageFileDTO {
     id: number;
+    url: string;
     // extend if needed
 }
 
@@ -41,3 +43,4 @@ export interface UpdateTrackFileDTO {
     playbackQualityId: number;
     file: File;
 }
+

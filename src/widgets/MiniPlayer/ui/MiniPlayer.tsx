@@ -6,7 +6,7 @@ import { PlayerControls } from './PlayerControls';
 import { ProgressBar } from './ProgressBar';
 import {TrackInfo} from "@widgets/MiniPlayer/ui/TrackInfo.tsx";
 
-import {formatTime, getCoverUrl} from "@widgets/MiniPlayer/lib/utils.ts";
+import {formatTime} from "@widgets/MiniPlayer/lib/utils.ts";
 
 
 export const MiniPlayer = ({
@@ -24,7 +24,7 @@ export const MiniPlayer = ({
   const hasTrack = currentTrack !== null;
 
   const coverUrl = useMemo(() =>
-          currentTrack ? getCoverUrl(currentTrack) : undefined,
+          currentTrack ? currentTrack.cover?.url : undefined,
       [currentTrack]
   );
 
@@ -35,7 +35,7 @@ export const MiniPlayer = ({
   );
 
   const formattedDuration = useMemo(() =>
-          formatTime(currentTrack?.duration ?? 0),
+          formatTime(parseInt(currentTrack?.duration ?? "0")),
       [currentTrack?.duration]
   );
 

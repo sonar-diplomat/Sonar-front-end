@@ -1,5 +1,4 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { MiniPlayerExample }from "@widgets/MiniPlayer";
 import { App }  from "@app/App.tsx";
 import React from "react";
 import {Hello, EntryMethod, Registration, TestPage, PasswordRecovery, AssignNewPassword} from "@pages";
@@ -35,10 +34,10 @@ export const router = createBrowserRouter([
                 path: '/assign-new-password',
                 element: <AssignNewPassword/>
             },
-            {
-                path: '/',
-                element: <MiniPlayerExample />,
-            },
+            // {
+            //     path: '/',
+            //     element: < />,
+            // },
             {
                 path: '/test',
                 element: <TestPage />,

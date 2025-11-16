@@ -1,5 +1,4 @@
 import type { CosmeticItemType } from './CosmeticItemType';
-import type { Inventory } from '@entities/Inventory';
 
 export interface CosmeticItem {
  id: number;
@@ -12,5 +11,5 @@ export interface CosmeticItem {
  */
  type?: CosmeticItemType;
  file?: File;
- inventories?: Inventory[];
+ //inventories?: Inventory[];
 }
