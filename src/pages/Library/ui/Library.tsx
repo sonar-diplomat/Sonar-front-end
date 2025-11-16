@@ -38,9 +38,8 @@ export const Library: React.FC<LibraryProps> = ({className = ''}) => {
 
     const handleCreateNew = useCallback(() => {
         console.log('Create new:', selectedCategory);
-        // TODO: navigate to create page
-        // navigate(`/create`);
-    }, [selectedCategory]);
+        navigate('/library/create');
+    }, [navigate]);
 
     // Filter
     const shouldShowFolders = useMemo(() => {
