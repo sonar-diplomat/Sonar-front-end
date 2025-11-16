@@ -1,0 +1,1 @@
+export { ChipsBar } from "./ui/ChipsBar.tsx"

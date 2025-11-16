@@ -4,7 +4,7 @@ import {Button} from "@shared/ui";
 
 const categories = ['All', 'Creators', 'Playlists', 'Radio'];
 
-const ChipsBar = () => {
+export const ChipsBar = () => {
     const [selectedCategory, setSelectedCategory] = useState('All');
 
     return (
@@ -24,5 +24,3 @@ const ChipsBar = () => {
         </div>
     );
 };
-
-export default ChipsBar;
