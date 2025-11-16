@@ -202,8 +202,8 @@ export const CloseIcon: React.FC<IconProps> = ({ className }) => (
 
 export const PlusIcon: React.FC<IconProps> = ({className}) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M14 7C14 7.55228 13.6726 8 13.2687 8L0.731342 8C0.327433 8 -9.53674e-07 7.55228 -9.53674e-07 7C-9.53674e-07 6.44772 0.327433 6 0.731342 6L13.2687 6C13.6726 6 14 6.44772 14 7Z" fill="#EAEAEA"/>
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M7 0C7.55228 0 8 0.327434 8 0.731343V13.2687C8 13.6726 7.55228 14 7 14C6.44772 14 6 13.6726 6 13.2687L6 0.731343C6 0.327434 6.44772 0 7 0Z" fill="#EAEAEA"/>
+        <path fillRule="evenodd" clipRule="evenodd" d="M14 7C14 7.55228 13.6726 8 13.2687 8L0.731342 8C0.327433 8 -9.53674e-07 7.55228 -9.53674e-07 7C-9.53674e-07 6.44772 0.327433 6 0.731342 6L13.2687 6C13.6726 6 14 6.44772 14 7Z" fill="#EAEAEA"/>
+        <path fillRule="evenodd" clipRule="evenodd" d="M7 0C7.55228 0 8 0.327434 8 0.731343V13.2687C8 13.6726 7.55228 14 7 14C6.44772 14 6 13.6726 6 13.2687L6 0.731343C6 0.327434 6.44772 0 7 0Z" fill="#EAEAEA"/>
     </svg>
 )
 
