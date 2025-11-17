@@ -19,7 +19,7 @@ export const SearchFilterHeader: React.FC<SearchFilterHeaderProps> = ({
     searchPlaceholder = "Search in library"
 }) => {
     return (
-        <>
+        <div className={styles.header}>
             <div className={styles.title}>
                 {title}
             </div>
@@ -35,6 +35,6 @@ export const SearchFilterHeader: React.FC<SearchFilterHeaderProps> = ({
                 selectedCategory={selectedCategory}
                 onCategoryChange={onCategoryChange}
             />
-        </>
+        </div>
     );
 };
