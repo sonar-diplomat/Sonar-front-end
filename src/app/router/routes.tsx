@@ -2,7 +2,19 @@ import { createBrowserRouter } from 'react-router-dom';
 import { MiniPlayerExample }from "@widgets/MiniPlayer";
 import { App }  from "@app/App.tsx";
 import React from "react";
-import {Hello, EntryMethod, Registration, TestPage, PasswordRecovery, AssignNewPassword, Library, Create, CreatePlaylist, CreateFolder} from "@pages";
+import {
+    Hello,
+    EntryMethod,
+    Registration,
+    TestPage,
+    PasswordRecovery,
+    AssignNewPassword,
+    Library,
+    Create,
+    CreatePlaylist,
+    CreateFolder,
+    Search
+} from "@pages";
 import {Login} from "@pages/Login";
 
 
@@ -52,6 +64,10 @@ export const router = createBrowserRouter([
                 element: <CreateFolder/>
             },
             {
+                path: '/search',
+                element: <Search/>
+            },
+            {
                 path: '/',
                 element: <MiniPlayerExample />,
             },
@@ -59,6 +75,7 @@ export const router = createBrowserRouter([
                 path: '/test',
                 element: <TestPage />,
             }
+
 
             // Другие маршруты добавляй сюда
         ],

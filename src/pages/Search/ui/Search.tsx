@@ -2,24 +2,18 @@ import React, {useState, useMemo, useCallback} from 'react';
 
 import {useNavigate} from 'react-router-dom';
 
-import type {Folder, Playlist, LibraryProps} from '@pages/Library';
-import {Button, FolderCard, ItemCard, PlusIcon} from "@shared/ui";
+import type {Playlist} from "@pages/Library";
+import {ItemCard} from "@shared/ui";
 import type {Category} from "@widgets/ChipsBar";
 import {ContentSections, type ContentSection} from "@widgets/ContentSections";
 import {SearchFilterHeader} from "@widgets/SearchFilterHeader";
 
-import styles from './Library.module.css';
+import styles from './Search.module.css';
 
-export const Library: React.FC<LibraryProps> = ({className = ''}) => {
+export const Search: React.FC = () => {
     const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState<Category>('All');
 
-    const [folders, setFolders] = useState<Folder[]>([
-        {id: '1', name: 'Every day'},
-        {id: '2', name: 'Gym'},
-        {id: '3', name: 'Party'},
-        {id: '4', name: 'Work'}
-    ]);
 
     const [playlists, setPlaylists] = useState<Playlist[]>([
         {id: '1', name: 'Playlist 1'},
@@ -28,12 +22,6 @@ export const Library: React.FC<LibraryProps> = ({className = ''}) => {
         {id: '4', name: 'Playlist 4'}
     ]);
 
-    // Event handlers
-    const handleFolderClick = useCallback((folder: Folder) => {
-        console.log('Opening folder:', folder);
-        // TODO: Navigate to folder detail
-        // navigate(`/folder/${folder.id}`);
-    }, []);
 
     const handlePlaylistClick = useCallback((playlist: Playlist) => {
         console.log('Opening playlist:', playlist);
@@ -41,27 +29,8 @@ export const Library: React.FC<LibraryProps> = ({className = ''}) => {
         // navigate(`/playlist/${playlist.id}`);
     }, []);
 
-    const handleCreateNew = useCallback(() => {
-        console.log('Create new:', selectedCategory);
-        navigate('/library/create');
-    }, [navigate]);
-
     // Define sections
     const sections = useMemo<ContentSection[]>(() => [
-        {
-            id: 'folders',
-            title: 'Folders',
-            countLabel: 'folders',
-            shouldShow: selectedCategory === 'All',
-            items: folders,
-            renderItem: (folder: Folder) => (
-                <FolderCard
-                    key={folder.id}
-                    label={folder.name}
-                    onClick={() => handleFolderClick(folder)}
-                />
-            )
-        },
         {
             id: 'playlists',
             title: 'Playlists',
@@ -70,6 +39,7 @@ export const Library: React.FC<LibraryProps> = ({className = ''}) => {
             items: playlists,
             renderItem: (playlist: Playlist) => (
                 <ItemCard
+                    size="large"
                     key={playlist.id}
                     image={playlist.coverImage}
                     textContent={{
@@ -80,22 +50,15 @@ export const Library: React.FC<LibraryProps> = ({className = ''}) => {
                 />
             )
         }
-    ], [selectedCategory, folders, playlists, handleFolderClick, handlePlaylistClick]);
+    ], [selectedCategory, playlists, handlePlaylistClick]);
 
     return (
         <div className={styles.container}>
             <SearchFilterHeader
-                title="Library"
+                title="Search"
                 selectedCategory={selectedCategory}
                 onCategoryChange={setSelectedCategory}
             />
-            <Button
-                className={styles.createBtn}
-                icon={<PlusIcon/>}
-                onClick={handleCreateNew}
-            >
-                Create New
-            </Button>
             <ContentSections sections={sections} />
         </div>
     );
