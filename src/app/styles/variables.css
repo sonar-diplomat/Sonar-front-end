@@ -1,5 +1,5 @@
 :root{
-    --font-family-base: 'Sora', sans-serif;
+    --font-family-base: 'Roboto', sans-serif;
 
     /*Buttons*/
     --button-bg-color-light: #FFF;
@@ -44,6 +44,5 @@
     --miniplayer-action: rgba(31, 31, 31, 0.40);
     --miniplayer-action-liked: #ff3b5c;
     --miniplayer-action-liked-hover: #ff1744;
-
 
 }

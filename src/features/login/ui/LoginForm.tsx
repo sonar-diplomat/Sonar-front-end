@@ -56,10 +56,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                         iconPosition={"suffix"}
                         helperText={"Forgot Password?"}
                         required={true}
-                        helperTextAction={{
-                            text: 'Recover',
-                            onClick: onForgotPassword,
-                        }}
+                        {...(onForgotPassword && {
+                            helperTextAction: {
+                                text: 'Recover',
+                                onClick: onForgotPassword,
+                            }
+                        })}
                     />
                 </div>
 

@@ -1,4 +1,5 @@
 import React from "react";
+
 import styles from "./CarouselDots.module.css";
 
 interface CarouselDotsProps {

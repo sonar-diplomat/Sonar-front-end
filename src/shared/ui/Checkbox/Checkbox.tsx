@@ -1,6 +1,9 @@
 import React from 'react';
-import styles from './Checkbox.module.css';
+
 import { CheckMark } from '../icons';
+
+import styles from './Checkbox.module.css';
+
 
 export interface CheckboxProps {
   label?: string | React.ReactNode;

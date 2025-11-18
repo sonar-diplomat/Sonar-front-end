@@ -169,7 +169,7 @@
 /* Icon sizes based on button size */
 .small .icon svg,
 .small .icon {
-  width: 10.5px;
+  width: 10px;
   height: 9px;
 }
 

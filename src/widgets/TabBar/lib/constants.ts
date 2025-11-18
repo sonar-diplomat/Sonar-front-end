@@ -1,5 +1,6 @@
-import type { TabItem } from '../model/types';
 import { HomeIcon, SearchIcon, LibraryIcon, ProfileIcon } from '@shared/ui';
+
+import type { TabItem } from '../model/types';
 
 export const TAB_ITEMS: TabItem[] = [
   {

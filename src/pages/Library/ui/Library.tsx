@@ -10,10 +10,12 @@ import {SearchFilterHeader} from "@widgets/SearchFilterHeader";
 
 import styles from './Library.module.css';
 
-export const Library: React.FC<LibraryProps> = ({className = ''}) => {
+export const Library: React.FC<LibraryProps> = () => {
     const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState<Category>('All');
 
+    // @ts-expect-error setFolders will be used later
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [folders, setFolders] = useState<Folder[]>([
         {id: '1', name: 'Every day'},
         {id: '2', name: 'Gym'},
@@ -21,6 +23,8 @@ export const Library: React.FC<LibraryProps> = ({className = ''}) => {
         {id: '4', name: 'Work'}
     ]);
 
+    // @ts-expect-error setPlaylists will be used later
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [playlists, setPlaylists] = useState<Playlist[]>([
         {id: '1', name: 'Playlist 1'},
         {id: '2', name: 'Playlist 2'},
