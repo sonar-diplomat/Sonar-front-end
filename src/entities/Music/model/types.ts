@@ -15,15 +15,22 @@ export interface VisibilityStateDTO {
 
 export interface TrackDTO {
     id: number;
-    title: string;
-    duration: string | null;
-    isExplicit: boolean;
-    drivingDisturbingNoises: boolean;
-    visibilityStateId: number;
-    coverId: number;
-    lowQualityAudioFileId: number;
-    mediumQualityAudioFileId: number | null;
-    highQualityAudioFileId: number | null;
+    // Fields from GetById response
+    name?: string;
+    durationInSeconds?: number;
+    coverUrl?: string;
+    fileUrl?: string;
+    artists?: string[];
+    // Fields from Update response
+    title?: string;
+    duration?: string | null;
+    isExplicit?: boolean;
+    drivingDisturbingNoises?: boolean;
+    visibilityStateId?: number;
+    coverId?: number;
+    lowQualityAudioFileId?: number;
+    mediumQualityAudioFileId?: number | null;
+    highQualityAudioFileId?: number | null;
     lowQualityAudioFile?: AudioFileDTO | null;
     mediumQualityAudioFile?: AudioFileDTO | null;
     highQualityAudioFile?: AudioFileDTO | null;
@@ -40,4 +47,8 @@ export interface UpdateTrackDTO {
 export interface UpdateTrackFileDTO {
     playbackQualityId: number;
     file: File;
+}
+
+export interface UpdateTrackVisibilityDTO {
+    visibilityStatusId: number;
 }
