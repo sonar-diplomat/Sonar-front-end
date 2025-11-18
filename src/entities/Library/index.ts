@@ -1,2 +1,3 @@
-//export type * from './model/types.ts';
-//export * from './model/store.ts';
+export type { FolderDTO, CreateFolderDTO, SubFolderDTO, CollectionSummaryDTO } from './model/types';
+export { Api } from './api/api';
+export * from './model/store';

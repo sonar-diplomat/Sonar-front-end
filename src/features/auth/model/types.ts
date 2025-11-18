@@ -1,12 +1,12 @@
 export interface UserRegisterDTO {
-    userName: string;
-    login: string;
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    dateOfBirth: string;
-    locale: string;
+    Username: string;
+    Login: string;
+    Email: string;
+    Password: string;
+    FirstName: string;
+    LastName: string;
+    DateOfBirth: string;
+    Locale: string;
 }
 
 export interface LoginResponseDTO {
@@ -16,8 +16,8 @@ export interface LoginResponseDTO {
 }
 
 export interface Verify2FaDTO {
-    email: string;
-    code: string;
+    Email: string;
+    Code: string;
 }
 
 export interface RefreshTokenResponse {
@@ -32,9 +32,9 @@ export interface ConfirmEmailChangeDTO {
 }
 
 export interface ConfirmPasswordChangeDTO {
-    token: string;
-    newPassword: string;
-    oldPassword: string;
+    Token: string;
+    NewPassword: string;
+    OldPassword: string;
 }
 
 export interface ActiveSessionDTO {

@@ -7,36 +7,9 @@ import type {
     ClientOptions,
 } from '@shared/types/api';
 import { normalizeResponse } from '@shared/types/api';
+import { authManager } from '@shared/lib/auth/auth-manager';
 
-const isDate = (v: unknown): v is Date => v instanceof Date;
-const isPlainObject = (v: unknown): v is Record<string, unknown> =>
-    v != null && typeof v === 'object' && !Array.isArray(v) && !isDate(v);
-
-const serializeParamValue = (v: unknown): string => {
-    if (v === null) return 'null';
-    if (isDate(v)) return v.toISOString();
-    if (isPlainObject(v)) return JSON.stringify(v);
-    return String(v);
-};
-
-const toSearchParams = (params?: RequestConfig['params']) => {
-    const sp = new URLSearchParams();
-    if (!params) return sp;
-
-    Object.entries(params).forEach(([k, v]) => {
-        if (v === undefined) return;
-        if (Array.isArray(v)) {
-            v.forEach((i) => {
-                if (i === undefined) return;
-                sp.append(k, serializeParamValue(i));
-            });
-        } else {
-            sp.append(k, serializeParamValue(v));
-        }
-    });
-
-    return sp;
-};
+import { toSearchParams } from './params-utils';
 
 class ApiClient {
     private baseURL: string;
@@ -244,4 +217,10 @@ class ApiClient {
     }
 }
 
-export const apiClient = new ApiClient();
+export const apiClient = new ApiClient(API_BASE_URL, {
+  retries: 0,
+  getToken: () => authManager.getAccessToken(),
+  onUnauthorized: async () => {
+    await authManager.handleUnauthorized();
+  },
+});

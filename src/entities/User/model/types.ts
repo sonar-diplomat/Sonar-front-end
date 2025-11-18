@@ -24,6 +24,7 @@ export interface Post {
 }
 
 export interface AccessFeature {
+    id: number
     name: string
 }
 
@@ -32,53 +33,56 @@ export interface NonSensetiveUserDTO {
     publicIdentifier: string
     registrationDate: ISODate
     avatarImageId: number
-    avatarImage: ImageFile
-    posts: Post[]
+    imageUrl?: string
     accessFeatures: AccessFeature[]
 }
 
 export interface UserUpdateDTO {
-    publicIdentifier?: string | null
-    biography?: string | null
-    dateOfBirth?: ISODateOnly | null
-    lastName?: string | null
-    firstName?: string | null
+    PublicIdentifier?: string | null
+    Biography?: string | null
+    DateOfBirth?: ISODateOnly | null
+    LastName?: string | null
+    FirstName?: string | null
 }
 
 export interface User {
     id: number
     userName: string
-    normalizedUserName: string
-    email: string
-    normalizedEmail: string
-    emailConfirmed: boolean
-    passwordHash?: string | null
-    securityStamp?: string | null
-    concurrencyStamp?: string | null
-    phoneNumber?: string | null
-    phoneNumberConfirmed: boolean
-    twoFactorEnabled: boolean
-    lockoutEnd?: ISODate | null
-    lockoutEnabled: boolean
-    accessFailedCount: number
     firstName: string
     lastName: string
-    dateOfBirth: ISODateOnly
     login: string
-    biography?: string | null
+    email: string
     publicIdentifier: string
-    availableCurrency: number
     registrationDate: ISODate
+    emailConfirmed: boolean
     enabled2FA: boolean
-    googleAuthorizationKey?: string | null
+    availableCurrency: number
     avatarImageId: number
     visibilityStateId: number
     subscriptionPackId?: number | null
     userStateId: number
     settingsId: number
     inventoryId: number
+    libraryId?: number
+    accessFeatures: AccessFeature[]
+    // Optional fields from different endpoints
+    normalizedUserName?: string
+    normalizedEmail?: string
+    passwordHash?: string | null
+    securityStamp?: string | null
+    concurrencyStamp?: string | null
+    phoneNumber?: string | null
+    phoneNumberConfirmed?: boolean
+    twoFactorEnabled?: boolean
+    lockoutEnd?: ISODate | null
+    lockoutEnabled?: boolean
+    accessFailedCount?: number
+    dateOfBirth?: ISODateOnly
+    biography?: string | null
+    googleAuthorizationKey?: string | null
+    avatarUrl?: string
     visibilityState?: unknown
-    avatarImage: ImageFile
+    avatarImage?: ImageFile
     subscriptionPack?: unknown
     userState?: unknown
     settings?: unknown
@@ -86,8 +90,7 @@ export interface User {
     artist?: unknown
     userSessions?: unknown[]
     achievementProgresses?: unknown[]
-    posts: Post[]
-    accessFeatures: AccessFeature[]
+    posts?: Post[]
     messages?: unknown[]
     chats?: unknown[]
     collections?: unknown[]

@@ -18,7 +18,7 @@ export const TrackInfo = ({currentTrack, isLiked, onLike}: TrackInfoProps) => {
     return(
         <div className={styles.infoHeader}>
             <div className={styles.songMeta}>
-                <h2 className={styles.title}>{currentTrack?.title}</h2>
+                <h2 className={styles.title}>{currentTrack?.title || currentTrack?.name || 'Unknown Track'}</h2>
                 <p className={styles.artist}>{artistNames}</p>
             </div>
             <PlayerActions isLiked={isLiked} onLike={onLike}/>
