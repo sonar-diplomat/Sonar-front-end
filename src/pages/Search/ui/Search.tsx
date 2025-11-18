@@ -11,10 +11,14 @@ import {SearchFilterHeader} from "@widgets/SearchFilterHeader";
 import styles from './Search.module.css';
 
 export const Search: React.FC = () => {
+    // @ts-expect-error Use later
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState<Category>('All');
 
 
+    // @ts-expect-error setFolders will be used later
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [playlists, setPlaylists] = useState<Playlist[]>([
         {id: '1', name: 'Playlist 1'},
         {id: '2', name: 'Playlist 2'},

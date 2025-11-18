@@ -1,7 +1,10 @@
 import React, {useState} from 'react';
-import styles from './CreateFolder.module.css';
-import {Button, Input, LeftArrow} from "@shared/ui";
+
 import {useNavigate} from 'react-router-dom';
+
+import {Button, Input, LeftArrow} from "@shared/ui";
+
+import styles from './CreateFolder.module.css';
 
 export interface CreateFolderProps {
     className?: string;

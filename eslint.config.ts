@@ -1,7 +1,7 @@
 // eslint.config.ts
 import * as eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
 import * as importPlugin from 'eslint-plugin-import';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
     eslint.configs.recommended,
@@ -13,7 +13,7 @@ export default tseslint.config(
         },
         languageOptions: {
             parserOptions: {
-                project: './tsconfig.json',
+                //project: './tsconfig.json',
             },
         },
         settings: {

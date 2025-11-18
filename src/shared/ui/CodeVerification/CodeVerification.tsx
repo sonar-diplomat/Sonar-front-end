@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import styles from './CodeVerification.module.css';
+
 import { Button, SendRight } from '@shared/ui';
+
+import styles from './CodeVerification.module.css';
 
 const CODE_LENGTH = 6;
 const DIGIT_REGEX = /^\d*$/;
