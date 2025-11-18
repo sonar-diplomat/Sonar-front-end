@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 
 import styles from './Modal.module.css';
-import { CloseIcon } from '../icons';
+import {ClearIcon} from '../icons';
 import {Button} from "@shared/ui";
 
 export interface ModalProps {
@@ -63,7 +63,7 @@ export const Modal: React.FC<ModalProps> = ({
         {(title || showCloseButton) && (
           <div className={styles.header}>
             {showCloseButton && (
-                <Button onClick={onClose} icon={<CloseIcon/>} children={"Close"} size={"small"} variant={"dark"} shape={"cr-16"}/>
+                <Button onClick={onClose} icon={<ClearIcon/>} children={"Close"} size={"small"} variant={"dark"} shape={"cr-16"}/>
             )}
             {title && <h2 className={styles.title}>{title}</h2>}
           </div>

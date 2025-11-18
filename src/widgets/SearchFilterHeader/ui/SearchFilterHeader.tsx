@@ -1,9 +1,8 @@
 import React from 'react';
-
-import {Input, SearchIcon} from "@shared/ui";
 import {ChipsBar, type Category} from "@widgets/ChipsBar";
 
 import styles from './SearchFilterHeader.module.css';
+import {SearchBar} from "@widgets/SearchBar";
 
 interface SearchFilterHeaderProps {
     title: string;
@@ -23,14 +22,7 @@ export const SearchFilterHeader: React.FC<SearchFilterHeaderProps> = ({
             <div className={styles.title}>
                 {title}
             </div>
-            <div className={styles.searchWrapper}>
-                <Input
-                    type="text"
-                    placeholder={searchPlaceholder}
-                    icon={<SearchIcon/>}
-                    iconPosition="suffix"
-                />
-            </div>
+            <SearchBar placeholder={searchPlaceholder}/>
             <ChipsBar
                 selectedCategory={selectedCategory}
                 onCategoryChange={onCategoryChange}
