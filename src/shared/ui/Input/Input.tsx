@@ -8,7 +8,7 @@ import type { InputProps, DropdownOption } from './Input.types';
 
 export type { InputProps, DropdownOption };
 
-export const Input: React.FC<InputProps> = ({
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(({
     label,
     helperText,
     error,
@@ -24,7 +24,7 @@ export const Input: React.FC<InputProps> = ({
     className = '',
     id,
     ...props
-}) => {
+}, ref) => {
     const inputId = id || `input-${React.useId()}`;
     const dropdown = useDropdown();
 
@@ -70,6 +70,7 @@ export const Input: React.FC<InputProps> = ({
                 )}
 
                 <input
+                    ref={ref}
                     id={inputId}
                     className={`${styles.input} ${error ? styles.error : ''}`}
                     aria-invalid={error ? 'true' : 'false'}
@@ -109,4 +110,6 @@ export const Input: React.FC<InputProps> = ({
             )}
         </div>
     );
-};
+});
+
+Input.displayName = 'Input';

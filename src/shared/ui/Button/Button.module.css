@@ -47,8 +47,8 @@
 
 /* Sizes */
 .small {
-  padding: 6px 10px;
-  font-size: 14px;
+  padding: 8px 12px;
+  font-size: 12px;
   min-height: 32px;
 }
 
@@ -115,6 +115,20 @@
 .selected {
   flex: 1 0 0;
   min-width: 0;
+}
+
+.selected.dark {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #1F1F1F;
+}
+
+.selected.dark:hover:not(.disabled) {
+  color: #1F1F1F;
+  opacity: 0.9;
+}
+
+.selected.dark:active:not(.disabled) {
+  background-color: rgba(255, 255, 255, 0.7);
 }
 
 

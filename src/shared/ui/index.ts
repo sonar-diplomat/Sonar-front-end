@@ -36,5 +36,6 @@ export {
     SearchIcon,
     HomeIcon,
     FolderCoverIcon,
-    CloseIcon
+    PlusIcon,
+    ClearIcon,
 } from './icons';

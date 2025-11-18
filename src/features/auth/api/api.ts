@@ -49,8 +49,9 @@ export const Api = {
     requestPasswordChange: () =>
         apiClient.post<void>(API_ENDPOINTS.auth.requestPasswordChange),
 
-    getSessions: () =>
-        apiClient.get<ActiveSessionDTO[]>(API_ENDPOINTS.auth.getSessions),
+    // Закомментировано: используйте useGetSessionsQuery из @shared/api/rtkApi
+    // getSessions: () =>
+    //     apiClient.get<ActiveSessionDTO[]>(API_ENDPOINTS.auth.getSessions),
 
     revokeSession: (sessionId: number) =>
         apiClient.post<void>(API_ENDPOINTS.auth.revokeSession(sessionId)),
