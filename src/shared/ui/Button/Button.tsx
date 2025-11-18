@@ -15,6 +15,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   fullWidth?: boolean;
   disabled?: boolean;
   loading?: boolean;
+  selected?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -27,6 +28,7 @@ export const Button: React.FC<ButtonProps> = ({
   fullWidth = false,
   disabled = false,
   loading = false,
+  selected = false,
   className = '',
   ...props
 }) => {
@@ -39,6 +41,7 @@ export const Button: React.FC<ButtonProps> = ({
     fullWidth && styles.fullWidth,
     disabled && styles.disabled,
     loading && styles.loading,
+    selected && styles.selected,
     className,
   ]
     .filter(Boolean)
