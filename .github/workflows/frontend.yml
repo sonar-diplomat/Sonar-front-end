@@ -1,4 +1,4 @@
-name: Deploy Frontend
+name: Deploy Frontend to Test Server
 
 on:
   push:
@@ -7,22 +7,53 @@ on:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, linux]
+    runs-on: self-hosted
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build Docker image
-        run: docker build -t sonar-frontend .
-
-      - name: Stop and remove old container
+      - name: Set up Docker
         run: |
-          docker stop sonar-frontend || true
-          docker rm sonar-frontend || true
+          docker --version
+          docker ps
 
-      - name: Run new container
+      - name: Build Docker image with docker-compose
         run: |
-          docker run -d --name sonar-frontend -p 8082:80 sonar-frontend
+          docker compose build
+          docker save sonar-frontend:latest > sonar-frontend.tar
+
+      - name: Copy image to Test Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.TEST_SERVER_IP }}
+          username: ${{ secrets.TEST_SERVER_USER }}
+          key: ${{ secrets.TEST_SERVER_SSH_KEY }}
+          source: "sonar-frontend.tar"
+          target: "${{ secrets.SERVER_PATH }}"
+
+      - name: Debug connection
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.TEST_SERVER_IP }}
+          username: ${{ secrets.TEST_SERVER_USER }}
+          key: ${{ secrets.TEST_SERVER_SSH_KEY }}
+          script: |
+            echo
+            hostname
+            whoami
+            ls -la ${{ secrets.SERVER_PATH }}
+
+      - name: Deploy on Test Server via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.TEST_SERVER_IP }}
+          username: ${{ secrets.TEST_SERVER_USER }}
+          key: ${{ secrets.TEST_SERVER_SSH_KEY }}
+          script: |
+            cd ${{ secrets.SERVER_PATH }}
+            docker stop sonar-frontend || true
+            docker rm sonar-frontend || true
+            docker rmi sonar-frontend:latest || true
+            docker load < sonar-frontend.tar
+            docker run -d --name sonar-frontend -p 8082:80 sonar-frontend:latest
