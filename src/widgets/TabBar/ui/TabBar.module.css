@@ -12,7 +12,7 @@
   padding: 8px;
   box-sizing: border-box;
   border-radius: 32px;
-  background: var(--Tab-bar-bg-color, rgba(24, 24, 24, 0.90));
+  background: rgba(24, 24, 24, 0.90);
 
   /* Tab-bar/Tab-bar-bg-effect */
   box-shadow: 0 1px 1px 0 rgba(255, 255, 255, 0.40) inset;
@@ -46,8 +46,8 @@
 }
 
 .tabItemActive {
-  background-color: var(--Tab-bar-item-bg-color-active);
-  color: var(--Tab-bar-item-color-active);
+  background-color: #ffffff;
+  color: #000000;
   padding: 12px 20px;
 }
 
@@ -60,12 +60,12 @@
   height: var(--icon-size);
   flex-shrink: 0;
   aspect-ratio: 1/1;
-  fill: var(--Tab-bar-icon-color);
+  fill: #ffffff;
 }
 
 .tabItemActive .tabIcon {
   transform: scale(1.05);
-  fill: var(--Tab-bar-icon-color-active);
+  fill: #000000;
 }
 
 .tabLabel {

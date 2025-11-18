@@ -1,7 +1,7 @@
-import type { Track } from '@entities/Music';
+import type { TrackDTO } from '@entities/Music';
 
 export interface MiniPlayerProps {
-  currentTrack: Track | null;
+  currentTrack: TrackDTO | null;
   isPlaying: boolean;
   currentTime: number;
   duration: number;
@@ -25,10 +25,6 @@ export interface ProgressBarProps {
   currentTime: number;
   duration: number;
   onSeek: (time: number) => void;
-}
-
-export interface TrackInfoProps {
-  track: Track | null;
 }
 
 export interface PlayerActionsProps {

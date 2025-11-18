@@ -1,5 +1,5 @@
 import type { Chat } from "./Chat";
-import type { Types } from '@entities/User';
+import type { User } from '@entities/User';
 
 export interface Message {
  id: number;
@@ -12,5 +12,5 @@ export interface Message {
  */
  replyMessage?: Message;
  chat?: Chat;
- users?: Types[];
+ users?: User[];
 }
