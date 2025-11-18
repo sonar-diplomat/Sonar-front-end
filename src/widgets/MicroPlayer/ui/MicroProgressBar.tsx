@@ -1,9 +1,14 @@
 import React from "react";
+import styles from './MicroPlayer.module.css';
 import { useProgressBar } from "@shared/lib/useProgressBar";
-import styles from './MiniPlayer.module.css';
-import type { ProgressBarProps } from '@widgets/MiniPlayer';
 
-export const ProgressBar = ({ currentTime, duration, onSeek }: ProgressBarProps) => {
+interface ProgressBarProps {
+  currentTime: number;
+  duration: number;
+  onSeek: (time: number) => void;
+}
+
+export const MicroProgressBar = ({ currentTime, duration, onSeek }: ProgressBarProps) => {
   const {
     progressRef,
     handleMouseDown,
@@ -18,11 +23,9 @@ export const ProgressBar = ({ currentTime, duration, onSeek }: ProgressBarProps)
         className={styles.progressBar}
         onMouseDown={handleMouseDown}
         role="slider"
-        aria-label="Seek"
         aria-valuemin={0}
         aria-valuemax={duration}
         aria-valuenow={displayTime}
-        tabIndex={0}
       >
         <div className={styles.progressTrack}>
           <div className={styles.progressFill} style={{ width: `${progress}%` }} />
