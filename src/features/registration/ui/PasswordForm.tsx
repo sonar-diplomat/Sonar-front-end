@@ -90,8 +90,6 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ onSubmit }) => {
     <>
       By continuing, you agree to the{' '}
       <a href="/terms" className={styles.link}>Terms of Service</a>
-      {' '}and{' '}
-      <a href="/privacy" className={styles.link}>Data Processing Policy.</a>
     </>
   ), []);
 
@@ -122,22 +120,20 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ onSubmit }) => {
         error={errors.confirmPassword}
       />
 
-      <div className={styles.submits}>
-        <Checkbox
-          checked={isAgreed}
-          onChange={setIsAgreed}
-          label={termsLabel}
-        />
-        <Button
-          icon={<RightArrow />}
-          variant="light"
-          size="large"
-          fullWidth
-          type="submit"
-        >
-          Create account
-        </Button>
-      </div>
+        <div className={styles.submits}>
+            <div style={{ marginLeft: '8px' }}>
+                <Checkbox checked={isAgreed} onChange={setIsAgreed} label={termsLabel}/>
+            </div>
+            <Button
+                icon={<RightArrow/>}
+                variant="light"
+                size="large"
+                fullWidth
+                type="submit"
+            >
+                Create account
+            </Button>
+        </div>
     </Form>
   );
 };

@@ -9,4 +9,3 @@ export interface MicroPlayerProps {
   onNext: () => void;
   onSeek: (time: number) => void;
 }
-
