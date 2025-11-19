@@ -18,9 +18,12 @@ jobs:
           docker --version
           docker ps
 
-      - name: Build Docker image with docker-compose
+      - name: Build Docker image
         run: |
-          docker compose build
+          docker build -t sonar-frontend:latest .
+
+      - name: Save Docker image to file
+        run: |
           docker save sonar-frontend:latest > sonar-frontend.tar
 
       - name: Copy image to Test Server
