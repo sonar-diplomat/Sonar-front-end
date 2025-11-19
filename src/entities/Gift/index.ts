@@ -1,2 +1,3 @@
-export type { Gift } from './model/types/Gift';
-export type { GiftStyle } from './model/types/GiftStyle';
+export type { GiftResponseDTO, GiftStyleDTO, SendGiftDTO } from './model/types';
+export { Api } from './api/api';
+export * from './model/store';

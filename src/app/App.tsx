@@ -1,12 +1,11 @@
 import React from "react";
-import './styles/index.css';
+import {Outlet} from "react-router-dom";
 
-function App() {
-  return (
-    <div className="app">
-      <h1>Sonar Application</h1>
-    </div>
-  );
+
+export function App() {
+    return (
+        <div className="app">
+            <Outlet />
+        </div>
+    );
 }
-
-export default App;
