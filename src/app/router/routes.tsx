@@ -3,7 +3,7 @@ import { App }  from "@app/App.tsx";
 import React from "react";
 import {Hello, EntryMethod, Registration, TestPage, PasswordRecovery, AssignNewPassword} from "@pages";
 import {Login} from "@pages/Login";
-
+import {TermsOfService} from "@pages/Terms/TermsOfService/TermsOfService.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -41,9 +41,11 @@ export const router = createBrowserRouter([
             {
                 path: '/test',
                 element: <TestPage />,
+            },
+            {
+                path: '/terms',
+                element: <TermsOfService />,
             }
-
-            // Другие маршруты добавляй сюда
         ],
     },
 ]);

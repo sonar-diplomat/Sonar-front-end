@@ -1,6 +1,5 @@
 import React from "react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-
 import styles from "./WheelPicker.module.css";
 
 export interface WheelPickerOption {
@@ -23,10 +22,10 @@ interface WheelPickerWrapperProps {
   className?: string;
 }
 
-export function WheelPickerWrapper({
+export const WheelPickerWrapper: React.FC<WheelPickerWrapperProps> = ({
   children,
   className = "",
-}: WheelPickerWrapperProps) {
+}) => {
   return (
     <div className={`${styles.wheelPickerWrapper} ${className}`}>
       {children}
@@ -34,7 +33,7 @@ export function WheelPickerWrapper({
   );
 }
 
-export function WheelPicker({
+export const WheelPicker: React.FC<WheelPickerProps> = ({
   options,
   value,
   onChange,
@@ -42,7 +41,7 @@ export function WheelPicker({
   itemHeight = 44,
   visibleItems = 5,
   className = "",
-}: WheelPickerProps) {
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollTimeoutRef = useRef<number | null>(null);
   const isScrollingRef = useRef(false);
