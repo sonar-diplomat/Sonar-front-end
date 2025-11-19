@@ -1,0 +1,134 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #0A0A0A;
+    padding: 0;
+}
+
+.header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    padding: 0 16px;
+}
+
+.backButton {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.title {
+    font-family: 'Philosopher', serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: normal;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    text-align: center;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+}
+
+.welcomeSection {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 358px;
+    margin-top: 32px;
+}
+
+.welcomeTitle {
+    font-family: 'Philosopher', serif;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.welcomeDescription {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: normal;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.inputSection {
+    width: 100%;
+    max-width: 362px;
+    margin-top: 16px;
+}
+
+.folderInput {
+    width: 100%;
+}
+
+.firstContentSection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 378px;
+    margin-top: 16px;
+}
+
+.sectionTitle {
+    font-family: 'Philosopher', serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+    padding: 0 16px;
+}
+
+.contentGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 123px);
+    grid-template-rows: repeat(2, 123px);
+    gap: 4px;
+}
+
+.contentSquare {
+    width: 123px;
+    height: 123px;
+    background-color: #1F1F1F;
+    border-radius: 24px;
+    flex-shrink: 0;
+}
+
+.createFolderButton {
+    width: 100%;
+    max-width: 362px;
+    padding: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    background-color: #FFFFFF;
+    color: #1F1F1F;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: -0.23px;
+    cursor: pointer;
+    margin-top: 24px;
+    margin-bottom: 32px;
+}

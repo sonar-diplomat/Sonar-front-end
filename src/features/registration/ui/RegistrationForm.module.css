@@ -1,0 +1,48 @@
+.form {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.welcome {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-left: 8px;
+}
+
+.welcome h2 {
+    font-size: 36px;
+    font-family: 'Philosopher', sans-serif;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.welcome p {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: normal;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.submits {
+    width: 100%;
+    height: 45%;
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+    gap: 16px;
+    justify-content: space-between;
+}
+
+.link {
+    color: #ffffff;
+    text-decoration: underline;
+    transition: opacity 0.2s ease;
+}
+
+.link:hover {
+    opacity: 0.8;
+}

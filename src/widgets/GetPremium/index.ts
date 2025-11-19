@@ -1,0 +1,1 @@
+export { GetPremiumCard } from "./ui/GetPremiumCard.tsx"

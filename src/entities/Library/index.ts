@@ -1,2 +1,3 @@
-export type { Folder } from './model/types/Folder';
-export type { Library } from './model/types/Library';
+export type { FolderDTO, CreateFolderDTO, SubFolderDTO, CollectionSummaryDTO } from './model/types';
+export { Api } from './api/api';
+export * from './model/store';

@@ -1,0 +1,69 @@
+.container {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    gap: 12px;
+}
+
+.container.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: relative;
+    height: 24px;
+    width: 24px;
+    background: #1F1F1F;
+    border-radius: 8px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container:hover .checkmark {
+    border-color: #cccccc;
+}
+
+
+.icon {
+    width: 12px;
+    height: 11px;
+}
+
+.input:checked ~ .checkmark .icon path {
+    stroke: #EAEAEA;
+}
+
+.container.disabled .checkmark {
+    background: #4C4C4C;
+}
+
+.container.disabled .input:checked ~ .checkmark {
+    background-color: #666666;
+}
+
+.label {
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    color: #ffffff;
+    flex: 1;
+}
+
+.container.disabled .label {
+    color: #666666;
+}
