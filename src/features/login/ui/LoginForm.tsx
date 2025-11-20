@@ -3,14 +3,14 @@ import styles from './LoginForm.module.css';
 import {Button, Input, RightArrow, Form, EyeIcon, EyeOffIcon, GoogleIcon, AppleIcon} from '@shared/ui';
 import type { LoginFormData, LoginFormProps } from '../model/types';
 
-type FormField = keyof LoginFormData;
-
-export const LoginForm: React.FC<LoginFormProps> = ({ 
+export const LoginForm: React.FC<LoginFormProps> = ({
     onSubmit, 
     onForgotPassword,
     onContinueWithGoogle,
     onContinueWithApple,
-    onCreateAccount 
+    onCreateAccount,
+    isSubmitting,
+    error,
 }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState<LoginFormData>({
@@ -18,7 +18,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         password: ''
     });
 
-    const updateField = useCallback((field: FormField, value: string) => {
+    const updateField = useCallback((field: keyof LoginFormData, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     }, []);
 
@@ -32,6 +32,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             <div className={styles.header}>
                 <h2>Sign in</h2>
                 <p>Enter your details to log in!</p>
+                {error && <p className={styles.error}>{error}</p>}
             </div>
 
             <Form onSubmit={handleSubmit} className={styles.form}>
@@ -67,8 +68,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
                 <div className={styles.actions}>
                     <div className={styles.submits}>
-                        <Button icon={<RightArrow/>} children={"Continue"} variant={"light"} size={"large"}
-                                fullWidth/>
+                        <Button
+                            icon={<RightArrow/>}
+                            children={"Continue"}
+                            variant={"light"}
+                            size={"large"}
+                            fullWidth
+                            disabled={isSubmitting}
+                        />
                         <Button icon={<GoogleIcon/>} children={"Continue with Google"} variant={"dark"} size={"large"}
                                 onClick={onContinueWithGoogle}
                                 fullWidth/>
