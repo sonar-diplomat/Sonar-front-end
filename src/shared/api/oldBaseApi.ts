@@ -1,4 +1,4 @@
-// src/shared/api/client.ts
+// src/shared/api/oldBaseApi.ts
 import { API_BASE_URL } from '@shared/config';
 import type {
     ApiResponse,

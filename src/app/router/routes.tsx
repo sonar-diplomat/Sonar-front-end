@@ -4,6 +4,7 @@ import React from "react";
 import {Hello, EntryMethod, Registration, TestPage, PasswordRecovery, AssignNewPassword} from "@pages";
 import {Login} from "@pages/Login";
 import {TermsOfService} from "@pages/Terms/TermsOfService/TermsOfService.tsx";
+import {ApiTestPage} from "@pages/TestPage";
 
 export const router = createBrowserRouter([
     {
@@ -34,17 +35,21 @@ export const router = createBrowserRouter([
                 path: '/assign-new-password',
                 element: <AssignNewPassword/>
             },
-            // {
-            //     path: '/',
-            //     element: < />,
-            // },
             {
                 path: '/test',
                 element: <TestPage />,
             },
             {
+                path: '/-test-api',
+                element: <ApiTestPage />,
+            },
+            {
                 path: '/terms',
                 element: <TermsOfService />,
+            },
+            {
+                path: '/',
+                element: <EntryMethod />,
             }
         ],
     },

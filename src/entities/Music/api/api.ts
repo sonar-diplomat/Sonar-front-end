@@ -1,4 +1,4 @@
-import { apiClient } from '@shared/api/client';
+import { apiClient } from '@shared/api/oldBaseApi.ts';
 import { API_ENDPOINTS } from '@shared/config';
 import type { TrackDTO, UpdateTrackDTO, UpdateTrackFileDTO } from '../model/types.ts';
 import type {RequestConfig} from "@shared/types";
