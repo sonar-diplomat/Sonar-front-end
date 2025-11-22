@@ -3,7 +3,7 @@ import { App }  from "@app/App.tsx";
 import React from "react";
 import {
     Hello, EntryMethod, Registration, TestPage, PasswordRecovery, AssignNewPassword, Library, Create,
-    CreatePlaylist, Search, CreateFolder
+    CreatePlaylist, Search, CreateFolder, UserProfile
 } from "@pages";
 import {Login} from "@pages/Login";
 import {TermsOfService} from "@pages/Terms/TermsOfService/TermsOfService.tsx";
@@ -70,6 +70,10 @@ export const router = createBrowserRouter([
                     {
                         path: '/search',
                         element: <Search/>
+                    },
+                    {
+                        path: '/profile',
+                        element: <UserProfile/>
                     },
                 ]
             }

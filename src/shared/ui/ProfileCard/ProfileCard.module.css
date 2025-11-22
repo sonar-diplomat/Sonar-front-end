@@ -1,0 +1,100 @@
+.imageCard {
+    position: relative;
+    border-radius: 32px;
+    width: 100%;
+    height: 100%;
+}
+
+.imageContainer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    border-radius: 32px;
+}
+
+.image {
+    position: absolute;
+    height: 100%;
+    left: 0;
+    max-width: none;
+    top: -13.85%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 0 16px 4px 16px;
+    pointer-events: auto;
+}
+
+.nameContainer {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: -4px;
+}
+
+.name {
+    font-family: 'Chillax', sans-serif;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.verifiedBadge {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.checkIcon {
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    width: 14px;
+    height: 14px;
+    color: #FFFFFF;
+}
+
+.statsContainer {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: -4px;
+    cursor: pointer;
+}
+
+.statItem {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+    font-size: 14px;
+    line-height: normal;
+    text-decoration: none;
+}
+
+.statValue {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.statLabel {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.8);
+}
