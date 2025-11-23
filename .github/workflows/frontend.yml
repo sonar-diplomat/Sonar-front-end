@@ -3,7 +3,7 @@ name: Deploy Frontend to Test Server
 on:
   push:
     branches:
-      - dev
+      - deploy/github-actions-frontend
 
 jobs:
   deploy:
