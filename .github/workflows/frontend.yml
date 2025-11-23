@@ -3,7 +3,7 @@ name: Deploy Frontend to Test Server
 on:
   push:
     branches:
-      - dev
+      - deploy/github-actions-frontend
 
 jobs:
   deploy:
@@ -26,35 +26,39 @@ jobs:
         run: |
           docker save sonar-frontend:latest > sonar-frontend.tar
 
+      - name: Debug SSH key length
+        run: |
+          echo "${{ secrets.FRONT_SSH_PRIVATE_KEY }}" | wc -c
+
       - name: Copy image to Test Server
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.TEST_SERVER_IP }}
-          username: ${{ secrets.TEST_SERVER_USER }}
-          key: ${{ secrets.TEST_SERVER_SSH_KEY }}
+          host: ${{ secrets.FRONT_SERVER_HOST }}
+          username: ${{ secrets.FRONT_SERVER_USER }}
+          key: ${{ secrets.FRONT_SSH_PRIVATE_KEY }}
           source: "sonar-frontend.tar"
-          target: "${{ secrets.SERVER_PATH }}"
+          target: "${{ secrets.FRONT_DEPLOY_PATH }}"
 
       - name: Debug connection
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.TEST_SERVER_IP }}
-          username: ${{ secrets.TEST_SERVER_USER }}
-          key: ${{ secrets.TEST_SERVER_SSH_KEY }}
+          host: ${{ secrets.FRONT_SERVER_HOST }}
+          username: ${{ secrets.FRONT_SERVER_USER }}
+          key: ${{ secrets.FRONT_SSH_PRIVATE_KEY }}
           script: |
             echo
             hostname
             whoami
-            ls -la ${{ secrets.SERVER_PATH }}
+            ls -la ${{ secrets.FRONT_DEPLOY_PATH }}
 
       - name: Deploy on Test Server via SSH
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.TEST_SERVER_IP }}
-          username: ${{ secrets.TEST_SERVER_USER }}
-          key: ${{ secrets.TEST_SERVER_SSH_KEY }}
+          host: ${{ secrets.FRONT_SERVER_HOST }}
+          username: ${{ secrets.FRONT_SERVER_USER }}
+          key: ${{ secrets.FRONT_SSH_PRIVATE_KEY }}
           script: |
-            cd ${{ secrets.SERVER_PATH }}
+            cd ${{ secrets.FRONT_DEPLOY_PATH }}
             docker stop sonar-frontend || true
             docker rm sonar-frontend || true
             docker rmi sonar-frontend:latest || true
