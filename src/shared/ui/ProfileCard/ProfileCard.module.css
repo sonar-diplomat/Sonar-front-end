@@ -2,7 +2,7 @@
     position: relative;
     border-radius: 32px;
     width: 100%;
-    height: 100%;
+    height: 256px;
 }
 
 .imageContainer {
@@ -15,18 +15,15 @@
 
 .image {
     position: absolute;
-    height: 100%;
-    left: 0;
-    max-width: none;
-    top: -13.85%;
+    height: 264px;
     width: 100%;
     object-fit: cover;
 }
 
 .overlay {
     position: absolute;
-    bottom: 0;
-    left: 0;
+    bottom: 18px;
+    left: 8px;
     right: 0;
     display: flex;
     flex-direction: column;
