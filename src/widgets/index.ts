@@ -7,4 +7,6 @@ export * from './ModalDatePicker';
 export * from './ChipsBar';
 export * from './SearchFilterHeader';
 export * from './ContentSections'
+export * from './TopSongsWidget';
+export * from './TopArtistsWidget';
 

@@ -7,14 +7,67 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     src,
     alt = '',
     className = '',
+    variant = 'stats',
     name,
     isVerified = false,
-    stats
+    stats,
+    title,
+    bio
 }) => {
     const wrapperClasses = [
         styles.imageCard,
+        variant === 'bio' && styles.bioVariant,
         className,
     ].filter(Boolean).join(' ');
+
+    if (variant === 'simple') {
+        return (
+            <div className={wrapperClasses}>
+                <div className={styles.imageContainer}>
+                    <img
+                        src={src}
+                        alt={alt}
+                        className={styles.image}
+                    />
+                </div>
+            </div>
+        );
+    }
+
+    if (variant === 'bio') {
+        return (
+            <div className={wrapperClasses}>
+                <div className={styles.imageContainer}>
+                    <img
+                        src={src}
+                        alt={alt}
+                        className={styles.image}
+                    />
+                    <div className={styles.gradient} />
+                </div>
+                <div className={styles.overlay}>
+                    {isVerified && (
+                        <div className={styles.verifiedBadgeTop}>
+                            <div className={styles.verifiedIcon}>
+                                <CheckMark className={styles.checkIcon} />
+                            </div>
+                            <p className={styles.verifiedText}>Verified profile</p>
+                        </div>
+                    )}
+                    {(title || bio) && (
+                        <div className={styles.bioContent}>
+                            {title && (
+                                <h1 className={styles.title}>{title}</h1>
+                            )}
+                            {bio && (
+                                <p className={styles.bioText}>{bio}</p>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={wrapperClasses}>
