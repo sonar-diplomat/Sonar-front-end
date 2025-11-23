@@ -3,7 +3,6 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { MicroPlayer } from '@widgets/MicroPlayer';
 import { TabBar } from '@widgets/TabBar';
 import { useAppSelector } from '@shared/store/hooks';
-import { useAudioPlayer } from '@shared/hooks/useAudioPlayer';
 import type { TabId } from '@widgets/TabBar/model/types';
 import { TAB_ITEMS } from '@widgets/TabBar/lib/constants';
 import styles from './PageLayout.module.css';
@@ -11,8 +10,8 @@ import styles from './PageLayout.module.css';
 export const PageLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentTrack, isPlaying, currentTime, duration } = useAppSelector((state) => state.player);
-  const { handlePlayPause, handleNext, handleSeek } = useAudioPlayer();
+  // const { currentTrack, isPlaying, currentTime, duration } = useAppSelector((state) => );
+  // const { handlePlayPause, handleNext, handleSeek } = null;
 
   const handleTabChange = useCallback((tabId: TabId) => {
     const tab = TAB_ITEMS.find(item => item.id === tabId);
@@ -33,15 +32,15 @@ export const PageLayout = () => {
         <Outlet />
       </div>
       <div className={styles.fixedBottomBars}>
-          <MicroPlayer
-              duration={duration}
-              currentTime={currentTime}
-              isPlaying={isPlaying}
-              currentTrack={currentTrack}
-              onPlayPause={handlePlayPause}
-              onNext={handleNext}
-              onSeek={handleSeek}
-          />
+          {/*<MicroPlayer*/}
+          {/*    duration={duration}*/}
+          {/*    currentTime={currentTime}*/}
+          {/*    isPlaying={isPlaying}*/}
+          {/*    currentTrack={currentTrack}*/}
+          {/*    onPlayPause={handlePlayPause}*/}
+          {/*    onNext={handleNext}*/}
+          {/*    onSeek={handleSeek}*/}
+          {/*/>*/}
           <div className={styles.navBlurWrapper}>
             <TabBar
               defaultActiveTab={getActiveTab()}
