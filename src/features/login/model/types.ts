@@ -9,10 +9,14 @@ export interface LoginFormProps {
     onContinueWithGoogle?: () => void;
     onContinueWithApple?: () => void;
     onCreateAccount?: () => void;
+    isSubmitting?: boolean;
+    error?: string;
 }
 
 export interface TwoFactorVerificationProps {
     email: string;
     onVerify: (code: string) => void;
     onResend?: () => void;
+    isSubmitting?: boolean;
+    error?: string;
 }

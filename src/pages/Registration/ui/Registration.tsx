@@ -9,33 +9,53 @@ import {
   type PasswordFormData
 } from '@features/registration';
 import {useNavigate} from "react-router-dom";
+import { useRegister } from "@features/auth/model/store.ts";
+import type { UserRegisterDTO } from "@features/auth";
 
 type RegistrationStep = 'registration' | 'password' | 'confirmation';
 
 export const Registration: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<RegistrationStep>('registration');
   const [email, setEmail] = useState<string>('');
-    const navigate = useNavigate();
+  const [registrationData, setRegistrationData] = useState<RegistrationFormData | undefined>(undefined);
+  const navigate = useNavigate();
+
+  const { mutate: register } = useRegister();
 
   const handleRegistrationSubmit = (data: RegistrationFormData) => {
-    console.log('Registration submitted:', data);
     setEmail(data.email);
+    setRegistrationData(data);
     setCurrentStep('password');
   };
 
-  const handlePasswordSubmit = (data: PasswordFormData) => {
-    console.log('Password submitted:', data);
-    setCurrentStep('confirmation');
+  const handlePasswordSubmit = async (data: PasswordFormData) => {
+    if (!registrationData) return;
+
+    const dto: UserRegisterDTO = {
+      Username: registrationData.username,
+      Login: registrationData.login,
+      Email: registrationData.email,
+      Password: data.password,
+      FirstName: registrationData.username,
+      LastName: registrationData.username,
+      DateOfBirth: registrationData.dateOfBirth,
+      Locale: navigator.language || 'en-US',
+    };
+
+    const res = await register(dto);
+
+    if (res.success) {
+      setCurrentStep('confirmation');
+    }
   };
 
   const handleEmailConfirm = (code: string) => {
     console.log('Email confirmed with code:', code);
-    // Navigate to next page or show success message
+    navigate('/login');
   };
 
   const handleResendCode = () => {
     console.log('Resending verification code to:', email);
-    // API call to resend code
   };
 
   const handleBack = () => {
@@ -48,6 +68,7 @@ export const Registration: React.FC = () => {
       setCurrentStep('password');
     }
   };
+
   return (
     <div className={styles.container}>
       <Button

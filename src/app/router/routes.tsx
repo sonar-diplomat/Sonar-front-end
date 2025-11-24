@@ -7,6 +7,7 @@ import {
 } from "@pages";
 import {Login} from "@pages/Login";
 import {TermsOfService} from "@pages/Terms/TermsOfService/TermsOfService.tsx";
+import {ApiTestPage} from "@pages/TestPage";
 import {PageLayout} from "@widgets/PageLayout";
 
 export const router = createBrowserRouter([
@@ -40,12 +41,16 @@ export const router = createBrowserRouter([
                 element: <AssignNewPassword/>
             },
             {
-                path: '/terms',
-                element: <TermsOfService />,
+                path: '/test',
+                element: <TestPage />,
             },
             {
-              path: '/test',
-              element: <TestPage/>
+                path: '/-test-api',
+                element: <ApiTestPage />,
+            },
+            {
+                path: '/terms',
+                element: <TermsOfService />,
             },
             {
                 path: 'library/create',

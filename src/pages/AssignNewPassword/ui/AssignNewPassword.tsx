@@ -3,21 +3,30 @@ import styles from './AssignNewPassword.module.css';
 import { Button, LeftArrow } from "@shared/ui";
 import { AssignNewPassword as AssignNewPasswordFeature } from "@features/password-recovery";
 import type { AssignNewPasswordFormData } from "@features/password-recovery";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useConfirmPasswordChange } from "@features/auth/model/store.ts";
 
 export const AssignNewPassword: React.FC = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const { loading, error, mutate: confirmPasswordChange } = useConfirmPasswordChange();
 
     const handleBack = () => {
         navigate("/login");
     };
 
-    const handleAssignNewPasswordSubmit = (data: AssignNewPasswordFormData) => {
-        // Handle new password assignment
-        console.log('New password data:', data);
-        // Call API to set new password
-        // On success, redirect to login
-        navigate("/login");
+    const handleAssignNewPasswordSubmit = async (data: AssignNewPasswordFormData) => {
+        const token = searchParams.get('token') || '';
+
+        const res = await confirmPasswordChange({
+            Token: token,
+            NewPassword: data.password,
+            OldPassword: '',
+        });
+
+        if (res.success) {
+            navigate("/login");
+        }
     };
 
     return (
@@ -33,6 +42,8 @@ export const AssignNewPassword: React.FC = () => {
 
             <AssignNewPasswordFeature
                 onSubmit={handleAssignNewPasswordSubmit}
+                isSubmitting={loading}
+                error={error}
             />
         </div>
     );

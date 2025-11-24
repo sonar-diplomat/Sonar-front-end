@@ -2,7 +2,8 @@ import React, {useMemo} from "react";
 import styles from './MicroPlayer.module.css';
 import type { MicroPlayerProps } from '../model/types';
 import { MicroProgressBar } from './MicroProgressBar';
-import { PlayIcon, PauseIcon, NextIcon } from '@widgets/MiniPlayer/lib/icons';
+import { PlayIcon, PauseIcon, NextIcon, HeartIcon } from '@widgets/MiniPlayer/lib/icons';
+import { useToggleTrackFavorite } from '@entities/Music';
 
 export const MicroPlayer = ({
   currentTrack,
@@ -15,6 +16,8 @@ export const MicroPlayer = ({
 }: MicroPlayerProps) => {
   const hasTrack = currentTrack !== null;
 
+  const { mutate: toggleFavorite, loading: togglingFavorite } = useToggleTrackFavorite();
+
   const coverUrl = useMemo(() =>
       currentTrack ? currentTrack.cover?.url : undefined,
     [currentTrack]
@@ -23,6 +26,12 @@ export const MicroPlayer = ({
   const artistName = useMemo(() => {
     return "Artist Name"; // TODO: Extract from currentTrack when artist data is available
   }, []);
+
+  const handleToggleFavorite = () => {
+    if (!currentTrack || togglingFavorite) return;
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    toggleFavorite(currentTrack.id);
+  };
 
   return (
     <div className={styles.microPlayer}>
@@ -61,8 +70,15 @@ export const MicroPlayer = ({
         >
           <NextIcon />
         </button>
+        <button
+          onClick={handleToggleFavorite}
+          disabled={!hasTrack || togglingFavorite}
+          aria-label="Toggle favorite"
+          className={styles.controlButton}
+        >
+          <HeartIcon />
+        </button>
       </div>
     </div>
   );
 };
-
