@@ -1,0 +1,100 @@
+.songItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    width: 100%;
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.image {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    object-fit: cover;
+    background-color: #898989;
+    flex-shrink: 0;
+}
+
+.info {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    width: 195px;
+    flex-shrink: 0;
+}
+
+.rank {
+    font-family: 'Chillax', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.textContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    height: 36px;
+    justify-content: center;
+    overflow: hidden;
+    flex: 1;
+    min-width: 0;
+}
+
+.title {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.artist {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: normal;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.menuButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+}
+
+.menuButton:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.menuIcon {
+    width: 24px;
+    height: 24px;
+    color: #EAEAEA;
+}

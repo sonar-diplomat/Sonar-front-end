@@ -1,0 +1,48 @@
+.tabSlider {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tabList {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.tab {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: 'Chillax', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.4);
+    transition: color 0.3s ease;
+    white-space: nowrap;
+    position: relative;
+}
+
+.tab.active {
+    color: rgba(255, 255, 255, 1);
+}
+
+.tab:hover {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.tab:focus {
+    outline: none;
+}
+
+.indicator {
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 11px;
+    transition: left 0.3s ease, width 0.3s ease;
+}
