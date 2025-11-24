@@ -1,4 +1,4 @@
-// Widgets exports
+export * from './ProfileHeader'// Widgets exports
 export * from './TabBar';
 export * from './CarouselDots';
 export * from './MiniPlayer';
@@ -7,4 +7,6 @@ export * from './ModalDatePicker';
 export * from './ChipsBar';
 export * from './SearchFilterHeader';
 export * from './ContentSections'
+export * from './TopSongsWidget';
+export * from './TopArtistsWidget';
 
