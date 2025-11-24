@@ -8,6 +8,9 @@ export const Api = {
     // get: (config?: RequestConfig) =>
     //     apiClient.get<Settings>(API_ENDPOINTS.clientSettings.get, config),
 
+    /**
+     * @deprecated Use usePatchClientSettingsMutation from @shared/api/rtkApi instead
+     */
     patch: (updates: Record<string, unknown>, config?: RequestConfig) =>
         apiClient.patch<Settings>(API_ENDPOINTS.clientSettings.patch, updates, {
             ...config,

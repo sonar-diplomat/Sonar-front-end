@@ -12,12 +12,18 @@ export const Api = {
     // list: (config?: RequestConfig) =>
     //     apiClient.get<FolderDTO[]>(API_ENDPOINTS.folder.list, config),
 
+    /**
+     * @deprecated Use useCreateFolderMutation from @shared/api/rtkApi instead
+     */
     create: (dto: CreateFolderDTO, config?: RequestConfig) =>
         apiClient.post<FolderDTO>(API_ENDPOINTS.folder.create, dto, {
             ...config,
             bodyType: 'json',
         }),
 
+    /**
+     * @deprecated Use useUpdateFolderNameMutation from @shared/api/rtkApi instead
+     */
     updateName: (folderId: number, newName: string, config?: RequestConfig) =>
         apiClient.put<FolderDTO>(API_ENDPOINTS.folder.updateName(folderId), newName, {
             ...config,
@@ -25,15 +31,27 @@ export const Api = {
             headers: { ...(config?.headers ?? {}), 'content-type': 'text/plain' },
         }),
 
+    /**
+     * @deprecated Use useDeleteFolderMutation from @shared/api/rtkApi instead
+     */
     delete: (folderId: number, config?: RequestConfig) =>
         apiClient.delete<void>(API_ENDPOINTS.folder.delete(folderId), config),
 
+    /**
+     * @deprecated Use useAddCollectionToFolderMutation from @shared/api/rtkApi instead
+     */
     addCollection: (folderId: number, collectionId: number, config?: RequestConfig) =>
         apiClient.post<void>(API_ENDPOINTS.folder.addCollection(folderId, collectionId), undefined, config),
 
+    /**
+     * @deprecated Use useRemoveCollectionFromFolderMutation from @shared/api/rtkApi instead
+     */
     removeCollection: (folderId: number, collectionId: number, config?: RequestConfig) =>
         apiClient.delete<void>(API_ENDPOINTS.folder.removeCollection(folderId, collectionId), config),
 
+    /**
+     * @deprecated Use useMoveFolderMutation from @shared/api/rtkApi instead
+     */
     move: (folderId: number, newParentFolderId: number, config?: RequestConfig) =>
         apiClient.put<void>(API_ENDPOINTS.folder.move(folderId, newParentFolderId), undefined, config),
 };

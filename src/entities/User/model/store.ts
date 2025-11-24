@@ -38,6 +38,9 @@ export const useGetUserById = () => {
     return useMemo(() => ({ ...state, refetch }), [state, refetch])
 }
 
+/**
+ * @deprecated Use useUpdateUserMutation from @shared/api/rtkApi instead
+ */
 export const useUpdateUser = () => {
     const [state, setState] = useState<State<User>>({ loading: false })
     const mutate = useCallback(async (dto: UserUpdateDTO, cfg?: RequestConfig) => {
@@ -53,6 +56,9 @@ export const useUpdateUser = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate])
 }
 
+/**
+ * @deprecated Use useUpdateUserAvatarMutation from @shared/api/rtkApi instead
+ */
 export const useUpdateAvatar = () => {
     const [state, setState] = useState<State<void>>({ loading: false })
     const mutate = useCallback(async (file: File, cfg?: RequestConfig) => {
@@ -64,6 +70,9 @@ export const useUpdateAvatar = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate])
 }
 
+/**
+ * @deprecated Use useUpdateUserVisibilityMutation from @shared/api/rtkApi instead
+ */
 export const useUpdateUserVisibility = () => {
     const [state, setState] = useState<State<void>>({ loading: false })
     const mutate = useCallback(async (collectionId: number, visibilityStatusId: number, cfg?: RequestConfig) => {

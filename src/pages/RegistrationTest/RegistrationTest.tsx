@@ -1,7 +1,7 @@
 import React, { useState, type FormEvent } from 'react';
 import type { UserRegisterDTO } from '@features/auth';
 import styles from './RegistrationTest.module.css';
-import { useRegisterMutation } from '@shared/api/rtkApi';
+import { useRegisterMutation } from '@shared/api';
 
 
 export const RegistrationTest: React.FC = () => {

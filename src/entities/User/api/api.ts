@@ -8,10 +8,16 @@ export const Api = {
     // list: (config?: RequestConfig) => apiClient.get<User[]>(API_ENDPOINTS.user.list, config),
     // Закомментировано: используйте useGetUserByIdQuery из @shared/api/rtkApi
     // byId: (id: number, config?: RequestConfig) => apiClient.get<NonSensetiveUserDTO>(API_ENDPOINTS.user.byId(id), config),
+    /**
+     * @deprecated Use useUpdateUserMutation from @shared/api/rtkApi instead
+     */
     update: (data: UserUpdateDTO, config?: RequestConfig) => apiClient.put<User>(API_ENDPOINTS.user.update, data, {
         ...config,
         bodyType: 'json',
     }),
+    /**
+     * @deprecated Use useUpdateUserAvatarMutation from @shared/api/rtkApi instead
+     */
     updateAvatar: (file: File, config?: RequestConfig) => {
         const form = new FormData()
         form.append('file', file)
@@ -20,6 +26,9 @@ export const Api = {
             bodyType: 'form',
         })
     },
+    /**
+     * @deprecated Use useUpdateUserVisibilityMutation from @shared/api/rtkApi instead
+     */
     updateVisibility: (collectionId: number, visibilityStatusId: number, config?: RequestConfig) =>
         apiClient.put<void>(API_ENDPOINTS.user.updateVisibility(collectionId), undefined, {
             ...config,

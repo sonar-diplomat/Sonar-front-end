@@ -13,7 +13,7 @@ import {
   useGetSessionsQuery,
   useRevokeSessionMutation,
   useRevokeAllSessionsMutation,
-} from '@shared/api/rtkApi'
+} from '@shared/api'
 import type {
     ActiveSessionDTO,
     ConfirmEmailChangeDTO,

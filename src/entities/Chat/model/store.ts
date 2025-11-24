@@ -9,6 +9,9 @@ import type { CursorPageDTO } from '@entities/Playlist';
 const pickError = (res: any) =>
     res?.success ? undefined : res?.errors?.[0] || res?.details?.[0] || res?.message;
 
+/**
+ * @deprecated Use useCreateChatMutation from @shared/api/rtkApi instead
+ */
 export const useCreateChat = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (dto: CreateChatDTO, cfg?: RequestConfig) => {
@@ -20,6 +23,9 @@ export const useCreateChat = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate]);
 };
 
+/**
+ * @deprecated Use useSendMessageMutation from @shared/api/rtkApi instead
+ */
 export const useSendMessage = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (chatId: number, message: MessageDTO, cfg?: RequestConfig) => {
@@ -31,6 +37,9 @@ export const useSendMessage = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate]);
 };
 
+/**
+ * @deprecated Use useDeleteMessageMutation from @shared/api/rtkApi instead
+ */
 export const useDeleteMessage = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (messageId: number, cfg?: RequestConfig) => {
@@ -82,6 +91,9 @@ export const useGetChatMessages = () => {
     return useMemo(() => ({ ...state, refetch }), [state, refetch]);
 };
 
+/**
+ * @deprecated Use useAddUserToChatMutation from @shared/api/rtkApi instead
+ */
 export const useAddUserToChat = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (chatId: number, userId: number, cfg?: RequestConfig) => {
@@ -93,6 +105,9 @@ export const useAddUserToChat = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate]);
 };
 
+/**
+ * @deprecated Use useLeaveChatMutation from @shared/api/rtkApi instead
+ */
 export const useLeaveChat = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (chatId: number, cfg?: RequestConfig) => {
@@ -104,6 +119,9 @@ export const useLeaveChat = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate]);
 };
 
+/**
+ * @deprecated Use useRemoveUserFromChatMutation from @shared/api/rtkApi instead
+ */
 export const useRemoveUserFromChat = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (chatId: number, userId: number, cfg?: RequestConfig) => {
@@ -115,6 +133,9 @@ export const useRemoveUserFromChat = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate]);
 };
 
+/**
+ * @deprecated Use useUpdateChatCoverMutation from @shared/api/rtkApi instead
+ */
 export const useUpdateChatCover = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (chatId: number, file: File, cfg?: RequestConfig) => {
@@ -126,6 +147,9 @@ export const useUpdateChatCover = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate]);
 };
 
+/**
+ * @deprecated Use useUpdateChatNameMutation from @shared/api/rtkApi instead
+ */
 export const useUpdateChatName = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (chatId: number, newName: string, cfg?: RequestConfig) => {
@@ -137,6 +161,9 @@ export const useUpdateChatName = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate]);
 };
 
+/**
+ * @deprecated Use useReadMessagesMutation from @shared/api/rtkApi instead
+ */
 export const useReadMessages = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (chatId: number, messageIds: number[], cfg?: RequestConfig) => {
@@ -148,6 +175,9 @@ export const useReadMessages = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate]);
 };
 
+/**
+ * @deprecated Use useReadAllMessagesMutation from @shared/api/rtkApi instead
+ */
 export const useReadAllMessages = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (chatId: number, cfg?: RequestConfig) => {
