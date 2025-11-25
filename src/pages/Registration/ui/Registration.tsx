@@ -89,7 +89,7 @@ export const Registration: React.FC = () => {
 
       {currentStep === 'confirmation' && (
         <EmailConfirmation
-          email={email || 'user@example.com'}
+          email={email}
           onConfirm={handleEmailConfirm}
           onResend={handleResendCode}
         />

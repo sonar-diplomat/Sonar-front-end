@@ -50,7 +50,9 @@ export const Hello: React.FC = () => {
             <div className={styles.step}>
                 <CarouselDots total={textPage.length} currentIndex={currentPage} />
             </div>
-            <Button onClick={handleNext} children={textPage[currentPage].buttonText} icon={<RightArrow/>} shape={"cr-16"} size={"large"} fullWidth />
+            <div className={styles.button}>
+                <Button onClick={handleNext} children={textPage[currentPage].buttonText} icon={<RightArrow/>} shape={"cr-16"} size={"large"} fullWidth />
+            </div>
         </div>
     );
 }

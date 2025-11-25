@@ -1,7 +1,6 @@
 .wheelPickerWrapper {
   display: flex;
   gap: 50px;
-  width: 77.35%;
   border-radius: 0.5rem;
   padding: 0.25rem;
   background: transparent;
@@ -27,7 +26,6 @@
 .wheelPickerScroll {
   overflow-y: scroll;
   overflow-x: hidden;
-  scroll-behavior: smooth;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }
@@ -39,7 +37,7 @@
 .wheelPickerItem {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   cursor: pointer;
   font-size: 14px;
   font-weight: 400;
@@ -60,14 +58,15 @@
 /* Highlight wrapper - the selected item background */
 .highlightWrapper {
   position: absolute;
-  left: 58px;
-  right: 0;
+  left: 50%;
+  top: 47%;
+  transform: translate(-50%, -50%);
   width: 280px;
   pointer-events: none;
   z-index: 1;
   background: rgba(255, 255, 255, 0.20);
   border-radius: 16px;
-
+  height: 44px;
 }
 
 /* Create fade effect for items above and below */
@@ -77,7 +76,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  height: calc(var(--item-height) * 2);
+  height: 88px;
   pointer-events: none;
   z-index: 2;
 }
