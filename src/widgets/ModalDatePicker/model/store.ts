@@ -19,5 +19,5 @@ const MONTH_LABELS = [
 ] as const;
 
 export const monthOptions: WheelPickerOption[] = toOptions(Array.from(MONTH_LABELS));
-export const dayOptions = createNumericOptions(31, 31, 2);
-export const yearOptions = createNumericOptions(120, new Date(Date.now()).getFullYear(), 2);
+export const dayOptions = createNumericOptions(31, 31, 2).reverse();
+export const yearOptions = createNumericOptions(120, new Date(Date.now()).getFullYear(), 2).reverse();
