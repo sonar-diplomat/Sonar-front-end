@@ -4,7 +4,7 @@ import { API_ENDPOINTS } from '@shared/config';
 
 // Import types
 import type { TrackDTO } from '@entities/Music';
-import type { User, NonSensetiveUserDTO } from '@entities/User';
+import type { User, NonSensitiveUserDTO } from '@entities/User';
 import type { ChatDTO, MessageDTO } from '@entities/Chat';
 import type { CursorPageDTO } from '@entities/Playlist';
 import type { AccessFeatureDTO } from '@entities/Access';
@@ -91,7 +91,7 @@ export const rtkApi = createApi({
       providesTags: [{ type: 'User', id: 'LIST' }],
     }),
 
-    getUserById: builder.query<NonSensetiveUserDTO, number>({
+    getUserById: builder.query<NonSensitiveUserDTO, number>({
       query: (userId) => ({
         url: API_ENDPOINTS.user.byId(userId),
         method: 'GET',
