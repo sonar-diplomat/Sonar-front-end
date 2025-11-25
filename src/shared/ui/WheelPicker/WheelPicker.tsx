@@ -49,6 +49,12 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
     const lastScrollTopRef = useRef(0);
     const [selectedIndex, setSelectedIndex] = useState(0);
 
+    const paddingItems = useMemo(
+        () => Math.floor(visibleItems / 2),
+        [visibleItems]
+    );
+
+
     const displayOptions = useMemo(
         () => infinite ? [...options, ...options, ...options] : options,
         [options, infinite]
@@ -224,6 +230,9 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
                         } as CSSProperties
                     }
                 >
+                    {/* Top padding - нужно чтоб выбранный элемент был по центру */}
+                    <div style={{ height: `${paddingItems * itemHeight}px` }} />
+
                     {/* Items */}
                     {displayOptions.map((option, index) => {
                         const isSelected = isItemSelected(index);
@@ -241,8 +250,9 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
                             </div>
                         );
                     })}
+                    {/* Bottom padding - нужно чтоб выбранный элемент был по центру */}
+                    <div style={{ height: `${paddingItems * itemHeight}px` }} />
                 </div>
-
             </div>
             <div className={styles.highlightWrapper}/>
         </>
