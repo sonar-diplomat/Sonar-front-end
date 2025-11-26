@@ -1,7 +1,7 @@
 import React, { useState, type FormEvent } from 'react';
 import type { UserRegisterDTO } from '@features/auth';
 import styles from './RegistrationTest.module.css';
-import {Api} from "@features/auth/api/api.ts";
+import { useRegisterMutation } from '@shared/api/rtkApi';
 
 
 export const RegistrationTest: React.FC = () => {
@@ -16,7 +16,7 @@ export const RegistrationTest: React.FC = () => {
     locale: 'eng',
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [register, { isLoading, error: registerError }] = useRegisterMutation();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -33,28 +33,27 @@ export const RegistrationTest: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
     setError(null);
     setSuccess(null);
 
     try {
-      const response = await Api.register(formData);
-
-      if (response.success) {
-        setSuccess(response.message || 'Registration successful!');
-        // Clear form on success
-        setFormData({
-          userName: '',
-          login: '',
-          email: '',
-          password: '',
-          firstName: '',
-          lastName: '',
-          dateOfBirth: '',
-          locale: 'en-US',
-        });
-      }
-    } catch (err) {}
+      await register(formData).unwrap();
+      setSuccess('Registration successful!');
+      // Clear form on success
+      setFormData({
+        userName: '',
+        login: '',
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        dateOfBirth: '',
+        locale: 'en-US',
+      });
+    } catch (err: any) {
+      const errorMsg = err?.data?.message || err?.message || 'Registration failed';
+      setError(errorMsg);
+    }
   };
 
   return (

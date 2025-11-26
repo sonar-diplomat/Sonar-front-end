@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
 import { setCredentials, logout as logoutAction, setLoading } from '@shared/store/features/auth/authSlice';
-import { useLogin as useLoginApi } from '@features/auth/model/store';
+import { useLoginMutation } from '@shared/api/rtkApi';
 import { authManager } from './auth-manager';
 import { useClientSettings } from '@shared/store/features/clientSettings/useClientSettings';
 import { useAccess } from '@shared/store/features/access/useAccess';
@@ -15,7 +15,7 @@ import { decodeJWT } from './jwt-utils';
 export const useAuth = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated, accessToken, sessionId, isLoading: authLoading } = useAppSelector((state) => state.auth);
-  const { mutate: loginApi, loading: loginLoading } = useLoginApi();
+  const [loginMutation, { isLoading: loginLoading }] = useLoginMutation();
   const { loadSettings, clear: clearSettings } = useClientSettings();
   const { loadUserAccessFeatures, loadAllAccessFeatures, clear: clearAccess } = useAccess();
   const { clear: clearUserState } = useUserState();
@@ -28,10 +28,10 @@ export const useAuth = () => {
   ): Promise<boolean> => {
     dispatch(setLoading(true));
     try {
-      const res = await loginApi(userIdentifier, password, deviceName);
+      const data = await loginMutation({ userIdentifier, password, deviceName }).unwrap();
       
-      if (res.success && res.data) {
-        dispatch(setCredentials(res.data));
+      if (data) {
+        dispatch(setCredentials(data));
         
         // Сохраняем credentials для автоматического логина, если rememberMe = true
         if (rememberMe) {
@@ -52,7 +52,7 @@ export const useAuth = () => {
           
           // Загружаем функции доступа текущего пользователя
           // Пытаемся получить userId из JWT токена
-          const decoded = decodeJWT(res.data.accessToken);
+          const decoded = decodeJWT(data.accessToken);
           if (decoded) {
             // Обычно в JWT есть sub, nameid, userId или подобное поле
             const userId = decoded.sub || decoded.nameid || decoded.userId || decoded.id;
@@ -75,10 +75,14 @@ export const useAuth = () => {
       }
       
       return false;
+    } catch (error) {
+      // Обработка ошибки логина
+      console.error('Login failed:', error);
+      return false;
     } finally {
       dispatch(setLoading(false));
     }
-  }, [loginApi, dispatch, loadSettings, loadAllAccessFeatures, loadUserAccessFeatures]);
+  }, [loginMutation, dispatch, loadSettings, loadAllAccessFeatures, loadUserAccessFeatures]);
   
   const logout = useCallback(() => {
     // Удаляем credentials при выходе

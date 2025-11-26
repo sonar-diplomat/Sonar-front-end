@@ -85,7 +85,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
 
       <Input
         label="Date of birth"
-        placeholder="dd/mm/yy"
+        placeholder="yyyy-mm-dd"
         icon={<DropDown/>}
         iconPosition="prefix"
         iconClickable={true}
@@ -93,7 +93,14 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
         required={true}
         onChange={(e) => updateField('dateOfBirth', e.target.value)}
         onIconClick={()=>{setIsDatePickerOpen(true)}}
-      /><ModalDatePicker isOpen={isDatePickerOpen} onClose={() => setIsDatePickerOpen(false)} />
+        readOnly
+      />
+      <ModalDatePicker
+        isOpen={isDatePickerOpen}
+        onClose={() => setIsDatePickerOpen(false)}
+        onConfirm={(date) => updateField('dateOfBirth', date)}
+        initialValue={formData.dateOfBirth}
+      />
       <div className={styles.submits}>
         <Checkbox
           checked={isAgreed}

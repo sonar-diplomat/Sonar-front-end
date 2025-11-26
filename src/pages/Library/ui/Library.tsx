@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useCallback} from 'react';
+import React, {useState, useMemo, useCallback, useEffect} from 'react';
 
 import {useNavigate} from 'react-router-dom';
 
@@ -7,6 +7,7 @@ import {Button, FolderCard, ItemCard, PlusIcon} from "@shared/ui";
 import type {Category} from "@widgets/ChipsBar";
 import {ContentSections, type ContentSection} from "@widgets/ContentSections";
 import {SearchFilterHeader} from "@widgets/SearchFilterHeader";
+import { useGetAllFolders } from '@entities/Library';
 
 import styles from './Library.module.css';
 
@@ -14,25 +15,33 @@ export const Library: React.FC<LibraryProps> = () => {
     const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState<Category>('All');
 
-    // @ts-expect-error setFolders will be used later
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [folders, setFolders] = useState<Folder[]>([
-        {id: '1', name: 'Every day'},
-        {id: '2', name: 'Gym'},
-        {id: '3', name: 'Party'},
-        {id: '4', name: 'Work'}
-    ]);
+    const { data: folderData, loading: foldersLoading, refetch: refetchFolders } = useGetAllFolders();
 
-    // @ts-expect-error setPlaylists will be used later
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [playlists, setPlaylists] = useState<Playlist[]>([
+    const [folders, setFolders] = useState<Folder[]>([]);
+    const [playlists] = useState<Playlist[]>([
+        // TODO: Replace with collections from API
         {id: '1', name: 'Playlist 1'},
         {id: '2', name: 'Playlist 2'},
         {id: '3', name: 'Playlist 3'},
         {id: '4', name: 'Playlist 4'}
     ]);
 
-    // Event handlers
+    useEffect(() => {
+        if (folderData) {
+            setFolders(
+                folderData.map((f) => ({
+                    id: String(f.id),
+                    name: f.name,
+                    itemCount: f.collections.length,
+                }))
+            );
+        }
+    }, [folderData]);
+
+    useEffect(() => {
+        refetchFolders?.();
+    }, [refetchFolders]);
+
     const handleFolderClick = useCallback((folder: Folder) => {
         console.log('Opening folder:', folder);
         // TODO: Navigate to folder detail
@@ -48,9 +57,8 @@ export const Library: React.FC<LibraryProps> = () => {
     const handleCreateNew = useCallback(() => {
         console.log('Create new:', selectedCategory);
         navigate('/library/create');
-    }, [navigate]);
+    }, [navigate, selectedCategory]);
 
-    // Define sections
     const sections = useMemo<ContentSection[]>(() => [
         {
             id: 'folders',
@@ -86,6 +94,8 @@ export const Library: React.FC<LibraryProps> = () => {
         }
     ], [selectedCategory, folders, playlists, handleFolderClick, handlePlaylistClick]);
 
+    const isLoading = foldersLoading;
+
     return (
         <div className={styles.container}>
             <SearchFilterHeader
@@ -97,6 +107,7 @@ export const Library: React.FC<LibraryProps> = () => {
                 className={styles.createBtn}
                 icon={<PlusIcon/>}
                 onClick={handleCreateNew}
+                disabled={isLoading}
             >
                 Create New
             </Button>

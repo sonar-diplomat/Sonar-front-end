@@ -3,16 +3,16 @@ import styles from './PasswordRecovery.module.css';
 import { Button, Input, RightArrow, Form } from '@shared/ui';
 import type { PasswordRecoveryFormData, PasswordRecoveryProps } from '../model/types';
 
-type FormField = keyof PasswordRecoveryFormData;
-
 export const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({
-    onSubmit
+    onSubmit,
+    isSubmitting,
+    error,
 }) => {
     const [formData, setFormData] = useState<PasswordRecoveryFormData>({
         email: ''
     });
 
-    const updateField = useCallback((field: FormField, value: string) => {
+    const updateField = useCallback((field: keyof PasswordRecoveryFormData, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     }, []);
 
@@ -26,6 +26,7 @@ export const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({
             <div className={styles.header}>
                 <h2>Recover password</h2>
                 <p>Enter your email to recover password</p>
+                {error && <p className={styles.error}>{error}</p>}
             </div>
 
             <Form onSubmit={handleSubmit} className={styles.form}>
@@ -43,10 +44,11 @@ export const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({
                 <div className={styles.actions}>
                     <Button
                         icon={<RightArrow/>}
-                        children={"Continue"}
+                        children={isSubmitting ? "Sending..." : "Continue"}
                         variant={"light"}
                         size={"large"}
                         fullWidth
+                        disabled={isSubmitting}
                     />
                 </div>
             </Form>

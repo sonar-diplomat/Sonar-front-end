@@ -1,0 +1,65 @@
+.artistItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    width: 100%;
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.image {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    object-fit: cover;
+    background-color: #898989;
+    flex-shrink: 0;
+}
+
+.nameContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    justify-content: center;
+    overflow: hidden;
+    flex: 1;
+    min-width: 0;
+}
+
+.name {
+    font-family: 'Chillax', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rankContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+}
+
+.rank {
+    font-family: 'Chillax', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+}

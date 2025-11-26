@@ -71,6 +71,7 @@ const authSlice = createSlice({
     updateTokens: (state, action: PayloadAction<{ accessToken: string; refreshToken: string }>) => {
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
+      state.isAuthenticated = true; // Устанавливаем isAuthenticated при обновлении токенов
       
       try {
         localStorage.setItem('sonar_access_token', action.payload.accessToken);

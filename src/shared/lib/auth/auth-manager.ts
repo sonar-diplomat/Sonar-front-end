@@ -1,6 +1,6 @@
 import { store } from '@shared/store';
 import { updateTokens, logout, setCredentials } from '@shared/store/features/auth/authSlice';
-import { Api } from '@features/auth/api/api';
+import { authApiLogin, authApiRefreshToken } from './auth-api-utils';
 import { authStorage, type AuthCredentials } from './auth-storage';
 
 /**
@@ -15,7 +15,15 @@ class AuthManager {
    */
   getAccessToken(): string | null {
     const state = store.getState();
-    return state.auth.accessToken;
+    const token = state.auth.accessToken;
+    if (import.meta.env.DEV) {
+      console.log('[authManager] getAccessToken:', {
+        hasToken: !!token,
+        tokenLength: token?.length || 0,
+        isAuthenticated: state.auth.isAuthenticated,
+      });
+    }
+    return token;
   }
 
   /**
@@ -23,7 +31,14 @@ class AuthManager {
    */
   getRefreshToken(): string | null {
     const state = store.getState();
-    return state.auth.refreshToken;
+    const token = state.auth.refreshToken;
+    if (import.meta.env.DEV) {
+      console.log('[authManager] getRefreshToken:', {
+        hasToken: !!token,
+        tokenLength: token?.length || 0,
+      });
+    }
+    return token;
   }
 
   /**
@@ -49,19 +64,29 @@ class AuthManager {
   async refreshAccessToken(): Promise<string | null> {
     // Если уже идет refresh, возвращаем существующий промис
     if (this.refreshPromise) {
+      if (import.meta.env.DEV) {
+        console.log('[authManager] refreshAccessToken: Already in progress, waiting...');
+      }
       return this.refreshPromise;
     }
 
     const refreshToken = this.getRefreshToken();
     if (!refreshToken) {
+      if (import.meta.env.DEV) {
+        console.warn('[authManager] refreshAccessToken: No refresh token available, logging out');
+      }
       this.logout();
       return null;
+    }
+
+    if (import.meta.env.DEV) {
+      console.log('[authManager] refreshAccessToken: Starting token refresh...');
     }
 
     this.refreshPromise = (async () => {
       try {
         // Отправляем refresh token как raw string в body (согласно API)
-        const res = await Api.refreshToken(refreshToken);
+        const res = await authApiRefreshToken(refreshToken);
 
         if (res.success && res.data) {
           // Обновляем токены в Redux store
@@ -71,15 +96,25 @@ class AuthManager {
               refreshToken: res.data.refreshToken,
             })
           );
+          if (import.meta.env.DEV) {
+            console.log('[authManager] refreshAccessToken: Token refreshed successfully');
+          }
           return res.data.newAccessToken;
         } else {
           // Refresh failed - logout
-          console.error('Token refresh failed:', res.errors?.[0] || res.details?.[0] || res.message);
+          const errorMsg = res.errors?.[0] || res.details?.[0] || res.message || 'Unknown error';
+          console.error('[authManager] refreshAccessToken: Token refresh failed:', errorMsg);
+          if (import.meta.env.DEV) {
+            console.warn('[authManager] refreshAccessToken: ⚠️ Требуется новый логин - refresh token недействителен');
+          }
           this.logout();
           return null;
         }
       } catch (error) {
-        console.error('Token refresh error:', error);
+        console.error('[authManager] refreshAccessToken: Token refresh error:', error);
+        if (import.meta.env.DEV) {
+          console.warn('[authManager] refreshAccessToken: ⚠️ Требуется новый логин - ошибка при обновлении токена');
+        }
         this.logout();
         return null;
       } finally {
@@ -95,6 +130,9 @@ class AuthManager {
    * Очищает токены и может вызвать API для ревокации сессии на сервере
    */
   logout(): void {
+    if (import.meta.env.DEV) {
+      console.log('[authManager] logout: Clearing tokens and logging out');
+    }
     store.dispatch(logout());
     // Опционально: можно вызвать API для ревокации сессии на сервере
     // Но обычно это делается через отдельный вызов revokeSession или revokeAllSessions
@@ -115,11 +153,18 @@ class AuthManager {
   async autoLogin(): Promise<boolean> {
     const credentials = authStorage.getCredentials();
     if (!credentials) {
+      if (import.meta.env.DEV) {
+        console.warn('[authManager] autoLogin: ⚠️ Требуется новый логин - сохраненные credentials отсутствуют');
+      }
       return false;
     }
 
+    if (import.meta.env.DEV) {
+      console.log('[authManager] autoLogin: Attempting auto-login with saved credentials...');
+    }
+
     try {
-      const res = await Api.login(
+      const res = await authApiLogin(
         credentials.userIdentifier,
         credentials.password,
         credentials.deviceName
@@ -127,14 +172,25 @@ class AuthManager {
 
       if (res.success && res.data) {
         store.dispatch(setCredentials(res.data));
+        if (import.meta.env.DEV) {
+          console.log('[authManager] autoLogin: ✅ Auto-login successful');
+        }
         return true;
       }
 
       // Если логин не удался, удаляем credentials
+      const errorMsg = res.errors?.[0] || res.details?.[0] || res.message || 'Unknown error';
+      console.error('[authManager] autoLogin: Auto-login failed:', errorMsg);
+      if (import.meta.env.DEV) {
+        console.warn('[authManager] autoLogin: ⚠️ Требуется новый логин - неверные credentials');
+      }
       authStorage.clearCredentials();
       return false;
     } catch (error) {
-      console.error('Auto login failed:', error);
+      console.error('[authManager] autoLogin: Auto-login error:', error);
+      if (import.meta.env.DEV) {
+        console.warn('[authManager] autoLogin: ⚠️ Требуется новый логин - ошибка при auto-login');
+      }
       authStorage.clearCredentials();
       return false;
     }

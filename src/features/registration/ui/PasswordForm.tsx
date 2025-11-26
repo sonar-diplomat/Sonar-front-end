@@ -8,7 +8,8 @@ const PASSWORD_VALIDATION_RULES = {
   minLength: (password: string) => password.length >= PASSWORD_MIN_LENGTH,
   hasUpperCase: (password: string) => /[A-Z]/.test(password),
   hasLowerCase: (password: string) => /[a-z]/.test(password),
-  hasNumber: (password: string) => /[0-9]/.test(password)
+  hasNumber: (password: string) => /[0-9]/.test(password),
+  hasNonAlphanumeric: (password: string) => /[^A-Za-z0-9]/.test(password)
 };
 
 const PASSWORD_ERROR_MESSAGES = {
@@ -16,6 +17,7 @@ const PASSWORD_ERROR_MESSAGES = {
   hasUpperCase: 'Password must contain at least one uppercase letter',
   hasLowerCase: 'Password must contain at least one lowercase letter',
   hasNumber: 'Password must contain at least one number',
+  hasNonAlphanumeric: 'Password must contain at least one non-alphanumeric character (!@#$%^&* etc.)',
   mismatch: 'Passwords do not match'
 };
 
@@ -35,6 +37,9 @@ const validatePassword = (password: string): string | undefined => {
   }
   if (!PASSWORD_VALIDATION_RULES.hasNumber(password)) {
     return PASSWORD_ERROR_MESSAGES.hasNumber;
+  }
+  if (!PASSWORD_VALIDATION_RULES.hasNonAlphanumeric(password)) {
+    return PASSWORD_ERROR_MESSAGES.hasNonAlphanumeric;
   }
   return undefined;
 };
@@ -90,8 +95,6 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ onSubmit }) => {
     <>
       By continuing, you agree to the{' '}
       <a href="/terms" className={styles.link}>Terms of Service</a>
-      {' '}and{' '}
-      <a href="/privacy" className={styles.link}>Data Processing Policy.</a>
     </>
   ), []);
 
@@ -106,7 +109,7 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ onSubmit }) => {
         label="Password"
         placeholder="Enter your password"
         type="password"
-        helperText="Password: must be at least 6 characters, including an uppercase letter, a lowercase letter, and a number."
+        helperText="Password: must be at least 8 characters, including an uppercase letter, a lowercase letter, a number, and a non-alphanumeric character (!@#$%^&* etc.)."
         helperIcon={<Info />}
         value={formData.password}
         onChange={handlePasswordChange}
@@ -122,22 +125,20 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ onSubmit }) => {
         error={errors.confirmPassword}
       />
 
-      <div className={styles.submits}>
-        <Checkbox
-          checked={isAgreed}
-          onChange={setIsAgreed}
-          label={termsLabel}
-        />
-        <Button
-          icon={<RightArrow />}
-          variant="light"
-          size="large"
-          fullWidth
-          type="submit"
-        >
-          Create account
-        </Button>
-      </div>
+        <div className={styles.submits}>
+            <div style={{ marginLeft: '8px' }}>
+                <Checkbox checked={isAgreed} onChange={setIsAgreed} label={termsLabel}/>
+            </div>
+            <Button
+                icon={<RightArrow/>}
+                variant="light"
+                size="large"
+                fullWidth
+                type="submit"
+            >
+                Create account
+            </Button>
+        </div>
     </Form>
   );
 };

@@ -9,6 +9,7 @@ interface CustomFetchArgs extends FetchArgs {
   withAuth?: boolean;
   timeoutMs?: number;
   retries?: number;
+  bodyType?: 'json' | 'raw';
 }
 
 // Тип ошибки для RTK Query
@@ -39,6 +40,8 @@ export const rtkBaseQuery: BaseQueryFn<
     timeoutMs = 15000,
     retries = 0,
     params,
+    body,
+    bodyType = 'json',
     headers: restHeaders,
     ...rest
   } = args as CustomFetchArgs;
@@ -55,34 +58,70 @@ export const rtkBaseQuery: BaseQueryFn<
 
   // Авторизация
   if (withAuth) {
-    const accessToken = authManager.getAccessToken();
+    let accessToken = authManager.getAccessToken();
     const refreshToken = authManager.getRefreshToken();
+
+    if (import.meta.env.DEV) {
+      console.log('[rtkBaseQuery] Auth check for:', url, {
+        hasAccessToken: !!accessToken,
+        hasRefreshToken: !!refreshToken,
+        isAuthenticated: authManager.isAuthenticated(),
+      });
+    }
 
     // Проверка и обновление токена перед запросом
     if (accessToken && shouldRefreshToken(accessToken) && refreshToken) {
-      await authManager.refreshAccessToken();
+      if (import.meta.env.DEV) {
+        console.log('[rtkBaseQuery] Access token needs refresh, refreshing...');
+      }
+      const refreshed = await authManager.refreshAccessToken();
+      if (refreshed) {
+        accessToken = refreshed;
+      }
     } else if (!accessToken && refreshToken) {
-      await authManager.refreshAccessToken();
+      if (import.meta.env.DEV) {
+        console.log('[rtkBaseQuery] No access token, but refresh token exists, refreshing...');
+      }
+      const refreshed = await authManager.refreshAccessToken();
+      if (refreshed) {
+        accessToken = refreshed;
+      }
     } else if (!accessToken && !refreshToken) {
-      await authManager.autoLogin();
+      if (import.meta.env.DEV) {
+        console.log('[rtkBaseQuery] No tokens available, attempting auto-login...');
+      }
+      const loginSuccess = await authManager.autoLogin();
+      if (loginSuccess) {
+        accessToken = authManager.getAccessToken();
+        if (import.meta.env.DEV) {
+          console.log('[rtkBaseQuery] Auto-login successful, got access token');
+        }
+      } else {
+        if (import.meta.env.DEV) {
+          console.warn('[rtkBaseQuery] ⚠️ Требуется новый логин - auto-login не удался');
+        }
+      }
     }
 
-    const token = authManager.getAccessToken();
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+    // Устанавливаем токен в headers
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`;
+      if (import.meta.env.DEV) {
+        console.log('[rtkBaseQuery] Authorization header set for:', url);
+      }
+    } else {
+      console.warn('[rtkBaseQuery] ⚠️ No access token available for authenticated request:', url);
+      console.warn('[rtkBaseQuery] ⚠️ Требуется новый логин - токен не получен');
     }
   }
 
-  // Объединяем headers
-  const finalHeaders: HeadersInit = {
-    ...headers,
-    ...(restHeaders as Record<string, string>),
-  };
-
   // Выполнение запроса с retry логикой
+  // Для запросов с авторизацией добавляем дополнительную попытку для retry при 401
+  const maxAttempts = withAuth ? retries + 2 : retries + 1; // +1 для первоначального запроса, +1 для 401 retry
   let lastError: Error | null = null;
+  let hasRetried401 = false; // Флаг, чтобы не зациклиться на 401
 
-  for (let attempt = 0; attempt <= retries; attempt++) {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
     if (attempt > 0) {
       // Задержка перед retry (экспоненциальная)
       const delay = 300 * Math.pow(2, attempt - 1);
@@ -90,12 +129,43 @@ export const rtkBaseQuery: BaseQueryFn<
     }
 
     try {
+      // Обработка body в зависимости от bodyType
+      let bodyToSend: BodyInit | undefined;
+      if (body !== undefined) {
+        if (bodyType === 'raw' && typeof body === 'string') {
+          bodyToSend = body;
+        } else {
+          bodyToSend = JSON.stringify(body);
+          // Устанавливаем Content-Type только для JSON body
+          if (!headers['Content-Type']) {
+            headers['Content-Type'] = 'application/json';
+          }
+        }
+      }
+
+      // Объединяем headers на каждой итерации (на случай обновления токена)
+      const finalHeaders: HeadersInit = {
+        ...headers,
+        ...(restHeaders as Record<string, string>),
+      };
+
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+      // Логирование для отладки (можно удалить позже)
+      if (withAuth && import.meta.env.DEV) {
+        console.log('[rtkBaseQuery] Request:', {
+          url: fullUrl,
+          method,
+          hasAuth: !!finalHeaders['Authorization'],
+          authHeader: finalHeaders['Authorization'] ? `${finalHeaders['Authorization'].substring(0, 20)}...` : 'none',
+        });
+      }
 
       const response = await fetch(fullUrl, {
         method,
         headers: finalHeaders,
+        body: bodyToSend,
         signal: controller.signal,
         ...rest,
       });
@@ -105,27 +175,45 @@ export const rtkBaseQuery: BaseQueryFn<
       const status = response.status;
       const contentType = response.headers.get('content-type') || '';
 
-      // Обработка 401 с автоматическим refresh
-      if (status === 401 && withAuth) {
+      // Обработка 401 с автоматическим refresh (только один раз)
+      if (status === 401 && withAuth && !hasRetried401) {
+        hasRetried401 = true;
+        if (import.meta.env.DEV) {
+          console.warn('[rtkBaseQuery] Received 401, attempting token refresh...');
+        }
         const refreshed = await authManager.refreshAccessToken();
         if (refreshed) {
           // Повторяем запрос с новым токеном
           const newToken = authManager.getAccessToken();
           if (newToken) {
             headers['Authorization'] = `Bearer ${newToken}`;
+            if (import.meta.env.DEV) {
+              console.log('[rtkBaseQuery] Token refreshed, retrying request...');
+            }
             continue; // Retry запрос
           }
         } else {
           // Пытаемся auto-login
+          if (import.meta.env.DEV) {
+            console.log('[rtkBaseQuery] Token refresh failed, attempting auto-login...');
+          }
           const loginSuccess = await authManager.autoLogin();
           if (loginSuccess) {
             const newToken = authManager.getAccessToken();
             if (newToken) {
               headers['Authorization'] = `Bearer ${newToken}`;
+              if (import.meta.env.DEV) {
+                console.log('[rtkBaseQuery] Auto-login successful, retrying request...');
+              }
               continue; // Retry запрос
+            }
+          } else {
+            if (import.meta.env.DEV) {
+              console.error('[rtkBaseQuery] ⚠️ Требуется новый логин - не удалось обновить токен или выполнить auto-login');
             }
           }
         }
+        // Если refresh не удался, продолжаем обработку ошибки ниже
       }
 
       // Обработка не-JSON ответов (204, файлы и т.д.)
