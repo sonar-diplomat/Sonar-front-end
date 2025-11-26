@@ -3,7 +3,7 @@ name: Deploy Frontend to Test Server
 on:
   push:
     branches:
-      - deploy/github-actions-frontend
+      - dev
 
 jobs:
   deploy:
@@ -25,10 +25,6 @@ jobs:
       - name: Save Docker image to file
         run: |
           docker save sonar-frontend:latest > sonar-frontend.tar
-
-      - name: Debug SSH key length
-        run: |
-          echo "${{ secrets.FRONT_SSH_PRIVATE_KEY }}" | wc -c
 
       - name: Copy image to Test Server
         uses: appleboy/scp-action@master
