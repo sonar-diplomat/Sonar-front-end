@@ -74,7 +74,7 @@ export const ModalDatePicker: React.FC<ModalDatePickerProps> = ({isOpen, onClose
                 <WheelPicker options={dayOptions} value={day} onChange={setDay} infinite/>
                 <WheelPicker options={yearOptions} value={year} onChange={setYear} infinite/>
             </WheelPickerWrapper>
-            <Button size={"large"} shape={"cr-16"} variant={"light"} fullWidth onClick={handleConfirm}>
+            <Button size={"large"} shape={"cr-16"} variant={"filled"} theme={"light"} fullWidth onClick={handleConfirm}>
                 Confirm
             </Button>
         </Modal>

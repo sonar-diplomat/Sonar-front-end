@@ -68,7 +68,8 @@ export const AssignNewPassword: React.FC<AssignNewPasswordProps> = ({
                     <Button
                         icon={<RightArrow/>}
                         children={isSubmitting ? "Saving..." : "Continue"}
-                        variant={"light"}
+                        variant={"filled"}
+                        theme={"light"}
                         size={"large"}
                         fullWidth
                         disabled={isSubmitting}

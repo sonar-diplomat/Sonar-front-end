@@ -17,31 +17,68 @@
   outline-offset: 2px;
 }
 
-/* Variants */
-.light {
-  background-color: var(--button-bg-color-light);
-  color: var(--button-text-color-light);
+/* Variants - Control background presence */
+.filled {
+  /* Background color set by theme */
 }
 
-.light:hover:not(.disabled) {
-  color: var(--button-text-color-hover-light);
+.text {
+  background: transparent !important;
 }
 
-.light:active:not(.disabled) {
-  background-color: var(--button-bg-color-pressed-light);
+/* Themes - Control colors */
+.light.filled {
+  background-color: var(--button-bg-light);
+  color: var(--button-text-light);
 }
 
-.dark {
-  background-color: var(--button-bg-color-dark);
-  color: var(--button-text-color-dark);
+.light.filled:hover:not(.disabled) {
+  background-color: var(--button-bg-light-hover);
+  color: var(--button-text-light-hover);
 }
 
-.dark:hover:not(.disabled) {
-  color: var(--button-text-color-hover-dark);
+.light.filled:active:not(.disabled) {
+  background-color: var(--button-bg-light-pressed);
+  color: var(--button-text-light-pressed);
 }
 
-.dark:active:not(.disabled) {
-  background-color: var(--button-bg-color-pressed-dark);
+.light.text {
+  color: var(--button-text-light);
+}
+
+.light.text:hover:not(.disabled) {
+  color: var(--button-text-light-hover);
+}
+
+.light.text:active:not(.disabled) {
+  color: var(--button-text-light-pressed);
+}
+
+.dark.filled {
+  background-color: var(--button-bg-dark);
+  color: var(--button-text-dark);
+}
+
+.dark.filled:hover:not(.disabled) {
+  background-color: var(--button-bg-dark-hover);
+  color: var(--button-text-dark-hover);
+}
+
+.dark.filled:active:not(.disabled) {
+  background-color: var(--button-bg-dark-pressed);
+  color: var(--button-text-dark-pressed);
+}
+
+.dark.text {
+  color: var(--button-text-dark);
+}
+
+.dark.text:hover:not(.disabled) {
+  color: var(--button-text-dark-hover);
+}
+
+.dark.text:active:not(.disabled) {
+  color: var(--button-text-dark-pressed);
 }
 
 
@@ -117,18 +154,32 @@
   min-width: 0;
 }
 
-.selected.dark {
-  background-color: rgba(255, 255, 255, 0.8);
-  color: #1F1F1F;
+.selected.dark.filled {
+  background-color: var(--button-bg-dark-selected);
+  color: var(--button-text-dark-selected);
 }
 
-.selected.dark:hover:not(.disabled) {
-  color: #1F1F1F;
-  opacity: 0.9;
+.selected.dark.filled:hover:not(.disabled) {
+  background-color: var(--button-bg-dark-selected-hover);
+  color: var(--button-text-dark-selected);
 }
 
-.selected.dark:active:not(.disabled) {
-  background-color: rgba(255, 255, 255, 0.7);
+.selected.dark.filled:active:not(.disabled) {
+  background-color: var(--button-bg-dark-selected-pressed);
+}
+
+.selected.light.filled {
+  background-color: var(--button-bg-light-selected);
+  color: var(--button-text-light-selected);
+}
+
+.selected.light.filled:hover:not(.disabled) {
+  background-color: var(--button-bg-light-selected-hover);
+  color: var(--button-text-light-selected);
+}
+
+.selected.light.filled:active:not(.disabled) {
+  background-color: var(--button-bg-light-selected-pressed);
 }
 
 

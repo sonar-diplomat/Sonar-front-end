@@ -35,7 +35,8 @@ export const AssignNewPassword: React.FC = () => {
                 icon={<LeftArrow/>}
                 children={'Back'}
                 size={'small'}
-                variant={'dark'}
+                variant={'filled'}
+                theme={'dark'}
                 onClick={handleBack}
                 className={styles.backButton}
             />

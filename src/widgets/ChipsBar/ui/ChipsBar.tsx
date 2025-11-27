@@ -35,7 +35,8 @@ export const ChipsBar: React.FC<ChipsBarProps> = ({
                     key={category}
                     size="small"
                     shape="cr-16"
-                    variant={selectedCategory === category ? 'light' : 'dark'}
+                    variant="filled"
+                    theme={selectedCategory === category ? 'light' : 'dark'}
                     selected={selectedCategory === category}
                     onClick={() => handleCategoryClick(category)}
                 >

@@ -45,7 +45,8 @@ export const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({
                     <Button
                         icon={<RightArrow/>}
                         children={isSubmitting ? "Sending..." : "Continue"}
-                        variant={"light"}
+                        variant={"filled"}
+                        theme={"light"}
                         size={"large"}
                         fullWidth
                         disabled={isSubmitting}

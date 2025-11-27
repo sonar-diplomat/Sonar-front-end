@@ -106,6 +106,8 @@ export const Library: React.FC<LibraryProps> = () => {
             <Button
                 className={styles.createBtn}
                 icon={<PlusIcon/>}
+                variant={"filled"}
+                theme={"light"}
                 onClick={handleCreateNew}
                 disabled={isLoading}
             >

@@ -56,10 +56,8 @@ export const UserProfile = () => {
             <ProfileHeader/>
             <ProfileCard isVerified name={"Vannesa"} stats={{followers:125, following:16, publicPlaylists: 10}} src={"https://placehold.co/378x264"} alt={"profileImage"}/>
             <div className={styles.profileActions}>
-                <Button size={"medium"} shape={"cr-16"} icon={<UpRightArrow/>} children={"Follow"} fullWidth/>
-                <div className={styles.svgBox}>
-                    <MoreIcon />
-                </div>
+                <Button variant={"filled"} theme={"light"} size={"medium"} shape={"cr-16"} icon={<UpRightArrow/>} children={"Follow"} fullWidth/>
+                <Button variant={"text"} theme={"dark"} icon={<MoreIcon/>} size={'medium'}/>
             </div>
             <ContentSections sections={sections}/>
             <ProfileCard variant={"bio"} title={"Top 1% listener"} bio={"Curating playlists with 127 collections and counting 🎧 From morning coffee to late-night vibes, I have a soundtrack for every moment. Share your recommendations below 💌"} src={"https://placehold.co/378x264"} alt={"profileImage"}/>

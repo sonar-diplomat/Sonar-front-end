@@ -51,7 +51,7 @@ export const Hello: React.FC = () => {
                 <CarouselDots total={textPage.length} currentIndex={currentPage} />
             </div>
             <div className={styles.button}>
-                <Button onClick={handleNext} children={textPage[currentPage].buttonText} icon={<RightArrow/>} shape={"cr-16"} size={"large"} fullWidth />
+                <Button onClick={handleNext} children={textPage[currentPage].buttonText} icon={<RightArrow/>} shape={"cr-16"} size={"large"} variant={"filled"} theme={"light"} fullWidth />
             </div>
         </div>
     );
