@@ -9,7 +9,7 @@ interface CustomFetchArgs extends FetchArgs {
   withAuth?: boolean;
   timeoutMs?: number;
   retries?: number;
-  bodyType?: 'json' | 'raw';
+  bodyType?: 'json' | 'raw' | 'form';
 }
 
 // Тип ошибки для RTK Query
@@ -132,7 +132,10 @@ export const rtkBaseQuery: BaseQueryFn<
       // Обработка body в зависимости от bodyType
       let bodyToSend: BodyInit | undefined;
       if (body !== undefined) {
-        if (bodyType === 'raw' && typeof body === 'string') {
+        if (bodyType === 'form' && body instanceof FormData) {
+          bodyToSend = body;
+          // Не устанавливаем Content-Type для FormData - браузер установит автоматически с boundary
+        } else if (bodyType === 'raw' && typeof body === 'string') {
           bodyToSend = body;
         } else {
           bodyToSend = JSON.stringify(body);

@@ -1,75 +1,55 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
-import { setSettings, updateSettings, setLoading, setError, clearSettings } from './clientSettingsSlice';
-import { Api } from '@entities/ClientSettings/api/api';
-import { withAuth } from '@shared/lib/auth/withAuth';
-import type { Settings } from '@entities/ClientSettings';
-import type { RequestConfig } from '@shared/types';
-
-const pickError = (res: any) =>
-  res?.success ? undefined : res?.errors?.[0] || res?.details?.[0] || res?.message;
+import { setSettings, clearSettings } from './clientSettingsSlice';
+import { useGetClientSettingsQuery, usePatchClientSettingsMutation } from '@shared/api';
 
 /**
  * Хук для работы с настройками клиента
  * Предоставляет доступ к настройкам из Redux store и методы для их обновления
+ * Использует RTK Query для загрузки и обновления настроек
  */
 export const useClientSettings = () => {
   const dispatch = useAppDispatch();
-  const { settings, isLoading, error } = useAppSelector((state) => state.clientSettings);
+  const { settings } = useAppSelector((state) => state.clientSettings);
+  
+  // Используем RTK Query для загрузки настроек
+  const { data: settingsData, isLoading, error: queryError, refetch } = useGetClientSettingsQuery();
+  const [patchMutation, { isLoading: isPatching, error: patchError }] = usePatchClientSettingsMutation();
+
+  // Синхронизируем данные из RTK Query в Redux store
+  useEffect(() => {
+    if (settingsData) {
+      dispatch(setSettings(settingsData));
+    }
+  }, [settingsData, dispatch]);
 
   /**
    * Загружает настройки с сервера
    */
-  const loadSettings = useCallback(async (cfg?: RequestConfig) => {
-    dispatch(setLoading(true));
-    dispatch(setError(null));
-    
-    try {
-      const res = await withAuth(() => Api.get(cfg));
-      
-      if (res.success && res.data) {
-        dispatch(setSettings(res.data));
-        return res.data;
-      } else {
-        const errorMessage = pickError(res) || 'Failed to load settings';
-        dispatch(setError(errorMessage));
-        return null;
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load settings';
-      dispatch(setError(errorMessage));
-      return null;
-    } finally {
-      dispatch(setLoading(false));
+  const loadSettings = useCallback(async () => {
+    const result = await refetch();
+    if (result.data) {
+      return result.data;
     }
-  }, [dispatch]);
+    return null;
+  }, [refetch]);
 
   /**
    * Обновляет настройки частично
    */
-  const patchSettings = useCallback(async (updates: Record<string, unknown>, cfg?: RequestConfig) => {
-    dispatch(setLoading(true));
-    dispatch(setError(null));
-    
+  const patchSettings = useCallback(async (updates: Record<string, unknown>) => {
     try {
-      const res = await withAuth(() => Api.patch(updates, cfg));
-      
-      if (res.success && res.data) {
-        dispatch(setSettings(res.data));
-        return res.data;
-      } else {
-        const errorMessage = pickError(res) || 'Failed to update settings';
-        dispatch(setError(errorMessage));
-        return null;
+      const result = await patchMutation(updates).unwrap();
+      if (result) {
+        dispatch(setSettings(result));
+        return result;
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update settings';
-      dispatch(setError(errorMessage));
       return null;
-    } finally {
-      dispatch(setLoading(false));
+    } catch (err) {
+      console.error('Failed to update settings:', err);
+      return null;
     }
-  }, [dispatch]);
+  }, [patchMutation, dispatch]);
 
   /**
    * Очищает настройки (вызывается при logout)
@@ -80,8 +60,8 @@ export const useClientSettings = () => {
 
   return {
     settings,
-    isLoading,
-    error,
+    isLoading: isLoading || isPatching,
+    error: queryError || patchError,
     loadSettings,
     patchSettings,
     clear,

@@ -5,12 +5,18 @@ import type { RequestConfig } from '@shared/types';
 import type { SubscriptionPaymentDTO } from '@entities/Subscription';
 
 export const Api = {
+    /**
+     * @deprecated Use useSendGiftMutation from @shared/api/rtkApi instead
+     */
     send: (dto: SendGiftDTO, config?: RequestConfig) =>
         apiClient.post<GiftResponseDTO>(API_ENDPOINTS.gift.send, dto, {
             ...config,
             bodyType: 'json',
         }),
 
+    /**
+     * @deprecated Use useAcceptGiftMutation from @shared/api/rtkApi instead
+     */
     accept: (id: number, config?: RequestConfig) =>
         apiClient.post<SubscriptionPaymentDTO>(API_ENDPOINTS.gift.accept(id), undefined, config),
 
@@ -29,6 +35,9 @@ export const Api = {
     // byId: (id: number, config?: RequestConfig) =>
     //     apiClient.get<GiftResponseDTO>(API_ENDPOINTS.gift.byId(id), config),
 
+    /**
+     * @deprecated Use useCancelGiftMutation from @shared/api/rtkApi instead
+     */
     cancel: (id: number, config?: RequestConfig) =>
         apiClient.delete<void>(API_ENDPOINTS.gift.cancel(id), config),
 

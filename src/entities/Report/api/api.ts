@@ -16,10 +16,19 @@ export const ReportApi = {
     // Закомментировано: используйте useGetReportQuery из @shared/api/rtkApi
     // byId: (id: number, config?: RequestConfig) =>
     //     apiClient.get<ReportDTO>(API_ENDPOINTS.report.byId(id), config),
+    /**
+     * @deprecated Use useDeleteReportMutation from @shared/api/rtkApi instead
+     */
     delete: (id: number, config?: RequestConfig) =>
         apiClient.delete<void>(API_ENDPOINTS.report.delete(id), config),
+    /**
+     * @deprecated Use useCreateReportMutation from @shared/api/rtkApi instead
+     */
     create: (body: CreateReportDTO, config?: RequestConfig) =>
         apiClient.post<ReportDTO>(API_ENDPOINTS.report.create, body, config),
+    /**
+     * @deprecated Use useCloseReportMutation from @shared/api/rtkApi instead
+     */
     close: (id: number, config?: RequestConfig) =>
         apiClient.put<void>(API_ENDPOINTS.report.close(id), undefined, config),
     // Закомментировано: используйте useGetReportsFilterQuery из @shared/api/rtkApi

@@ -10,11 +10,17 @@ export const Api = {
     // Закомментировано: используйте useGetTrackQuery из @shared/api/rtkApi
     // getById: (trackId: number, config?: RequestConfig) =>
     //     apiClient.get<TrackDTO>(API_ENDPOINTS.track.byId(trackId), config),
+    /**
+     * @deprecated Use useUpdateTrackMutation from @shared/api/rtkApi instead
+     */
     updateInfo: (trackId: number, body: UpdateTrackDTO, config?: RequestConfig) =>
         apiClient.put<TrackDTO>(API_ENDPOINTS.track.update(trackId), body, {
             ...config,
             bodyType: 'json',
         }),
+    /**
+     * @deprecated Use useUpdateTrackFileMutation from @shared/api/rtkApi instead
+     */
     updateFile: (trackId: number, body: UpdateTrackFileDTO, config?: RequestConfig) => {
         const fd = new FormData();
         fd.append('PlaybackQualityId', String(body.playbackQualityId));
@@ -24,6 +30,9 @@ export const Api = {
             bodyType: 'form',
         });
     },
+    /**
+     * @deprecated Use useDeleteTrackMutation from @shared/api/rtkApi instead
+     */
     delete: (trackId: number, config?: RequestConfig) =>
         apiClient.delete<void>(API_ENDPOINTS.track.delete(trackId), config),
     stream: async (
@@ -76,11 +85,17 @@ export const Api = {
             withAuth: config?.withAuth ?? true,
         });
     },
+    /**
+     * @deprecated Use useUpdateTrackVisibilityMutation from @shared/api/rtkApi instead
+     */
     updateVisibility: (trackId: number, visibilityStatusId: number, config?: RequestConfig) =>
         apiClient.put<void>(API_ENDPOINTS.track.updateVisibility(trackId), undefined, {
             ...config,
             params: { ...(config?.params ?? {}), visibilityStatusId },
         }),
+    /**
+     * @deprecated Use useToggleTrackFavoriteMutation from @shared/api/rtkApi instead
+     */
     toggleFavorite: (trackId: number, config?: RequestConfig) =>
         apiClient.post<void>(API_ENDPOINTS.track.toggleFavorite(trackId), undefined, config),
 };
