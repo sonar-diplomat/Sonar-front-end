@@ -5,6 +5,12 @@ import userStateReducer from './features/userState/userStateSlice';
 import accessReducer from './features/access/accessSlice';
 import { rtkApi } from '@shared/api/rtkApi';
 
+// Импортируем все API модули для инжекции endpoints после инициализации rtkApi
+import '@shared/api/rtkApiEndpoints';
+// Импортируем hooks после инициализации endpoints
+// Это гарантирует, что все endpoints уже инжектированы перед экспортом hooks
+import '@shared/api/rtkApiHooks';
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,

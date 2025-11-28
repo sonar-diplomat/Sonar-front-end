@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
 import { setCredentials, logout as logoutAction, setLoading } from '@shared/store/features/auth/authSlice';
-import { useLoginMutation } from '@shared/api/rtkApi';
+import { useLoginMutation } from '@shared/api';
 import { authManager } from './auth-manager';
 import { useClientSettings } from '@shared/store/features/clientSettings/useClientSettings';
 import { useAccess } from '@shared/store/features/access/useAccess';

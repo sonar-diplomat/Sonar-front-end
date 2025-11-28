@@ -12,6 +12,9 @@ export const Api = {
         ...config,
         bodyType: 'json',
     }),
+    /**
+     * @deprecated Use useUpdateUserAvatarMutation from @shared/api/rtkApi instead
+     */
     updateAvatar: (file: File, config?: RequestConfig) => {
         const form = new FormData()
         form.append('file', file)
@@ -20,6 +23,9 @@ export const Api = {
             bodyType: 'form',
         })
     },
+    /**
+     * @deprecated Use useUpdateUserVisibilityMutation from @shared/api/rtkApi instead
+     */
     updateVisibility: (collectionId: number, visibilityStatusId: number, config?: RequestConfig) =>
         apiClient.put<void>(API_ENDPOINTS.user.updateVisibility(collectionId), undefined, {
             ...config,

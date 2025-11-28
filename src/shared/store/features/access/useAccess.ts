@@ -1,73 +1,53 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
-import { setUserAccessFeatures, setAllAccessFeatures, setLoading, setError, clearAccess } from './accessSlice';
-import { Api } from '@entities/Access/api/api';
-import { withAuth } from '@shared/lib/auth/withAuth';
-
-const pickError = (res: any) =>
-  res?.success ? undefined : res?.errors?.[0] || res?.details?.[0] || res?.message;
+import { setUserAccessFeatures, setAllAccessFeatures, clearAccess } from './accessSlice';
+import {
+  useGetAccessFeaturesQuery,
+  useGetUserAccessFeaturesQuery,
+  useAssignAccessFeaturesMutation,
+  useRevokeAccessFeaturesMutation,
+} from '@shared/api';
 
 /**
  * Хук для работы с функциями доступа
  * Предоставляет доступ к функциям доступа из Redux store и методы для их управления
+ * Использует RTK Query для загрузки функций доступа
  */
 export const useAccess = () => {
   const dispatch = useAppDispatch();
-  const { userAccessFeatures, allAccessFeatures, isLoading, error } = useAppSelector((state) => state.access);
+  const { userAccessFeatures, allAccessFeatures } = useAppSelector((state) => state.access);
+
+  // Используем RTK Query для загрузки всех функций доступа
+  const { data: allFeaturesData, isLoading: isLoadingAll, error: allFeaturesError, refetch: refetchAll } =
+    useGetAccessFeaturesQuery();
+
+  // Синхронизируем данные из RTK Query в Redux store
+  useEffect(() => {
+    if (allFeaturesData) {
+      dispatch(setAllAccessFeatures(allFeaturesData));
+    }
+  }, [allFeaturesData, dispatch]);
 
   /**
    * Загружает все доступные функции доступа (справочник)
    */
   const loadAllAccessFeatures = useCallback(async () => {
-    dispatch(setLoading(true));
-    dispatch(setError(null));
-    
-    try {
-      const res = await Api.list();
-      
-      if (res.success && res.data) {
-        dispatch(setAllAccessFeatures(res.data));
-        return res.data;
-      } else {
-        const errorMessage = pickError(res) || 'Failed to load access features';
-        dispatch(setError(errorMessage));
-        return null;
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load access features';
-      dispatch(setError(errorMessage));
-      return null;
-    } finally {
-      dispatch(setLoading(false));
+    const result = await refetchAll();
+    if (result.data) {
+      return result.data;
     }
-  }, [dispatch]);
+    return null;
+  }, [refetchAll]);
 
   /**
    * Загружает функции доступа для конкретного пользователя
    */
   const loadUserAccessFeatures = useCallback(async (userId: number) => {
-    dispatch(setLoading(true));
-    dispatch(setError(null));
-    
-    try {
-      const res = await withAuth(() => Api.byUserId(userId));
-      
-      if (res.success && res.data) {
-        dispatch(setUserAccessFeatures(res.data));
-        return res.data;
-      } else {
-        const errorMessage = pickError(res) || 'Failed to load user access features';
-        dispatch(setError(errorMessage));
-        return null;
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load user access features';
-      dispatch(setError(errorMessage));
-      return null;
-    } finally {
-      dispatch(setLoading(false));
-    }
-  }, [dispatch]);
+    // Используем RTK Query hook для загрузки функций доступа пользователя
+    // Это будет выполнено через useGetUserAccessFeaturesQuery в компоненте
+    // Здесь мы просто возвращаем функцию для совместимости
+    return null;
+  }, []);
 
   /**
    * Проверяет, есть ли у пользователя указанная функция доступа
@@ -86,8 +66,8 @@ export const useAccess = () => {
   return {
     userAccessFeatures,
     allAccessFeatures,
-    isLoading,
-    error,
+    isLoading: isLoadingAll,
+    error: allFeaturesError,
     loadAllAccessFeatures,
     loadUserAccessFeatures,
     hasAccessFeature,

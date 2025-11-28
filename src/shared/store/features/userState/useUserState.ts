@@ -1,151 +1,113 @@
 import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
-import { setCurrentPosition, setListeningTarget, setStatus, setLoading, clearUserState } from './userStateSlice';
-import { Api } from '@entities/UserState/api/api';
-import { withAuth } from '@shared/lib/auth/withAuth';
-import type { RequestConfig } from '@shared/types';
-
-const pickError = (res: any) =>
-  res?.success ? undefined : res?.errors?.[0] || res?.details?.[0] || res?.message;
+import { setCurrentPosition, setListeningTarget, setStatus, clearUserState } from './userStateSlice';
+import {
+  useUpdateCurrentPositionMutation,
+  useUpdateListeningTargetMutation,
+  useUpdateUserStatusMutation,
+  useAddToQueueMutation,
+  useDeleteFromQueueMutation,
+  useUpdatePrimarySessionMutation,
+} from '@shared/api';
 
 /**
  * Хук для работы с состоянием пользователя
  * Предоставляет доступ к состоянию из Redux store и методы для его обновления
+ * Использует RTK Query mutations для обновления состояния
  */
 export const useUserState = () => {
   const dispatch = useAppDispatch();
-  const { currentPosition, currentTrackId, currentCollectionId, statusId, isLoading } = useAppSelector(
+  const { currentPosition, currentTrackId, currentCollectionId, statusId } = useAppSelector(
     (state) => state.userState
   );
+
+  const [updatePositionMutation, { isLoading: isUpdatingPosition }] = useUpdateCurrentPositionMutation();
+  const [updateListeningMutation, { isLoading: isUpdatingListening }] = useUpdateListeningTargetMutation();
+  const [updateStatusMutation, { isLoading: isUpdatingStatus }] = useUpdateUserStatusMutation();
+  const [addToQueueMutation, { isLoading: isAddingToQueue }] = useAddToQueueMutation();
+  const [deleteFromQueueMutation, { isLoading: isDeletingFromQueue }] = useDeleteFromQueueMutation();
+  const [updatePrimarySessionMutation, { isLoading: isUpdatingSession }] = useUpdatePrimarySessionMutation();
 
   /**
    * Обновляет текущую позицию воспроизведения
    */
-  const updateCurrentPosition = useCallback(async (position: string, cfg?: RequestConfig) => {
-    dispatch(setLoading(true));
-    
+  const updateCurrentPosition = useCallback(async (position: string) => {
     try {
-      const res = await withAuth(() => Api.updateCurrentPosition(position, cfg));
-      
-      if (res.success) {
-        dispatch(setCurrentPosition(position));
-        return true;
-      } else {
-        const errorMessage = pickError(res) || 'Failed to update position';
-        console.error(errorMessage);
-        return false;
-      }
+      await updatePositionMutation(position).unwrap();
+      dispatch(setCurrentPosition(position));
+      return true;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update position';
-      console.error(errorMessage);
+      console.error('Failed to update position:', err);
       return false;
-    } finally {
-      dispatch(setLoading(false));
     }
-  }, [dispatch]);
+  }, [updatePositionMutation, dispatch]);
 
   /**
    * Обновляет текущий трек и коллекцию
    */
-  const updateListeningTarget = useCallback(async (trackId: number, collectionId?: number, cfg?: RequestConfig) => {
-    dispatch(setLoading(true));
-    
+  const updateListeningTarget = useCallback(async (trackId: number, collectionId?: number) => {
     try {
-      const res = await withAuth(() => Api.updateListeningTarget(trackId, collectionId, cfg));
-      
-      if (res.success) {
-        dispatch(setListeningTarget({ trackId, collectionId }));
-        return true;
-      } else {
-        const errorMessage = pickError(res) || 'Failed to update listening target';
-        console.error(errorMessage);
-        return false;
-      }
+      await updateListeningMutation({ trackId, collectionId }).unwrap();
+      dispatch(setListeningTarget({ trackId, collectionId }));
+      return true;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update listening target';
-      console.error(errorMessage);
+      console.error('Failed to update listening target:', err);
       return false;
-    } finally {
-      dispatch(setLoading(false));
     }
-  }, [dispatch]);
+  }, [updateListeningMutation, dispatch]);
 
   /**
    * Обновляет статус пользователя
    */
-  const updateStatus = useCallback(async (statusId: number, cfg?: RequestConfig) => {
-    dispatch(setLoading(true));
-    
+  const updateStatus = useCallback(async (statusId: number) => {
     try {
-      const res = await withAuth(() => Api.updateStatus(statusId, cfg));
-      
-      if (res.success) {
-        dispatch(setStatus(statusId));
-        return true;
-      } else {
-        const errorMessage = pickError(res) || 'Failed to update status';
-        console.error(errorMessage);
-        return false;
-      }
+      await updateStatusMutation(statusId).unwrap();
+      dispatch(setStatus(statusId));
+      return true;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update status';
-      console.error(errorMessage);
+      console.error('Failed to update status:', err);
       return false;
-    } finally {
-      dispatch(setLoading(false));
     }
-  }, [dispatch]);
+  }, [updateStatusMutation, dispatch]);
 
   /**
    * Добавляет трек в очередь
    */
-  const addToQueue = useCallback(async (cfg?: RequestConfig) => {
-    dispatch(setLoading(true));
-    
+  const addToQueue = useCallback(async () => {
     try {
-      const res = await withAuth(() => Api.addToQueue(cfg));
-      return res.success;
+      await addToQueueMutation().unwrap();
+      return true;
     } catch (err) {
       console.error('Failed to add to queue:', err);
       return false;
-    } finally {
-      dispatch(setLoading(false));
     }
-  }, [dispatch]);
+  }, [addToQueueMutation]);
 
   /**
    * Удаляет трек из очереди
    */
-  const deleteFromQueue = useCallback(async (cfg?: RequestConfig) => {
-    dispatch(setLoading(true));
-    
+  const deleteFromQueue = useCallback(async () => {
     try {
-      const res = await withAuth(() => Api.deleteFromQueue(cfg));
-      return res.success;
+      await deleteFromQueueMutation().unwrap();
+      return true;
     } catch (err) {
       console.error('Failed to delete from queue:', err);
       return false;
-    } finally {
-      dispatch(setLoading(false));
     }
-  }, [dispatch]);
+  }, [deleteFromQueueMutation]);
 
   /**
    * Обновляет основную сессию пользователя
    */
-  const updatePrimarySession = useCallback(async (cfg?: RequestConfig) => {
-    dispatch(setLoading(true));
-    
+  const updatePrimarySession = useCallback(async () => {
     try {
-      const res = await withAuth(() => Api.updatePrimarySession(cfg));
-      return res.success;
+      await updatePrimarySessionMutation().unwrap();
+      return true;
     } catch (err) {
       console.error('Failed to update primary session:', err);
       return false;
-    } finally {
-      dispatch(setLoading(false));
     }
-  }, [dispatch]);
+  }, [updatePrimarySessionMutation]);
 
   /**
    * Очищает состояние пользователя (вызывается при logout)
@@ -153,6 +115,14 @@ export const useUserState = () => {
   const clear = useCallback(() => {
     dispatch(clearUserState());
   }, [dispatch]);
+
+  const isLoading =
+    isUpdatingPosition ||
+    isUpdatingListening ||
+    isUpdatingStatus ||
+    isAddingToQueue ||
+    isDeletingFromQueue ||
+    isUpdatingSession;
 
   return {
     currentPosition,

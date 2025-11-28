@@ -14,6 +14,9 @@ export const Api = {
     // Закомментировано: используйте useGetSubscriptionPackByIdQuery из @shared/api/rtkApi
     // getPackById: (id: number) =>
     //     apiClient.get<SubscriptionPackDTO>(API_ENDPOINTS.subscription.packById(id)),
+    /**
+     * @deprecated Use usePurchaseSubscriptionMutation from @shared/api/rtkApi instead
+     */
     purchase: (body: PurchaseSubscriptionDTO) =>
         apiClient.post<SubscriptionPaymentDTO>(API_ENDPOINTS.subscription.purchase, body),
     // Закомментировано: используйте useGetSubscriptionPaymentsQuery из @shared/api/rtkApi

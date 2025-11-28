@@ -5,18 +5,27 @@ import type { RequestConfig } from '@shared/types';
 import type { CursorPageDTO } from '@entities/Playlist';
 
 export const Api = {
+    /**
+     * @deprecated Use useCreateChatMutation from @shared/api/rtkApi instead
+     */
     create: (dto: CreateChatDTO, config?: RequestConfig) =>
         apiClient.post<void>(API_ENDPOINTS.chat.create, dto, {
             ...config,
             bodyType: 'json',
         }),
 
+    /**
+     * @deprecated Use useSendMessageMutation from @shared/api/rtkApi instead
+     */
     sendMessage: (chatId: number, message: MessageDTO, config?: RequestConfig) =>
         apiClient.post<void>(API_ENDPOINTS.chat.sendMessage(chatId), message, {
             ...config,
             bodyType: 'json',
         }),
 
+    /**
+     * @deprecated Use useDeleteMessageMutation from @shared/api/rtkApi instead
+     */
     deleteMessage: (messageId: number, config?: RequestConfig) =>
         apiClient.delete<void>(API_ENDPOINTS.chat.deleteMessage(messageId), config),
 
@@ -43,15 +52,27 @@ export const Api = {
     //         },
     //     }),
 
+    /**
+     * @deprecated Use useAddUserToChatMutation from @shared/api/rtkApi instead
+     */
     addUser: (chatId: number, userId: number, config?: RequestConfig) =>
         apiClient.post<void>(API_ENDPOINTS.chat.addUser(chatId, userId), undefined, config),
 
+    /**
+     * @deprecated Use useLeaveChatMutation from @shared/api/rtkApi instead
+     */
     leave: (chatId: number, config?: RequestConfig) =>
         apiClient.delete<void>(API_ENDPOINTS.chat.leave(chatId), config),
 
+    /**
+     * @deprecated Use useRemoveUserFromChatMutation from @shared/api/rtkApi instead
+     */
     removeUser: (chatId: number, userId: number, config?: RequestConfig) =>
         apiClient.delete<void>(API_ENDPOINTS.chat.removeUser(chatId, userId), config),
 
+    /**
+     * @deprecated Use useUpdateChatCoverMutation from @shared/api/rtkApi instead
+     */
     updateCover: (chatId: number, file: File, config?: RequestConfig) => {
         const fd = new FormData();
         fd.append('file', file);
@@ -61,18 +82,27 @@ export const Api = {
         });
     },
 
+    /**
+     * @deprecated Use useUpdateChatNameMutation from @shared/api/rtkApi instead
+     */
     updateName: (chatId: number, newName: string, config?: RequestConfig) =>
         apiClient.put<void>(API_ENDPOINTS.chat.updateName(chatId), undefined, {
             ...config,
             params: { ...(config?.params ?? {}), newName },
         }),
 
+    /**
+     * @deprecated Use useReadMessagesMutation from @shared/api/rtkApi instead
+     */
     readMessages: (chatId: number, messageIds: number[], config?: RequestConfig) =>
         apiClient.put<void>(API_ENDPOINTS.chat.readMessages(chatId), messageIds, {
             ...config,
             bodyType: 'json',
         }),
 
+    /**
+     * @deprecated Use useReadAllMessagesMutation from @shared/api/rtkApi instead
+     */
     readAllMessages: (chatId: number, config?: RequestConfig) =>
         apiClient.put<void>(API_ENDPOINTS.chat.readAllMessages(chatId), undefined, config),
 };

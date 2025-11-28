@@ -19,6 +19,9 @@ export const useTrack = () => {
     return useMemo(() => ({ ...state, refetch }), [state, refetch]);
 };
 
+/**
+ * @deprecated Use useUpdateTrackMutation from @shared/api/rtkApi instead
+ */
 export const useUpdateTrack = () => {
     const [state, setState] = useState<State<TrackDTO>>({ loading: false });
     const mutate = useCallback(async (trackId: number, body: UpdateTrackDTO, cfg?: RequestConfig) => {
@@ -30,6 +33,9 @@ export const useUpdateTrack = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate]);
 };
 
+/**
+ * @deprecated Use useUpdateTrackFileMutation from @shared/api/rtkApi instead
+ */
 export const useUpdateTrackFile = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (trackId: number, body: UpdateTrackFileDTO, cfg?: RequestConfig) => {
@@ -41,6 +47,9 @@ export const useUpdateTrackFile = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate]);
 };
 
+/**
+ * @deprecated Use useDeleteTrackMutation from @shared/api/rtkApi instead
+ */
 export const useDeleteTrack = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (trackId: number, cfg?: RequestConfig) => {
@@ -52,6 +61,9 @@ export const useDeleteTrack = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate]);
 };
 
+/**
+ * @deprecated Use useUpdateTrackVisibilityMutation from @shared/api/rtkApi instead
+ */
 export const useUpdateTrackVisibility = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (trackId: number, visibilityStatusId: number, cfg?: RequestConfig) => {
@@ -63,6 +75,9 @@ export const useUpdateTrackVisibility = () => {
     return useMemo(() => ({ ...state, mutate }), [state, mutate]);
 };
 
+/**
+ * @deprecated Use useToggleTrackFavoriteMutation from @shared/api/rtkApi instead
+ */
 export const useToggleTrackFavorite = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
     const mutate = useCallback(async (trackId: number, cfg?: RequestConfig) => {
