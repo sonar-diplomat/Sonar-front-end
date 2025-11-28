@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Api } from '../api/api.ts'
-import type { NonSensetiveUserDTO, User, UserUpdateDTO } from '@entities/User'
+import type { NonSensitiveUserDTO, User, UserUpdateDTO } from '@entities/User'
 import type { State } from '@shared/types/store'
 import type { RequestConfig } from '@shared/types'
 import { withAuth } from '@shared/lib/auth/withAuth'
@@ -24,7 +24,7 @@ export const useGetUsers = () => {
 }
 
 export const useGetUserById = () => {
-    const [state, setState] = useState<State<NonSensetiveUserDTO>>({ loading: false })
+    const [state, setState] = useState<State<NonSensitiveUserDTO>>({ loading: false })
     const refetch = useCallback(async (id: number, cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }))
         const res = await Api.byId(id, cfg)

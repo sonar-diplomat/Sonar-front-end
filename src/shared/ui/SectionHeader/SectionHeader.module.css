@@ -1,0 +1,51 @@
+.sectionHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 16px;
+    flex-shrink: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.titleWrapper {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.title {
+    font-family: 'Chillax', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.subtitleWrapper {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.subtitle {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: normal;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    flex-shrink: 0;
+}

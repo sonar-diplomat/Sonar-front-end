@@ -1,0 +1,175 @@
+.imageCard {
+    position: relative;
+    border-radius: 32px;
+    width: 100%;
+    height: 256px;
+}
+
+.imageContainer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    border-radius: 32px;
+}
+
+.image {
+    position: absolute;
+    height: 264px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.overlay {
+    position: absolute;
+    bottom: 18px;
+    left: 8px;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 0 16px 4px 16px;
+    pointer-events: auto;
+}
+
+.nameContainer {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: -4px;
+}
+
+.name {
+    font-family: 'Chillax', sans-serif;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.verifiedBadge {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.checkIcon {
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    width: 14px;
+    height: 14px;
+    color: #FFFFFF;
+}
+
+.statsContainer {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: -4px;
+    cursor: pointer;
+}
+
+.statItem {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+    font-size: 14px;
+    line-height: normal;
+    text-decoration: none;
+}
+
+.statValue {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.statLabel {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Bio variant styles */
+.gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0) 57.206%,
+        rgba(0, 0, 0, 0.4) 100%
+    );
+    border-radius: 32px;
+    pointer-events: none;
+}
+
+.bioOverlay {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 16px 16px 24px 16px;
+    inset: 0;
+    pointer-events: auto;
+    bottom: 0;
+    left: 0;
+}
+
+.verifiedBadgeTop {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+}
+
+.verifiedIcon {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.verifiedText {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.bioContent {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.title {
+    font-family: 'Chillax', sans-serif;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+    padding-bottom: 8px;
+}
+
+.bioText {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+    max-width: 300px;
+    white-space: pre-wrap;
+}

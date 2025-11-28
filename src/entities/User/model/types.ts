@@ -28,7 +28,7 @@ export interface AccessFeature {
     name: string
 }
 
-export interface NonSensetiveUserDTO {
+export interface NonSensitiveUserDTO {
     biography?: string | null
     publicIdentifier: string
     registrationDate: ISODate

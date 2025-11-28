@@ -39,6 +39,7 @@ export const Login: React.FC = () =>{
                 deviceName,
             });
 
+            // TODO: Remove after testing is done
             authManager.clearCredentials();
 
             navigate("/hello");
