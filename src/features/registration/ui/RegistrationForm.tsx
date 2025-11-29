@@ -32,8 +32,8 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
 
   const handleSubmit = useCallback(() => {
     if (!isAgreed) {
-        // TODO: No alert, use proper UI feedback
-      alert('Please agree to the terms before continuing');
+        // TODO: Implement proper UI feedback for errors
+      console.log('Agree to the terms before continuing');
       return;
     }
 

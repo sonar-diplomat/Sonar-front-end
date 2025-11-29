@@ -1,0 +1,29 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    background-color: #000;
+    padding: 16px 16px 32px 16px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    margin-top: 24px;
+    flex: 1;
+}
+
+.footer {
+    margin-top: auto;
+    padding-top: 40px;
+    text-align: center;
+}
+
+.copyright {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+    color: var(--input-helper-text);
+    margin: 0;
+}
+

@@ -3,7 +3,8 @@ import { App }  from "@app/App.tsx";
 import React from "react";
 import {
     Hello, EntryMethod, Registration, TestPage, PasswordRecovery, AssignNewPassword, Library, Create,
-    CreatePlaylist, Search, CreateFolder, UserProfile, NotFound
+    CreatePlaylist, Search, CreateFolder, UserProfile, NotFound, Settings, AccountSettings, PrivacySettings,
+    BlockedAccounts, AppearanceSettings, PlaybackSettings, About, ReportProblem, ActiveSessions
 } from "@pages";
 import {Login} from "@pages/Login";
 import {TermsOfService} from "@pages/Terms/TermsOfService/TermsOfService.tsx";
@@ -77,6 +78,47 @@ export const router = createBrowserRouter([
                     {
                         path: 'profile',
                         element: <UserProfile />,
+                    },
+                    {
+                        path: 'settings',
+                        children: [
+                            {
+                                index: true,
+                                element: <Settings />,
+                            },
+                            {
+                                path: 'account',
+                                element: <AccountSettings />,
+                            },
+                            {
+                                path: 'sessions',
+                                element: <ActiveSessions />,
+                            },
+                            {
+                                path: 'privacy',
+                                element: <PrivacySettings />,
+                            },
+                            {
+                                path: 'blocked-accounts',
+                                element: <BlockedAccounts />,
+                            },
+                            {
+                                path: 'appearance',
+                                element: <AppearanceSettings />,
+                            },
+                            {
+                                path: 'playback',
+                                element: <PlaybackSettings />,
+                            },
+                            {
+                                path: 'about',
+                                element: <About />,
+                            },
+                            {
+                                path: 'report',
+                                element: <ReportProblem />,
+                            },
+                        ],
                     },
                 ],
             },

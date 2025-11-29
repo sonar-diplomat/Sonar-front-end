@@ -23,7 +23,7 @@ export interface Settings {
  preferredPlaybackQuality?: PlaybackQuality;
  language?: Language;
  theme?: Theme;
- notificationType?: NotificationType;
+ notificationTypes?: NotificationType[];
  user?: User;
  userPrivacy?: UserPrivacySettings;
 }
