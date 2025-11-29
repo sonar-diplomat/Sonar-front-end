@@ -41,45 +41,57 @@ export const router = createBrowserRouter([
                 element: <AssignNewPassword/>
             },
             {
-                path: '/test',
-                element: <TestPage />,
-            },
-            {
-                path: '/-test-api',
-                element: <ApiTestPage />,
-            },
-            {
                 path: '/terms',
                 element: <TermsOfService />,
             },
             {
-                path: 'library/create',
-                element: <Create/>
-            },
-            {
-                path: 'library/create-playlist',
-                element: <CreatePlaylist/>
-            },
-            {
-                path: 'library/create-folder',
-                element: <CreateFolder/>
-            },
-            // Pages with music player and navigation
-            {
                 element: <PageLayout />,
                 children: [
                     {
-                        path: '/library',
-                        element: <Library/>
+                        path: 'library',
+                        children: [
+                            { index: true, element: <Library /> },
+                            {
+                                path: 'create',
+                                children: [
+                                    {
+                                        index: true,
+                                        element: <Create />,
+                                    },
+                                    {
+                                        path: 'playlist',
+                                        element: <CreatePlaylist />,
+                                    },
+                                    {
+                                        path: 'folder',
+                                        element: <CreateFolder />,
+                                    },
+                                ],
+                            }
+                        ],
                     },
                     {
-                        path: '/search',
-                        element: <Search/>
+                        path: 'search',
+                        element: <Search />,
                     },
                     {
-                        path: '/profile',
-                        element: <UserProfile/>
+                        path: 'profile',
+                        element: <UserProfile />,
                     },
+                ],
+            },
+            {
+                path: '/test',
+                children: [
+                    {
+                        index: true,
+                        element: <TestPage />,
+                    },
+                    {
+                        path: 'api',
+                        element: <ApiTestPage />,
+                    },
+                ],
                 ]
             },
             {
