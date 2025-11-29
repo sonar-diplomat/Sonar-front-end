@@ -12,10 +12,10 @@
     /*Buttons - Dark Theme*/
     --button-bg-dark: #1F1F1F;
     --button-bg-dark-hover: #1F1F1F;
-    --button-bg-dark-pressed: #1F1F1F;
+    --button-bg-dark-pressed: #272727;
     --button-text-dark: #EAEAEA;
     --button-text-dark-hover: #C8C8C8;
-    --button-text-dark-pressed: #C8C8C8;
+    --button-text-dark-pressed: #EAEAEA;
 
     /*Buttons - Selected State (Light)*/
     --button-bg-light-selected: #EAEAEA;

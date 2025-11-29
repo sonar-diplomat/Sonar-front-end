@@ -84,9 +84,8 @@
 
 /* Sizes */
 .small {
-  padding: 8px 12px;
-  font-size: 12px;
-  min-height: 32px;
+  padding: 6px 10px;
+  font-size: 14px;
 }
 
 .small.iconOnly {
@@ -136,8 +135,14 @@
 }
 
 /* States */
-.disabled {
-  opacity: 0.5;
+.disabled.filled {
+  background-color: var(--button-bg-disabled) !important;
+  color: var(--button-text-disabled) !important;
+  cursor: not-allowed;
+}
+
+.disabled.text {
+  color: var(--button-text-disabled) !important;
   cursor: not-allowed;
 }
 
@@ -192,7 +197,10 @@
 }
 
 .text {
-  font-weight: 400;
+
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.23px;
   display: flex;
   align-items: center;
 }
@@ -220,7 +228,7 @@
 /* Icon sizes based on button size */
 .small .icon svg,
 .small .icon {
-  width: 10px;
+  width: 11px;
   height: 9px;
 }
 
