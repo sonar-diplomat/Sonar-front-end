@@ -20,8 +20,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     const [activeTab, setActiveTab] = useState('profile');
 
     const tabs = [
-        { value: 'profile', label: 'Profile' },
-        { value: 'library', label: 'Library' }
+        {value: 'profile', label: 'Profile'},
+        {value: 'library', label: 'Library'}
     ];
 
     const handleBackClick = () => {
@@ -29,43 +29,44 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     };
 
     return (
-    <div className={styles.header}>
-        {showBackButton && (
-            <Button
-                variant="filled"
-                theme="dark"
-                size="medium"
-                shape="cr-16"
-                icon={<LeftArrow />}
-                onClick={handleBackClick}
-            />
-        )}
-
-        {title && <h1 className={styles.title}>{title}</h1>}
-
-        {showTabs && (
-            <TabSlider
-                tabs={tabs}
-                activeTab={activeTab}
-                onChange={setActiveTab}
-            />
-        )}
-
-        {!showBackButton && !title && !showTabs && (
-            <>
+        <div className={styles.header}>
+            {showBackButton && (
                 <Button
                     variant="filled"
                     theme="dark"
                     size="medium"
                     shape="cr-16"
-                    icon={<LeftArrow />}
+                    icon={<LeftArrow/>}
+                    onClick={handleBackClick}
                 />
+            )}
+
+            {title && <h1 className={styles.title}>{title}</h1>}
+
+            {showTabs && (
                 <TabSlider
                     tabs={tabs}
                     activeTab={activeTab}
                     onChange={setActiveTab}
                 />
-            </>
-        )}
-    </div>
-);
+            )}
+
+            {!showBackButton && !title && !showTabs && (
+                <>
+                    <Button
+                        variant="filled"
+                        theme="dark"
+                        size="medium"
+                        shape="cr-16"
+                        icon={<LeftArrow/>}
+                    />
+                    <TabSlider
+                        tabs={tabs}
+                        activeTab={activeTab}
+                        onChange={setActiveTab}
+                    />
+                </>
+            )}
+        </div>
+    );
+};
