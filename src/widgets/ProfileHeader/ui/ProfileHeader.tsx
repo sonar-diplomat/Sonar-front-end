@@ -14,7 +14,7 @@ export const ProfileHeader = () => {
 
     return (
         <div className={styles.header}>
-            <Button variant={"dark"} size={"medium"} shape={"cr-16"} icon={<LeftArrow/>} />
+            <Button variant={"filled"} theme={"dark"} size={"medium"} shape={"cr-16"} icon={<LeftArrow/>} />
             <TabSlider tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
         </div>
     );

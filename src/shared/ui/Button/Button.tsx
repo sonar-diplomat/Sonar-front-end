@@ -2,12 +2,14 @@ import React from 'react';
 
 import styles from './Button.module.css';
 
-export type ButtonVariant = 'light' | 'dark';
+export type ButtonVariant = 'filled' | 'text';
+export type ButtonTheme = 'light' | 'dark';
 export type ButtonSize = 'small' | 'medium' | 'large';
 export type ButtonShape = 'cr-16' | 'cr-20' | 'cr-24' | 'cr-32';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
+  theme?: ButtonTheme;
   size?: ButtonSize;
   shape?: ButtonShape;
   iconOnly?: boolean;
@@ -20,7 +22,8 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 export const Button: React.FC<ButtonProps> = ({
-  variant = 'light',
+  variant = 'filled',
+  theme = 'light',
   size = 'medium',
   shape = 'cr-20',
   iconOnly = false,
@@ -36,6 +39,7 @@ export const Button: React.FC<ButtonProps> = ({
   const classNames = [
     styles.button,
     styles[variant],
+    styles[theme],
     styles[size],
     styles[shape],
     iconOnly && styles.iconOnly,

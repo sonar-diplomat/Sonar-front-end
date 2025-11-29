@@ -28,7 +28,8 @@ export const EntryMethod: React.FC = () => {
             <div className={styles.buttonGroup}>
                 <Button
                     onClick={handleSignIn}
-                    variant="light"
+                    variant="filled"
+                    theme="light"
                     size="large"
                     shape="cr-16"
                     fullWidth
@@ -39,7 +40,8 @@ export const EntryMethod: React.FC = () => {
 
                 <Button
                     onClick={handleCreateAccount}
-                    variant="dark"
+                    variant="filled"
+                    theme="dark"
                     size="large"
                     shape="cr-16"
                     fullWidth

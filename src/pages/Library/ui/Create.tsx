@@ -34,7 +34,8 @@ export const Create: React.FC<CreateProps> = ({className = ''}) => {
         <div className={`${styles.container} ${className}`}>
             <div className={styles.header}>
                 <Button
-                    variant="dark"
+                    variant="filled"
+                    theme="dark"
                     size="medium"
                     shape="cr-16"
                     iconOnly
@@ -48,7 +49,8 @@ export const Create: React.FC<CreateProps> = ({className = ''}) => {
             <div className={styles.optionsContainer}>
                 <div className={styles.optionWrapper}>
                     <Button
-                        variant="dark"
+                        variant="filled"
+                        theme="dark"
                         size="large"
                         shape="cr-32"
                         icon={<PlusIcon/>}
@@ -64,7 +66,8 @@ export const Create: React.FC<CreateProps> = ({className = ''}) => {
 
                 <div className={styles.optionWrapper}>
                     <Button
-                        variant="dark"
+                        variant="filled"
+                        theme="dark"
                         size="large"
                         shape="cr-32"
                         icon={<PlusIcon/>}
@@ -80,7 +83,8 @@ export const Create: React.FC<CreateProps> = ({className = ''}) => {
 
                 <div className={styles.optionWrapper}>
                     <Button
-                        variant="dark"
+                        variant="filled"
+                        theme="dark"
                         size="large"
                         shape="cr-32"
                         icon={<PlusIcon/>}

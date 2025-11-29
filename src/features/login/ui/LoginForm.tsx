@@ -71,15 +71,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                         <Button
                             icon={<RightArrow/>}
                             children={"Continue"}
-                            variant={"light"}
+                            variant={"filled"}
+                            theme={"light"}
                             size={"large"}
                             fullWidth
                             disabled={isSubmitting}
                         />
-                        <Button icon={<GoogleIcon/>} children={"Continue with Google"} variant={"dark"} size={"large"}
+                        <Button icon={<GoogleIcon/>} children={"Continue with Google"} variant={"filled"} theme={"dark"} size={"large"}
                                 onClick={onContinueWithGoogle}
                                 fullWidth/>
-                        <Button icon={<AppleIcon/>} children={"Continue with Apple"} variant={"dark"} size={"large"}
+                        <Button icon={<AppleIcon/>} children={"Continue with Apple"} variant={"filled"} theme={"dark"} size={"large"}
                                 onClick={onContinueWithApple}
                                 fullWidth/>
                     </div>
