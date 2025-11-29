@@ -3,19 +3,19 @@ import { App }  from "@app/App.tsx";
 import React from "react";
 import {
     Hello, EntryMethod, Registration, TestPage, PasswordRecovery, AssignNewPassword, Library, Create,
-    CreatePlaylist, Search, CreateFolder, UserProfile, NotFound
+    CreatePlaylist, Search, CreateFolder, UserProfile, NotFound, Chats, Chat, UserInfo
 } from "@pages";
 import {Login} from "@pages/Login";
 import {TermsOfService} from "@pages/Terms/TermsOfService/TermsOfService.tsx";
 import {ApiTestPage} from "@pages/TestPage";
 import {PageLayout} from "@widgets/PageLayout";
+import {ChatLayout} from "@widgets/ChatLayout";
 
 export const router = createBrowserRouter([
     {
         element: <App />,
         //errorElement: <ErrorPage />,
         children: [
-            // Auth pages without music player
             {
                 path: '/hello',
                 element: <Hello />,
@@ -77,6 +77,24 @@ export const router = createBrowserRouter([
                     {
                         path: 'profile',
                         element: <UserProfile />,
+                    },
+                    {
+                        path: 'chats',
+                        element: <ChatLayout />,
+                        children: [
+                            {
+                                index: true,
+                                element: <Chats />,
+                            },
+                            {
+                                path: ':chatId',
+                                element: <Chat />,
+                            },
+                            {
+                                path: ':chatId/info',
+                                element: <UserInfo />,
+                            },
+                        ],
                     },
                 ],
             },

@@ -9,3 +9,6 @@ export { Library, Create, CreatePlaylist, CreateFolder } from './Library';
 export { Search } from './Search';
 export { UserProfile } from './UserProfile';
 export { NotFound } from './NotFound';
+export { Chats } from './Chats';
+export { Chat } from './Chat';
+export { UserInfo } from './UserInfo';

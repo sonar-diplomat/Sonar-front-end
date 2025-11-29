@@ -1,0 +1,78 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--input-bg);
+    border-radius: 24px;
+    margin: 8px 16px;
+    overflow: hidden;
+}
+
+.replyPreview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--input-border-hover);
+    min-height: 32px;
+}
+
+.replyLine {
+    width: 2px;
+    height: 20px;
+    background-color: var(--input-label-color);
+    opacity: 0.5;
+    flex-shrink: 0;
+    border-radius: 1px;
+}
+
+.replyContent {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+.replyText {
+    font-size: 13px;
+    color: var(--input-label-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+
+.cancelReplyButton {
+    flex-shrink: 0;
+}
+
+.inputWrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+}
+
+.iconButton {
+    flex-shrink: 0;
+}
+
+.input {
+    flex: 1;
+}
+
+.input :global(.input_container) {
+    margin: 0;
+    gap: 0;
+}
+
+.input :global(.input_wrapper) {
+    background: none;
+}
+
+.input :global(.input) {
+    background: none;
+    border: none;
+    padding: 0;
+    height: auto;
+}
+
