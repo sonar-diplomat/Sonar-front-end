@@ -3,12 +3,13 @@ import { App }  from "@app/App.tsx";
 import React from "react";
 import {
     Hello, EntryMethod, Registration, TestPage, PasswordRecovery, AssignNewPassword, Library, Create,
-    CreatePlaylist, Search, CreateFolder, UserProfile, NotFound
+    CreatePlaylist, Search, CreateFolder, UserProfile, Collection, NotFound
 } from "@pages";
 import {Login} from "@pages/Login";
 import {TermsOfService} from "@pages/Terms/TermsOfService/TermsOfService.tsx";
 import {ApiTestPage} from "@pages/TestPage";
 import {PageLayout} from "@widgets/PageLayout";
+import {CollectionViewExample} from "@pages/TestPage/CollectionViewExample.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -78,6 +79,10 @@ export const router = createBrowserRouter([
                         path: 'profile',
                         element: <UserProfile />,
                     },
+                    {
+                        path: 'collection/:id',
+                        element: <Collection />,
+                    },
                 ],
             },
             {
@@ -90,6 +95,10 @@ export const router = createBrowserRouter([
                     {
                         path: 'api',
                         element: <ApiTestPage />,
+                    },
+                    {
+                        path: 'collection',
+                        element: <CollectionViewExample />,
                     },
                 ],
             },

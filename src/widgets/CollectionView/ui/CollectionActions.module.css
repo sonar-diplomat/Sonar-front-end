@@ -1,0 +1,49 @@
+.collectionActions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 0 8px;
+    margin: 16px 0;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: #1F1F1F;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+}
+
+.actionButton:hover {
+    background: rgba(31, 31, 31, 0.8);
+}
+
+.actionButton:active {
+    background: rgba(31, 31, 31, 0.6);
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    color: #EAEAEA;
+    flex-shrink: 0;
+}
+
+.label {
+    font-family: 'Synonym', 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.23px;
+    color: #EAEAEA;
+    white-space: nowrap;
+}
