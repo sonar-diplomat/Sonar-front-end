@@ -56,7 +56,8 @@ export const TermsOfService: React.FC = () => {
                 <Button
                     children={'Confirm'}
                     size={'large'}
-                    variant={'light'}
+                    variant={'filled'}
+                    theme={'light'}
                     onClick={handleBack}
                     className={styles.backButton}
                 />

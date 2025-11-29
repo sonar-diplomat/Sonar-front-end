@@ -119,7 +119,8 @@ export const CodeVerification: React.FC<CodeVerificationProps> = ({
       <div className={styles.actions}>
         <Button
           icon={buttonIcon}
-          variant="light"
+          variant="filled"
+          theme="light"
           size="large"
           fullWidth={true}
           onClick={handleSubmit}

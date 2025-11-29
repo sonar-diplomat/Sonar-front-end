@@ -29,24 +29,43 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     };
 
     return (
-        <div className={styles.header}>
-            {showBackButton && (
+    <div className={styles.header}>
+        {showBackButton && (
+            <Button
+                variant="filled"
+                theme="dark"
+                size="medium"
+                shape="cr-16"
+                icon={<LeftArrow />}
+                onClick={handleBackClick}
+            />
+        )}
+
+        {title && <h1 className={styles.title}>{title}</h1>}
+
+        {showTabs && (
+            <TabSlider
+                tabs={tabs}
+                activeTab={activeTab}
+                onChange={setActiveTab}
+            />
+        )}
+
+        {!showBackButton && !title && !showTabs && (
+            <>
                 <Button
-                    variant={"dark"}
-                    size={"medium"}
-                    shape={"cr-16"}
-                    icon={<LeftArrow/>}
-                    onClick={handleBackClick}
+                    variant="filled"
+                    theme="dark"
+                    size="medium"
+                    shape="cr-16"
+                    icon={<LeftArrow />}
                 />
-            )}
-            {title && <h1 className={styles.title}>{title}</h1>}
-            {showTabs && <TabSlider tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />}
-            {!showBackButton && !title && !showTabs && (
-                <>
-                    <Button variant={"dark"} size={"medium"} shape={"cr-16"} icon={<LeftArrow/>} />
-                    <TabSlider tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
-                </>
-            )}
-        </div>
-    );
-};
+                <TabSlider
+                    tabs={tabs}
+                    activeTab={activeTab}
+                    onChange={setActiveTab}
+                />
+            </>
+        )}
+    </div>
+);

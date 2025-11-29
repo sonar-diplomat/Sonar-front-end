@@ -1,17 +1,37 @@
 :root{
     --font-family-base: 'Roboto', sans-serif;
 
-    /*Buttons*/
-    --button-bg-color-light: #FFF;
-    --button-bg-color-dark: #1F1F1F;;
-    --button-bg-color-pressed-light: #D8D8D8;
-    --button-bg-color-pressed-dark: #1F1F1F;
-    --button-bg-color-disable: #AEAEAE;
-    --button-text-color-light: #1F1F1F;
-    --button-text-color-dark: #EAEAEA;
-    --button-text-color-hover-light: #4C4C4C;
-    --button-text-color-hover-dark: #C8C8C8;
-    --button-text-color-disable: #6A6A6A;
+    /*Buttons - Light Theme*/
+    --button-bg-light: #FFF;
+    --button-bg-light-hover: #FFF;
+    --button-bg-light-pressed: #D8D8D8;
+    --button-text-light: #1F1F1F;
+    --button-text-light-hover: #4C4C4C;
+    --button-text-light-pressed: #4C4C4C;
+
+    /*Buttons - Dark Theme*/
+    --button-bg-dark: #1F1F1F;
+    --button-bg-dark-hover: #1F1F1F;
+    --button-bg-dark-pressed: #272727;
+    --button-text-dark: #EAEAEA;
+    --button-text-dark-hover: #C8C8C8;
+    --button-text-dark-pressed: #EAEAEA;
+
+    /*Buttons - Selected State (Light)*/
+    --button-bg-light-selected: #EAEAEA;
+    --button-bg-light-selected-hover: #D8D8D8;
+    --button-bg-light-selected-pressed: #C8C8C8;
+    --button-text-light-selected: #1F1F1F;
+
+    /*Buttons - Selected State (Dark)*/
+    --button-bg-dark-selected: rgba(255, 255, 255, 0.8);
+    --button-bg-dark-selected-hover: rgba(255, 255, 255, 0.9);
+    --button-bg-dark-selected-pressed: rgba(255, 255, 255, 0.7);
+    --button-text-dark-selected: #1F1F1F;
+
+    /*Buttons - Disabled State*/
+    --button-bg-disabled: #AEAEAE;
+    --button-text-disabled: #6A6A6A;
 
     /*Inputs*/
     --input-bg: #1F1F1F;

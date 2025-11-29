@@ -132,7 +132,8 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ onSubmit }) => {
             </div>
             <Button
                 icon={<RightArrow/>}
-                variant="light"
+                variant="filled"
+                theme="light"
                 size="large"
                 fullWidth
                 type="submit"

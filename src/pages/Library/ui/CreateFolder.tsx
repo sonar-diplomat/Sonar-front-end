@@ -38,7 +38,8 @@ export const CreateFolder: React.FC<CreateFolderProps> = ({className = ''}) => {
         <div className={`${styles.container} ${className}`}>
             <div className={styles.header}>
                 <Button
-                    variant="dark"
+                    variant="filled"
+                    theme="dark"
                     size="medium"
                     shape="cr-16"
                     iconOnly
@@ -72,7 +73,8 @@ export const CreateFolder: React.FC<CreateFolderProps> = ({className = ''}) => {
                 </div>
 
                 <Button
-                    variant="light"
+                    variant="filled"
+                    theme="light"
                     size="large"
                     shape="cr-16"
                     onClick={handleCreateFolder}

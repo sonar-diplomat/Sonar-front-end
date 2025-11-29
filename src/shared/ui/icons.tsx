@@ -3,6 +3,7 @@ import React from "react";
 interface IconProps {
     className?: string;
     color?: string;
+    style?: React.CSSProperties;
 }
 
 export const PlayIcon: React.FC<IconProps> = ({ className }) => (
@@ -220,5 +221,66 @@ export const MoreIcon: React.FC<IconProps> = ({className}) => (
 export const UpRightArrow: React.FC<IconProps> = ({className}) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
         <path d="M15.9619 7C16.2755 7 16.5276 7.09833 16.7168 7.29297C16.9056 7.48208 17 7.7279 17 8.03027V14.3564C16.9999 14.6429 16.9026 14.886 16.708 15.0859C16.5188 15.2806 16.2913 15.3779 16.0264 15.3779C15.7618 15.3778 15.5382 15.2802 15.3545 15.0859C15.1761 14.8913 15.0859 14.6532 15.0859 14.3721V12.1338L15.1758 10.0986L14.1865 11.2256L8.73633 16.668C8.51487 16.8894 8.27146 16.9998 8.00684 17C7.74743 17 7.51495 16.8967 7.30957 16.6914C7.10416 16.486 7 16.2536 7 15.9941C7.00007 15.7293 7.11147 15.4862 7.33301 15.2646L12.7754 9.81445L13.8945 8.8252L11.8506 8.90625H9.62891C9.34813 8.90625 9.10953 8.8176 8.91504 8.63965C8.72062 8.45603 8.62327 8.23374 8.62305 7.97461C8.62305 7.70428 8.71702 7.47341 8.90625 7.28418C9.10088 7.09498 9.34479 7 9.63672 7H15.9619Z" fill={"CurrentColor"}/>
+    </svg>
+)
+
+export const ClockIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <circle cx="6" cy="6" r="5.5" stroke="currentColor" strokeWidth="1"/>
+        <path d="M6 3V6L8 8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+    </svg>
+)
+
+export const ErrorIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <circle cx="6" cy="6" r="5.5" stroke="currentColor" strokeWidth="1"/>
+        <path d="M6 3V6M6 9H6.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+    </svg>
+)
+
+export const ReplyIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path
+            d="M10 4L4 10L10 16M4 10H16"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </svg>
+)
+
+export const CopyIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <rect x="6" y="6" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+        <path
+            d="M4 4C4 2.89543 4.89543 2 6 2H12C13.1046 2 14 2.89543 14 4V6"
+            stroke="currentColor"
+            strokeWidth="1.5"
+        />
+    </svg>
+)
+
+export const EditIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path
+            d="M11 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V9M17 3L14 6M17 3L11 9"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </svg>
+)
+
+export const DeleteIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path
+            d="M6 6V16C6 17.1046 6.89543 18 8 18H12C13.1046 18 14 17.1046 14 16V6M8 6V4C8 2.89543 8.89543 2 10 2C11.1046 2 12 2.89543 12 4V6M4 6H16"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
     </svg>
 )

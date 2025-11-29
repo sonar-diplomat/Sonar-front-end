@@ -40,7 +40,8 @@ export const CreatePlaylist: React.FC<CreatePlaylistProps> = ({className = ''}) 
         <div className={`${styles.container} ${className}`}>
             <div className={styles.header}>
                 <Button
-                    variant="dark"
+                    variant="filled"
+                    theme="dark"
                     size="medium"
                     shape="cr-16"
                     iconOnly
@@ -69,7 +70,8 @@ export const CreatePlaylist: React.FC<CreatePlaylistProps> = ({className = ''}) 
                 </div>
 
                 <Button
-                    variant="dark"
+                    variant="filled"
+                    theme="dark"
                     size="large"
                     shape="cr-32"
                     icon={<PlusIcon/>}
@@ -85,7 +87,8 @@ export const CreatePlaylist: React.FC<CreatePlaylistProps> = ({className = ''}) 
                 </div>
 
                 <Button
-                    variant="light"
+                    variant="filled"
+                    theme="light"
                     size="large"
                     shape="cr-16"
                     onClick={handleCreateFolder}

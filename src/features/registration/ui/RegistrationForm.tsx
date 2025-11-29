@@ -15,7 +15,7 @@ type FormField = keyof RegistrationFormData;
 export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, data, onDataChange }) => {
   const [isAgreed, setIsAgreed] = useState(false);
   const [formData, setFormData] = useState<RegistrationFormData>(data ?? {
-    email: '',
+    email: '',  
     username: '',
     login: '',
     dateOfBirth: ''
@@ -110,7 +110,8 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
 
         <Button
           icon={<RightArrow />}
-          variant="light"
+          variant="filled"
+          theme="light"
           size="large"
           fullWidth
           type="submit"
