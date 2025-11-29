@@ -92,7 +92,6 @@ export const router = createBrowserRouter([
                         element: <ApiTestPage />,
                     },
                 ],
-                ]
             },
             {
                 path: '*',
