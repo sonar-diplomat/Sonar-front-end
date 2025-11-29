@@ -2,8 +2,31 @@ import { createBrowserRouter } from 'react-router-dom';
 import { App }  from "@app/App.tsx";
 import React from "react";
 import {
-    Hello, EntryMethod, Registration, TestPage, PasswordRecovery, AssignNewPassword, Library, Create,
-    CreatePlaylist, Search, CreateFolder, UserProfile, NotFound, Chats, Chat, UserInfo
+    Hello,
+    EntryMethod,
+    Registration,
+    TestPage,
+    PasswordRecovery,
+    AssignNewPassword,
+    Library,
+    Create,
+    CreatePlaylist,
+    Search,
+    CreateFolder,
+    UserProfile,
+    NotFound,
+    Settings,
+    AccountSettings,
+    PrivacySettings,
+    BlockedAccounts,
+    AppearanceSettings,
+    PlaybackSettings,
+    About,
+    ReportProblem,
+    ActiveSessions,
+    Chats,
+    Chat,
+    UserInfo,
 } from "@pages";
 import {Login} from "@pages/Login";
 import {TermsOfService} from "@pages/Terms/TermsOfService/TermsOfService.tsx";
@@ -79,25 +102,30 @@ export const router = createBrowserRouter([
                         element: <UserProfile />,
                     },
                     {
+                        path: 'settings',
+                        children: [
+                            { index: true, element: <Settings /> },
+                            { path: 'account', element: <AccountSettings /> },
+                            { path: 'sessions', element: <ActiveSessions /> },
+                            { path: 'privacy', element: <PrivacySettings /> },
+                            { path: 'blocked-accounts', element: <BlockedAccounts /> },
+                            { path: 'appearance', element: <AppearanceSettings /> },
+                            { path: 'playback', element: <PlaybackSettings /> },
+                            { path: 'about', element: <About /> },
+                            { path: 'report', element: <ReportProblem /> },
+                        ],
+                    },
+                    {
                         path: 'chats',
                         element: <ChatLayout />,
                         children: [
-                            {
-                                index: true,
-                                element: <Chats />,
-                            },
-                            {
-                                path: ':chatId',
-                                element: <Chat />,
-                            },
-                            {
-                                path: ':chatId/info',
-                                element: <UserInfo />,
-                            },
+                            { index: true, element: <Chats /> },
+                            { path: ':chatId', element: <Chat /> },
+                            { path: ':chatId/info', element: <UserInfo /> },
                         ],
                     },
                 ],
-            },
+            }, 
             {
                 path: '/test',
                 children: [

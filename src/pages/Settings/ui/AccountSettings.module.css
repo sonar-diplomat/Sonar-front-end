@@ -1,0 +1,56 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    background-color: #000;
+    padding: 16px 16px 32px 16px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    margin-top: 24px;
+}
+
+.modalContent {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 32px 24px;
+}
+
+.modalTitle {
+    font-family: 'Philosopher', sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 32px;
+    color: var(--input-text);
+    margin: 0;
+}
+
+.modalDescription {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 22px;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+}
+
+.modalActions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.modalActions button {
+    flex: 1;
+}
+
+.warningText {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 22px;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+}
+

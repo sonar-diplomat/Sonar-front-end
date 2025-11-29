@@ -1,0 +1,119 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    background-color: #000;
+    padding: 16px 16px 32px 16px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    margin-top: 24px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.description {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--input-helper-text);
+    margin: 0;
+}
+
+.loading,
+.noSessions {
+    text-align: center;
+    padding: 40px 16px;
+    font-size: 15px;
+    color: var(--input-helper-text);
+}
+
+.sessions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sessionCard {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    background-color: var(--input-bg);
+    border-radius: 16px;
+}
+
+.sessionInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+.sessionHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.deviceName {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 22px;
+    color: var(--input-text);
+}
+
+.sessionDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+    color: var(--input-helper-text);
+}
+
+.modalContent {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px;
+}
+
+.modalTitle {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 28px;
+    color: var(--input-text);
+    margin: 0;
+}
+
+.modalText {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--input-helper-text);
+    margin: 0;
+}
+
+.modalActions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.modalActions button {
+    flex: 1;
+}
+

@@ -155,6 +155,9 @@ export const API_ENDPOINTS = {
     clientSettings: {
         get: 'ClientSettings',
         patch: 'ClientSettings',
+        languages: 'ClientSettings/languages',
+        themes: 'ClientSettings/themes',
+        playbackQualities: 'ClientSettings/playback-qualities',
     },
     gift: {
         send: 'Gift/send',

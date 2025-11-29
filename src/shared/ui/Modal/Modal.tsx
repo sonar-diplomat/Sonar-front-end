@@ -30,22 +30,46 @@ export const Modal: React.FC<ModalProps> = ({
   useEffect(() => {
     if (!isOpen) return;
 
-    // Lock body scroll when modal is open
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
-    // Handle ESC key press
     const handleEscape = (event: KeyboardEvent) => {
       if (closeOnEscape && event.key === 'Escape') {
         onClose();
       }
     };
 
+    const handleResize = () => {
+      if (!modalRef.current) return;
+
+      const visualViewport = window.visualViewport;
+      if (visualViewport) {
+        const keyboardHeight = window.innerHeight - visualViewport.height;
+        if (keyboardHeight > 100) {
+          modalRef.current.style.maxHeight = `${visualViewport.height - 20}px`;
+          modalRef.current.style.overflowY = 'auto';
+        } else {
+          modalRef.current.style.maxHeight = '';
+          modalRef.current.style.overflowY = '';
+        }
+      }
+    };
+
     document.addEventListener('keydown', handleEscape);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize);
+      window.visualViewport.addEventListener('scroll', handleResize);
+      handleResize();
+    }
 
     return () => {
       document.body.style.overflow = originalOverflow;
       document.removeEventListener('keydown', handleEscape);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleResize);
+        window.visualViewport.removeEventListener('scroll', handleResize);
+      }
     };
   }, [isOpen, onClose, closeOnEscape]);
 
