@@ -51,4 +51,8 @@ export {
     MoreIcon,
     UpRightArrow,
     MenuIcon,
+    EditIcon,
+    StatisticsIcon,
+    MessageIcon,
+    ShuffleIcon,
 } from './icons';

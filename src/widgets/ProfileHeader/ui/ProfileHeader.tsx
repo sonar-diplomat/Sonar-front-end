@@ -4,12 +4,16 @@ import styles from "./ProfileHeader.module.css";
 
 import { Button, LeftArrow, TabSlider } from "@shared/ui";
 
-export const ProfileHeader = () => {
+interface ProfileHeaderProps {
+    secondaryTab?: string;
+}
+
+export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ secondaryTab = 'Library' }) => {
     const [activeTab, setActiveTab] = useState('profile');
 
     const tabs = [
         { value: 'profile', label: 'Profile' },
-        { value: 'library', label: 'Library' }
+        { value: secondaryTab, label: secondaryTab }
     ];
 
     return (

@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './ProfileCard.module.css';
 import type { ProfileCardProps } from '@shared/ui';
 import { CheckMark } from '@shared/ui';
+import { formatNumber } from '@shared/lib';
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({
     src,
@@ -11,6 +12,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     name,
     isVerified = false,
     stats,
+    monthlyListeners,
     title,
     bio
 }) => {
@@ -78,7 +80,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     className={styles.image}
                 />
             </div>
-            {(name || stats) && (
+            {(name || stats || monthlyListeners) && (
                 <div className={styles.overlay}>
                     {name && (
                         <div className={styles.nameContainer}>
@@ -90,20 +92,29 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                             )}
                         </div>
                     )}
-                    {stats && (
+                    {monthlyListeners !== undefined ? (
                         <div className={styles.statsContainer}>
-                            <a className={styles.statItem}>
+                            <div className={styles.monthlyListenersContainer}>
+                                <span className={styles.monthlyListenersValue}>
+                                    {formatNumber(monthlyListeners)}
+                                </span>
+                                <span className={styles.monthlyListenersLabel}>Monthly listeners</span>
+                            </div>
+                        </div>
+                    ) : stats && (
+                        <div className={styles.statsContainer}>
+                            <button type="button" className={styles.statItem}>
                                 <span className={styles.statValue}>{stats.publicPlaylists}</span>
                                 <span className={styles.statLabel}>Public playlists</span>
-                            </a>
-                            <a className={styles.statItem}>
+                            </button>
+                            <button type="button" className={styles.statItem}>
                                 <span className={styles.statValue}>{stats.followers}</span>
                                 <span className={styles.statLabel}>Followers</span>
-                            </a>
-                            <a className={styles.statItem}>
+                            </button>
+                            <button type="button" className={styles.statItem}>
                                 <span className={styles.statValue}>{stats.following}</span>
                                 <span className={styles.statLabel}>Following</span>
-                            </a>
+                            </button>
                         </div>
                     )}
                 </div>

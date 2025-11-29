@@ -222,3 +222,23 @@ export const UpRightArrow: React.FC<IconProps> = ({className}) => (
         <path d="M15.9619 7C16.2755 7 16.5276 7.09833 16.7168 7.29297C16.9056 7.48208 17 7.7279 17 8.03027V14.3564C16.9999 14.6429 16.9026 14.886 16.708 15.0859C16.5188 15.2806 16.2913 15.3779 16.0264 15.3779C15.7618 15.3778 15.5382 15.2802 15.3545 15.0859C15.1761 14.8913 15.0859 14.6532 15.0859 14.3721V12.1338L15.1758 10.0986L14.1865 11.2256L8.73633 16.668C8.51487 16.8894 8.27146 16.9998 8.00684 17C7.74743 17 7.51495 16.8967 7.30957 16.6914C7.10416 16.486 7 16.2536 7 15.9941C7.00007 15.7293 7.11147 15.4862 7.33301 15.2646L12.7754 9.81445L13.8945 8.8252L11.8506 8.90625H9.62891C9.34813 8.90625 9.10953 8.8176 8.91504 8.63965C8.72062 8.45603 8.62327 8.23374 8.62305 7.97461C8.62305 7.70428 8.71702 7.47341 8.90625 7.28418C9.10088 7.09498 9.34479 7 9.63672 7H15.9619Z" fill={"CurrentColor"}/>
     </svg>
 )
+
+export const EditIcon: React.FC<IconProps> = ({className}) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M14.3636 4.95455L16.0455 3.27273C16.8485 2.46970 18.1515 2.46970 18.9545 3.27273C19.7576 4.07576 19.7576 5.37879 18.9545 6.18182L17.2727 7.86364M14.3636 4.95455L6.40909 12.9091C5.93939 13.3788 5.70455 13.6136 5.52273 13.8864C5.34091 14.1591 5.21212 14.4621 4.95455 15.0682L3.68182 18.3636M14.3636 4.95455L17.2727 7.86364M17.2727 7.86364L9.31818 15.8182C8.84848 16.2879 8.61364 16.5227 8.34091 16.7045C8.06818 16.8864 7.76515 17.0152 7.15909 17.2727L3.86364 18.5455M3.86364 18.5455L3.68182 18.3636M3.86364 18.5455L5.13636 15.25C5.39394 14.6439 5.52273 14.3409 5.70455 14.0682C5.88636 13.7955 6.12121 13.5606 6.59091 13.0909L3.68182 18.3636" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+)
+
+export const StatisticsIcon: React.FC<IconProps> = ({className}) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M3 3V21H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M7 16L11 12L15 16L21 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M17 10H21V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+)
+
+export const ShuffleIcon: React.FC<IconProps> = ({className}) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M16 3H21V8M4 20L21 3M21 16V21H16M15 15L21 21M4 4L9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+)

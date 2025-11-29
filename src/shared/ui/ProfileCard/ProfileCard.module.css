@@ -82,6 +82,9 @@
     font-size: 14px;
     line-height: normal;
     text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
 .statValue {
@@ -93,6 +96,29 @@
 .statLabel {
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.monthlyListenersContainer {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    justify-content: flex-start;
+}
+
+.monthlyListenersValue {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: normal;
+    color: #FFFFFF;
+}
+
+.monthlyListenersLabel {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: normal;
     color: rgba(255, 255, 255, 0.8);
 }
 
