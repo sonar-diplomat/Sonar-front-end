@@ -1,7 +1,6 @@
 import React from 'react';
 import styles from './ProfileCard.module.css';
-import type { ProfileCardProps } from '@shared/ui';
-import { CheckMark } from '@shared/ui';
+import {type ProfileCardProps, VerifyIcon} from '@shared/ui';
 import { formatNumber } from '@shared/lib';
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({
@@ -51,7 +50,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     {isVerified && (
                         <div className={styles.verifiedBadgeTop}>
                             <div className={styles.verifiedIcon}>
-                                <CheckMark className={styles.checkIcon} />
+                                <VerifyIcon className={styles.checkIcon} />
                             </div>
                             <p className={styles.verifiedText}>Verified profile</p>
                         </div>
@@ -87,7 +86,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                             <h1 className={styles.name}>{name}</h1>
                             {isVerified && (
                                 <div className={styles.verifiedBadge}>
-                                    <CheckMark className={styles.checkIcon} />
+                                    <VerifyIcon className={styles.checkIcon} />
                                 </div>
                             )}
                         </div>

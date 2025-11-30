@@ -58,4 +58,6 @@ export {
     MessageIcon,
     ShuffleIcon,
     SortIcon,
+    VerifyIcon,
+    EditProfileIcon,
 } from './icons';
