@@ -60,4 +60,6 @@ export {
     SortIcon,
     VerifyIcon,
     EditProfileIcon,
+    LinkIcon,
+    NextTrackIcon,
 } from './icons';

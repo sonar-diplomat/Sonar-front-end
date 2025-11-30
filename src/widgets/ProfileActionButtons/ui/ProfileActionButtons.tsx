@@ -1,14 +1,14 @@
 import React from 'react';
 import { Button, MoreIcon, UpRightArrow, EditProfileIcon, StatisticsIcon, ShuffleIcon, PlayIcon } from '@shared/ui';
-import type { UserRole, ViewerType } from './UserProfile';
-import styles from './UserProfile.module.css';
+import type { ViewerType } from '@shared/types';
+
+export type ProfileType = 'user' | 'artist';
 
 interface ProfileActionButtonsProps {
-    role: UserRole;
     viewerType: ViewerType;
+    profileType: ProfileType;
 }
 
-//button configurations
 const FILLED_BUTTON_PROPS = {
     variant: 'filled' as const,
     size: 'medium' as const,
@@ -23,20 +23,11 @@ const ICON_BUTTON_PROPS = {
     iconOnly: true,
 };
 
-export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({ role, viewerType }) => {
-    // Reusable buttons
-    const followButton = (
-        <Button {...FILLED_BUTTON_PROPS} theme="light" icon={<UpRightArrow />}>
-            Follow
-        </Button>
-    );
-
-    const moreButton = <Button {...ICON_BUTTON_PROPS} icon={<MoreIcon />} />;
-
-    // Owner viewing their own profile
+export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({ viewerType, profileType }) => {
+    // Owner viewing their own profile (same for both user and artist)
     if (viewerType === 'owner') {
         return (
-            <div className={styles.profileActions}>
+            <div style={{ display: 'flex', gap: '8px' }}>
                 <Button {...FILLED_BUTTON_PROPS} theme="dark" icon={<EditProfileIcon />}>
                     Edit profile
                 </Button>
@@ -47,12 +38,14 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({ role
         );
     }
 
-    // Guest viewing artist profile
-    if (role === 'artist') {
+    // Guest viewing artist profile - includes playback controls
+    if (profileType === 'artist') {
         return (
-            <div className={styles.profileActions}>
-                {followButton}
-                {moreButton}
+            <div style={{ display: 'flex', gap: '8px' }}>
+                <Button {...FILLED_BUTTON_PROPS} theme="light" icon={<UpRightArrow />}>
+                    Follow
+                </Button>
+                <Button {...ICON_BUTTON_PROPS} icon={<MoreIcon />} />
                 <Button {...ICON_BUTTON_PROPS} icon={<ShuffleIcon />} />
                 <Button {...ICON_BUTTON_PROPS} icon={<PlayIcon />} />
             </div>
@@ -61,9 +54,11 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({ role
 
     // Guest viewing regular user profile
     return (
-        <div className={styles.profileActions}>
-            {followButton}
-            {moreButton}
+        <div style={{ display: 'flex', gap: '8px' }}>
+            <Button {...FILLED_BUTTON_PROPS} theme="light" icon={<UpRightArrow />}>
+                Follow
+            </Button>
+            <Button {...ICON_BUTTON_PROPS} icon={<MoreIcon />} />
         </div>
     );
 };
