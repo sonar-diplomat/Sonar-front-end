@@ -2,6 +2,7 @@ import { store } from '@shared/store';
 import { updateTokens, logout, setCredentials } from '@shared/store/features/auth/authSlice';
 import { authApiLogin, authApiRefreshToken } from './auth-api-utils';
 import { authStorage, type AuthCredentials } from './auth-storage';
+import { signalRManager } from '../signalr/signalr-manager';
 
 /**
  * Централизованный менеджер авторизации
@@ -129,10 +130,18 @@ class AuthManager {
    * Выход из системы
    * Очищает токены и может вызвать API для ревокации сессии на сервере
    */
-  logout(): void {
+  async logout(): Promise<void> {
     if (import.meta.env.DEV) {
       console.log('[authManager] logout: Clearing tokens and logging out');
     }
+    
+    // Отключаем SignalR соединение
+    try {
+      await signalRManager.disconnect();
+    } catch (error) {
+      console.error('[authManager] Error disconnecting SignalR:', error);
+    }
+    
     store.dispatch(logout());
     // Опционально: можно вызвать API для ревокации сессии на сервере
     // Но обычно это делается через отдельный вызов revokeSession или revokeAllSessions

@@ -1,6 +1,6 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
-import type { ChatDTO, MessageDTO, CreateChatDTO } from '../model/types';
+import type { ChatDTO, MessageDTO, CreateChatDTO, ChatListItemDTO } from '../model/types';
 import type { CursorPageDTO } from '@entities/Playlist';
 
 /**
@@ -8,6 +8,15 @@ import type { CursorPageDTO } from '@entities/Playlist';
  */
 export const chatApi = rtkApi.injectEndpoints({
   endpoints: (builder) => ({
+    getChats: builder.query<ChatListItemDTO[], void>({
+      query: () => ({
+        url: API_ENDPOINTS.chat.list,
+        method: 'GET',
+        withAuth: true,
+      }),
+      providesTags: [{ type: 'Chat', id: 'LIST' }],
+    }),
+
     getMessage: builder.query<MessageDTO, number>({
       query: (messageId) => ({
         url: API_ENDPOINTS.chat.getMessage(messageId),
@@ -59,9 +68,8 @@ export const chatApi = rtkApi.injectEndpoints({
         body: message,
         withAuth: true,
       }),
-      invalidatesTags: (_result, _error, { chatId }) => [
-        { type: 'Message', id: `chat-${chatId}` },
-        { type: 'Chat', id: chatId },
+      invalidatesTags: () => [
+        { type: 'Chat', id: 'LIST' },
       ],
     }),
 
@@ -133,7 +141,9 @@ export const chatApi = rtkApi.injectEndpoints({
         body: messageIds,
         withAuth: true,
       }),
-      invalidatesTags: (_result, _error, { chatId }) => [{ type: 'Message', id: `chat-${chatId}` }],
+      // Don't invalidate tags - state is updated via SignalR message.read event
+      // If SignalR is not available, the event will still be sent by the server
+      invalidatesTags: () => [],
     }),
 
     readAllMessages: builder.mutation<void, number>({
@@ -142,13 +152,16 @@ export const chatApi = rtkApi.injectEndpoints({
         method: 'PUT',
         withAuth: true,
       }),
-      invalidatesTags: (_result, _error, chatId) => [{ type: 'Message', id: `chat-${chatId}` }],
+      // Don't invalidate tags - state is updated via SignalR message.read event
+      // If SignalR is not available, the event will still be sent by the server
+      invalidatesTags: () => [],
     }),
   }),
 });
 
 // Export hooks
 export const {
+  useGetChatsQuery,
   useGetMessageQuery,
   useGetChatInfoQuery,
   useGetChatMessagesQuery,

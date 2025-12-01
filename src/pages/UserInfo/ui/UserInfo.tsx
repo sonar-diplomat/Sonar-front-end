@@ -1,7 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Checkbox, ClearIcon, ProfileIcon, Info, PlusIcon } from '@shared/ui';
-import { getChatMockData } from '@entities/Chat/model/mock/chatMockData';
+import { Checkbox, ProfileIcon, Info, PlusIcon, ErrorIcon } from '@shared/ui';
+import { 
+    useGetChatInfoQuery,
+    useLeaveChatMutation,
+} from '@entities/Chat/api/rtkApi';
 import styles from './UserInfo.module.css';
 
 export const UserInfo: React.FC = () => {
@@ -10,14 +13,14 @@ export const UserInfo: React.FC = () => {
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const currentUserId = 1;
 
-    const chatData = useMemo(() => {
-        if (!chatId) return null;
-        return getChatMockData(Number(chatId));
-    }, [chatId]);
-
-    const handleClose = () => {
-        navigate(-1);
-    };
+    const chatIdNumber = chatId ? Number(chatId) : 0;
+    
+    // RTK Query hooks
+    const { data: chatInfo, isLoading, error } = useGetChatInfoQuery(chatIdNumber, {
+        skip: !chatIdNumber,
+    });
+    
+    const [leaveChat] = useLeaveChatMutation();
 
     const handleGoToProfile = () => {
         console.log('Go to profile');
@@ -35,41 +38,52 @@ export const UserInfo: React.FC = () => {
         console.log('Delete chat');
     };
 
-    if (!chatData) {
-        return null;
+    if (isLoading) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.emptyState}>
+                    <div className={styles.loadingSpinner}></div>
+                    <p className={styles.emptyText}>Loading chat info...</p>
+                </div>
+            </div>
+        );
     }
 
-    const chatName = chatData.chat.name;
-    const isGroup = chatData.chat.isGroup;
-    const members = chatData.chat.users || [];
-    const membersCount = members.length;
+    if (error || !chatInfo) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.emptyState}>
+                    <div className={styles.errorIcon}>
+                        <ErrorIcon />
+                    </div>
+                    <h2 className={styles.emptyTitle}>Chat not found</h2>
+                    <p className={styles.emptyText}>The chat you're looking for doesn't exist or has been deleted.</p>
+                </div>
+            </div>
+        );
+    }
+
+    const chatName = chatInfo.name;
+    const isGroup = chatInfo.isGroup;
+    const membersCount = chatInfo.userIds?.length || 0;
 
     const handleAddMembers = () => {
         console.log('Add members');
     };
 
-    const handleLeaveGroup = () => {
-        console.log('Leave group');
+    const handleLeaveGroup = async () => {
+        if (!chatIdNumber) return;
+        
+        try {
+            await leaveChat(chatIdNumber).unwrap();
+            navigate('/chats');
+        } catch (error) {
+            console.error('Failed to leave chat:', error);
+        }
     };
 
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
-                <Button
-                    iconOnly
-                    icon={<ClearIcon />}
-                    onClick={handleClose}
-                    variant="text"
-                    theme="dark"
-                    size="medium"
-                    className={styles.closeButton}
-                />
-                <div className={styles.headerContent}>
-                    <h1 className={styles.title}>{isGroup ? 'Group info' : 'User info'}</h1>
-                    <p className={styles.subtitle}>{isGroup ? 'Group chat' : 'Personal chat'}</p>
-                </div>
-            </div>
-
             <div className={styles.profileSection}>
                 <div className={styles.profileImage}>
                     <div className={styles.profilePlaceholder}>
@@ -96,22 +110,22 @@ export const UserInfo: React.FC = () => {
                 </div>
             </div>
 
-            {isGroup && members.length > 0 && (
+            {isGroup && chatInfo.userIds && chatInfo.userIds.length > 0 && (
                 <div className={styles.membersSection}>
                     <div className={styles.membersHeader}>
                         <span className={styles.membersTitle}>Members</span>
                         <span className={styles.membersCount}>{membersCount}</span>
                     </div>
                     <div className={styles.membersList}>
-                        {members.map((member) => (
-                            <div key={member.id} className={styles.memberItem}>
+                        {chatInfo.userIds.map((userId) => (
+                            <div key={userId} className={styles.memberItem}>
                                 <div className={styles.memberAvatar}>
                                     <div className={styles.memberAvatarPlaceholder}>
-                                        {member.firstName.charAt(0).toUpperCase()}
+                                        {userId === currentUserId ? 'Y' : 'U'}
                                     </div>
                                 </div>
                                 <span className={styles.memberName}>
-                                    {member.id === currentUserId ? 'You' : member.firstName}
+                                    {userId === currentUserId ? 'You' : `User ${userId}`}
                                 </span>
                             </div>
                         ))}
