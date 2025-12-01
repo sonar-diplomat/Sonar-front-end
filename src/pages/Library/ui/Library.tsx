@@ -7,7 +7,7 @@ import {Button, FolderCard, ItemCard, PlusIcon} from "@shared/ui";
 import type {Category} from "@widgets/ChipsBar";
 import {ContentSections, type ContentSection} from "@widgets/ContentSections";
 import {SearchFilterHeader} from "@widgets/SearchFilterHeader";
-import { useGetAllFolders } from '@entities/Library';
+import { useGetFoldersQuery } from '@shared/api/rtkApi';
 
 import styles from './Library.module.css';
 
@@ -15,7 +15,7 @@ export const Library: React.FC<LibraryProps> = () => {
     const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState<Category>('All');
 
-    const { data: folderData, loading: foldersLoading, refetch: refetchFolders } = useGetAllFolders();
+    const { data: folderData, isLoading: foldersLoading, refetch: refetchFolders } = useGetFoldersQuery();
 
     const [folders, setFolders] = useState<Folder[]>([]);
     const [playlists] = useState<Playlist[]>([
@@ -39,7 +39,7 @@ export const Library: React.FC<LibraryProps> = () => {
     }, [folderData]);
 
     useEffect(() => {
-        refetchFolders?.();
+        void refetchFolders();
     }, [refetchFolders]);
 
     const handleFolderClick = useCallback((folder: Folder) => {
@@ -94,8 +94,6 @@ export const Library: React.FC<LibraryProps> = () => {
         }
     ], [selectedCategory, folders, playlists, handleFolderClick, handlePlaylistClick]);
 
-    const isLoading = foldersLoading;
-
     return (
         <div className={styles.container}>
             <SearchFilterHeader
@@ -109,7 +107,7 @@ export const Library: React.FC<LibraryProps> = () => {
                 variant={"filled"}
                 theme={"light"}
                 onClick={handleCreateNew}
-                disabled={isLoading}
+                disabled={foldersLoading}
             >
                 Create New
             </Button>

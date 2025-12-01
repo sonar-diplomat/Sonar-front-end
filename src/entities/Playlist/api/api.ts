@@ -1,12 +1,8 @@
 import { apiClient } from '@shared/api/oldBaseApi.ts';
 import { API_ENDPOINTS } from '@shared/config';
-
 import type { TrackDTO } from '@entities/Music';
-import type { ShareLinkDTO } from '@entities/Collection';
 import type {RequestConfig} from "@shared/types";
 import type {CreatePlaylistDTO, CursorPageDTO, PlaylistDTO} from "@entities/Playlist";
-
-
 
 export const Api = {
     /**
