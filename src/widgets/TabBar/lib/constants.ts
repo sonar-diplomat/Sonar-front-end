@@ -22,9 +22,9 @@ export const TAB_ITEMS: TabItem[] = [
     path: '/library',
   },
   {
-    id: 'profile',
+    id: 'user',
     label: 'Profile',
     icon: ProfileIcon,
-    path: '/profile',
+    path: '/user/1',
   },
 ];

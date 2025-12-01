@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, MoreIcon, UpRightArrow, EditProfileIcon, StatisticsIcon, ShuffleIcon, PlayIcon } from '@shared/ui';
 import type { ViewerType } from '@shared/types';
+import styles from './ProfileActionButtons.module.css';
 
 export type ProfileType = 'user' | 'artist';
 
@@ -27,7 +28,7 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({ view
     // Owner viewing their own profile (same for both user and artist)
     if (viewerType === 'owner') {
         return (
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div className={styles.container}>
                 <Button {...FILLED_BUTTON_PROPS} theme="dark" icon={<EditProfileIcon />}>
                     Edit profile
                 </Button>
@@ -41,7 +42,7 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({ view
     // Guest viewing artist profile - includes playback controls
     if (profileType === 'artist') {
         return (
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div className={styles.container}>
                 <Button {...FILLED_BUTTON_PROPS} theme="light" icon={<UpRightArrow />}>
                     Follow
                 </Button>
@@ -54,7 +55,7 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({ view
 
     // Guest viewing regular user profile
     return (
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div className={styles.container}>
             <Button {...FILLED_BUTTON_PROPS} theme="light" icon={<UpRightArrow />}>
                 Follow
             </Button>

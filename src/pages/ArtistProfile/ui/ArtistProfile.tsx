@@ -16,7 +16,7 @@ interface ArtistProfileProps {
 }
 
 export const ArtistProfile: React.FC<ArtistProfileProps> = ({
-    viewerType = 'guest'
+    viewerType = 'owner'
 }) => {
     const { id } = useParams<{ id: string }>();
     const { handleBackClick } = useProfileNavigation();
@@ -81,10 +81,22 @@ export const ArtistProfile: React.FC<ArtistProfileProps> = ({
         </div>
     );
 
+    const handleMessageClick = () => {
+        console.log('Message clicked');
+    };
+
+    const handleMenuClick = () => {
+        console.log('Menu clicked');
+    };
+
     return (
         <ProfileLayout
-            secondaryTab="Posts"
+            viewerType={viewerType}
+            profileType="artist"
+            secondaryTab="Messages"
             onBackClick={handleBackClick}
+            onMessageClick={handleMessageClick}
+            onMenuClick={handleMenuClick}
             profileCard={profileCard}
             actionButtons={actionButtons}
             profileView={profileView}

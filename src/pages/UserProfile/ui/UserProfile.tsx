@@ -70,11 +70,23 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         </>
     );
 
+    const handleMessageClick = () => {
+        console.log('Message clicked');
+    };
+
+    const handleMenuClick = () => {
+        console.log('Menu clicked');
+    };
+
     return (
         <ProfileLayout
+            viewerType={viewerType}
+            profileType="user"
             secondaryTab="Library"
             onBackClick={handleBackClick}
             onTabChange={handleTabChange}
+            onMessageClick={handleMessageClick}
+            onMenuClick={handleMenuClick}
             profileCard={profileCard}
             actionButtons={actionButtons}
             profileView={profileView}
