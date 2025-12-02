@@ -28,7 +28,8 @@ export const NotFound: React.FC = () => {
             <div className={styles.buttonGroup}>
                 <Button
                     onClick={handleGoHome}
-                    variant="light"
+                    variant="filled"
+                    theme="light"
                     size="large"
                     shape="cr-16"
                     fullWidth
@@ -39,7 +40,8 @@ export const NotFound: React.FC = () => {
 
                 <Button
                     onClick={handleGoBack}
-                    variant="dark"
+                    variant="filled"
+                    theme="light"
                     size="large"
                     shape="cr-16"
                     fullWidth

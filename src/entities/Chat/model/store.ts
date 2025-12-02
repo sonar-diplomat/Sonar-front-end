@@ -1,9 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Api } from '../api/api';
-import type { CreateChatDTO, MessageDTO } from './types';
+import type {ChatDTO, CreateChatDTO, MessageDTO} from './types';
 import type { State } from '@shared/types/store';
 import type { RequestConfig } from '@shared/types';
 import { withAuth } from '@shared/lib/auth/withAuth';
+import type {CursorPageDTO} from "@entities/Playlist";
 
 const pickError = (res: any) =>
     res?.success ? undefined : res?.errors?.[0] || res?.details?.[0] || res?.message;

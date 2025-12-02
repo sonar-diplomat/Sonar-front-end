@@ -12,7 +12,8 @@ export const Settings: React.FC = () => {
         icon={<LeftArrow/>}
         children={'Back'}
         size={'medium'}
-        variant={'dark'}
+        variant="filled"
+        theme="dark"
         onClick={() => navigate('/profile')}
         className={styles.backButton}
       />
@@ -49,10 +50,6 @@ export const Settings: React.FC = () => {
           <SettingsItem
             label="About"
             onClick={() => navigate('/settings/about')}
-          />
-          <SettingsItem
-            label="Report a Problem"
-            onClick={() => navigate('/settings/report')}
           />
         </SettingsSection>
       </div>

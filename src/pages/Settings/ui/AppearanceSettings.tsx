@@ -72,7 +72,8 @@ export const AppearanceSettings: React.FC = () => {
         {hasChanges && (
           <div className={styles.saveButtonContainer}>
             <Button
-              variant="dark"
+              variant="filled"
+              theme="dark"
               size="large"
               fullWidth
               onClick={handleSave}

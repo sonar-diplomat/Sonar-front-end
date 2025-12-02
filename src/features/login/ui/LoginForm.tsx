@@ -10,7 +10,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     onContinueWithApple,
     onCreateAccount,
     isSubmitting,
-    error,
 }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState<LoginFormData>({
@@ -32,7 +31,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             <div className={styles.header}>
                 <h2>Sign in</h2>
                 <p>Enter your details to log in!</p>
-                {error && <p className={styles.error}>{error}</p>}
             </div>
 
             <Form onSubmit={handleSubmit} className={styles.form}>

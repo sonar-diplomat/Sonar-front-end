@@ -277,7 +277,7 @@ export const rtkBaseQuery: BaseQueryFn<
       const normalized = normalizeResponse(raw, status);
 
       // Проверка на ошибку
-      if (!response.ok || normalized.success === false) {
+      if (!response.ok || !normalized.success) {
         return {
           error: {
             status: normalized.status,

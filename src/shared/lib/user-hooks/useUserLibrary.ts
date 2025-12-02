@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import {
   useGetFoldersQuery,
   useGetClientSettingsQuery,
-} from '@shared/api/rtkApi';
+} from '@shared/api';
 
 export const useUserLibrary = () => {
   const {
@@ -25,15 +25,15 @@ export const useUserLibrary = () => {
   const library = useMemo(() => {
     if (!folders) return null;
 
-    const allPlaylists = folders.flatMap(folder =>
+    const allPlaylists = folders.flatMap((folder: { collections: any[]; }) =>
       folder.collections.filter(c => c.type === 'Playlist')
     );
 
-    const allAlbums = folders.flatMap(folder =>
+    const allAlbums = folders.flatMap((folder: { collections: any[]; }) =>
       folder.collections.filter(c => c.type === 'Album')
     );
 
-    const allBlends = folders.flatMap(folder =>
+    const allBlends = folders.flatMap((folder: { collections: any[]; }) =>
       folder.collections.filter(c => c.type === 'Blend')
     );
 

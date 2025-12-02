@@ -4,6 +4,7 @@ import type { PlaylistDTO, CursorPageDTO } from './types';
 import type { TrackDTO } from '@entities/Music';
 import type { State } from '@shared/types/store';
 import type {RequestConfig} from "@shared/types";
+import type {ShareLinkDTO} from "@entities/Collection";
 
 const pickError = (res: any) =>
     res?.success ? undefined : res?.errors?.[0] || res?.details?.[0] || res?.message;

@@ -14,14 +14,14 @@
     justify-content: center;
     padding: 40px 20px;
     text-align: center;
-    color: var(--text-secondary, #999);
+    color: #999;
 }
 
 .error {
-    color: var(--error-color, #ff4444);
+    color: #ff4444;
 }
 
 .emptyState {
-    color: var(--text-secondary, #999);
+    color: #999;
     font-size: 16px;
 }

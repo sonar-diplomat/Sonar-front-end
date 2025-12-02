@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './SectionHeader.module.css';
-import type { SectionHeaderProps } from './SectionHeader.types';
+import type { SectionHeaderProps } from '@shared/ui';
 
 export const SectionHeader: React.FC<SectionHeaderProps> = ({
     title,

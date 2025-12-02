@@ -16,6 +16,7 @@ export { Toggle } from './Toggle/Toggle';
 export { Select } from './Select/Select';
 export { SettingsItem } from './SettingsItem/SettingsItem';
 export { SettingsSection } from './SettingsSection/SettingsSection';
+export { Notification, NotificationContainer } from './Notification';
 export type { ButtonProps, ButtonVariant, ButtonSize, ButtonShape } from './Button/Button';
 export type { CheckboxProps } from './Checkbox/Checkbox';
 export type { FormProps } from './Form/Form';
@@ -32,6 +33,7 @@ export type { ToggleProps } from './Toggle/Toggle';
 export type { SelectProps, SelectOption } from './Select/Select';
 export type { SettingsItemProps } from './SettingsItem/SettingsItem';
 export type { SettingsSectionProps } from './SettingsSection/SettingsSection';
+export type { NotificationProps } from './Notification';
 export {
     PlayIcon,
     EyeIcon,

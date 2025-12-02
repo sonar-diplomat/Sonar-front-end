@@ -5,11 +5,13 @@ import { AssignNewPassword as AssignNewPasswordFeature } from "@features/passwor
 import type { AssignNewPasswordFormData } from "@features/password-recovery";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useConfirmPasswordChange } from "@features/auth/model/store.ts";
+import { useNotifications } from "@shared/store/notificationStore";
 
 export const AssignNewPassword: React.FC = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const { loading, error, mutate: confirmPasswordChange } = useConfirmPasswordChange();
+    const { loading, mutate: confirmPasswordChange } = useConfirmPasswordChange();
+    const { showSuccess, showError } = useNotifications();
 
     const handleBack = () => {
         navigate("/login");
@@ -25,7 +27,10 @@ export const AssignNewPassword: React.FC = () => {
         });
 
         if (res.success) {
+            showSuccess('Password updated successfully!');
             navigate("/login");
+        } else {
+            showError(res.message || 'Failed to update password', res.status);
         }
     };
 
@@ -44,7 +49,6 @@ export const AssignNewPassword: React.FC = () => {
             <AssignNewPasswordFeature
                 onSubmit={handleAssignNewPasswordSubmit}
                 isSubmitting={loading}
-                error={error}
             />
         </div>
     );
