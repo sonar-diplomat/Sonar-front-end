@@ -15,6 +15,7 @@ export interface ProfileCardProps {
     name?: string;
     isVerified?: boolean;
     stats?: ProfileCardStats;
+    monthlyListeners?: number;
     // For 'bio' variant
     title?: string;
     bio?: string;

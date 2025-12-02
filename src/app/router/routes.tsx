@@ -14,6 +14,8 @@ import {
     Search,
     CreateFolder,
     UserProfile,
+    ArtistProfile, 
+    Collection,
     NotFound,
     Settings,
     AccountSettings,
@@ -98,10 +100,16 @@ export const router = createBrowserRouter([
                         element: <Search />,
                     },
                     {
-                        path: 'profile',
+                        path: 'user/:id',
                         element: <UserProfile />,
                     },
                     {
+                        path: 'artist/:id',
+                        element: <ArtistProfile />,
+                    },
+                    {
+                        path: 'collection/:id',
+                        element: <Collection />,
                         path: 'settings',
                         children: [
                             { index: true, element: <Settings /> },
@@ -136,6 +144,10 @@ export const router = createBrowserRouter([
                     {
                         path: 'api',
                         element: <ApiTestPage />,
+                    },
+                    {
+                        path: 'collection',
+                        element: <CollectionViewExample />,
                     },
                 ],
             },

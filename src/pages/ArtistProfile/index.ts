@@ -1,0 +1,1 @@
+export { ArtistProfile } from './ui/ArtistProfile';
