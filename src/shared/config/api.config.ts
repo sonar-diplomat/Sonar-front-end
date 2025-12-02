@@ -119,6 +119,7 @@ export const API_ENDPOINTS = {
         changePassword: (id: number) => `DistributorMaster/account/${id}/password`,
     },
     chat: {
+        list: 'Chat',
         create: 'Chat',
         sendMessage: (chatId: number) => `Chat/${chatId}/send`,
         deleteMessage: (messageId: number) => `Chat/message/${messageId}`,

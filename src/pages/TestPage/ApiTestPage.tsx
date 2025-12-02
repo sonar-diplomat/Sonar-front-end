@@ -156,218 +156,8 @@ import {
   useUpdatePostVisibilityMutation,
 } from '@shared/api';
 
-// ==================== Music Store Hooks ====================
-import {
-  useTrack,
-  useUpdateTrack,
-  useUpdateTrackFile,
-  useDeleteTrack,
-  useUpdateTrackVisibility,
-  useToggleTrackFavorite,
-} from '@entities/Music/model/store';
-
-// ==================== User Store Hooks ====================
-import {
-  useGetUsers,
-  useGetUserById,
-  useUpdateUser,
-  useUpdateAvatar,
-  useUpdateUserVisibility,
-} from '@entities/User/model/store';
-
-// ==================== Chat Store Hooks ====================
-import {
-  useCreateChat,
-  useSendMessage,
-  useDeleteMessage,
-  useGetMessage,
-  useGetChatInfo,
-  useGetChatMessages,
-  useAddUserToChat,
-  useLeaveChat,
-  useRemoveUserFromChat,
-  useUpdateChatCover,
-  useUpdateChatName,
-  useReadMessages,
-  useReadAllMessages,
-} from '@entities/Chat/model/store';
-
-// ==================== Album Store Hooks ====================
-import {
-  useUploadAlbum,
-  useDeleteAlbum,
-  useUpdateAlbumName,
-  useAlbumAddTrack,
-  useUpdateAlbumCover,
-  useAlbumShareLink,
-  useAlbumShareQr,
-  useAlbumUpdateVisibility,
-} from '@entities/Album/model/store';
-
-// ==================== Playlist Store Hooks ====================
-import {
-  useCreatePlaylist,
-  useDeletePlaylist,
-  useUpdatePlaylistName,
-  useUpdatePlaylistCover,
-  useAddContributor,
-  useRemoveContributor,
-  useAddTrackToPlaylist,
-  useRemoveTrackFromPlaylist,
-  usePlaylistTracks,
-  usePlaylistById,
-  useImportCollectionToPlaylist,
-  usePlaylistShareLink,
-  usePlaylistShareQr,
-  usePlaylistUpdateVisibility,
-} from '@entities/Playlist/model/store';
-
-// ==================== Report Store Hooks ====================
-import {
-  useReports,
-  useReport,
-  useCreateReport,
-  useDeleteReport,
-  useCloseReport,
-  useFilteredReports,
-  useReportsByReporter,
-  useOpenReports,
-  useReportReasonTypes,
-  useReportReasonType,
-  useReportableEntityTypes,
-  useReportableEntityType,
-} from '@entities/Report/model/store';
-
-// ==================== Subscription Store Hooks ====================
-import {
-  useSubscriptionPacks,
-  useSubscriptionPack,
-  useSubscriptionFeatures,
-  useSubscriptionFeature,
-  useSubscriptionPayments,
-  useSubscriptionPayment,
-  usePurchaseSubscription,
-} from '@entities/Subscription/model/store';
-
-// ==================== Gift Store Hooks ====================
-import {
-  useSendGift,
-  useAcceptGift,
-  useGetReceivedGifts,
-  useGetSentGifts,
-  useGetGift,
-  useCancelGift,
-  useGetGiftStyles,
-  useGetGiftStyle,
-} from '@entities/Gift/model/store';
-
-// ==================== Library Store Hooks ====================
-import {
-  useGetFolder,
-  useGetAllFolders,
-  useCreateFolder,
-  useUpdateFolderName,
-  useDeleteFolder,
-  useAddCollectionToFolder,
-  useRemoveCollectionFromFolder,
-  useMoveFolder,
-} from '@entities/Library/model/store';
-
-// ==================== Auth Store Hooks ====================
-import {
-  useRegister,
-  useLogin,
-} from '@features/auth/model/store';
-
-// ==================== Access Store Hooks ====================
-import {
-  useAccessFeatures,
-  useAccessFeatureById,
-  useUserAccessFeatures,
-  useAssignAccessFeatures,
-  useRevokeAccessFeatures,
-} from '@entities/Access/model/store';
-
-// ==================== ClientSettings Store Hooks ====================
-import {
-  useGetClientSettings,
-  usePatchClientSettings,
-} from '@entities/ClientSettings/model/store';
-
-// ==================== UserState Store Hooks ====================
-import {
-  useUpdateCurrentPosition,
-  useUpdateListeningTarget,
-  useAddToQueue,
-  useDeleteFromQueue,
-  useUpdateUserStatus,
-  useUpdateUserPrimarySession,
-} from '@entities/UserState/model/store';
-
-// ==================== Auth Store Hooks ====================
-import {
-  useVerify2FA,
-  useRefreshToken,
-  useRequestEmailChange,
-  useConfirmEmailChange,
-  useConfirmPasswordChange,
-  useRequestPasswordChange,
-  useSessions,
-} from '@features/auth/model/store';
-
-// ==================== Collection Store Hooks ====================
-import {
-  useUpdateCollectionVisibility,
-  useToggleCollectionFavorite,
-} from '@entities/Collection/model/store';
-
-// ==================== Distribution Store Hooks ====================
-import {
-  useCreateDistributor,
-  useGetDistributors,
-  useGetDistributor,
-  useUpdateDistributor,
-  useDeleteDistributor,
-  useUpdateDistributorKey,
-  useGetArtistRequests,
-  useGetArtistRequest,
-  useResolveArtistRequest,
-  useTerminateDistributorSession,
-  useRegisterDistributorAccount,
-  useDistributorLogin,
-  useDistributorRefreshToken,
-  useDistributorRevokeSession,
-  useDistributorRevokeAllSessions,
-  useGetDistributorSessions,
-  useDeleteDistributorAccount,
-  useChangeDistributorUsername,
-  useGetDistributorAccount,
-  useChangeDistributorEmail,
-  useChangeDistributorPassword,
-} from '@entities/Distribution/model/store';
-
-// ==================== Artist Store Hooks ====================
-import {
-  useRegisterArtist,
-  useUpdateArtistName,
-  useDeleteArtist,
-  useCreatePost,
-  useDeletePost,
-  useUpdatePost,
-  useUpdatePostVisibility,
-} from '@entities/Artist/model/store';
-
-// ==================== Blend Store Hooks ====================
-import {
-  useUpdateBlendVisibility,
-  useToggleBlendFavorite,
-} from '@entities/Blend/model/store';
-
-// ==================== Share Store Hooks ====================
-import {
-  useGetShareLink,
-  useGetShareQr,
-} from '@entities/Share/model/store';
+// ==================== Legacy Store Hooks ====================
+// All hooks are now using RTK Query - legacy hooks removed
 
 // ==================== Shared Store Hooks ====================
 // Note: These hooks are imported but not used in the test page
@@ -394,7 +184,7 @@ interface EndpointDefinition {
   category: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   params: EndpointParam[];
-  hookType: 'rtk' | 'store';
+  hookType: 'rtk';
   hookName: string;
 }
 
@@ -835,15 +625,7 @@ export const ApiTestPage: React.FC = () => {
   const [updatePost] = useUpdatePostMutation();
   const [updatePostVisibility] = useUpdatePostVisibilityMutation();
 
-  // Store hooks (legacy)
-  const updateTrackHook = useUpdateTrack();
-  const deleteTrackHook = useDeleteTrack();
-  const updateUserHook = useUpdateUser();
-  const createChatHook = useCreateChat();
-  const sendMessageHook = useSendMessage();
-  const createFolderHook = useCreateFolder();
-  const registerHook = useRegister();
-  const loginHook = useLogin();
+  // All hooks are now RTK Query - legacy hooks removed
 
   const handleSubmit = async () => {
     if (!selectedEndpoint) return;
@@ -856,7 +638,7 @@ export const ApiTestPage: React.FC = () => {
       let result: any;
 
       // RTK Query hooks
-      if (selectedEndpoint.hookType === 'rtk') {
+      {
         // RTK Query queries - use refetch
         if (selectedEndpoint.hookName.includes('Query')) {
           switch (selectedEndpoint.id) {
@@ -956,7 +738,7 @@ export const ApiTestPage: React.FC = () => {
                 result = { success: true, data: mutationResult };
                 break;
               case 'sendMessage':
-                mutationResult = await sendMessage({ chatId: formData.chatId, body: formData.body }).unwrap();
+                mutationResult = await sendMessage({ chatId: formData.chatId, message: formData.body }).unwrap();
                 result = { success: true, data: mutationResult };
                 break;
               case 'deleteMessage':
@@ -980,7 +762,7 @@ export const ApiTestPage: React.FC = () => {
                 result = { success: true, data: null };
                 break;
               case 'updateChatName':
-                await updateChatName({ chatId: formData.chatId, name: formData.name }).unwrap();
+                await updateChatName({ chatId: formData.chatId, newName: formData.name }).unwrap();
                 result = { success: true, data: null };
                 break;
               case 'readMessages':
@@ -1027,7 +809,7 @@ export const ApiTestPage: React.FC = () => {
                 result = { success: true, data: null };
                 break;
               case 'moveFolder':
-                await moveFolder({ folderId: formData.folderId, newParentId: formData.newParentId }).unwrap();
+                await moveFolder({ folderId: formData.folderId, newParentFolderId: formData.newParentId }).unwrap();
                 result = { success: true, data: null };
                 break;
               // Gift mutations
@@ -1071,7 +853,7 @@ export const ApiTestPage: React.FC = () => {
                 result = { success: true, data: null };
                 break;
               case 'updateAlbumName':
-                mutationResult = await updateAlbumName({ albumId: formData.albumId, newName: formData.newName }).unwrap();
+                mutationResult = await updateAlbumName({ albumId: formData.albumId, name: formData.newName }).unwrap();
                 result = { success: true, data: mutationResult };
                 break;
               case 'addTrackToAlbum':
@@ -1100,15 +882,15 @@ export const ApiTestPage: React.FC = () => {
                 result = { success: true, data: mutationResult };
                 break;
               case 'updatePlaylistCover':
-                await updatePlaylistCover({ playlistId: formData.playlistId, file: formData.file }).unwrap();
+                await updatePlaylistCover({ playlistId: formData.playlistId, coverFile: formData.file }).unwrap();
                 result = { success: true, data: null };
                 break;
               case 'addContributor':
-                await addContributor({ playlistId: formData.playlistId, userId: formData.userId }).unwrap();
+                await addContributor({ playlistId: formData.playlistId, contributorId: formData.userId }).unwrap();
                 result = { success: true, data: null };
                 break;
               case 'removeContributor':
-                await removeContributor({ playlistId: formData.playlistId, userId: formData.userId }).unwrap();
+                await removeContributor({ playlistId: formData.playlistId, contributorId: formData.userId }).unwrap();
                 result = { success: true, data: null };
                 break;
               case 'addTrackToPlaylist':
@@ -1120,7 +902,7 @@ export const ApiTestPage: React.FC = () => {
                 result = { success: true, data: null };
                 break;
               case 'importCollectionToPlaylist':
-                await importCollectionToPlaylist({ playlistId: formData.playlistId, collectionId: formData.collectionId }).unwrap();
+                await importCollectionToPlaylist({ playlistId: formData.playlistId, collection: formData.collection || 'Playlist', collectionId: formData.collectionId }).unwrap();
                 result = { success: true, data: null };
                 break;
               case 'updatePlaylistVisibility':
@@ -1154,7 +936,7 @@ export const ApiTestPage: React.FC = () => {
                 break;
               // Collection mutations
               case 'updateCollectionVisibility':
-                await updateCollectionVisibility({ collectionId: formData.collectionId, visibilityStatusId: formData.visibilityStatusId }).unwrap();
+                await updateCollectionVisibility({ collectionType: formData.collectionType || 'Playlist', collectionId: formData.collectionId, visibilityStatusId: formData.visibilityStatusId }).unwrap();
                 result = { success: true, data: null };
                 break;
               case 'toggleCollectionFavorite':
@@ -1163,7 +945,7 @@ export const ApiTestPage: React.FC = () => {
                 break;
               // Blend mutations
               case 'updateBlendVisibility':
-                await updateBlendVisibility({ blendId: formData.blendId, visibilityStatusId: formData.visibilityStatusId }).unwrap();
+                await updateBlendVisibility({ collectionId: formData.blendId, visibilityStatusId: formData.visibilityStatusId }).unwrap();
                 result = { success: true, data: null };
                 break;
               case 'toggleBlendFavorite':
@@ -1176,27 +958,27 @@ export const ApiTestPage: React.FC = () => {
                 result = { success: true, data: mutationResult };
                 break;
               case 'updateArtistName':
-                await updateArtistName({ artistId: formData.artistId, newName: formData.newName }).unwrap();
+                await updateArtistName({ artistId: formData.artistId, newArtistName: formData.newName }).unwrap();
                 result = { success: true, data: null };
                 break;
               case 'deleteArtist':
-                await deleteArtist(formData.artistId).unwrap();
+                await deleteArtist().unwrap();
                 result = { success: true, data: null };
                 break;
               case 'createPost':
-                mutationResult = await createPost({ artistId: formData.artistId, body: formData.body }).unwrap();
+                mutationResult = await createPost(formData.body).unwrap();
                 result = { success: true, data: mutationResult };
                 break;
               case 'deletePost':
-                await deletePost({ artistId: formData.artistId, postId: formData.postId }).unwrap();
+                await deletePost(formData.postId).unwrap();
                 result = { success: true, data: null };
                 break;
               case 'updatePost':
-                mutationResult = await updatePost({ artistId: formData.artistId, postId: formData.postId, body: formData.body }).unwrap();
+                mutationResult = await updatePost({ postId: formData.postId, dto: formData.body }).unwrap();
                 result = { success: true, data: mutationResult };
                 break;
               case 'updatePostVisibility':
-                await updatePostVisibility({ artistId: formData.artistId, postId: formData.postId, visibilityStatusId: formData.visibilityStatusId }).unwrap();
+                await updatePostVisibility({ postId: formData.postId, visibilityStatusId: formData.visibilityStatusId }).unwrap();
                 result = { success: true, data: null };
                 break;
               // Auth mutations
@@ -1217,40 +999,6 @@ export const ApiTestPage: React.FC = () => {
               error: err?.data || err?.message || err,
             };
           }
-        }
-      } else {
-        // Store hooks
-        switch (selectedEndpoint.id) {
-          case 'updateTrack':
-            result = await updateTrackHook.mutate(formData.trackId, formData.body);
-            break;
-          case 'deleteTrack':
-            result = await deleteTrackHook.mutate(formData.trackId);
-            break;
-          case 'updateUser':
-            result = await updateUserHook.mutate(formData.body);
-            break;
-          case 'createChat':
-            result = await createChatHook.mutate(formData.body);
-            break;
-          case 'sendMessage':
-            result = await sendMessageHook.mutate(formData.chatId, formData.body);
-            break;
-          case 'createFolder':
-            result = await createFolderHook.mutate(formData.body);
-            break;
-          case 'register':
-            result = await registerHook.mutate(formData.body);
-            break;
-          case 'login':
-            result = await loginHook.mutate(
-              formData.userIdentifier,
-              formData.password,
-              formData.deviceName
-            );
-            break;
-          default:
-            throw new Error('Endpoint not implemented');
         }
       }
 
