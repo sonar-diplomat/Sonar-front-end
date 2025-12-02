@@ -1,6 +1,9 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
-import type { Settings } from '../model/types';
+import type { Settings } from '../model/types/Settings';
+import type { Language } from '../model/types/Language';
+import type { Theme } from '../model/types/Theme';
+import type { PlaybackQuality } from '@entities/ClientSettings';
 
 /**
  * ClientSettings API endpoints
@@ -25,6 +28,33 @@ export const clientSettingsApi = rtkApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'ClientSettings', id: 'CURRENT' }],
     }),
+
+    getLanguages: builder.query<Language[], void>({
+      query: () => ({
+        url: API_ENDPOINTS.clientSettings.languages,
+        method: 'GET',
+        withAuth: false,
+      }),
+      providesTags: [{ type: 'Language', id: 'LIST' }],
+    }),
+
+    getThemes: builder.query<Theme[], void>({
+      query: () => ({
+        url: API_ENDPOINTS.clientSettings.themes,
+        method: 'GET',
+        withAuth: false,
+      }),
+      providesTags: [{ type: 'Theme', id: 'LIST' }],
+    }),
+
+    getPlaybackQualities: builder.query<PlaybackQuality[], void>({
+      query: () => ({
+        url: API_ENDPOINTS.clientSettings.playbackQualities,
+        method: 'GET',
+        withAuth: false,
+      }),
+      providesTags: [{ type: 'PlaybackQuality', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -32,5 +62,8 @@ export const clientSettingsApi = rtkApi.injectEndpoints({
 export const {
   useGetClientSettingsQuery,
   usePatchClientSettingsMutation,
+  useGetLanguagesQuery,
+  useGetThemesQuery,
+  useGetPlaybackQualitiesQuery,
 } = clientSettingsApi;
 

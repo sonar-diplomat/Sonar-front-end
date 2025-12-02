@@ -1,0 +1,47 @@
+name: Frontend CI
+
+on:
+  push:
+    branches-ignore:
+      - dev
+      - main
+      - master
+  pull_request:
+    branches:
+      - dev
+      - main
+      - master
+
+concurrency:
+  group: frontend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Frontend build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: |
+          echo "::group::npm ci"
+          npm ci --no-audit --no-fund
+          echo "::endgroup::"
+
+      - name: Build frontend
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+        run: |
+          echo "::group::npm run build"
+          npm run build
+          echo "::endgroup::"

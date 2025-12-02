@@ -73,7 +73,8 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ onSubmit }) => {
 
   const handleSubmit = useCallback(() => {
     if (!isAgreed) {
-      alert('Please agree to the terms before continuing');
+        // Alert
+      console.log('Agree to the terms before continuing');
       return;
     }
 

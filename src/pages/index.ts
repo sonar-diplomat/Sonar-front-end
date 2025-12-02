@@ -1,4 +1,3 @@
-// Pages exports
 export { TestPage } from './TestPage';
 export { Registration } from './Registration';
 export { Hello } from './Hello';
@@ -11,3 +10,19 @@ export { UserProfile } from './UserProfile';
 export { ArtistProfile } from './ArtistProfile';
 export { Collection } from './Collection';
 export { NotFound } from './NotFound';
+
+export {
+    Settings,
+    AccountSettings,
+    PrivacySettings,
+    BlockedAccounts,
+    AppearanceSettings,
+    PlaybackSettings,
+    About,
+    ReportProblem,
+    ActiveSessions,
+} from './Settings';
+
+export { Chats } from './Chats';
+export { Chat } from './Chat';
+export { UserInfo } from './UserInfo';

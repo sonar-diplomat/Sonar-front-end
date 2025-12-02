@@ -1,0 +1,31 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    background-color: #000;
+    padding: 16px 16px 32px 16px;
+    gap: 32px;
+}
+
+.backButton {
+    align-self: flex-start;
+    width: auto;
+}
+
+.titleSection {
+    margin: 8px 0 0 8px;
+}
+
+.title {
+    margin: 0;
+    font-family: 'Philosopher', sans-serif;
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--input-text);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+

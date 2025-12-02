@@ -13,6 +13,10 @@ export { SongItem } from './SongItem';
 export { ArtistItem } from './ArtistItem';
 export { TrackItem } from './TrackItem';
 export { SectionHeader } from './SectionHeader';
+export { Toggle } from './Toggle/Toggle';
+export { Select } from './Select/Select';
+export { SettingsItem } from './SettingsItem/SettingsItem';
+export { SettingsSection } from './SettingsSection/SettingsSection';
 export type { ButtonProps, ButtonVariant, ButtonSize, ButtonShape } from './Button/Button';
 export type { CheckboxProps } from './Checkbox/Checkbox';
 export type { FormProps } from './Form/Form';
@@ -26,6 +30,10 @@ export type { SectionHeaderProps } from './SectionHeader';
 export type { ModalProps } from './Modal/Modal';
 export type { WheelPickerOption } from './WheelPicker';
 export type { TabSliderProps, TabOption } from './TabSlider';
+export type { ToggleProps } from './Toggle/Toggle';
+export type { SelectProps, SelectOption } from './Select/Select';
+export type { SettingsItemProps } from './SettingsItem/SettingsItem';
+export type { SettingsSectionProps } from './SettingsSection/SettingsSection';
 export {
     PlayIcon,
     EyeIcon,
@@ -35,6 +43,12 @@ export {
     DropDown,
     Info,
     CheckMark,
+    ClockIcon,
+    ErrorIcon,
+    ReplyIcon,
+    CopyIcon,
+    EditIcon,
+    DeleteIcon,
     SendRight,
     QRCode,
     GoogleIcon,

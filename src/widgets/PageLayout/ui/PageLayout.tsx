@@ -1,8 +1,6 @@
 import React, { useCallback } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { MicroPlayer } from '@widgets/MicroPlayer';
 import { TabBar } from '@widgets/TabBar';
-import { useAppSelector } from '@shared/store/hooks';
 import type { TabId } from '@widgets/TabBar/model/types';
 import { TAB_ITEMS } from '@widgets/TabBar/lib/constants';
 import styles from './PageLayout.module.css';

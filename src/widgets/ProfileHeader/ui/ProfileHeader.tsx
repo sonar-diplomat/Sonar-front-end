@@ -60,6 +60,10 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         setActiveTab(tabs[0].value);
     }, []);
 
+    const handleBackClick = () => {
+        navigate(-1);
+    };
+
     return (
         <div className={styles.header}>
             {viewerType === 'guest' ? (
