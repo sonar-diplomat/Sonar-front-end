@@ -316,7 +316,7 @@ export const CopyIcon: React.FC<IconProps> = ({ className }) => (
     </svg>
 )
 
-export const EditIcon: React.FC<IconProps> = ({ className }) => (
+export const EditIcon2: React.FC<IconProps> = ({ className }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path
             d="M11 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V9M17 3L14 6M17 3L11 9"
