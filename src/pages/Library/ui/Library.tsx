@@ -7,7 +7,7 @@ import {Button, FolderCard, ItemCard, PlusIcon} from "@shared/ui";
 import type {Category} from "@widgets/ChipsBar";
 import {ContentSections, type ContentSection} from "@widgets/ContentSections";
 import {SearchFilterHeader} from "@widgets/SearchFilterHeader";
-import { useGetFoldersQuery } from '@shared/api/rtkApi';
+import { useGetFoldersQuery } from '@shared/api';
 
 import styles from './Library.module.css';
 

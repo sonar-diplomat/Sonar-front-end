@@ -20,6 +20,12 @@ export const API_ENDPOINTS = {
         update: 'User/update',
         updateAvatar: 'User/update-avatar',
         updateVisibility: (collectionId: number) => `User/${collectionId}/visibility`,
+        sendFriendRequest: (toUserId: number) => `User/friend-request/${toUserId}`,
+        getPendingFriendRequests: 'User/friend-requests/pending',
+        getSentFriendRequests: 'User/friend-requests/sent',
+        resolveFriendRequest: (requestId: number) => `User/friend-request/${requestId}/resolve`,
+        removeFriend: (friendId: number) => `User/friends/${friendId}`,
+        getFriends: 'User/friends',
     },
     accessFeature: {
         list: 'AccessFeature',
