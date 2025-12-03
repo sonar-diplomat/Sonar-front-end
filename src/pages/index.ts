@@ -7,6 +7,8 @@ export { AssignNewPassword } from './AssignNewPassword';
 export { Library, Create, CreatePlaylist, CreateFolder } from './Library';
 export { Search } from './Search';
 export { UserProfile } from './UserProfile';
+export { ArtistProfile } from './ArtistProfile';
+export { Collection } from './Collection';
 export { NotFound } from './NotFound';
 
 export {

@@ -37,17 +37,16 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                     <div className={styles.title}>{title}</div>
                     {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
                 </div>
-                {onAction && (
-                    <Button
-                        iconOnly
-                        icon={icon}
-                        onClick={onAction}
-                        variant="text"
-                        theme="dark"
-                        size="medium"
-                        className={styles.button}
-                    />
-                )}
+                <Button
+                    iconOnly
+                    icon={icon}
+                    onClick={onAction}
+                    variant="text"
+                    theme="dark"
+                    size="medium"
+                    className={`${styles.button} ${!onAction ? styles.hidden : ''}`}
+                    disabled={!onAction}
+                />
             </div>
             {showSeparator && <div className={styles.separator} />}
         </>

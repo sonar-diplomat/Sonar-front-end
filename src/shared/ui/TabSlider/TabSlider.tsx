@@ -27,9 +27,11 @@ export const TabSlider: React.FC<TabSliderProps> = ({
     if (activeIndex !== -1 && tabRefs.current[activeIndex]) {
       const activeTabElement = tabRefs.current[activeIndex];
       if (activeTabElement) {
+        // Center the 16px indicator under the tab
+        const indicatorWidth = 16;
+        const centerPosition = activeTabElement.offsetLeft + (activeTabElement.offsetWidth / 2) - (indicatorWidth / 2);
         setIndicatorStyle({
-          left: `${activeTabElement.offsetLeft}px`,
-          width: `${activeTabElement.offsetWidth}px`,
+          left: `${centerPosition}px`,
         });
       }
     }

@@ -25,6 +25,12 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_PROXY_TARGET || 'http://localhost:5205',
           changeOrigin: true,
           secure: false,
+        },
+        '/hubs': {
+          target: env.VITE_PROXY_TARGET || 'https://localhost:7124',
+          changeOrigin: true,
+          secure: false,
+          ws: true,
         }
       }
     }

@@ -1,28 +1,64 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 
 import styles from "./ProfileHeader.module.css";
 
-import { Button, LeftArrow, TabSlider } from "@shared/ui";
+import { Button, LeftArrow, TabSlider, MessageIcon, MenuIcon } from "@shared/ui";
+import type { ViewerType } from '@shared/types';
 
-export interface ProfileHeaderProps {
-    title?: string;
-    showBackButton?: boolean;
-    showTabs?: boolean;
+export type ProfileType = 'user' | 'artist';
+
+interface ProfileHeaderProps {
+    viewerType: ViewerType;
+    profileType: ProfileType;
+    secondaryTab?: string;
+    onBackClick?: () => void;
+    onTabChange?: (tab: string) => void;
+    onMessageClick?: () => void;
+    onMenuClick?: () => void;
 }
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
-    title,
-    showBackButton = false,
-    showTabs = false
+    viewerType,
+    profileType,
+    secondaryTab,
+    onBackClick,
+    onTabChange,
+    onMessageClick,
+    onMenuClick
 }) => {
-    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('profile');
 
-    const tabs = [
-        {value: 'profile', label: 'Profile'},
-        {value: 'library', label: 'Library'}
-    ];
+    // Determine primary and secondary tab based on profile type
+    const getPrimaryTab = () => {
+        if (profileType === 'artist') {
+            return { value: 'music', label: 'Music' };
+        }
+        return { value: 'profile', label: 'Profile' };
+    };
+
+    const getSecondaryTab = () => {
+        if (secondaryTab) {
+            return { value: secondaryTab.toLowerCase(), label: secondaryTab };
+        }
+        if (profileType === 'artist') {
+            return { value: 'messages', label: 'Messages' };
+        }
+        return { value: 'library', label: 'Library' };
+    };
+
+    const tabs = [getPrimaryTab(), getSecondaryTab()];
+
+    const handleTabChange = (value: string) => {
+        setActiveTab(value);
+        if (onTabChange) {
+            onTabChange(value);
+        }
+    };
+
+    useEffect(() => {
+        // Reset to primary tab when component mounts
+        setActiveTab(tabs[0].value);
+    }, []);
 
     const handleBackClick = () => {
         navigate(-1);
@@ -30,42 +66,42 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
     return (
         <div className={styles.header}>
-            {showBackButton && (
+            {viewerType === 'guest' ? (
                 <Button
-                    variant="filled"
-                    theme="dark"
-                    size="medium"
-                    shape="cr-16"
+                    variant={"filled"}
+                    theme={"dark"}
+                    size={"medium"}
+                    shape={"cr-16"}
                     icon={<LeftArrow/>}
-                    onClick={handleBackClick}
+                    onClick={onBackClick}
+                    iconOnly
+                />
+            ) : (
+                <Button
+                    variant={"filled"}
+                    theme={"dark"}
+                    size={"medium"}
+                    shape={"cr-16"}
+                    icon={<MessageIcon/>}
+                    onClick={onMessageClick}
+                    iconOnly
                 />
             )}
 
-            {title && <h1 className={styles.title}>{title}</h1>}
+            <div className={styles.tabSliderWrapper}>
+                <TabSlider tabs={tabs} activeTab={activeTab} onChange={handleTabChange} />
+            </div>
 
-            {showTabs && (
-                <TabSlider
-                    tabs={tabs}
-                    activeTab={activeTab}
-                    onChange={setActiveTab}
+            {viewerType === 'owner' && (
+                <Button
+                    variant={"filled"}
+                    theme={"dark"}
+                    size={"medium"}
+                    shape={"cr-16"}
+                    icon={<MenuIcon/>}
+                    onClick={onMenuClick}
+                    iconOnly
                 />
-            )}
-
-            {!showBackButton && !title && !showTabs && (
-                <>
-                    <Button
-                        variant="filled"
-                        theme="dark"
-                        size="medium"
-                        shape="cr-16"
-                        icon={<LeftArrow/>}
-                    />
-                    <TabSlider
-                        tabs={tabs}
-                        activeTab={activeTab}
-                        onChange={setActiveTab}
-                    />
-                </>
             )}
         </div>
     );

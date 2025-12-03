@@ -5,34 +5,42 @@ import { PlayIcon, PauseIcon, NextIcon, HeartIcon } from '@widgets/MiniPlayer/li
 import { useToggleTrackFavoriteMutation } from '@entities/Music/api/rtkApi';
 import { usePlayer } from '@shared/store/features/player';
 import { useAudioSeek } from '@shared/lib/audio';
-import { getArtistNames } from '@widgets/MiniPlayer/lib/utils';
+import { getImageUrlById } from '@shared/lib/image-utils';
+import type { TrackDTO } from '@entities/Music';
 
-export const MicroPlayer = () => {
-  const {
-    currentTrack,
-    isPlaying,
-    currentTime,
-    duration,
-    togglePlayPause,
-    playNext,
-    collectionContext,
-    queue,
-    queueIndex,
-    favoriteTrackIds,
-    toggleFavoriteTrackLocal,
-  } = usePlayer();
+interface MicroPlayerProps {
+  duration?: number;
+  currentTime?: number;
+  isPlaying?: boolean;
+  currentTrack?: TrackDTO | null;
+  onPlayPause?: () => void;
+  onNext?: () => void;
+  onSeek?: (time: number) => void;
+}
 
-  const handleSeek = useAudioSeek();
+export const MicroPlayer: React.FC<MicroPlayerProps> = (props) => {
+  // Если пропсы переданы, используем их, иначе используем хуки
+  const playerState = usePlayer();
+  const audioSeek = useAudioSeek();
+
+  const currentTrack = props.currentTrack !== undefined ? props.currentTrack : playerState.currentTrack;
+  const isPlaying = props.isPlaying !== undefined ? props.isPlaying : playerState.isPlaying;
+  const currentTime = props.currentTime !== undefined ? props.currentTime : playerState.currentTime;
+  const duration = props.duration !== undefined ? props.duration : playerState.duration;
+  const handlePlayPause = props.onPlayPause || playerState.togglePlayPause;
+  const handleNext = props.onNext || playerState.playNext;
+  const handleSeek = props.onSeek || audioSeek;
   const hasTrack = currentTrack !== null;
   const hasNextTrack = collectionContext !== null && queueIndex < queue.length - 1;
   const isFavorite = currentTrack ? favoriteTrackIds.includes(currentTrack.id) : false;
 
   const [toggleFavoriteApi, { isLoading: togglingFavorite }] = useToggleTrackFavoriteMutation();
 
-  const coverUrl = useMemo(() =>
-      currentTrack ? currentTrack.cover?.url : undefined,
-    [currentTrack]
-  );
+  const coverUrl = useMemo(() => {
+    if (!currentTrack) return undefined;
+    // Используем coverId для получения URL обложки
+    return getImageUrlById(currentTrack.coverId);
+  }, [currentTrack]);
 
   const artistName = useMemo(() => {
     return currentTrack ? getArtistNames(currentTrack) : '';
@@ -73,7 +81,7 @@ export const MicroPlayer = () => {
       </div>
       <div className={styles.controls}>
         <button
-          onClick={togglePlayPause}
+          onClick={handlePlayPause}
           disabled={!hasTrack}
           aria-label={isPlaying ? 'Pause' : 'Play'}
           className={styles.playButton}

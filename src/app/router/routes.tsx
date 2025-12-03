@@ -14,6 +14,8 @@ import {
     Search,
     CreateFolder,
     UserProfile,
+    ArtistProfile,
+    Collection,
     NotFound,
     Settings,
     AccountSettings,
@@ -32,12 +34,17 @@ import {TermsOfService} from "@pages/Terms/TermsOfService/TermsOfService.tsx";
 import {ApiTestPage} from "@pages/TestPage";
 import {PageLayout} from "@widgets/PageLayout";
 import {ChatLayout} from "@widgets/ChatLayout";
+import {FirstVisitGuard} from "./FirstVisitGuard";
 
 export const router = createBrowserRouter([
     {
         element: <App />,
         //errorElement: <ErrorPage />,
         children: [
+            {
+                path: '/',
+                element: <FirstVisitGuard />,
+            },
             {
                 path: '/hello',
                 element: <Hello />,
@@ -97,8 +104,16 @@ export const router = createBrowserRouter([
                         element: <Search />,
                     },
                     {
-                        path: 'profile',
+                        path: 'user/:id',
                         element: <UserProfile />,
+                    },
+                    {
+                        path: 'artist/:id',
+                        element: <ArtistProfile />,
+                    },
+                    {
+                        path: 'collection/:id',
+                        element: <Collection/>,
                     },
                     {
                         path: 'settings',

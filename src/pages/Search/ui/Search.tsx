@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useDebounce } from '@shared/lib/hooks/useDebounce';
 import { getImageUrlById } from '@shared/lib/image-utils';
+import { useUserState } from '@shared/store/features/userState/useUserState';
 import { ItemCard } from '@shared/ui';
 import type { Category } from '@widgets/ChipsBar';
 import { ContentSections, type ContentSection } from '@widgets/ContentSections';
@@ -27,6 +28,7 @@ export const Search: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const { updateListeningTarget } = useUserState();
 
   // Определяем, нужно ли выполнять поиск
   const shouldSearch = debouncedSearchQuery.trim().length > 0;
@@ -113,10 +115,16 @@ export const Search: React.FC = () => {
     isUsersLoading;
 
   // Обработчики кликов
-  const handleTrackClick = useCallback((track: TrackSearchItemDTO) => {
-    console.log('Opening track:', track);
-    // TODO: Navigate to track page when routing is implemented
-  }, []);
+  const handleTrackClick = useCallback(async (track: TrackSearchItemDTO) => {
+    try {
+      // Устанавливаем трек как текущий для воспроизведения
+      // UserStatePlayerSync автоматически загрузит трек и запустит его в плеере
+      await updateListeningTarget(track.id);
+      console.log('Listening target updated, track will start playing:', track.id);
+    } catch (error) {
+      console.error('Failed to start track:', error);
+    }
+  }, [updateListeningTarget]);
 
   const handleAlbumClick = useCallback((album: AlbumSearchItemDTO) => {
     console.log('Opening album:', album);

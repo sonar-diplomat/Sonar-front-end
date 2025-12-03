@@ -1,0 +1,44 @@
+.collectionView {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 362px;
+    margin-bottom: 10px;
+}
+
+.title {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.container {
+    background: #1F1F1F;
+    border-radius: 32px;
+    padding: 8px;
+    width: 362px;
+}
+
+.trackList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.divider {
+    height: 1px;
+    width: 346px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    margin: 0 auto;
+}

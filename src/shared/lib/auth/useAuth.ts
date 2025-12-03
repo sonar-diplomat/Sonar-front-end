@@ -84,7 +84,7 @@ export const useAuth = () => {
     }
   }, [loginMutation, dispatch, loadSettings, loadAllAccessFeatures, loadUserAccessFeatures]);
   
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
     // Удаляем credentials при выходе
     authManager.clearCredentials();
     
@@ -93,9 +93,9 @@ export const useAuth = () => {
     clearAccess();
     clearUserState();
     
-    // Очищаем auth
-    dispatch(logoutAction());
-  }, [dispatch, clearSettings, clearAccess, clearUserState]);
+    // Отключаем SignalR и очищаем auth (authManager.logout() делает и то, и другое)
+    await authManager.logout();
+  }, [clearSettings, clearAccess, clearUserState]);
 
   const refreshToken = useCallback(async (): Promise<string | null> => {
     return await authManager.refreshAccessToken();

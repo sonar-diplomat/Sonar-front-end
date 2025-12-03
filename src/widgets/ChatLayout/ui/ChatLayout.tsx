@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ChatHeader } from './ChatHeader';
-import { getChatMockData } from '@entities/Chat/model/mock/chatMockData';
+import { chatApi } from '@entities/Chat/api/rtkApi';
+import { useAppSelector } from '@shared/store/hooks';
 import styles from './ChatLayout.module.css';
 
 export const ChatLayout: React.FC = () => {
@@ -11,14 +12,21 @@ export const ChatLayout: React.FC = () => {
 
     const isChatList = location.pathname === '/chats';
     const isChatDetail = !!params.chatId;
+    const isUserInfo = location.pathname.includes('/info');
 
-    const chatData = useMemo(() => {
-        if (!isChatDetail || !params.chatId) return null;
-        return getChatMockData(Number(params.chatId));
-    }, [isChatDetail, params.chatId]);
+    const chatIdNumber = params.chatId ? Number(params.chatId) : 0;
+    
+    // Get chat name from cached chat list (no new request)
+    const chatsList = useAppSelector((state) => 
+        chatApi.endpoints.getChats.select()(state).data
+    );
+    
+    const chatInfo = chatsList?.find(chat => chat.id === chatIdNumber);
 
     const handleBack = () => {
-        if (isChatDetail) {
+        if (isUserInfo && params.chatId) {
+            navigate(`/chats/${params.chatId}`);
+        } else if (isChatDetail) {
             navigate('/chats');
         } else {
             navigate(-1);
@@ -28,7 +36,7 @@ export const ChatLayout: React.FC = () => {
     const handleAction = () => {
         if (isChatList) {
             console.log('Create new chat');
-        } else if (isChatDetail && params.chatId) {
+        } else if (isChatDetail && !isUserInfo && params.chatId) {
             navigate(`/chats/${params.chatId}/info`);
         }
     };
@@ -37,14 +45,14 @@ export const ChatLayout: React.FC = () => {
         if (isChatList) {
             return 'Inbox';
         }
-        if (isChatDetail && chatData) {
-            return chatData.chat.name;
+        if (isChatDetail && chatInfo) {
+            return chatInfo.name;
         }
         return 'Chat';
     };
 
     const getSubtitle = () => {
-        if (isChatDetail && !chatData?.chat.isGroup) {
+        if (isChatDetail && !isUserInfo && !chatInfo?.isGroup) {
             return 'Last seen recently';
         }
         return undefined;
@@ -64,7 +72,7 @@ export const ChatLayout: React.FC = () => {
                     title={getTitle()}
                     subtitle={getSubtitle()}
                     onBack={handleBack}
-                    onAction={handleAction}
+                    onAction={isUserInfo ? undefined : handleAction}
                     actionIcon={getActionIcon()}
                     showSeparator={false}
                 />
