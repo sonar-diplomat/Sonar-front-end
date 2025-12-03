@@ -19,7 +19,8 @@ export const PasswordRecoveryConfirmation: React.FC<PasswordRecoveryConfirmation
             <div className={styles.actions}>
                 <Button
                     children={"Back to Login"}
-                    variant={"light"}
+                    variant="filled"
+                    theme="light"
                     size={"large"}
                     onClick={onBackToLogin}
                     fullWidth

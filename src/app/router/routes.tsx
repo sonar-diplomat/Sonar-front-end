@@ -24,7 +24,6 @@ import {
     AppearanceSettings,
     PlaybackSettings,
     About,
-    ReportProblem,
     ActiveSessions,
     Chats,
     Chat,
@@ -127,7 +126,6 @@ export const router = createBrowserRouter([
                             { path: 'appearance', element: <AppearanceSettings /> },
                             { path: 'playback', element: <PlaybackSettings /> },
                             { path: 'about', element: <About /> },
-                            { path: 'report', element: <ReportProblem /> },
                         ],
                     },
                     {

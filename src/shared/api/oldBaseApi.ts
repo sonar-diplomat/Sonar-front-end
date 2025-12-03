@@ -25,7 +25,7 @@ const isMediaEndpoint = (endpoint: string): boolean => {
 };
 
 class ApiClient {
-    private baseURL: string;
+    private readonly baseURL: string;
     private opts: ClientOptions;
 
     constructor(baseURL: string = API_BASE_URL, opts: ClientOptions = { retries: 0}) {
@@ -123,7 +123,7 @@ class ApiClient {
             }
             const normalized = normalizeResponse<T>(raw, status);
 
-            if (!resp.ok || normalized.success === false) {
+            if (!resp.ok || !normalized.success) {
                 return {
                     ...normalized,
                     success: false,

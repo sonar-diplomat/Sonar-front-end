@@ -56,10 +56,8 @@ export const PlayerTestComponent: React.FC = () => {
 
   return (
     <div style={{
-      padding: '24px',
       border: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
       borderRadius: '12px',
-      margin: '20px 0',
       backgroundColor: 'var(--surface-color, rgba(0, 0, 0, 0.3))',
       color: 'var(--text-color, #ffffff)'
     }}>
@@ -173,17 +171,6 @@ export const PlayerTestComponent: React.FC = () => {
 
               <span style={{ opacity: 0.7 }}>Title:</span>
               <span style={{ fontWeight: '500' }}>{track.title}</span>
-
-              <span style={{ opacity: 0.7 }}>Duration:</span>
-              <span>{track.duration || 'Unknown'}</span>
-
-              <span style={{ opacity: 0.7 }}>Streaming Method:</span>
-              <span style={{
-                fontWeight: '500',
-                color: '#0d6efd'
-              }}>
-                🌐 API Stream
-              </span>
             </div>
 
             <button
@@ -247,7 +234,6 @@ export const PlayerTestComponent: React.FC = () => {
                 <span>Time: {formatTime(currentTime)} / {formatTime(duration)}</span>
               </div>
             </div>
-            <MicroPlayer />
           </div>
         ) : (
           <div style={{
@@ -262,72 +248,11 @@ export const PlayerTestComponent: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* Instructions */}
-      <div style={{
-        marginTop: '24px',
-        padding: '16px',
-        backgroundColor: 'rgba(13, 110, 253, 0.1)',
-        borderRadius: '8px',
-        border: '1px solid rgba(13, 110, 253, 0.3)'
-      }}>
-        <h4 style={{
-          marginTop: 0,
-          marginBottom: '12px',
-          fontSize: '16px',
-          fontWeight: '500'
-        }}>
-          📝 How to Use:
-        </h4>
-        <ol style={{
-          marginLeft: '20px',
-          marginBottom: '16px',
-          fontSize: '14px',
-          lineHeight: '1.6'
-        }}>
-          <li>Enter a valid track ID from your database</li>
-          <li>Click "Fetch Track" to load track metadata</li>
-          <li>Review the track information (streaming method, audio files, etc.)</li>
-          <li>Click "Play This Track" to start playback</li>
-          <li>Use the MicroPlayer controls to play/pause/seek</li>
-          <li>Check browser console (F12) for detailed streaming logs</li>
-        </ol>
-
-        <div style={{
-          padding: '12px',
-          backgroundColor: 'rgba(13, 110, 253, 0.1)',
-          borderRadius: '6px',
-          border: '1px solid rgba(13, 110, 253, 0.3)',
-          fontSize: '13px',
-          lineHeight: '1.6'
-        }}>
-          <strong>💡 Streaming:</strong>
-          <ul style={{ marginLeft: '20px', marginTop: '8px', marginBottom: 0 }}>
-            <li>All tracks are streamed from <code>api/Track/{'{trackId}'}/stream</code></li>
-            <li>Requires Bearer token authentication (automatic)</li>
-            <li>Audio is fetched as blob and cached for playback</li>
-          </ul>
-        </div>
-
-        <div style={{
-          marginTop: '12px',
-          padding: '12px',
-          backgroundColor: 'rgba(220, 53, 69, 0.1)',
-          borderRadius: '6px',
-          border: '1px solid rgba(220, 53, 69, 0.3)',
-          fontSize: '13px',
-          lineHeight: '1.6'
-        }}>
-          <strong>⚠️ Troubleshooting:</strong>
-          <ul style={{ marginLeft: '20px', marginTop: '8px', marginBottom: 0 }}>
-            <li>Ensure you're logged in (authentication required)</li>
-            <li>Check Network tab in DevTools for streaming API errors</li>
-            <li>Verify track exists in database</li>
-            <li>Check that audio file is accessible on server</li>
-            <li>Look for <code>[AudioPlayer]</code> logs in console</li>
-          </ul>
-        </div>
-      </div>
+        {currentTrack && (
+            <div style={{ marginTop: '32px' }}>
+                <MicroPlayer />
+            </div>
+        )}
     </div>
   );
 };

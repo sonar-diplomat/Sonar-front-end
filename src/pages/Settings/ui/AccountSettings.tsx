@@ -11,6 +11,7 @@ import {
   useUpdateUserMutation,
   useRequestPasswordChangeMutation
 } from '@shared/api';
+import { useNotifications } from '@shared/store/notificationStore';
 
 export const AccountSettings: React.FC = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export const AccountSettings: React.FC = () => {
   const [requestEmailChange] = useRequestEmailChangeMutation();
   const [confirmPasswordChange] = useConfirmPasswordChangeMutation();
   const [requestPasswordChange] = useRequestPasswordChangeMutation();
+  const { showSuccess, showError } = useNotifications();
 
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
@@ -39,26 +41,23 @@ export const AccountSettings: React.FC = () => {
   const [newDateOfBirth, setNewDateOfBirth] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const [tokenSent, setTokenSent] = useState(false);
 
   const handleChangeUsername = async () => {
     if (!newUsername.trim()) {
-      setError('Username cannot be empty');
+      showError('Username cannot be empty');
       return;
     }
 
     setIsLoading(true);
-    setError('');
 
     try {
       await updateUser({ PublicIdentifier: newUsername }).unwrap();
       setShowUsernameModal(false);
       setNewUsername('');
-      //Alert
-      console.log('Username updated successfully!');
+      showSuccess('Username updated successfully!');
     } catch (err: any) {
-      setError(err?.data?.message || 'Failed to update username');
+      showError(err?.data?.message || 'Failed to update username');
     } finally {
       setIsLoading(false);
     }
@@ -66,21 +65,19 @@ export const AccountSettings: React.FC = () => {
 
   const handleRequestEmailChange = async () => {
     if (!newEmail.trim()) {
-      setError('Email cannot be empty');
+      showError('Email cannot be empty');
       return;
     }
 
     setIsLoading(true);
-    setError('');
 
     try {
       await requestEmailChange(newEmail).unwrap();
       setShowEmailModal(false);
       setNewEmail('');
-      // Alert
-      console.log('Verification email sent. Please check your inbox and click the confirmation link.');
+      showSuccess('Verification email sent. Please check your inbox and click the confirmation link.');
     } catch (err: any) {
-      setError(err?.data?.message || 'Failed to request email change');
+      showError(err?.data?.message || 'Failed to request email change');
     } finally {
       setIsLoading(false);
     }
@@ -88,22 +85,21 @@ export const AccountSettings: React.FC = () => {
 
   const handleChangePassword = async () => {
     if (!oldPassword || !newPassword || !confirmPassword || !passwordToken) {
-      setError('All fields are required');
+      showError('All fields are required');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match');
+      showError('Passwords do not match');
       return;
     }
 
     if (newPassword.length < 8) {
-      setError('Password must be at least 8 characters');
+      showError('Password must be at least 8 characters');
       return;
     }
 
     setIsLoading(true);
-    setError('');
 
     try {
       await confirmPasswordChange({
@@ -118,10 +114,9 @@ export const AccountSettings: React.FC = () => {
       setConfirmPassword('');
       setPasswordToken('');
       setTokenSent(false);
-      // Alert
-      console.log('Password changed successfully!');
+      showSuccess('Password changed successfully!');
     } catch (err: any) {
-      setError(err?.data?.message || 'Failed to change password');
+      showError(err?.data?.message || 'Failed to change password');
     } finally {
       setIsLoading(false);
     }
@@ -129,21 +124,19 @@ export const AccountSettings: React.FC = () => {
 
   const handleChangePublicIdentifier = async () => {
     if (!newPublicIdentifier.trim()) {
-      setError('Public identifier cannot be empty');
+      showError('Public identifier cannot be empty');
       return;
     }
 
     setIsLoading(true);
-    setError('');
 
     try {
       await updateUser({ PublicIdentifier: newPublicIdentifier }).unwrap();
       setShowPublicIdentifierModal(false);
       setNewPublicIdentifier('');
-      // Alert
-      console.log('Public identifier updated successfully!');
+      showSuccess('Public identifier updated successfully!');
     } catch (err: any) {
-      setError(err?.data?.message || 'Failed to update public identifier');
+      showError(err?.data?.message || 'Failed to update public identifier');
     } finally {
       setIsLoading(false);
     }
@@ -151,19 +144,19 @@ export const AccountSettings: React.FC = () => {
 
   const handleChangeDateOfBirth = async () => {
     if (!newDateOfBirth.trim()) {
-      setError('Date of birth cannot be empty');
+      showError('Date of birth cannot be empty');
       return;
     }
 
     setIsLoading(true);
-    setError('');
 
     try {
       await updateUser({ DateOfBirth: newDateOfBirth }).unwrap();
       setShowDateOfBirthModal(false);
       setNewDateOfBirth('');
+      showSuccess('Date of birth updated successfully!');
     } catch (err: any) {
-      setError(err?.data?.message || 'Failed to update date of birth');
+      showError(err?.data?.message || 'Failed to update date of birth');
     } finally {
       setIsLoading(false);
     }
@@ -235,13 +228,12 @@ export const AccountSettings: React.FC = () => {
             value={newUsername}
             onChange={(e) => setNewUsername(e.target.value)}
             placeholder="Enter new username"
-            error={error}
           />
           <div className={styles.modalActions}>
-            <Button variant="light" onClick={() => setShowUsernameModal(false)}>
+            <Button variant="filled" theme="light" onClick={() => setShowUsernameModal(false)}>
               Cancel
             </Button>
-            <Button variant="dark" onClick={handleChangeUsername} loading={isLoading}>
+            <Button variant="filled" theme="dark" onClick={handleChangeUsername} loading={isLoading}>
               Save
             </Button>
           </div>
@@ -257,20 +249,19 @@ export const AccountSettings: React.FC = () => {
             value={newEmail}
             onChange={(e) => setNewEmail(e.target.value)}
             placeholder="Enter new email"
-            error={error}
           />
           <div className={styles.modalActions}>
-            <Button variant="light" onClick={() => setShowEmailModal(false)}>
+            <Button variant="filled" theme="light" onClick={() => setShowEmailModal(false)}>
               Cancel
             </Button>
-            <Button variant="dark" onClick={handleRequestEmailChange} loading={isLoading}>
+            <Button variant="filled" theme="dark" onClick={handleRequestEmailChange} loading={isLoading}>
               Verify
             </Button>
           </div>
         </div>
       </Modal>
 
-      <Modal isOpen={showPasswordModal} onClose={() => { setShowPasswordModal(false); setTokenSent(false); setError(''); }}>
+      <Modal isOpen={showPasswordModal} onClose={() => { setShowPasswordModal(false); setTokenSent(false); }}>
         <div className={styles.modalContent}>
           <h2 className={styles.modalTitle}>Change Password</h2>
           {!tokenSent ? (
@@ -279,19 +270,17 @@ export const AccountSettings: React.FC = () => {
                 A verification token will be sent to your email. You'll need this token to complete the password change.
               </p>
               <div className={styles.modalActions}>
-                <Button variant="light" onClick={() => { setShowPasswordModal(false); setTokenSent(false); }}>
+                <Button variant="filled" theme="light" onClick={() => { setShowPasswordModal(false); setTokenSent(false); }}>
                   Cancel
                 </Button>
-                <Button variant="dark" onClick={async () => {
+                <Button variant="filled" theme="dark" onClick={async () => {
                   setIsLoading(true);
-                  setError('');
                   try {
                     await requestPasswordChange().unwrap();
                     setTokenSent(true);
-                    // Alert
-                    console.log('Verification token sent to your email!');
+                    showSuccess('Verification token sent to your email!');
                   } catch (err: any) {
-                    setError(err?.data?.message || 'Failed to send token');
+                    showError(err?.data?.message || 'Failed to send token');
                   } finally {
                     setIsLoading(false);
                   }
@@ -329,13 +318,12 @@ export const AccountSettings: React.FC = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
-                error={error}
               />
               <div className={styles.modalActions}>
-                <Button variant="light" onClick={() => { setShowPasswordModal(false); setTokenSent(false); setError(''); }}>
+                <Button variant="filled" theme="light" onClick={() => { setShowPasswordModal(false); setTokenSent(false); }}>
                   Cancel
                 </Button>
-                <Button variant="dark" onClick={handleChangePassword} loading={isLoading}>
+                <Button variant="filled" theme="dark" onClick={handleChangePassword} loading={isLoading}>
                   Change Password
                 </Button>
               </div>
@@ -352,13 +340,12 @@ export const AccountSettings: React.FC = () => {
             value={newPublicIdentifier}
             onChange={(e) => setNewPublicIdentifier(e.target.value)}
             placeholder="Enter new public identifier"
-            error={error}
           />
           <div className={styles.modalActions}>
-            <Button variant="light" onClick={() => setShowPublicIdentifierModal(false)}>
+            <Button variant="filled" theme="light" onClick={() => setShowPublicIdentifierModal(false)}>
               Cancel
             </Button>
-            <Button variant="dark" onClick={handleChangePublicIdentifier} loading={isLoading}>
+            <Button variant="filled" theme="dark" onClick={handleChangePublicIdentifier} loading={isLoading}>
               Save
             </Button>
           </div>
@@ -386,10 +373,10 @@ export const AccountSettings: React.FC = () => {
             initialValue={newDateOfBirth}
           />
           <div className={styles.modalActions}>
-            <Button variant="light" onClick={() => setShowDateOfBirthModal(false)}>
+            <Button variant="filled" theme="light" onClick={() => setShowDateOfBirthModal(false)}>
               Cancel
             </Button>
-            <Button variant="dark" onClick={handleChangeDateOfBirth} loading={isLoading}>
+            <Button variant="filled" theme="dark" onClick={handleChangeDateOfBirth} loading={isLoading}>
               Save
             </Button>
           </div>
@@ -404,10 +391,10 @@ export const AccountSettings: React.FC = () => {
             All your data will be permanently deleted.
           </p>
           <div className={styles.modalActions}>
-            <Button variant="light" onClick={() => setShowDeleteModal(false)}>
+            <Button variant="filled" theme="light" onClick={() => setShowDeleteModal(false)}>
               Cancel
             </Button>
-            <Button variant="dark" onClick={handleDeleteAccount}>
+            <Button variant="filled" theme="dark" onClick={handleDeleteAccount}>
               Delete Account
             </Button>
           </div>

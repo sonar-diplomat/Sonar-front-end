@@ -11,6 +11,7 @@ import {
 import {useNavigate} from "react-router-dom";
 import { useRegister } from "@features/auth/model/store.ts";
 import type { UserRegisterDTO } from "@features/auth";
+import { useNotifications } from "@shared/store/notificationStore";
 
 type RegistrationStep = 'registration' | 'password' | 'confirmation';
 
@@ -21,6 +22,7 @@ export const Registration: React.FC = () => {
   const navigate = useNavigate();
 
   const { mutate: register } = useRegister();
+  const { showSuccess, showError } = useNotifications();
 
   const handleRegistrationSubmit = (data: RegistrationFormData) => {
     setEmail(data.email);
@@ -45,7 +47,10 @@ export const Registration: React.FC = () => {
     const res = await register(dto);
 
     if (res.success) {
+      showSuccess('Registration successful! Please check your email for verification.');
       setCurrentStep('confirmation');
+    } else {
+      showError(res.message || 'Registration failed', res.status);
     }
   };
 

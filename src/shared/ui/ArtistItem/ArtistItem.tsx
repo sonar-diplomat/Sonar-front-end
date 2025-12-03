@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './ArtistItem.module.css';
-import type { ArtistItemProps } from './ArtistItem.types';
+import type { ArtistItemProps } from '@shared/ui';
 
 export const ArtistItem: React.FC<ArtistItemProps> = ({
     rank,

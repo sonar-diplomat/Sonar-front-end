@@ -15,18 +15,11 @@ import {
   useRevokeAllSessionsMutation,
 } from '@shared/api'
 import type {
-    ActiveSessionDTO,
     ConfirmEmailChangeDTO,
     ConfirmPasswordChangeDTO,
-    LoginResponseDTO,
-    RefreshTokenResponse,
     UserRegisterDTO,
     Verify2FaDTO,
-    Verify2FaResponseDTO,
 } from '@features/auth'
-import type {State} from "@shared/types/store.ts";
-
-
 
 export const useRegister = () => {
     const [trigger, result] = useRegisterMutation()

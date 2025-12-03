@@ -19,7 +19,6 @@ export {
     AppearanceSettings,
     PlaybackSettings,
     About,
-    ReportProblem,
     ActiveSessions,
 } from './Settings';
 

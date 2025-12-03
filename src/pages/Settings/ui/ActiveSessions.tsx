@@ -54,7 +54,8 @@ export const ActiveSessions: React.FC = () => {
           </p>
           {sessions && sessions.length > 1 && (
             <Button
-              variant="dark"
+              variant="filled"
+              theme="dark"
               size="medium"
               onClick={() => setShowRevokeAllModal(true)}
             >
@@ -91,7 +92,8 @@ export const ActiveSessions: React.FC = () => {
                   </div>
                 </div>
                 <Button
-                  variant="light"
+                  variant="filled"
+                  theme="light"
                   size="small"
                   onClick={() => {
                     setSelectedSessionId(session.id);
@@ -115,10 +117,10 @@ export const ActiveSessions: React.FC = () => {
             Are you sure you want to revoke this session? You will be logged out from that device.
           </p>
           <div className={styles.modalActions}>
-            <Button variant="light" onClick={() => setShowRevokeModal(false)}>
+            <Button variant="filled" theme="light" onClick={() => setShowRevokeModal(false)}>
               Cancel
             </Button>
-            <Button variant="dark" onClick={handleRevokeSession}>
+            <Button variant="filled" theme="dark" onClick={handleRevokeSession}>
               Revoke
             </Button>
           </div>
@@ -132,10 +134,10 @@ export const ActiveSessions: React.FC = () => {
             Are you sure you want to revoke all sessions? You will be logged out from all devices except this one.
           </p>
           <div className={styles.modalActions}>
-            <Button variant="light" onClick={() => setShowRevokeAllModal(false)}>
+            <Button variant="filled" theme="light" onClick={() => setShowRevokeAllModal(false)}>
               Cancel
             </Button>
-            <Button variant="dark" onClick={handleRevokeAll}>
+            <Button variant="filled" theme="dark" onClick={handleRevokeAll}>
               Revoke All
             </Button>
           </div>

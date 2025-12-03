@@ -50,8 +50,8 @@ export const usePlayTracks = () => {
   const { setQueue } = usePlayer();
 
   return useCallback(
-    (tracks: TrackDTO[], startIndex = 0) => {
-      setQueue(tracks, startIndex);
+    (tracks: TrackDTO[], startIndex = 0, collectionContext?: { type: 'playlist' | 'album' | 'blend'; id: number }) => {
+      setQueue(tracks, startIndex, collectionContext);
     },
     [setQueue]
   );

@@ -157,13 +157,11 @@ export const Message: React.FC<MessageProps> = ({
         }
         
         const isRead = status === 'read';
-        const isDelivered = status === 'delivered' || isRead;
-        const showSecond = isDelivered;
         
         return (
             <span className={styles.statusIcons}>
                 <CheckMark className={`${styles.checkIcon} ${isRead ? styles.read : ''}`} />
-                {showSecond && <CheckMark className={`${styles.checkIcon} ${styles.second} ${isRead ? styles.read : ''}`} />}
+                {status === 'delivered' || isRead && <CheckMark className={`${styles.checkIcon} ${styles.second} ${isRead ? styles.read : ''}`} />}
             </span>
         );
     };

@@ -45,6 +45,36 @@ export interface UserUpdateDTO {
     FirstName?: string | null
 }
 
+export interface UserFriendRequestDTO {
+    id: number
+    requestedAt: ISODate
+    fromUserId: number
+    fromUserName: string
+    toUserId: number
+    toUserName: string
+}
+
+export interface UserReceivedFriendRequestDTO {
+    id: number
+    requestedAt: ISODate
+    fromUserId: number
+    fromUserName: string
+}
+
+export interface UserSentFriendRequestDTO {
+    id: number
+    toUserId: number
+    toUserName: string
+    requestedAt: ISODate
+}
+
+export interface UserFriendDTO {
+    id: number
+    userName: string
+    publicIdentifier: string
+    avatarImageId: number | null
+}
+
 export interface User {
     id: number
     userName: string

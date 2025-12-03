@@ -6,7 +6,6 @@ import type { PasswordRecoveryFormData, PasswordRecoveryProps } from '../model/t
 export const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({
     onSubmit,
     isSubmitting,
-    error,
 }) => {
     const [formData, setFormData] = useState<PasswordRecoveryFormData>({
         email: ''
@@ -26,7 +25,6 @@ export const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({
             <div className={styles.header}>
                 <h2>Recover password</h2>
                 <p>Enter your email to recover password</p>
-                {error && <p className={styles.error}>{error}</p>}
             </div>
 
             <Form onSubmit={handleSubmit} className={styles.form}>

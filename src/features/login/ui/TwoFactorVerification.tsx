@@ -8,7 +8,6 @@ export const TwoFactorVerification: React.FC<TwoFactorVerificationProps> = ({
   onVerify,
   onResend,
   isSubmitting,
-  error,
 }) => {
   return (
     <CodeVerification
@@ -17,7 +16,6 @@ export const TwoFactorVerification: React.FC<TwoFactorVerificationProps> = ({
         <>
           Enter the 6-digit code you received via email at{' '}
           <span className={styles.email}>{email}</span> to verify your account.
-          {error && <span className={styles.error}> {error}</span>}
         </>
       }
       buttonText={isSubmitting ? "Signing in..." : "Sign in"}

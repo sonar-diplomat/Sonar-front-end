@@ -36,13 +36,15 @@ export const PreviousIcon = () => (
     </svg>
 );
 
-export const HeartIcon = () => (
-
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14">
-            <path fillRule="evenodd" clipRule="evenodd"
-                  d="M0.317053 6.70701C-0.794596 3.52732 1.2027 0.919207 3.42704 0.258132C5.59686 -0.386735 7.19476 0.270042 7.99367 1.19976C8.79263 0.270041 10.3905 -0.384198 12.5518 0.258132C14.9212 0.962279 16.782 3.52732 15.6694 6.70701C14.2649 10.8268 8.79265 14 7.99364 14C7.19462 14 1.76861 10.8749 0.317053 6.70701Z"
-                  fill='currentColor'
-                  fillOpacity="0.4"/>
-        </svg>
-    )
-;
+export const HeartIcon = ({ isFilled = false }: { isFilled?: boolean }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" viewBox="0 0 18 16" fill="none">
+        <path
+            d="M9 15.5C9 15.5 1.5 11 1.5 5.5C1.5 3.5 2.5 1.5 4.5 1.5C6.5 1.5 8 3 9 4C10 3 11.5 1.5 13.5 1.5C15.5 1.5 16.5 3.5 16.5 5.5C16.5 11 9 15.5 9 15.5Z"
+            fill={isFilled ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </svg>
+);
