@@ -26,3 +26,4 @@ export {
 export { Chats } from './Chats';
 export { Chat } from './Chat';
 export { UserInfo } from './UserInfo';
+export { MacroPlayer } from './MacroPlayer';

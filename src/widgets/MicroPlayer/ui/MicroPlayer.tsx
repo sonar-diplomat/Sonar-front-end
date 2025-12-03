@@ -2,7 +2,7 @@ import React, {useMemo} from "react";
 import styles from './MicroPlayer.module.css';
 import type { MicroPlayerProps } from '../model/types';
 import { MicroProgressBar } from './MicroProgressBar';
-import { PlayIcon, PauseIcon, NextIcon, HeartIcon } from '@widgets/MiniPlayer/lib/icons';
+import { PlayIcon, PauseIcon, NextIcon, HeartIcon } from '@shared/ui';
 import { useToggleTrackFavorite } from '@entities/Music';
 
 export const MicroPlayer = ({

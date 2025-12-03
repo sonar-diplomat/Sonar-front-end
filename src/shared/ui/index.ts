@@ -75,4 +75,8 @@ export {
     EditProfileIcon,
     LinkIcon,
     NextTrackIcon,
+    HeartIcon,
+    NextIcon,
+    PreviousIcon,
+    PauseIcon,
 } from './icons';
