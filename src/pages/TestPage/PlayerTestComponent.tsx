@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePlayer } from '@shared/store/features/player';
 import { usePlayTrack } from '@shared/lib/audio';
-import { useGetTrackQuery } from '@shared/api/rtkApi';
+import { useGetTrackQuery } from '@shared/api';
 import { MicroPlayer } from '@widgets/MicroPlayer';
 
 export const PlayerTestComponent: React.FC = () => {

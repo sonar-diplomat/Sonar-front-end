@@ -15,7 +15,7 @@ import { toSearchParams } from './params-utils';
  * Base URL for blob and stream endpoints
  * Используется отдельный домен для медиа-контента
  */
-const MEDIA_BASE_URL = 'https://sonar.pp.ua/api';
+const MEDIA_BASE_URL = 'https://sonar.pp.ua/api/';
 
 /**
  * Проверяет, является ли endpoint медиа-контентом (blob или stream)

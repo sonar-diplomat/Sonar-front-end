@@ -5,26 +5,40 @@ import { PlayIcon, PauseIcon, NextIcon, HeartIcon } from '@widgets/MiniPlayer/li
 import { useToggleTrackFavorite } from '@entities/Music';
 import { usePlayer } from '@shared/store/features/player';
 import { useAudioSeek } from '@shared/lib/audio';
+import { getImageUrlById } from '@shared/lib/image-utils';
+import type { TrackDTO } from '@entities/Music';
 
-export const MicroPlayer = () => {
-  const {
-    currentTrack,
-    isPlaying,
-    currentTime,
-    duration,
-    togglePlayPause,
-    playNext,
-  } = usePlayer();
+interface MicroPlayerProps {
+  duration?: number;
+  currentTime?: number;
+  isPlaying?: boolean;
+  currentTrack?: TrackDTO | null;
+  onPlayPause?: () => void;
+  onNext?: () => void;
+  onSeek?: (time: number) => void;
+}
 
-  const handleSeek = useAudioSeek();
+export const MicroPlayer: React.FC<MicroPlayerProps> = (props) => {
+  // Если пропсы переданы, используем их, иначе используем хуки
+  const playerState = usePlayer();
+  const audioSeek = useAudioSeek();
+
+  const currentTrack = props.currentTrack !== undefined ? props.currentTrack : playerState.currentTrack;
+  const isPlaying = props.isPlaying !== undefined ? props.isPlaying : playerState.isPlaying;
+  const currentTime = props.currentTime !== undefined ? props.currentTime : playerState.currentTime;
+  const duration = props.duration !== undefined ? props.duration : playerState.duration;
+  const handlePlayPause = props.onPlayPause || playerState.togglePlayPause;
+  const handleNext = props.onNext || playerState.playNext;
+  const handleSeek = props.onSeek || audioSeek;
   const hasTrack = currentTrack !== null;
 
   const { mutate: toggleFavorite, loading: togglingFavorite } = useToggleTrackFavorite();
 
-  const coverUrl = useMemo(() =>
-      currentTrack ? currentTrack.cover?.url : undefined,
-    [currentTrack]
-  );
+  const coverUrl = useMemo(() => {
+    if (!currentTrack) return undefined;
+    // Используем coverId для получения URL обложки
+    return getImageUrlById(currentTrack.coverId);
+  }, [currentTrack]);
 
   const artistName = useMemo(() => {
     return "Artist Name"; // TODO: Extract from currentTrack when artist data is available
@@ -58,7 +72,7 @@ export const MicroPlayer = () => {
       </div>
       <div className={styles.controls}>
         <button
-          onClick={togglePlayPause}
+          onClick={handlePlayPause}
           disabled={!hasTrack}
           aria-label={isPlaying ? 'Pause' : 'Play'}
           className={styles.playButton}
@@ -66,7 +80,7 @@ export const MicroPlayer = () => {
           {isPlaying ? <PauseIcon /> : <PlayIcon />}
         </button>
         <button
-          onClick={playNext}
+          onClick={handleNext}
           disabled={!hasTrack}
           aria-label="Next track"
           className={styles.controlButton}

@@ -11,7 +11,7 @@ export const libraryApi = rtkApi.injectEndpoints({
       query: (folderId) => ({
         url: API_ENDPOINTS.folder.byId(folderId),
         method: 'GET',
-        withAuth: false,
+        withAuth: true,
       }),
       providesTags: (_result, _error, folderId) => [{ type: 'Folder', id: folderId }],
     }),
@@ -20,7 +20,7 @@ export const libraryApi = rtkApi.injectEndpoints({
       query: () => ({
         url: API_ENDPOINTS.folder.list,
         method: 'GET',
-        withAuth: false,
+        withAuth: true,
       }),
       providesTags: [{ type: 'Folder', id: 'LIST' }],
     }),

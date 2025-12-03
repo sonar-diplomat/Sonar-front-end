@@ -3,6 +3,8 @@ import type { TrackDTO } from '@entities/Music';
 
 export interface PlayerState {
   currentTrack: TrackDTO | null;
+  pendingTrack: TrackDTO | null; // Трек, который загружается, но еще не готов к воспроизведению
+  isLoadingNextTrack: boolean; // Флаг загрузки следующего трека
   queue: TrackDTO[];
   queueIndex: number;
   isPlaying: boolean;
@@ -17,6 +19,8 @@ export interface PlayerState {
 
 const initialState: PlayerState = {
   currentTrack: null,
+  pendingTrack: null,
+  isLoadingNextTrack: false,
   queue: [],
   queueIndex: -1,
   isPlaying: false,
@@ -82,22 +86,58 @@ const playerSlice = createSlice({
       state.queue = [];
       state.queueIndex = -1;
       state.currentTrack = null;
+      state.pendingTrack = null;
+      state.isLoadingNextTrack = false;
       state.isPlaying = false;
       state.currentTime = 0;
       state.originalQueue = [];
     },
     
-    playTrack: (state, action: PayloadAction<TrackDTO>) => {
-      state.currentTrack = action.payload;
-      state.isPlaying = true;
-      state.currentTime = 0;
+    // Устанавливает трек как pending (загружается, но UI не меняется)
+    setPendingTrack: (state, action: PayloadAction<TrackDTO | null>) => {
+      state.pendingTrack = action.payload;
+      state.isLoadingNextTrack = action.payload !== null;
+    },
+    
+    // Подтверждает переключение на pending трек (когда он готов к воспроизведению)
+    confirmTrackSwitch: (state) => {
+      if (state.pendingTrack) {
+        state.currentTrack = state.pendingTrack;
+        state.pendingTrack = null;
+        state.isLoadingNextTrack = false;
+        state.isPlaying = true;
+        state.currentTime = 0;
 
-      const existingIndex = state.queue.findIndex(t => t.id === action.payload.id);
-      if (existingIndex >= 0) {
-        state.queueIndex = existingIndex;
+        const existingIndex = state.queue.findIndex(t => t.id === state.currentTrack!.id);
+        if (existingIndex >= 0) {
+          state.queueIndex = existingIndex;
+        } else {
+          state.queue.push(state.currentTrack);
+          state.queueIndex = state.queue.length - 1;
+        }
+      }
+    },
+    
+    playTrack: (state, action: PayloadAction<TrackDTO>) => {
+      // Если есть текущий трек, устанавливаем новый как pending для плавного переключения
+      if (state.currentTrack && state.currentTrack.id !== action.payload.id) {
+        state.pendingTrack = action.payload;
+        state.isLoadingNextTrack = true;
       } else {
-        state.queue.push(action.payload);
-        state.queueIndex = state.queue.length - 1;
+        // Если нет текущего трека, сразу переключаемся
+        state.currentTrack = action.payload;
+        state.pendingTrack = null;
+        state.isLoadingNextTrack = false;
+        state.isPlaying = true;
+        state.currentTime = 0;
+
+        const existingIndex = state.queue.findIndex(t => t.id === action.payload.id);
+        if (existingIndex >= 0) {
+          state.queueIndex = existingIndex;
+        } else {
+          state.queue.push(action.payload);
+          state.queueIndex = state.queue.length - 1;
+        }
       }
     },
     
@@ -119,7 +159,12 @@ const playerSlice = createSlice({
         state.currentTime = 0;
         state.isPlaying = true;
       } else {
+        // Если очередь пуста, очищаем текущий трек и останавливаем воспроизведение
         state.isPlaying = false;
+        state.currentTrack = null;
+        state.currentTime = 0;
+        state.pendingTrack = null;
+        state.isLoadingNextTrack = false;
       }
     },
     
@@ -209,6 +254,8 @@ export const {
   addToQueueNext,
   removeFromQueue,
   clearQueue,
+  setPendingTrack,
+  confirmTrackSwitch,
   playTrack,
   playNext,
   playPrevious,

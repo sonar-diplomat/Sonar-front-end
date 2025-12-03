@@ -13,10 +13,8 @@ export interface PlaylistDTO extends CollectionDTO {
 }
 
 export interface CreatePlaylistDTO {
-    // TODO: confirm exact fields
     name: string;
-    visibilityStateId?: number;
-    coverId?: number;
+    cover?: File | null; // IFormFile - опциональный файл обложки
 }
 
 export interface CursorPageDTO<T> {
