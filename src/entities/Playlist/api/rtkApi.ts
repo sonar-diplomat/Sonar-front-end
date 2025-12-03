@@ -1,7 +1,6 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
 import type { PlaylistDTO, CreatePlaylistDTO } from '../model/types';
-import type { ShareLinkDTO } from '@entities/Collection';
 
 /**
  * Playlist API endpoints
@@ -17,7 +16,7 @@ export const playlistApi = rtkApi.injectEndpoints({
       providesTags: (_result, _error, playlistId) => [{ type: 'Playlist', id: playlistId }],
     }),
 
-    getPlaylistShareLink: builder.query<ShareLinkDTO, number>({
+    getPlaylistShareLink: builder.query<string, number>({
       query: (playlistId) => ({
         url: API_ENDPOINTS.playlist.shareLink(playlistId),
         method: 'GET',

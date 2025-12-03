@@ -1,14 +1,13 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
 import type { AlbumDTO, UploadAlbumDTO } from '../model/types';
-import type { ShareLinkDTO } from '@entities/Collection';
 
 /**
  * Album API endpoints
  */
 export const albumApi = rtkApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAlbumShareLink: builder.query<ShareLinkDTO, number>({
+    getAlbumShareLink: builder.query<string, number>({
       query: (albumId) => ({
         url: API_ENDPOINTS.album.shareLink(albumId),
         method: 'GET',
