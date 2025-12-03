@@ -13,7 +13,30 @@ export interface PlayerState {
   repeatMode: 'off' | 'one' | 'all';
   isShuffled: boolean;
   originalQueue: TrackDTO[];
+  collectionContext: {
+    type: 'playlist' | 'album' | 'blend' | null;
+    id: number | null;
+  } | null;
+  favoriteTrackIds: number[];
 }
+
+const loadFavoritesFromStorage = (): number[] => {
+  try {
+    const stored = localStorage.getItem('favoriteTrackIds');
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error('Failed to load favorites from localStorage:', error);
+    return [];
+  }
+};
+
+const saveFavoritesToStorage = (favorites: number[]) => {
+  try {
+    localStorage.setItem('favoriteTrackIds', JSON.stringify(favorites));
+  } catch (error) {
+    console.error('Failed to save favorites to localStorage:', error);
+  }
+};
 
 const initialState: PlayerState = {
   currentTrack: null,
@@ -27,6 +50,8 @@ const initialState: PlayerState = {
   repeatMode: 'off',
   isShuffled: false,
   originalQueue: [],
+  collectionContext: null,
+  favoriteTrackIds: loadFavoritesFromStorage(),
 };
 
 const playerSlice = createSlice({
@@ -38,12 +63,34 @@ const playerSlice = createSlice({
       state.currentTime = 0;
     },
     
-    setQueue: (state, action: PayloadAction<{ tracks: TrackDTO[]; startIndex?: number }>) => {
+    setQueue: (state, action: PayloadAction<{ tracks: TrackDTO[]; startIndex?: number; collectionContext?: { type: 'playlist' | 'album' | 'blend'; id: number } }>) => {
       state.queue = action.payload.tracks;
       state.queueIndex = action.payload.startIndex ?? 0;
       state.currentTrack = action.payload.tracks[state.queueIndex] || null;
       state.currentTime = 0;
       state.originalQueue = action.payload.tracks;
+      state.collectionContext = action.payload.collectionContext ?? null;
+
+      let favoritesChanged = false;
+      action.payload.tracks.forEach(track => {
+        if (track.isFavorite !== undefined) {
+          const trackId = track.id;
+          const isFavorite = track.isFavorite;
+          const index = state.favoriteTrackIds.indexOf(trackId);
+
+          if (isFavorite && index === -1) {
+            state.favoriteTrackIds.push(trackId);
+            favoritesChanged = true;
+          } else if (!isFavorite && index > -1) {
+            state.favoriteTrackIds.splice(index, 1);
+            favoritesChanged = true;
+          }
+        }
+      });
+
+      if (favoritesChanged) {
+        saveFavoritesToStorage(state.favoriteTrackIds);
+      }
     },
     
     addToQueue: (state, action: PayloadAction<TrackDTO>) => {
@@ -85,12 +132,28 @@ const playerSlice = createSlice({
       state.isPlaying = false;
       state.currentTime = 0;
       state.originalQueue = [];
+      state.collectionContext = null;
     },
     
     playTrack: (state, action: PayloadAction<TrackDTO>) => {
       state.currentTrack = action.payload;
       state.isPlaying = true;
       state.currentTime = 0;
+      state.collectionContext = null;
+
+      if (action.payload.isFavorite !== undefined) {
+        const trackId = action.payload.id;
+        const isFavorite = action.payload.isFavorite;
+        const index = state.favoriteTrackIds.indexOf(trackId);
+
+        if (isFavorite && index === -1) {
+          state.favoriteTrackIds.push(trackId);
+          saveFavoritesToStorage(state.favoriteTrackIds);
+        } else if (!isFavorite && index > -1) {
+          state.favoriteTrackIds.splice(index, 1);
+          saveFavoritesToStorage(state.favoriteTrackIds);
+        }
+      }
 
       const existingIndex = state.queue.findIndex(t => t.id === action.payload.id);
       if (existingIndex >= 0) {
@@ -199,6 +262,22 @@ const playerSlice = createSlice({
         }
       }
     },
+
+    toggleFavoriteTrack: (state, action: PayloadAction<number>) => {
+      const trackId = action.payload;
+      const index = state.favoriteTrackIds.indexOf(trackId);
+      if (index > -1) {
+        state.favoriteTrackIds.splice(index, 1);
+      } else {
+        state.favoriteTrackIds.push(trackId);
+      }
+      saveFavoritesToStorage(state.favoriteTrackIds);
+    },
+
+    setFavoriteTracks: (state, action: PayloadAction<number[]>) => {
+      state.favoriteTrackIds = action.payload;
+      saveFavoritesToStorage(state.favoriteTrackIds);
+    },
   },
 });
 
@@ -221,6 +300,8 @@ export const {
   toggleMute,
   setRepeatMode,
   toggleShuffle,
+  toggleFavoriteTrack,
+  setFavoriteTracks,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;

@@ -11,7 +11,7 @@ export const PlayerActions = ({ isLiked, onLike }: PlayerActionsProps) => {
         aria-label={isLiked ? 'Unlike track' : 'Like track'}
         className={`${styles.actionButton} ${isLiked ? styles.liked : ''}`}
       >
-        <HeartIcon />
+        <HeartIcon isFilled={isLiked} />
       </button>
     </div>
   );

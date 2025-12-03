@@ -20,6 +20,8 @@ import {
   toggleMute,
   setRepeatMode,
   toggleShuffle,
+  toggleFavoriteTrack,
+  setFavoriteTracks,
 } from './playerSlice';
 import type { TrackDTO } from '@entities/Music';
 
@@ -35,8 +37,8 @@ export const usePlayer = () => {
   );
 
   const handleSetQueue = useCallback(
-    (tracks: TrackDTO[], startIndex?: number) => {
-      dispatch(setQueue({ tracks, startIndex }));
+    (tracks: TrackDTO[], startIndex?: number, collectionContext?: { type: 'playlist' | 'album' | 'blend'; id: number }) => {
+      dispatch(setQueue({ tracks, startIndex, collectionContext }));
     },
     [dispatch]
   );
@@ -129,6 +131,20 @@ export const usePlayer = () => {
     dispatch(toggleShuffle());
   }, [dispatch]);
 
+  const handleToggleFavoriteTrack = useCallback(
+    (trackId: number) => {
+      dispatch(toggleFavoriteTrack(trackId));
+    },
+    [dispatch]
+  );
+
+  const handleSetFavoriteTracks = useCallback(
+    (trackIds: number[]) => {
+      dispatch(setFavoriteTracks(trackIds));
+    },
+    [dispatch]
+  );
+
   return {
     ...playerState,
     setCurrentTrack: handleSetCurrentTrack,
@@ -149,6 +165,8 @@ export const usePlayer = () => {
     toggleMute: handleToggleMute,
     setRepeatMode: handleSetRepeatMode,
     toggleShuffle: handleToggleShuffle,
+    toggleFavoriteTrackLocal: handleToggleFavoriteTrack,
+    setFavoriteTracks: handleSetFavoriteTracks,
   };
 };
 

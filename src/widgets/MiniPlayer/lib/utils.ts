@@ -14,15 +14,48 @@ export const formatTime = (seconds: number): string => {
 
 /**
  * Gets artist names from track data
+ * Supports multiple possible artist data structures
  */
-export const getArtistNames = (track: { artists?: Array<{ user?: { firstName?: string; lastName?: string } }> }): string => {
-  if (!track || !track.artists || track.artists.length === 0) {
+export const getArtistNames = (track: any): string => {
+  if (!track) {
     return 'Unknown Artist';
   }
-  const names = track.artists
-    .map(artist => {
+
+  const artists = track.artists || track.albumArtists || track.trackArtists;
+
+  if (!artists || artists.length === 0) {
+    if (track.creator) {
+      if (typeof track.creator === 'string') return track.creator;
+      if (track.creator.firstName && track.creator.lastName) {
+        return `${track.creator.firstName} ${track.creator.lastName}`;
+      }
+      if (track.creator.userName || track.creator.username) {
+        return track.creator.userName || track.creator.username;
+      }
+    }
+
+    if (track.artist) {
+      if (typeof track.artist === 'string') return track.artist;
+    }
+
+    return 'Unknown Artist';
+  }
+
+  const names = artists
+    .map((artist: any) => {
+      if (artist.pseudonym) return artist.pseudonym;
+      if (artist.name) return artist.name;
       if (artist.user?.firstName && artist.user?.lastName) {
         return `${artist.user.firstName} ${artist.user.lastName}`;
+      }
+      if (artist.user?.userName || artist.user?.username) {
+        return artist.user.userName || artist.user.username;
+      }
+      if (artist.firstName && artist.lastName) {
+        return `${artist.firstName} ${artist.lastName}`;
+      }
+      if (artist.userName || artist.username) {
+        return artist.userName || artist.username;
       }
       return null;
     })

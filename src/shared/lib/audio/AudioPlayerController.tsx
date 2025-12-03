@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { usePlayer } from '@shared/store/features/player';
 import { Api as MusicApi } from '@entities/Music/api/api';
+import React from "react";
 
 export const AudioPlayerController = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -15,12 +16,8 @@ export const AudioPlayerController = () => {
   } = usePlayer();
 
   useEffect(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-      audioRef.current.preload = 'auto';
-    }
-
     const audio = audioRef.current;
+    if (!audio) return;
 
     const handleTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
@@ -128,7 +125,7 @@ export const AudioPlayerController = () => {
         URL.revokeObjectURL(blobUrl);
       }
     };
-  }, [currentTrack, isPlaying]);
+  }, [currentTrack]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -152,7 +149,7 @@ export const AudioPlayerController = () => {
     audio.volume = isMuted ? 0 : volume;
   }, [volume, isMuted]);
 
-  return null;
+  return <audio ref={audioRef} preload="auto" style={{ display: 'none' }} />;
 };
 
 export const useAudioSeek = () => {
