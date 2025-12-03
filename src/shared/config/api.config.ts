@@ -1,4 +1,5 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
+//export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sonar.pp.ua/api/';
 
 export const API_ENDPOINTS = {
     auth: {
@@ -193,5 +194,15 @@ export const API_ENDPOINTS = {
     },
     blob: {
         image: (id: number) => `blob/${id}`,
+    },
+    search: {
+        search: 'Search',
+        tracks: 'Search/tracks',
+        albums: 'Search/albums',
+        playlists: 'Search/playlists',
+        artists: 'Search/artists',
+        users: 'Search/users',
+        suggestions: 'Search/suggestions',
+        popular: 'Search/popular',
     },
 } as const;

@@ -27,12 +27,22 @@ export const playlistApi = rtkApi.injectEndpoints({
     }),
 
     createPlaylist: builder.mutation<PlaylistDTO, CreatePlaylistDTO>({
-      query: (body) => ({
-        url: API_ENDPOINTS.playlist.create,
-        method: 'POST',
-        body,
-        withAuth: true,
-      }),
+      query: (body) => {
+        // Создаем FormData для отправки файла обложки
+        const formData = new FormData();
+        formData.append('Name', body.name);
+        if (body.cover) {
+          formData.append('Cover', body.cover);
+        }
+        
+        return {
+          url: API_ENDPOINTS.playlist.create,
+          method: 'POST',
+          body: formData,
+          bodyType: 'form',
+          withAuth: true,
+        };
+      },
       invalidatesTags: [{ type: 'Playlist', id: 'LIST' }],
     }),
 

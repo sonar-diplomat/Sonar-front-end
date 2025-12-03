@@ -21,5 +21,6 @@ import '@entities/Collection/api/rtkApi';
 import '@entities/Blend/api/rtkApi';
 import '@entities/Artist/api/rtkApi';
 import '@entities/Share/api/rtkApi';
+import '@entities/Search/api/rtkApi';
 import '@features/auth/api/rtkApi';
 

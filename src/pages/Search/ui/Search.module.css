@@ -5,3 +5,23 @@
     width: 100%;
     padding: 8px;
 }
+
+.loading,
+.error,
+.emptyState {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-secondary, #999);
+}
+
+.error {
+    color: var(--error-color, #ff4444);
+}
+
+.emptyState {
+    color: var(--text-secondary, #999);
+    font-size: 16px;
+}

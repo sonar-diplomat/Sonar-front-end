@@ -3,6 +3,7 @@ import authReducer from './features/auth/authSlice';
 import clientSettingsReducer from './features/clientSettings/clientSettingsSlice';
 import userStateReducer from './features/userState/userStateSlice';
 import accessReducer from './features/access/accessSlice';
+import playerReducer from './features/player/playerSlice';
 import { rtkApi } from '@shared/api/rtkApi';
 
 // Импортируем все API модули для инжекции endpoints после инициализации rtkApi
@@ -17,6 +18,7 @@ export const store = configureStore({
     clientSettings: clientSettingsReducer,
     userState: userStateReducer,
     access: accessReducer,
+    player: playerReducer,
     [rtkApi.reducerPath]: rtkApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>

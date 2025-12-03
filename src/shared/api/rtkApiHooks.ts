@@ -24,5 +24,6 @@ export * from '@entities/Collection/api/rtkApi';
 export * from '@entities/Blend/api/rtkApi';
 export * from '@entities/Artist/api/rtkApi';
 export * from '@entities/Share/api/rtkApi';
+export * from '@entities/Search/api/rtkApi';
 export * from '@features/auth/api/rtkApi';
 
