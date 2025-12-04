@@ -20,6 +20,11 @@
     justify-content: center;
 }
 
+.button.hidden {
+    visibility: hidden;
+    pointer-events: none;
+}
+
 .content {
     flex: 1;
     display: flex;

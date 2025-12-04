@@ -1,4 +1,5 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
+//export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sonar.pp.ua/api/';
 
 export const API_ENDPOINTS = {
     auth: {
@@ -125,6 +126,7 @@ export const API_ENDPOINTS = {
         changePassword: (id: number) => `DistributorMaster/account/${id}/password`,
     },
     chat: {
+        list: 'Chat',
         create: 'Chat',
         sendMessage: (chatId: number) => `Chat/${chatId}/send`,
         deleteMessage: (messageId: number) => `Chat/message/${messageId}`,

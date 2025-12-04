@@ -5,13 +5,17 @@ import React from "react";
 
 export const AudioPlayerController = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const pendingAudioRef = useRef<HTMLAudioElement | null>(null);
   const {
     currentTrack,
+    pendingTrack,
+    isLoadingNextTrack,
     isPlaying,
     volume,
     isMuted,
     setCurrentTime,
     setDuration,
+    confirmTrackSwitch,
     playNext,
   } = usePlayer();
 
@@ -78,10 +82,16 @@ export const AudioPlayerController = () => {
     };
   }, [setCurrentTime, setDuration, playNext]);
 
+  // Загрузка текущего трека (если нет pendingTrack)
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !currentTrack) {
-      if (audio && audio.src) {
+    if (!audio || !currentTrack || pendingTrack) {
+      // Если есть pendingTrack, не загружаем currentTrack заново
+      if (audio && audio.src && !pendingTrack) {
+        // Продолжаем воспроизведение текущего трека
+        return;
+      }
+      if (audio && audio.src && !currentTrack) {
         audio.pause();
         audio.removeAttribute('src');
         audio.load();
@@ -93,7 +103,7 @@ export const AudioPlayerController = () => {
 
     const loadTrack = async () => {
       try {
-        console.log('[AudioPlayer] Streaming track:', currentTrack.id);
+        console.log('[AudioPlayer] Streaming current track:', currentTrack.id);
 
         const response = await MusicApi.stream(currentTrack.id);
 
@@ -104,7 +114,7 @@ export const AudioPlayerController = () => {
         const blob = await response.blob();
         blobUrl = URL.createObjectURL(blob);
 
-        console.log('[AudioPlayer] Stream loaded successfully');
+        console.log('[AudioPlayer] Current track stream loaded successfully');
 
         audio.src = blobUrl;
         audio.load();
@@ -113,7 +123,7 @@ export const AudioPlayerController = () => {
           await audio.play();
         }
       } catch (error) {
-        console.error('[AudioPlayer] Error loading track:', error);
+        console.error('[AudioPlayer] Error loading current track:', error);
         console.error('[AudioPlayer] Track data:', currentTrack);
       }
     };
@@ -125,7 +135,223 @@ export const AudioPlayerController = () => {
         URL.revokeObjectURL(blobUrl);
       }
     };
-  }, [currentTrack]);
+  }, [currentTrack, isPlaying, pendingTrack]);
+
+  // Предзагрузка pendingTrack в фоне
+  useEffect(() => {
+    if (!pendingTrack || !isLoadingNextTrack) {
+      return;
+    }
+
+    // Создаем отдельный audio элемент для предзагрузки
+    if (!pendingAudioRef.current) {
+      pendingAudioRef.current = new Audio();
+    }
+
+    const pendingAudio = pendingAudioRef.current;
+    let blobUrl: string | null = null;
+    let isCancelled = false;
+
+    const preloadTrack = async () => {
+      try {
+        console.log('[AudioPlayer] Preloading pending track:', pendingTrack.id);
+
+        const response = await MusicApi.stream(pendingTrack.id);
+
+        if (!response || !response.ok) {
+          throw new Error(`Stream API returned status: ${response?.status || 'unknown'}`);
+        }
+
+        const blob = await response.blob();
+        blobUrl = URL.createObjectURL(blob);
+
+        if (isCancelled) {
+          URL.revokeObjectURL(blobUrl);
+          return;
+        }
+
+        console.log('[AudioPlayer] Pending track preloaded successfully');
+
+        // Предзагружаем трек (без воспроизведения)
+        pendingAudio.src = blobUrl;
+        pendingAudio.volume = 0; // Убеждаемся, что pendingAudio не слышен
+        pendingAudio.load();
+        
+        // Убеждаемся, что pendingAudio не воспроизводится
+        if (!pendingAudio.paused) {
+          pendingAudio.pause();
+        }
+
+        // Ждем пока трек будет готов к воспроизведению
+        await new Promise<void>((resolve, reject) => {
+          if (isCancelled) {
+            reject(new Error('Preload cancelled'));
+            return;
+          }
+
+          const handleCanPlay = () => {
+            pendingAudio.removeEventListener('canplay', handleCanPlay);
+            pendingAudio.removeEventListener('error', handleError);
+            if (!isCancelled) {
+              resolve();
+            }
+          };
+
+          const handleError = () => {
+            pendingAudio.removeEventListener('canplay', handleCanPlay);
+            pendingAudio.removeEventListener('error', handleError);
+            if (!isCancelled) {
+              reject(new Error('Failed to preload pending track'));
+            }
+          };
+
+          if (pendingAudio.readyState >= 3) {
+            // HAVE_FUTURE_DATA или выше - трек готов
+            resolve();
+          } else {
+            pendingAudio.addEventListener('canplay', handleCanPlay);
+            pendingAudio.addEventListener('error', handleError);
+          }
+        });
+
+        if (isCancelled) {
+          if (blobUrl) {
+            URL.revokeObjectURL(blobUrl);
+          }
+          return;
+        }
+
+        console.log('[AudioPlayer] Pending track is ready, switching...');
+
+        // Переключаемся на предзагруженный трек с плавным переходом
+        const mainAudio = audioRef.current;
+        if (mainAudio && !isCancelled) {
+          // Сохраняем blobUrl для использования в mainAudio
+          const trackBlobUrl = blobUrl;
+          blobUrl = null; // Не освобождаем в cleanup, так как используется в mainAudio
+
+          // Плавное переключение с fade out/in
+          const fadeDuration = 300; // Длительность fade в миллисекундах (увеличено для более плавного перехода)
+          const steps = 30; // Количество шагов для плавности
+          const stepDuration = fadeDuration / steps;
+          const targetVolume = isMuted ? 0 : volume;
+          const volumeStep = targetVolume / steps;
+
+          // Fade out текущего трека
+          const currentVolume = mainAudio.volume;
+          let currentStep = 0;
+          let fadeOutInterval: NodeJS.Timeout | null = null;
+
+          const cleanupFade = () => {
+            if (fadeOutInterval) {
+              clearInterval(fadeOutInterval);
+              fadeOutInterval = null;
+            }
+          };
+
+          fadeOutInterval = setInterval(() => {
+            if (isCancelled) {
+              cleanupFade();
+              return;
+            }
+
+            currentStep++;
+            const newVolume = Math.max(0, currentVolume - (volumeStep * currentStep));
+            mainAudio.volume = newVolume;
+
+            if (currentStep >= steps) {
+              cleanupFade();
+              
+              if (!isCancelled) {
+                // Полностью останавливаем старый трек перед переключением
+                mainAudio.pause();
+                mainAudio.currentTime = 0;
+                
+                // Убеждаемся, что pendingAudio не воспроизводится
+                if (pendingAudio && !pendingAudio.paused) {
+                  pendingAudio.pause();
+                }
+
+                // Небольшая задержка для полной остановки старого трека
+                setTimeout(() => {
+                  if (isCancelled) return;
+
+                  // Переключаем src на предзагруженный трек
+                  mainAudio.src = trackBlobUrl;
+                  mainAudio.load();
+
+                  // Начинаем с начала нового трека
+                  mainAudio.currentTime = 0;
+
+                  // Запускаем воспроизведение если было включено
+                  if (isPlaying) {
+                    mainAudio.play().then(() => {
+                      // Fade in нового трека
+                      mainAudio.volume = 0;
+                      let fadeInStep = 0;
+                      
+                      const fadeInInterval = setInterval(() => {
+                        fadeInStep++;
+                        const newVolume = Math.min(targetVolume, volumeStep * fadeInStep);
+                        mainAudio.volume = newVolume;
+
+                        if (fadeInStep >= steps) {
+                          clearInterval(fadeInInterval);
+                          mainAudio.volume = targetVolume;
+                        }
+                      }, stepDuration);
+                    }).catch((error) => {
+                      console.error('[AudioPlayer] Error playing new track:', error);
+                      mainAudio.volume = targetVolume;
+                    });
+                  } else {
+                    // Если не играет, просто устанавливаем громкость
+                    mainAudio.volume = targetVolume;
+                  }
+
+                  // Подтверждаем переключение в Redux
+                  confirmTrackSwitch();
+                  
+                  console.log('[AudioPlayer] Track switched successfully');
+                }, 50); // Небольшая задержка для полной остановки
+              }
+
+              // Освобождаем blobUrl после небольшой задержки
+              setTimeout(() => {
+                URL.revokeObjectURL(trackBlobUrl);
+              }, 1000);
+            }
+          }, stepDuration);
+        }
+
+        // Очищаем pending audio
+        pendingAudio.removeAttribute('src');
+        pendingAudio.load();
+      } catch (error) {
+        if (!isCancelled) {
+          console.error('[AudioPlayer] Error preloading pending track:', error);
+          console.error('[AudioPlayer] Pending track data:', pendingTrack);
+        }
+        if (blobUrl) {
+          URL.revokeObjectURL(blobUrl);
+        }
+      }
+    };
+
+    void preloadTrack();
+
+    return () => {
+      isCancelled = true;
+      if (blobUrl) {
+        URL.revokeObjectURL(blobUrl);
+      }
+      // Очищаем pending audio при отмене
+      if (pendingAudio.src) {
+        pendingAudio.removeAttribute('src');
+        pendingAudio.load();
+      }
+    };
+  }, [pendingTrack, isLoadingNextTrack, isPlaying, confirmTrackSwitch]);
 
   useEffect(() => {
     const audio = audioRef.current;

@@ -8,6 +8,8 @@ import {
   addToQueueNext,
   removeFromQueue,
   clearQueue,
+  setPendingTrack,
+  confirmTrackSwitch,
   playTrack,
   playNext,
   playPrevious,
@@ -66,6 +68,17 @@ export const usePlayer = () => {
 
   const handleClearQueue = useCallback(() => {
     dispatch(clearQueue());
+  }, [dispatch]);
+
+  const handleSetPendingTrack = useCallback(
+    (track: TrackDTO | null) => {
+      dispatch(setPendingTrack(track));
+    },
+    [dispatch]
+  );
+
+  const handleConfirmTrackSwitch = useCallback(() => {
+    dispatch(confirmTrackSwitch());
   }, [dispatch]);
 
   const handlePlayTrack = useCallback(
@@ -153,6 +166,8 @@ export const usePlayer = () => {
     addToQueueNext: handleAddToQueueNext,
     removeFromQueue: handleRemoveFromQueue,
     clearQueue: handleClearQueue,
+    setPendingTrack: handleSetPendingTrack,
+    confirmTrackSwitch: handleConfirmTrackSwitch,
     playTrack: handlePlayTrack,
     playNext: handlePlayNext,
     playPrevious: handlePlayPrevious,
