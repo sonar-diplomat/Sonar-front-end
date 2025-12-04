@@ -82,3 +82,12 @@ export {
     PreviousIcon,
     PauseIcon,
 } from './icons';
+
+export { ActionMenu } from './ActionMenu';
+export type {
+    ActionMenuProps,
+    ActionMenuContext,
+    ActionMenuContextType,
+    ActionMenuItem
+} from './ActionMenu';
+

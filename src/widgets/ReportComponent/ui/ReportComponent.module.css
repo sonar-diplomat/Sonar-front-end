@@ -1,56 +1,31 @@
 .container {
     display: flex;
     flex-direction: column;
-    background-color: #000;
-    padding: 16px 16px 32px 16px;
+    width: 100%;
+    padding: 16px 0 24px;
 }
 
 .header {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
+    padding: 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .title {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 600;
-    color: var(--input-text);
+    color: #EAEAEA;
     margin: 0 0 8px 0;
-}
-
-.content {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-    margin-top: 24px;
 }
 
 .description {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 400;
     line-height: 20px;
-    color: var(--input-helper-text);
-    margin: 0;
-}
-
-.helpText {
-    text-align: center;
-    padding: 32px 16px;
-    background-color: var(--input-bg);
-    border-radius: 16px;
-}
-
-.helpText p {
-    font-size: 17px;
-    font-weight: 500;
-    line-height: 22px;
-    color: var(--input-text);
-    margin: 0 0 8px 0;
-}
-
-.helpSubtext {
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 18px;
-    color: var(--input-helper-text);
+    color: rgba(234, 234, 234, 0.6);
+    margin: 0 0 24px 0;
 }
 
 .form {
@@ -66,41 +41,52 @@
 }
 
 .reasonsHelper {
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 16px;
-    color: var(--input-helper-text);
-    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    color: rgba(234, 234, 234, 0.7);
+    margin: 0 0 4px 0;
 }
 
 .reasonsList {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 16px;
-    background-color: var(--input-bg);
-    border-radius: 16px;
+    gap: 6px;
 }
 
 .reasonItem {
     display: flex;
     align-items: center;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.reasonItem:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.reasonItem:active {
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(0.98);
 }
 
 .actions {
     display: flex;
     gap: 12px;
-    margin-top: 8px;
+    margin-top: 4px;
 }
 
 .error {
     font-size: 14px;
     font-weight: 400;
     line-height: 18px;
-    color: #FF6B6B;
+    color: #ff6b6b;
     margin: 0;
     padding: 12px 16px;
-    background-color: rgba(255, 107, 107, 0.1);
+    background: rgba(255, 107, 107, 0.1);
     border-radius: 12px;
 }
 
@@ -115,3 +101,25 @@
     border-radius: 12px;
 }
 
+.helpText {
+    text-align: center;
+    padding: 24px 8px 0 8px;
+    background: none;
+    border-radius: 0;
+}
+
+.helpText p {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 22px;
+    color: rgba(234, 234, 234, 0.6);
+    margin: 0 0 4px 0;
+}
+
+.helpSubtext {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+    color: rgba(234, 234, 234, 0.6);
+    margin: 0;
+}

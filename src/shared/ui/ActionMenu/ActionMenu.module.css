@@ -1,0 +1,76 @@
+.actionMenu {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 8px 0;
+}
+
+.actionList {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.actionItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    text-align: left;
+}
+
+.actionItem:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.actionItem:active {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(0.98);
+}
+
+.actionItem:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.actionItem:disabled:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: none;
+}
+
+.actionItem.danger {
+    color: #ff6b6b;
+}
+
+.actionItem.danger:hover {
+    background: rgba(255, 107, 107, 0.1);
+}
+
+.actionIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.actionIcon svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.actionLabel {
+    flex: 1;
+}
+
