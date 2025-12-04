@@ -1,9 +1,10 @@
 .container {
     display: flex;
     flex-direction: column;
-    gap: 32px;
-    background-color: #000;
-    padding: 16px 16px 32px 16px;
+    gap: 12px;
+    padding: 0 0 32px 0;
+    width: 100%;
+    align-self: stretch;
 }
 
 .section {
@@ -12,32 +13,12 @@
     gap: 16px;
 }
 
-.sectionHeader {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.sectionIcon {
-    width: 20px;
-    height: 20px;
-    color: var(--input-text);
-}
-
-.sectionTitle {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 24px;
-    color: var(--input-text);
-    margin: 0;
-}
-
 .qrCodeContainer {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 200px;
-    padding: 24px;
+    min-height: 240px;
+    padding: 32px;
     background-color: var(--input-bg);
     border-radius: 16px;
 }
@@ -47,18 +28,22 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    max-width: 200px;
+    max-width: 240px;
+    background-color: #FFF;
+    padding: 16px;
+    border-radius: 12px;
 }
 
 .qrCode svg {
     width: 100%;
     height: auto;
+    display: block;
 }
 
 .linkContainer {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
 .linkBox {
@@ -66,6 +51,9 @@
     background-color: var(--input-bg);
     border-radius: 16px;
     overflow: hidden;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
 }
 
 .linkText {
@@ -76,6 +64,7 @@
     margin: 0;
     word-break: break-all;
     overflow-wrap: break-word;
+    flex: 1;
 }
 
 .loadingState {
@@ -83,8 +72,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 16px;
     width: 100%;
+    padding: 16px;
 }
 
 .loadingText {
@@ -100,14 +90,16 @@
     align-items: center;
     justify-content: center;
     width: 100%;
+    padding: 16px;
 }
 
 .errorText {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 400;
-    line-height: 20px;
-    color: #FF6B6B;
+    line-height: 18px;
+    color: var(--input-error);
     margin: 0;
+    text-align: center;
 }
 
 .spinner {
