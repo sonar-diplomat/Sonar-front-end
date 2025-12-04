@@ -1,119 +1,168 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styles from './Collection.module.css';
 import { CollectionHeader, CollectionCover, CollectionView, CollectionActions } from '@widgets/CollectionView';
 import type { Track } from '@widgets/CollectionView';
+import { useGetPlaylistQuery, useGetPlaylistTracksQuery } from '@entities/Playlist/api/rtkApi';
+import { useGetAlbumTracksQuery } from '@entities/Album/api/rtkApi';
+import { usePlayTracks } from '@shared/lib/audio/usePlaybackActions';
+import { getImageUrlById } from '@shared/lib/image-utils';
+import type { TrackDTO } from '@entities/Music';
+import { getArtistNames } from '@widgets/MiniPlayer/lib/utils';
+
+type CollectionType = 'Playlist' | 'Album' | 'Blend';
+
+/**
+ * Converts TrackDTO to Track format for CollectionView
+ */
+const convertTrackDTOToTrack = (trackDTO: TrackDTO): Track => {
+    const artistName = getArtistNames(trackDTO);
+    const coverUrl = trackDTO.cover?.url || getImageUrlById(trackDTO.coverId);
+    
+    return {
+        id: String(trackDTO.id),
+        title: trackDTO.title,
+        artist: artistName,
+        imageSrc: coverUrl,
+        imageAlt: trackDTO.title,
+    };
+};
 
 export const Collection: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const collectionData = {
-        title: 'Your mix',
-        coverImage: undefined, // Add image URL
-        tracks: [
-            {
-                id: '1',
-                title: 'Whispers of the Dreamscape',
-                artist: 'Echo Night',
-            },
-            {
-                id: '2',
-                title: 'Voices from the Heart',
-                artist: 'Sienna Bloom',
-            },
-            {
-                id: '3',
-                title: 'Harmonies of Reflection',
-                artist: 'Jasper Voss',
-            },
-            {
-                id: '4',
-                title: 'Artists of Awareness',
-                artist: 'Slate Rivers',
-            },
-            {
-                id: '5',
-                title: 'Tunes of Introspection',
-                artist: 'Finn Chord',
-            },
-            {
-                id: '6',
-                title: 'Serenades of Peace',
-                artist: 'Zylo Vibe',
-            },
-            {
-                id: '7',
-                title: 'Singers of Insight',
-                artist: 'Echo Pulse',
-            },
-            {
-                id: '8',
-                title: 'Collective Calm',
-                artist: 'Ryder Wave',
-            },
-            {
-                id: '9',
-                title: 'Harmonies of Thoughtfulness',
-                artist: 'Nova Beat',
-            },
-            {
-                id: '10',
-                title: 'Artists of Contemplation',
-                artist: 'Kairo Synth',
-            },
-            {
-                id: '11',
-                title: 'Singers of Reflection',
-                artist: 'Luna Groove',
-            },
-            {
-                id: '12',
-                title: 'Creators of Awareness',
-                artist: 'Axel Rhythm',
-            },
-        ] as Track[],
-    };
-
+    const location = useLocation();
+    
+    // Get collection type from navigation state, default to 'Playlist'
+    const collectionType = (location.state?.collectionType as CollectionType) || 'Playlist';
+    const collectionId = id ? Number.parseInt(id, 10) : null;
+    
+    const playTracks = usePlayTracks();
+    
+    // Load playlist data if type is Playlist
+    const { data: playlistData, isLoading: playlistLoading, error: playlistError } = useGetPlaylistQuery(
+        collectionId!,
+        { skip: !collectionId || collectionType !== 'Playlist' }
+    );
+    
+    // Load playlist tracks if type is Playlist
+    const { data: playlistTracksData, isLoading: playlistTracksLoading } = useGetPlaylistTracksQuery(
+        collectionId!,
+        { skip: !collectionId || collectionType !== 'Playlist' }
+    );
+    
+    // Load album tracks if type is Album
+    const { data: albumTracksData, isLoading: albumTracksLoading } = useGetAlbumTracksQuery(
+        collectionId!,
+        { skip: !collectionId || collectionType !== 'Album' }
+    );
+    
+    // Determine collection data based on type
+    const collectionData = useMemo(() => {
+        if (collectionType === 'Playlist' && playlistData) {
+            return {
+                title: playlistData.name,
+                coverImage: playlistData.cover?.url || getImageUrlById(playlistData.coverId),
+            };
+        }
+        // For Album, we don't have album data endpoint, so we'll use tracks data
+        if (collectionType === 'Album' && albumTracksData && albumTracksData.length > 0) {
+            // Use first track's cover as collection cover
+            const firstTrack = albumTracksData[0];
+            return {
+                title: 'Album', // TODO: Get album name from somewhere
+                coverImage: firstTrack.cover?.url || getImageUrlById(firstTrack.coverId),
+            };
+        }
+        return {
+            title: 'Collection',
+            coverImage: undefined,
+        };
+    }, [collectionType, playlistData, albumTracksData]);
+    
+    // Convert tracks to CollectionView format
+    const tracks: Track[] = useMemo(() => {
+        if (collectionType === 'Playlist' && playlistTracksData) {
+            return playlistTracksData.items.map(convertTrackDTOToTrack);
+        }
+        if (collectionType === 'Album' && albumTracksData) {
+            return albumTracksData.map(convertTrackDTOToTrack);
+        }
+        return [];
+    }, [collectionType, playlistTracksData, albumTracksData]);
+    
+    const isLoading = playlistLoading || playlistTracksLoading || albumTracksLoading;
+    const hasError = playlistError;
+    
     const handleBackClick = () => {
-        console.log('Back clicked - navigate to previous page');
-        navigate(-1); // Go back to previous page
+        navigate(-1);
     };
-
+    
     const handleMenuClick = () => {
         console.log('Menu clicked - open collection options');
-        // Open a menu with options like: Share, Add to playlist, Delete, etc.
     };
-
+    
     const handlePlayClick = () => {
-        console.log('Play clicked - start playing collection');
-        // Start playing all tracks in order
+        if (!collectionId) return;
+        
+        if (collectionType === 'Playlist' && playlistTracksData?.items) {
+            playTracks(playlistTracksData.items, 0, { type: 'playlist', id: collectionId });
+        } else if (collectionType === 'Album' && albumTracksData) {
+            playTracks(albumTracksData, 0, { type: 'album', id: collectionId });
+        }
     };
-
+    
     const handleShuffleClick = () => {
-        console.log('Shuffle clicked - shuffle and play');
-        // Shuffle tracks and start playing
+        if (!collectionId) return;
+        
+        let tracksToShuffle: TrackDTO[] = [];
+        if (collectionType === 'Playlist' && playlistTracksData?.items) {
+            tracksToShuffle = [...playlistTracksData.items];
+        } else if (collectionType === 'Album' && albumTracksData) {
+            tracksToShuffle = [...albumTracksData];
+        }
+        
+        // Shuffle tracks
+        for (let i = tracksToShuffle.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [tracksToShuffle[i], tracksToShuffle[j]] = [tracksToShuffle[j], tracksToShuffle[i]];
+        }
+        
+        playTracks(tracksToShuffle, 0, { type: collectionType.toLowerCase() as 'playlist' | 'album' | 'blend', id: collectionId });
     };
-
+    
     const handleTrackMenuClick = (trackId: string) => {
         console.log('Track menu clicked:', trackId);
     };
-
+    
     const handleAddClick = () => {
         console.log('Add clicked - add tracks to collection');
-        // Open dialog to add tracks to this collection
     };
-
+    
     const handleEditClick = () => {
         console.log('Edit clicked - edit collection details');
-        // Open edit dialog for collection name, description, etc.
     };
-
+    
     const handleSortClick = () => {
         console.log('Sort clicked - sort tracks');
-        // Open sort menu: by name, artist, date added, etc.
     };
-
-
+    
+    if (isLoading) {
+        return (
+            <div className={styles.collection}>
+                <div>Loading...</div>
+            </div>
+        );
+    }
+    
+    if (hasError) {
+        return (
+            <div className={styles.collection}>
+                <div>Error loading collection</div>
+            </div>
+        );
+    }
+    
     return (
         <div className={styles.collection}>
             <CollectionHeader
@@ -133,7 +182,7 @@ export const Collection: React.FC = () => {
             />
             <CollectionView
                 title="Tracks inside"
-                tracks={collectionData.tracks}
+                tracks={tracks}
                 onTrackMenuClick={handleTrackMenuClick}
             />
         </div>

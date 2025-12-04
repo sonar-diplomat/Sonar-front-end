@@ -202,6 +202,8 @@ export const Search: React.FC = () => {
               subtitle1: album.authors.map((a) => a.pseudonym).join(', '),
               subtitle2: `${album.trackCount} tracks`,
             }}
+            to={`/collection/${album.id}`}
+            state={{ collectionType: 'Album' }}
             onClick={() => handleAlbumClick(album)}
           />
         ),
@@ -232,6 +234,8 @@ export const Search: React.FC = () => {
                 subtitle1: `by ${playlist.creatorName}`,
                 subtitle2: `${playlist.trackCount} tracks`,
               }}
+              to={`/collection/${playlist.id}`}
+              state={{ collectionType: 'Playlist' }}
               onClick={() => handlePlaylistClick(playlist)}
             />
           ),

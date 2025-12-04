@@ -12,6 +12,7 @@ export interface Playlist {
     description?: string;
     coverImage?: string;
     trackCount?: number;
+    type?: string; // "Album", "Playlist", "Blend"
     createdAt?: Date;
     updatedAt?: Date;
 }

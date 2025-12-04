@@ -150,7 +150,7 @@ export const distributionApi = rtkApi.injectEndpoints({
       query: (token) => ({
         url: API_ENDPOINTS.authDistributor.refreshToken,
         method: 'POST',
-        body: token,
+        body: `"${token}"`,
         bodyType: 'raw',
         withAuth: false,
       }),

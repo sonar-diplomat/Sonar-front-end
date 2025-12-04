@@ -2,6 +2,7 @@ import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
 import type { AlbumDTO, UploadAlbumDTO } from '../model/types';
 import type { ShareLinkDTO } from '@entities/Collection';
+import type { TrackDTO } from '@entities/Music';
 
 /**
  * Album API endpoints
@@ -85,6 +86,15 @@ export const albumApi = rtkApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { albumId }) => [{ type: 'Album', id: albumId }],
     }),
+
+    getAlbumTracks: builder.query<TrackDTO[], number>({
+      query: (albumId) => ({
+        url: API_ENDPOINTS.album.tracks(albumId),
+        method: 'GET',
+        withAuth: true,
+      }),
+      providesTags: (_result, _error, albumId) => [{ type: 'Album', id: albumId }, { type: 'Track', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -97,5 +107,6 @@ export const {
   useAddTrackToAlbumMutation,
   useUpdateAlbumCoverMutation,
   useUpdateAlbumVisibilityMutation,
+  useGetAlbumTracksQuery,
 } = albumApi;
 
