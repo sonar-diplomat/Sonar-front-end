@@ -4,7 +4,7 @@ import {ItemCardContainer} from "@shared/ui";
 
 import styles from './ContentSections.module.css';
 
-export interface ContentSection<T = any> {
+export interface ContentSection<T = unknown> {
     id: string;
     title: string;
     countLabel: string;
@@ -14,14 +14,15 @@ export interface ContentSection<T = any> {
 }
 
 interface ContentSectionsProps {
-    sections: ContentSection[];
+    sections: ContentSection<any>[];
 }
 
 export const ContentSections: React.FC<ContentSectionsProps> = ({sections}) => {
     return (
         <div className={styles.sectionsContainer}>
-            {sections.map((section) => (
-                section.shouldShow && (
+            {sections
+                .filter((section) => section.shouldShow)
+                .map((section) => (
                     <ItemCardContainer
                         key={section.id}
                         title={section.title}
@@ -30,8 +31,7 @@ export const ContentSections: React.FC<ContentSectionsProps> = ({sections}) => {
                     >
                         {section.items.map((item) => section.renderItem(item))}
                     </ItemCardContainer>
-                )
-            ))}
+                ))}
         </div>
     );
 };

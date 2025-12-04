@@ -19,3 +19,10 @@
     align-items: center;
     justify-content: center;
 }
+.messagesView{
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 16px 0;
+    width: 100%;
+}

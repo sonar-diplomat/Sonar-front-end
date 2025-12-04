@@ -1,4 +1,4 @@
-import { PlayIcon, PauseIcon, NextIcon, PreviousIcon } from '../lib/icons';
+import { PlayIcon, PauseIcon, NextIcon, PreviousIcon } from '@shared/ui';
 import type { PlayerControlsProps } from '../model/types';
 import styles from './MiniPlayer.module.css';
 import React from "react";

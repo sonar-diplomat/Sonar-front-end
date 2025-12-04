@@ -11,6 +11,7 @@ export { WheelPicker, WheelPickerWrapper } from './WheelPicker';
 export { TabSlider } from './TabSlider';
 export { SongItem } from './SongItem';
 export { ArtistItem } from './ArtistItem';
+export { TrackItem } from './TrackItem';
 export { SectionHeader } from './SectionHeader';
 export { Toggle } from './Toggle/Toggle';
 export { Select } from './Select/Select';
@@ -25,6 +26,7 @@ export type { ItemCardProps, ItemCardSize, ItemCardTextContent, ItemCardContaine
 export type { ProfileCardProps, ProfileCardStats } from './ProfileCard';
 export type { SongItemProps } from './SongItem';
 export type { ArtistItemProps } from './ArtistItem';
+export type { TrackItemProps } from './TrackItem';
 export type { SectionHeaderProps } from './SectionHeader';
 export type { ModalProps } from './Modal/Modal';
 export type { WheelPickerOption } from './WheelPicker';
@@ -67,4 +69,16 @@ export {
     MoreIcon,
     UpRightArrow,
     MenuIcon,
+    StatisticsIcon,
+    MessageIcon,
+    ShuffleIcon,
+    SortIcon,
+    VerifyIcon,
+    EditProfileIcon,
+    LinkIcon,
+    NextTrackIcon,
+    HeartIcon,
+    NextIcon,
+    PreviousIcon,
+    PauseIcon,
 } from './icons';

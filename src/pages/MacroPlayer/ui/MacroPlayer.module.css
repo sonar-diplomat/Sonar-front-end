@@ -1,0 +1,786 @@
+.macroPlayer {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background: #151515;
+    color: white;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 80px;
+}
+
+.time {
+    font-family: 'SF Pro', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 22px;
+    text-align: center;
+    color: white;
+}
+
+.statusIcons {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+}
+
+.signal,
+.wifi,
+.battery {
+    width: 20px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 2px;
+}
+
+/* Top Bar */
+.topBar {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    margin-top: 16px;
+    height: 44px;
+}
+
+.backButton,
+.menuButton {
+    background: rgba(217, 217, 217, 0.2);
+    border: none;
+    border-radius: 20px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.backButton:hover,
+.menuButton:hover {
+    background: rgba(217, 217, 217, 0.3);
+}
+
+/* Main Player - MP3 Style */
+.mainPlayer {
+    padding: 16px;
+    margin-top: 8px;
+    background: rgba(217, 217, 217, 0.15);
+    border-radius: 32px;
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
+.albumCover {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 24px;
+    overflow: hidden;
+    background: rgba(217, 217, 217, 0.2);
+    margin-bottom: 16px;
+}
+
+.albumCover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholderCover {
+    width: 100%;
+    height: 100%;
+    background: rgba(217, 217, 217, 0.3);
+}
+
+/* Info Row */
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 12px;
+}
+
+.trackInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.trackTitle {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: rgba(217, 217, 217, 0.3);
+    padding: 8px 12px;
+    border-radius: 12px;
+}
+
+.artistName {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: rgba(217, 217, 217, 0.15);
+    padding: 4px 12px;
+    border-radius: 8px;
+}
+
+.likeButton {
+    background: rgba(217, 217, 217, 0.2);
+    border: none;
+    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.likeButton:hover {
+    background: rgba(217, 217, 217, 0.3);
+}
+
+/* Progress Bar */
+.progressContainer {
+    margin-bottom: 20px;
+}
+
+.progressBar {
+    width: 100%;
+    height: 3px;
+    background: rgba(217, 217, 217, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 2px;
+    transition: width 0.3s;
+}
+
+/* MP3 Player Controls */
+.mp3Controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+/* Circular Control Wheel */
+.controlWheel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wheelOuter {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    height: 200px;
+    background: rgba(217, 217, 217, 0.2);
+    border-radius: 50%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    box-shadow:
+        inset 0 2px 8px rgba(0, 0, 0, 0.2),
+        0 2px 12px rgba(255, 255, 255, 0.05);
+}
+
+/* Top Button */
+.wheelTop {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 56px;
+    height: 40px;
+    border-radius: 50% 50% 0 0;
+}
+
+.wheelTop:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.wheelTop:active {
+    transform: scale(0.95);
+}
+
+/* Middle Row */
+.wheelMiddleRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    flex: 1;
+    padding: 0 10px;
+}
+
+/* Left Button */
+.wheelLeft {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 40px;
+    height: 56px;
+    border-radius: 50% 0 0 50%;
+}
+
+.wheelLeft:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.wheelLeft:active {
+    transform: scale(0.95);
+}
+
+/* Center Play Button */
+.wheelCenter {
+    width: 90px;
+    height: 90px;
+    background: rgba(217, 217, 217, 0.15);
+    border: 3px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.wheelCenter:hover {
+    background: rgba(217, 217, 217, 0.25);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
+
+.wheelCenter:active {
+    transform: scale(0.95);
+}
+
+.centerCircle {
+    width: 60px;
+    height: 60px;
+    background: rgba(217, 217, 217, 0.3);
+    border-radius: 50%;
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.15),
+        0 2px 8px rgba(255, 255, 255, 0.05);
+}
+
+/* Right Button */
+.wheelRight {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 40px;
+    height: 56px;
+    border-radius: 0 50% 50% 0;
+}
+
+.wheelRight:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.wheelRight:active {
+    transform: scale(0.95);
+}
+
+/* Bottom Button */
+.wheelBottom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 56px;
+    height: 40px;
+    border-radius: 0 0 50% 50%;
+}
+
+.wheelBottom:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.wheelBottom:active {
+    transform: scale(0.95);
+}
+
+/* Icon for directional buttons */
+.wheelIcon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    background: rgba(217, 217, 217, 0.4);
+    border-radius: 8px;
+}
+
+/* Connect/Share Section */
+.connectShare {
+    margin: 16px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.deviceButton {
+    background: rgba(217, 217, 217, 0.4);
+    border: none;
+    border-radius: 20px;
+    padding: 12px 24px;
+    color: white;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.deviceButton:hover {
+    background: rgba(217, 217, 217, 0.5);
+}
+
+.shareButton {
+    background: rgba(217, 217, 217, 0.4);
+    border: none;
+    border-radius: 20px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.shareButton:hover {
+    background: rgba(217, 217, 217, 0.5);
+}
+
+/* Lyrics Section */
+.lyricsSection {
+    margin: 16px;
+    padding: 12px;
+    background: rgba(217, 217, 217, 0.2);
+    border-radius: 32px;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.sectionHeader h2 {
+    background: rgba(217, 217, 217, 0.4);
+    border-radius: 20px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.expandButton {
+    background: rgba(217, 217, 217, 0.4);
+    border: none;
+    border-radius: 20px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.expandButton:hover {
+    background: rgba(217, 217, 217, 0.5);
+}
+
+.lyricsContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.lyricLine {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(217, 217, 217, 0.05);
+    height: 24px;
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 14px;
+}
+
+.lyricLine.pastLine {
+    background: rgba(217, 217, 217, 0.05);
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.lyricLine.currentLine {
+    background: rgba(217, 217, 217, 0.55);
+    color: white;
+    font-weight: 500;
+}
+
+.lyricLine.futureLine {
+    background: rgba(217, 217, 217, 0.03);
+    color: rgba(255, 255, 255, 0.2);
+}
+
+/* What Next Section */
+.whatNextSection {
+    margin: 16px;
+    padding: 12px;
+    background: rgba(217, 217, 217, 0.2);
+    border-radius: 32px;
+}
+
+.trackList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.trackItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    background: rgba(217, 217, 217, 0.2);
+    border-radius: 20px;
+    transition: background 0.2s;
+}
+
+.trackItem:hover {
+    background: rgba(217, 217, 217, 0.3);
+}
+
+.trackCover {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(217, 217, 217, 0.6);
+    flex-shrink: 0;
+}
+
+.trackCover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholderTrackCover {
+    width: 100%;
+    height: 100%;
+    background: rgba(217, 217, 217, 0.6);
+}
+
+.trackDetails {
+    flex: 1;
+    min-width: 0;
+}
+
+.trackName {
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: rgba(217, 217, 217, 0.5);
+    padding: 4px 8px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.trackArtist {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: rgba(217, 217, 217, 0.2);
+    padding: 2px 8px;
+    border-radius: 8px;
+    height: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.trackMenuButton {
+    background: rgba(217, 217, 217, 0.4);
+    border: none;
+    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.trackMenuButton:hover {
+    background: rgba(217, 217, 217, 0.5);
+}
+
+/* Artist Info Section */
+.artistInfoSection {
+    margin: 16px;
+    padding: 12px;
+    background: rgba(217, 217, 217, 0.2);
+    border-radius: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.artistGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.artistImageCard {
+    aspect-ratio: 1;
+    background: rgba(217, 217, 217, 0.2);
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.artistImage {
+    width: 100%;
+    height: 100%;
+    background: rgba(217, 217, 217, 0.4);
+}
+
+.artistStatsCard {
+    background: rgba(217, 217, 217, 0.2);
+    border-radius: 24px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.statItem {
+    background: rgba(217, 217, 217, 0.4);
+    height: 44px;
+    width: 79px;
+    border-radius: 16px;
+}
+
+.statGraph {
+    background: rgba(217, 217, 217, 0.4);
+    height: 44px;
+    width: 100%;
+    border-radius: 16px;
+}
+
+.exploreCard,
+.favoriteCard {
+    background: rgba(217, 217, 217, 0.2);
+    border-radius: 24px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    aspect-ratio: 1;
+}
+
+.favoriteCard {
+    background: rgba(217, 217, 217, 0.15);
+}
+
+.exploreIcon,
+.favoriteIcon {
+    background: rgba(217, 217, 217, 0.4);
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    align-self: flex-end;
+}
+
+.exploreText,
+.favoriteText {
+    background: rgba(217, 217, 217, 0.4);
+    height: 44px;
+    width: 100%;
+    border-radius: 16px;
+}
+
+/* Merch Section */
+.merchSection {
+    margin: 16px;
+    padding: 12px;
+    background: rgba(217, 217, 217, 0.2);
+    border-radius: 32px;
+}
+
+.merchGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.merchImageCard {
+    background: rgba(217, 217, 217, 0.4);
+    border-radius: 24px;
+    padding: 31px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+}
+
+.merchIcon {
+    font-size: 64px;
+}
+
+.merchLinkCard {
+    background: rgba(217, 217, 217, 0.2);
+    border-radius: 24px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.merchTitle {
+    background: rgba(217, 217, 217, 0.4);
+    height: 44px;
+    width: 79px;
+    border-radius: 16px;
+}
+
+.merchLink {
+    background: rgba(217, 217, 217, 0.4);
+    height: 44px;
+    width: 100%;
+    border-radius: 16px;
+}
+
+/* Mini Player */
+.miniPlayer {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    height: 64px;
+    background: #cdc9c9;
+    border-radius: 32px;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    gap: 8px;
+    z-index: 50;
+}
+
+.miniCover {
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    background: #a6a6a6;
+    opacity: 0.65;
+    flex-shrink: 0;
+}
+
+.miniInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.miniTitle {
+    background: #a6a6a6;
+    height: 24px;
+    border-radius: 24px;
+    opacity: 0.65;
+    margin-bottom: 8px;
+    width: 180px;
+}
+
+.miniArtist {
+    background: #a6a6a6;
+    height: 8px;
+    border-radius: 24px;
+    opacity: 0.65;
+    width: 92.8px;
+}
+
+.miniPlayButton {
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
+    background: #b3b2b2;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1f1f1f;
+    font-size: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.miniPlayButton:hover {
+    background: #9e9d9d;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .macroPlayer {
+        max-width: 100%;
+    }
+}

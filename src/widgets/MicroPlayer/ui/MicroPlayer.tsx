@@ -1,11 +1,11 @@
 import React, {useMemo} from "react";
 import styles from './MicroPlayer.module.css';
 import { MicroProgressBar } from './MicroProgressBar';
-import { PlayIcon, PauseIcon, NextIcon, HeartIcon } from '@widgets/MiniPlayer/lib/icons';
 import { useToggleTrackFavoriteMutation } from '@entities/Music/api/rtkApi';
 import { usePlayer } from '@shared/store/features/player';
 import { useAudioSeek } from '@shared/lib/audio';
 import { getArtistNames } from '@widgets/MiniPlayer/lib/utils';
+import { PlayIcon, PauseIcon, NextIcon, HeartIcon } from '@shared/ui';
 
 export const MicroPlayer = () => {
   const {

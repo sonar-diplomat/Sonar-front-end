@@ -1,0 +1,1 @@
+export type ViewerType = 'owner' | 'guest';

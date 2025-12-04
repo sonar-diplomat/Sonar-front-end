@@ -1,0 +1,88 @@
+.trackItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    width: 100%;
+    gap: 16px;
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.image {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    background-color: #898989;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+.textContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    justify-content: center;
+    overflow: hidden;
+    flex: 1;
+    min-width: 0;
+}
+
+.title {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: normal;
+    color: #FFFFFF;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.artist {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: normal;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.menuButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px;
+    background: #1F1F1F;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+}
+
+.menuButton:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.menuButton:active {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.menuIcon {
+    width: 18px;
+    height: 18px;
+    color: #EAEAEA;
+}

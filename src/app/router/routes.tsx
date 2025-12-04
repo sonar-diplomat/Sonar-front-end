@@ -14,6 +14,8 @@ import {
     Search,
     CreateFolder,
     UserProfile,
+    ArtistProfile, 
+    Collection,
     NotFound,
     Settings,
     AccountSettings,
@@ -26,6 +28,7 @@ import {
     Chats,
     Chat,
     UserInfo,
+    MacroPlayer,
 } from "@pages";
 import {Login} from "@pages/Login";
 import {TermsOfService} from "@pages/Terms/TermsOfService/TermsOfService.tsx";
@@ -67,6 +70,10 @@ export const router = createBrowserRouter([
                 element: <TermsOfService />,
             },
             {
+                path: '/player/:trackId?',
+                element: <MacroPlayer />,
+            },
+            {
                 element: <PageLayout />,
                 children: [
                     {
@@ -97,8 +104,16 @@ export const router = createBrowserRouter([
                         element: <Search />,
                     },
                     {
-                        path: 'profile',
+                        path: 'user/:id',
                         element: <UserProfile />,
+                    },
+                    {
+                        path: 'artist/:id',
+                        element: <ArtistProfile />,
+                    },
+                    {
+                        path: 'collection/:id',
+                        element: <Collection/>,
                     },
                     {
                         path: 'settings',
