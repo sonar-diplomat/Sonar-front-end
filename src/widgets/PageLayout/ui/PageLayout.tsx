@@ -40,15 +40,17 @@ export const PageLayout = () => {
         <Outlet />
       </div>
       <div className={styles.fixedBottomBars}>
-          <MicroPlayer
-              duration={duration}
-              currentTime={currentTime}
-              isPlaying={isPlaying}
-              currentTrack={currentTrack}
-              onPlayPause={togglePlayPause}
-              onNext={playNext}
-              onSeek={handleSeek}
-          />
+          {currentTrack && isPlaying && (
+              <MicroPlayer
+                  duration={duration}
+                  currentTime={currentTime}
+                  isPlaying={isPlaying}
+                  currentTrack={currentTrack}
+                  onPlayPause={togglePlayPause}
+                  onNext={playNext}
+                  onSeek={handleSeek}
+              />
+          )}
           <div className={styles.navBlurWrapper}>
             <TabBar
               defaultActiveTab={getActiveTab()}

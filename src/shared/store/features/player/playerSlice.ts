@@ -143,25 +143,25 @@ const playerSlice = createSlice({
     
 
     playTrack: (state, action: PayloadAction<TrackDTO>) => {
-      state.currentTrack = action.payload;
-      state.isPlaying = true;
-      state.currentTime = 0;
-      state.collectionContext = null;
+        state.currentTrack = action.payload;
+        state.isPlaying = true;
+        state.currentTime = 0;
+        state.collectionContext = null;
 
-      if (action.payload.isFavorite !== undefined) {
-        const trackId = action.payload.id;
-        const isFavorite = action.payload.isFavorite;
-        const index = state.favoriteTrackIds.indexOf(trackId);
+        if (action.payload.isFavorite !== undefined) {
+            const trackId = action.payload.id;
+            const isFavorite = action.payload.isFavorite;
+            const index = state.favoriteTrackIds.indexOf(trackId);
 
-        if (isFavorite && index === -1) {
-          state.favoriteTrackIds.push(trackId);
-          saveFavoritesToStorage(state.favoriteTrackIds);
-        } else if (!isFavorite && index > -1) {
-          state.favoriteTrackIds.splice(index, 1);
-          saveFavoritesToStorage(state.favoriteTrackIds);
+            if (isFavorite && index === -1) {
+                state.favoriteTrackIds.push(trackId);
+                saveFavoritesToStorage(state.favoriteTrackIds);
+            } else if (!isFavorite && index > -1) {
+                state.favoriteTrackIds.splice(index, 1);
+                saveFavoritesToStorage(state.favoriteTrackIds);
+            }
         }
-      }
-
+    },
     // Устанавливает трек как pending (загружается, но UI не меняется)
     setPendingTrack: (state, action: PayloadAction<TrackDTO | null>) => {
       state.pendingTrack = action.payload;
@@ -183,29 +183,6 @@ const playerSlice = createSlice({
           state.queueIndex = existingIndex;
         } else {
           state.queue.push(state.currentTrack);
-          state.queueIndex = state.queue.length - 1;
-        }
-      }
-    },
-    
-    playTrack: (state, action: PayloadAction<TrackDTO>) => {
-      // Если есть текущий трек, устанавливаем новый как pending для плавного переключения
-      if (state.currentTrack && state.currentTrack.id !== action.payload.id) {
-        state.pendingTrack = action.payload;
-        state.isLoadingNextTrack = true;
-      } else {
-        // Если нет текущего трека, сразу переключаемся
-        state.currentTrack = action.payload;
-        state.pendingTrack = null;
-        state.isLoadingNextTrack = false;
-        state.isPlaying = true;
-        state.currentTime = 0;
-
-        const existingIndex = state.queue.findIndex(t => t.id === action.payload.id);
-        if (existingIndex >= 0) {
-          state.queueIndex = existingIndex;
-        } else {
-          state.queue.push(action.payload);
           state.queueIndex = state.queue.length - 1;
         }
       }

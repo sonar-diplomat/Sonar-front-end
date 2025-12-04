@@ -93,6 +93,7 @@ export const API_ENDPOINTS = {
         delete: (albumId: number) => `Album/${albumId}`,
         updateName: (albumId: number) => `Album/${albumId}/name`,
         addTrack: (albumId: number) => `Album/${albumId}/add`,
+        tracks: (albumId: number) => `Album/${albumId}/tracks`,
         updateCover: (albumId: number) => `Album/${albumId}/cover`,
         shareLink: (albumId: number) => `Album/${albumId}/share-link`,
         shareQr: (albumId: number) => `Album/${albumId}/share-qr`,

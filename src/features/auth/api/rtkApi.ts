@@ -58,7 +58,7 @@ export const authApi = rtkApi.injectEndpoints({
       query: (token) => ({
         url: API_ENDPOINTS.auth.refreshToken,
         method: 'POST',
-        body: token,
+        body: `"${token}"`,
         bodyType: 'raw',
         withAuth: false,
       }),

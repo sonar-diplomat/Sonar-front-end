@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
 
 import {Button, Input, LeftArrow} from "@shared/ui";
 import { useCreateFolderMutation } from '@shared/api';
@@ -13,6 +13,8 @@ export interface CreateFolderProps {
 
 export const CreateFolder: React.FC<CreateFolderProps> = ({className = ''}) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const parentFolderId = location.state?.parentFolderId as number | undefined;
     const [folderName, setFolderName] = useState('My folder #1');
     const [createFolder, { isLoading, error }] = useCreateFolderMutation();
 
@@ -29,6 +31,7 @@ export const CreateFolder: React.FC<CreateFolderProps> = ({className = ''}) => {
         try {
             const result = await createFolder({
                 name: folderName.trim(),
+                parentFolderId: parentFolderId || undefined,
             }).unwrap();
             
             console.log('Folder created successfully:', result);

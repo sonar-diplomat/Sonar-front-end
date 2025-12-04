@@ -1,7 +1,8 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
-import type { PlaylistDTO, CreatePlaylistDTO } from '../model/types';
+import type { PlaylistDTO, CreatePlaylistDTO, CursorPageDTO } from '../model/types';
 import type { ShareLinkDTO } from '@entities/Collection';
+import type { TrackDTO } from '@entities/Music';
 
 /**
  * Playlist API endpoints
@@ -143,6 +144,15 @@ export const playlistApi = rtkApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { playlistId }) => [{ type: 'Playlist', id: playlistId }],
     }),
+
+    getPlaylistTracks: builder.query<CursorPageDTO<TrackDTO>, number>({
+      query: (playlistId) => ({
+        url: API_ENDPOINTS.playlist.tracks(playlistId),
+        method: 'GET',
+        withAuth: true,
+      }),
+      providesTags: (_result, _error, playlistId) => [{ type: 'Playlist', id: playlistId }, { type: 'Track', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -160,5 +170,6 @@ export const {
   useRemoveTrackFromPlaylistMutation,
   useImportCollectionToPlaylistMutation,
   useUpdatePlaylistVisibilityMutation,
+  useGetPlaylistTracksQuery,
 } = playlistApi;
 
