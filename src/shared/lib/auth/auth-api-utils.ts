@@ -51,7 +51,7 @@ export async function authApiRefreshToken(
   const result = await rtkBaseQuery({
     url: API_ENDPOINTS.auth.refreshToken,
     method: 'POST',
-    body: token,
+    body: `"${token}"`,
     bodyType: 'raw',
     withAuth: false,
   });

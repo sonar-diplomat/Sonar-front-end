@@ -84,6 +84,15 @@ export const albumApi = rtkApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { albumId }) => [{ type: 'Album', id: albumId }],
     }),
+
+    getAlbumTracks: builder.query<TrackDTO[], number>({
+      query: (albumId) => ({
+        url: API_ENDPOINTS.album.tracks(albumId),
+        method: 'GET',
+        withAuth: true,
+      }),
+      providesTags: (_result, _error, albumId) => [{ type: 'Album', id: albumId }, { type: 'Track', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -96,5 +105,6 @@ export const {
   useAddTrackToAlbumMutation,
   useUpdateAlbumCoverMutation,
   useUpdateAlbumVisibilityMutation,
+  useGetAlbumTracksQuery,
 } = albumApi;
 

@@ -1,31 +1,45 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './ItemCard.module.css';
 import type {ItemCardProps} from '@shared/ui';
 
-export const ItemCard: React.FC<ItemCardProps> = ({size = 'medium', image, backgroundColor = '#1F1F1F', textContent, onClick, className = ''}) => {
+export const ItemCard: React.FC<ItemCardProps> = ({size = 'medium', image, backgroundColor = '#1F1F1F', textContent, onClick, to, state, className = ''}) => {
+    const navigate = useNavigate();
     const classNames = [
         styles.card,
         styles[size],
         className,
     ].filter(Boolean).join(' ');
 
+    const handleClick = () => {
+        if (to) {
+            navigate(to, { state });
+        } else if (onClick) {
+            onClick();
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleClick();
+        }
+    };
+
+    const hasAction = to || onClick;
+
     return (
         <div className={styles.cardWrapper}>
             <div
                 className={classNames}
-                onClick={onClick}
+                onClick={hasAction ? handleClick : undefined}
                 style={{
                     backgroundColor: image ? 'transparent' : backgroundColor,
                     backgroundImage: image ? `url(${image})` : undefined,
                 }}
-                role={onClick ? 'button' : undefined}
-                tabIndex={onClick ? 0 : undefined}
-                onKeyDown={onClick ? (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        onClick();
-                    }
-                } : undefined}
+                role={hasAction ? 'button' : undefined}
+                tabIndex={hasAction ? 0 : undefined}
+                onKeyDown={hasAction ? handleKeyDown : undefined}
             />
             {textContent && (
                 <div className={`${styles.textContent} ${styles[`textContent_${size}`]}`}>

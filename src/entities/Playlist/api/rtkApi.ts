@@ -142,6 +142,15 @@ export const playlistApi = rtkApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { playlistId }) => [{ type: 'Playlist', id: playlistId }],
     }),
+
+    getPlaylistTracks: builder.query<CursorPageDTO<TrackDTO>, number>({
+      query: (playlistId) => ({
+        url: API_ENDPOINTS.playlist.tracks(playlistId),
+        method: 'GET',
+        withAuth: true,
+      }),
+      providesTags: (_result, _error, playlistId) => [{ type: 'Playlist', id: playlistId }, { type: 'Track', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -159,5 +168,6 @@ export const {
   useRemoveTrackFromPlaylistMutation,
   useImportCollectionToPlaylistMutation,
   useUpdatePlaylistVisibilityMutation,
+  useGetPlaylistTracksQuery,
 } = playlistApi;
 

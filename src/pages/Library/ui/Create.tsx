@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './Create.module.css';
 import {Button, PlusIcon} from "@shared/ui";
 import {LeftArrow} from "@shared/ui";
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
 
 export interface CreateProps {
     className?: string;
@@ -10,6 +10,8 @@ export interface CreateProps {
 
 export const Create: React.FC<CreateProps> = ({className = ''}) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const parentFolderId = location.state?.parentFolderId as number | undefined;
 
     const handleBack = () => {
         navigate(-1);
@@ -17,7 +19,9 @@ export const Create: React.FC<CreateProps> = ({className = ''}) => {
 
     const handleCreatePlaylist = () => {
         console.log('Creating playlist');
-        navigate('/library/create/playlist');
+        navigate('/library/create/playlist', { 
+            state: { parentFolderId } 
+        });
     };
 
     const handleCreateBlend = () => {
@@ -27,7 +31,9 @@ export const Create: React.FC<CreateProps> = ({className = ''}) => {
 
     const handleCreateFolder = () => {
         console.log('Creating folder');
-        navigate('/library/create/folder');
+        navigate('/library/create/folder', { 
+            state: { parentFolderId } 
+        });
     };
 
     return (

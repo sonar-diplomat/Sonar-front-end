@@ -27,21 +27,34 @@ export const MicroPlayer = () => {
   const hasNextTrack = collectionContext !== null && queueIndex < queue.length - 1;
   const isFavorite = currentTrack ? favoriteTrackIds.includes(currentTrack.id) : false;
 
-  const [toggleFavoriteApi, { isLoading: togglingFavorite }] = useToggleTrackFavoriteMutation();
+    const coverUrl = useMemo(() => {
+        if (!currentTrack) return undefined;
+        if (currentTrack.cover?.url) {
+            return currentTrack.cover.url;
+        }
+        if (currentTrack.coverId) {
+            return getImageUrlById(currentTrack.coverId);
+        }
+        return undefined;
+    }, [currentTrack]);
 
   const coverUrl = useMemo(() =>
       currentTrack ? currentTrack.cover?.url : undefined,
     [currentTrack]
   );
 
-  const artistName = useMemo(() => {
-    return currentTrack ? getArtistNames(currentTrack) : '';
-  }, [currentTrack]);
+    const handleToggleFavorite = async () => {
+        if (!currentTrack || togglingFavorite) return;
 
-  const handleToggleFavorite = async () => {
-    if (!currentTrack || togglingFavorite) return;
+        toggleFavoriteTrackLocal(currentTrack.id);
 
-    toggleFavoriteTrackLocal(currentTrack.id);
+        try {
+            await toggleFavoriteApi(currentTrack.id).unwrap();
+        } catch (error) {
+            toggleFavoriteTrackLocal(currentTrack.id);
+            console.error('Failed to toggle favorite:', error);
+        }
+    };
 
     try {
       await toggleFavoriteApi(currentTrack.id).unwrap();

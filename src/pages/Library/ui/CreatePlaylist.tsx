@@ -1,8 +1,8 @@
 import React, {useState, useRef} from 'react';
 import styles from './CreatePlaylist.module.css';
 import {Button, Input, PlusIcon, LeftArrow} from "@shared/ui";
-import {useNavigate} from 'react-router-dom';
-import { useCreatePlaylistMutation } from '@shared/api';
+import {useNavigate, useLocation} from 'react-router-dom';
+import { useCreatePlaylistMutation, useAddCollectionToFolderMutation } from '@shared/api';
 
 export interface CreatePlaylistProps {
     className?: string;
@@ -10,11 +10,14 @@ export interface CreatePlaylistProps {
 
 export const CreatePlaylist: React.FC<CreatePlaylistProps> = ({className = ''}) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const parentFolderId = location.state?.parentFolderId as number | undefined;
     const [playlistName, setPlaylistName] = useState('My Playlist #1');
     const [coverFile, setCoverFile] = useState<File | null>(null);
     const [coverPreview, setCoverPreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [createPlaylist, { isLoading, error }] = useCreatePlaylistMutation();
+    const [addCollectionToFolder] = useAddCollectionToFolderMutation();
 
     const handleBack = () => {
         navigate(-1);
@@ -50,6 +53,21 @@ export const CreatePlaylist: React.FC<CreatePlaylistProps> = ({className = ''}) 
             }).unwrap();
             
             console.log('Playlist created successfully:', result);
+            
+            // Если есть parentFolderId, добавляем плейлист в папку
+            if (parentFolderId && result.id) {
+                try {
+                    await addCollectionToFolder({
+                        folderId: parentFolderId,
+                        collectionId: result.id
+                    }).unwrap();
+                    console.log('Playlist added to folder successfully');
+                } catch (err) {
+                    console.error('Failed to add playlist to folder:', err);
+                    // Не прерываем процесс, плейлист уже создан
+                }
+            }
+            
             // Переходим обратно в библиотеку после успешного создания
             navigate('/library');
         } catch (err) {
