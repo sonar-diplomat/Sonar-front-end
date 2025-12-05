@@ -9,6 +9,8 @@ import {ContentSections, type ContentSection} from "@widgets/ContentSections";
 import {SearchFilterHeader} from "@widgets/SearchFilterHeader";
 import { getImageUrlById } from '@shared/lib/image-utils';
 import { useFolders, useFolder } from '@shared/store/features/library/useLibrary';
+import { useAddCollectionToFolderMutation, useMoveFolderMutation } from '@entities/Library/api/rtkApi';
+import type { DraggedItem } from '@shared/ui/FolderCard/FolderCard.types';
 
 import styles from './Library.module.css';
 
@@ -22,6 +24,10 @@ export const Library: React.FC<LibraryProps> = () => {
 
     // Загрузка данных для конкретной папки (когда currentFolderId !== null)
     const { folder: folderData, isLoading: folderLoading, error: folderError } = useFolder(currentFolderId);
+
+    // API мутации для drag-and-drop
+    const [addCollectionToFolder] = useAddCollectionToFolderMutation();
+    const [moveFolder] = useMoveFolderMutation();
 
     // Автоматически обновляем данные при возврате на страницу, если библиотека помечена как "грязная"
     useEffect(() => {
@@ -146,6 +152,61 @@ export const Library: React.FC<LibraryProps> = () => {
         });
     }, [navigate, selectedCategory, currentFolderId]);
 
+    // Вспомогательная функция для проверки, является ли папка дочерней (рекурсивно)
+    const isChildFolder = useCallback((parentFolderId: number, childFolderId: number, allFolders: typeof foldersData): boolean => {
+        if (!allFolders) return false;
+        
+        const parentFolder = allFolders.find(f => f.id === parentFolderId);
+        if (!parentFolder) return false;
+        
+        // Проверяем прямых потомков
+        if (parentFolder.subFolders.some(sf => sf.id === childFolderId)) {
+            return true;
+        }
+        
+        // Рекурсивно проверяем всех потомков
+        return parentFolder.subFolders.some(subFolder => {
+            const fullSubFolder = allFolders.find(f => f.id === subFolder.id);
+            if (fullSubFolder) {
+                return isChildFolder(fullSubFolder.id, childFolderId, allFolders);
+            }
+            return false;
+        });
+    }, []);
+
+    const handleDrop = useCallback(async (draggedItem: DraggedItem, targetFolderId: number) => {
+        // Предотвращаем перетаскивание папки в саму себя
+        if (draggedItem.type === 'folder' && draggedItem.id === targetFolderId) {
+            console.warn('Cannot move folder into itself');
+            return;
+        }
+
+        // Предотвращаем циклические ссылки - проверяем, что целевая папка не является дочерней
+        if (draggedItem.type === 'folder' && foldersData) {
+            if (isChildFolder(draggedItem.id, targetFolderId, foldersData)) {
+                console.warn('Cannot move folder into its child folder');
+                return;
+            }
+        }
+
+        try {
+            if (draggedItem.type === 'collection') {
+                await addCollectionToFolder({
+                    folderId: targetFolderId,
+                    collectionId: draggedItem.id,
+                }).unwrap();
+            } else if (draggedItem.type === 'folder') {
+                await moveFolder({
+                    folderId: draggedItem.id,
+                    newParentFolderId: targetFolderId,
+                }).unwrap();
+            }
+        } catch (error) {
+            console.error('Error during drag-and-drop:', error);
+            // TODO: Показать уведомление об ошибке пользователю
+        }
+    }, [addCollectionToFolder, moveFolder, foldersData, isChildFolder]);
+
     const sections = useMemo<ContentSection[]>(() => [
         {
             id: 'folders',
@@ -157,7 +218,9 @@ export const Library: React.FC<LibraryProps> = () => {
                 <FolderCard
                     key={folder.id}
                     label={folder.name}
+                    folderId={Number(folder.id)}
                     onClick={() => handleFolderClick(folder)}
+                    onDrop={(draggedItem) => handleDrop(draggedItem, Number(folder.id))}
                 />
             )
         },
@@ -178,6 +241,8 @@ export const Library: React.FC<LibraryProps> = () => {
                     to={`/collection/${playlist.id}`}
                     state={{ collectionType: playlist.type || 'Playlist' }}
                     onClick={() => handlePlaylistClick(playlist)}
+                    collectionId={Number(playlist.id)}
+                    collectionName={playlist.name}
                 />
             )
         }

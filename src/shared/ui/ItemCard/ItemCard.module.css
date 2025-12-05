@@ -70,3 +70,9 @@
   display: -webkit-box;
 }
 
+.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
