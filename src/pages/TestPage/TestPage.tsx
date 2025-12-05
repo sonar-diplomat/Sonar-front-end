@@ -7,7 +7,7 @@ export const TestPage: React.FC = () => {
     return (
         <div style={{ padding: '16px', overflowY: 'scroll' }}>
             <PlayerTestComponent />
-            {/*<ActionMenu isOpen={true} onClose={() => {}} context={{type: 'track', entityId: 212}} />*/}
+            {<ActionMenu isOpen={true} onClose={() => {}} context={{type: 'track', entityId: 212}} />}
             <TabBar />
         </div>
     );

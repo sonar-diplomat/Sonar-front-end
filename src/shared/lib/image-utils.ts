@@ -1,10 +1,4 @@
-import { API_ENDPOINTS } from '@shared/config';
-
-/**
- * Base URL for blob and stream endpoints
- * Используется отдельный домен для медиа-контента
- */
-const MEDIA_BASE_URL = 'https://sonar.pp.ua/api';
+import { API_ENDPOINTS, MEDIA_BASE_URL } from '@shared/config';
 
 /**
  * Converts image ID to blob API URL for image retrieval
@@ -14,7 +8,7 @@ const MEDIA_BASE_URL = 'https://sonar.pp.ua/api';
 export const getImageUrlById = (imageId: number | null | undefined): string | undefined => {
   if (!imageId || imageId <= 0) return undefined;
   
-  return `${MEDIA_BASE_URL}/${API_ENDPOINTS.blob.image(imageId)}`;
+  return `${MEDIA_BASE_URL}${API_ENDPOINTS.blob.image(imageId)}`;
 };
 
 /**
@@ -89,7 +83,7 @@ export const getTrackStreamUrl = (
   trackId: number,
   params?: { startPosition?: string; length?: string; download?: boolean }
 ): string => {
-  const baseUrl = `${MEDIA_BASE_URL}/${API_ENDPOINTS.track.stream(trackId)}`;
+  const baseUrl = `${MEDIA_BASE_URL}${API_ENDPOINTS.track.stream(trackId)}`;
   
   if (!params || Object.keys(params).length === 0) {
     return baseUrl;

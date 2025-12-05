@@ -24,12 +24,7 @@ type CustomFetchBaseQueryError = FetchBaseQueryError & {
 };
 
 import { toSearchParams } from './params-utils';
-
-/**
- * Base URL for blob and stream endpoints
- * Используется отдельный домен для медиа-контента
- */
-const MEDIA_BASE_URL = 'https://sonar.pp.ua/api';
+import { MEDIA_BASE_URL } from '@shared/config';
 
 /**
  * Проверяет, является ли endpoint медиа-контентом (blob или stream)

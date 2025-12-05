@@ -1,6 +1,8 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
 import type { FolderDTO, CreateFolderDTO } from '../model/types';
+import { store } from '@shared/store';
+import { markDirty } from '@shared/store/features/library/librarySlice';
 
 /**
  * Library (Folder) API endpoints
@@ -33,6 +35,9 @@ export const libraryApi = rtkApi.injectEndpoints({
         withAuth: true,
       }),
       invalidatesTags: [{ type: 'Folder', id: 'LIST' }],
+      async onQueryStarted(_arg, { dispatch }) {
+        store.dispatch(markDirty());
+      },
     }),
 
     updateFolderName: builder.mutation<FolderDTO, { folderId: number; newName: string }>({
@@ -48,6 +53,9 @@ export const libraryApi = rtkApi.injectEndpoints({
         { type: 'Folder', id: folderId },
         { type: 'Folder', id: 'LIST' },
       ],
+      async onQueryStarted(_arg, { dispatch }) {
+        store.dispatch(markDirty());
+      },
     }),
 
     deleteFolder: builder.mutation<void, number>({
@@ -60,6 +68,9 @@ export const libraryApi = rtkApi.injectEndpoints({
         { type: 'Folder', id: folderId },
         { type: 'Folder', id: 'LIST' },
       ],
+      async onQueryStarted(_arg, { dispatch }) {
+        store.dispatch(markDirty());
+      },
     }),
 
     addCollectionToFolder: builder.mutation<void, { folderId: number; collectionId: number }>({
@@ -69,6 +80,9 @@ export const libraryApi = rtkApi.injectEndpoints({
         withAuth: true,
       }),
       invalidatesTags: (_result, _error, { folderId }) => [{ type: 'Folder', id: folderId }],
+      async onQueryStarted(_arg, { dispatch }) {
+        store.dispatch(markDirty());
+      },
     }),
 
     removeCollectionFromFolder: builder.mutation<void, { folderId: number; collectionId: number }>({
@@ -78,6 +92,9 @@ export const libraryApi = rtkApi.injectEndpoints({
         withAuth: true,
       }),
       invalidatesTags: (_result, _error, { folderId }) => [{ type: 'Folder', id: folderId }],
+      async onQueryStarted(_arg, { dispatch }) {
+        store.dispatch(markDirty());
+      },
     }),
 
     moveFolder: builder.mutation<void, { folderId: number; newParentFolderId: number }>({
@@ -90,6 +107,9 @@ export const libraryApi = rtkApi.injectEndpoints({
         { type: 'Folder', id: folderId },
         { type: 'Folder', id: 'LIST' },
       ],
+      async onQueryStarted(_arg, { dispatch }) {
+        store.dispatch(markDirty());
+      },
     }),
   }),
 });

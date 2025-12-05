@@ -7,8 +7,8 @@ import {Button, FolderCard, ItemCard, PlusIcon, LeftArrow} from "@shared/ui";
 import type {Category} from "@widgets/ChipsBar";
 import {ContentSections, type ContentSection} from "@widgets/ContentSections";
 import {SearchFilterHeader} from "@widgets/SearchFilterHeader";
-import { useGetFoldersQuery, useGetFolderQuery } from '@shared/api';
 import { getImageUrlById } from '@shared/lib/image-utils';
+import { useFolders, useFolder } from '@shared/store/features/library/useLibrary';
 
 import styles from './Library.module.css';
 
@@ -18,14 +18,10 @@ export const Library: React.FC<LibraryProps> = () => {
     const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);
 
     // Загрузка данных для корневой папки (когда currentFolderId === null)
-    const { data: foldersData, isLoading: foldersLoading, refetch: refetchFolders } = useGetFoldersQuery(undefined, {
-        skip: currentFolderId !== null,
-    });
+    const { folders: foldersData, isLoading: foldersLoading, refetchFolders } = useFolders();
 
     // Загрузка данных для конкретной папки (когда currentFolderId !== null)
-    const { data: folderData, isLoading: folderLoading, error: folderError } = useGetFolderQuery(currentFolderId!, {
-        skip: currentFolderId === null,
-    });
+    const { folder: folderData, isLoading: folderLoading, error: folderError } = useFolder(currentFolderId);
 
     const [folders, setFolders] = useState<Folder[]>([]);
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
@@ -120,11 +116,7 @@ export const Library: React.FC<LibraryProps> = () => {
         }
     }, [folderData, currentFolderId, folderLoading, folderError]);
 
-    useEffect(() => {
-        if (currentFolderId === null) {
-            void refetchFolders();
-        }
-    }, [refetchFolders, currentFolderId]);
+    // Удален useEffect с refetchFolders, так как теперь запросы управляются через isDirty флаг
 
     const handleFolderClick = useCallback((folder: Folder) => {
         setCurrentFolderId(Number(folder.id));

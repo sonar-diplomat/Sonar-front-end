@@ -1,6 +1,8 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
 import type { PlaylistDTO, CreatePlaylistDTO } from '../model/types';
+import { store } from '@shared/store';
+import { markDirty } from '@shared/store/features/library/librarySlice';
 
 /**
  * Playlist API endpoints
@@ -43,6 +45,9 @@ export const playlistApi = rtkApi.injectEndpoints({
         };
       },
       invalidatesTags: [{ type: 'Playlist', id: 'LIST' }],
+      async onQueryStarted(_arg, { dispatch }) {
+        store.dispatch(markDirty());
+      },
     }),
 
     deletePlaylist: builder.mutation<void, number>({
@@ -55,6 +60,9 @@ export const playlistApi = rtkApi.injectEndpoints({
         { type: 'Playlist', id: playlistId },
         { type: 'Playlist', id: 'LIST' },
       ],
+      async onQueryStarted(_arg, { dispatch }) {
+        store.dispatch(markDirty());
+      },
     }),
 
     updatePlaylistName: builder.mutation<PlaylistDTO, { playlistId: number; newName: string }>({
