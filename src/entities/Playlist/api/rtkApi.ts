@@ -1,6 +1,7 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
-import type { PlaylistDTO, CreatePlaylistDTO } from '../model/types';
+import type { TrackDTO } from '@entities/Music';
+import type { PlaylistDTO, CreatePlaylistDTO, CursorPageDTO } from '../model/types';
 import { store } from '@shared/store';
 import { markDirty } from '@shared/store/features/library/librarySlice';
 

@@ -4,6 +4,8 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localh
 export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://localhost:7124/api/';
 //export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://sonar.pp.ua/api/';
 
+export const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || 'https://sonar.pp.ua';
+
 export const API_ENDPOINTS = {
     auth: {
         register: 'Auth/register',
@@ -92,6 +94,7 @@ export const API_ENDPOINTS = {
         updateVisibility: (playlistId: number) => `Playlist/${playlistId}/visibility`,
     },
     album: {
+        byId: (albumId: number) => `Album/${albumId}`,
         upload: 'Album',
         delete: (albumId: number) => `Album/${albumId}`,
         updateName: (albumId: number) => `Album/${albumId}/name`,

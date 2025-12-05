@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { Message as MessageType } from '@entities/Chat';
 import { CheckMark, ClockIcon, ErrorIcon, ReplyIcon, CopyIcon, EditIcon, DeleteIcon, Info, Button } from '@shared/ui';
+import { MessageContentRenderer, shouldShowEmbed } from '@shared/lib/chat-embeds';
 import styles from './Message.module.css';
 
 export interface MessageProps {
@@ -168,11 +169,12 @@ export const Message: React.FC<MessageProps> = ({
 
     const showSenderName = !isOwn && isGroupChat && senderName;
     const showAvatar = !isOwn && isGroupChat;
+    const hasEmbed = shouldShowEmbed(message.textContent);
 
     return (
         <div
             ref={messageRef}
-            className={`${styles.message} ${isOwn ? styles.own : styles.other} ${showAvatar ? styles.withAvatar : ''}`}
+            className={`${styles.message} ${isOwn ? styles.own : styles.other} ${showAvatar ? styles.withAvatar : ''} ${hasEmbed ? styles.withEmbed : ''}`}
             onContextMenu={handleContextMenu}
         >
             {showAvatar && (
@@ -205,7 +207,7 @@ export const Message: React.FC<MessageProps> = ({
             )}
             <div className={styles.contentWrapper}>
                 <div className={styles.content}>
-                    <span className={styles.text}>{message.textContent}</span>
+                    <MessageContentRenderer text={message.textContent} />
                     {isOwn ? (
                         <span className={styles.metaRight}>
                             {getStatusIcon()}
