@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button, Input, SendRight, PlusIcon, ClearIcon } from '@shared/ui';
 import type { Message } from '@entities/Chat';
 import styles from './SendInput.module.css';
@@ -10,6 +10,8 @@ export interface SendInputProps {
     disabled?: boolean;
     replyMessage?: Message | null;
     onCancelReply?: () => void;
+    editingMessage?: Message | null;
+    onCancelEdit?: () => void;
 }
 
 export const SendInput: React.FC<SendInputProps> = ({
@@ -19,20 +21,39 @@ export const SendInput: React.FC<SendInputProps> = ({
     disabled = false,
     replyMessage,
     onCancelReply,
+    editingMessage,
+    onCancelEdit,
 }) => {
     const [message, setMessage] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
 
+    // Update message when editing
+    useEffect(() => {
+        if (editingMessage) {
+            setMessage(editingMessage.textContent);
+            inputRef.current?.focus();
+        } else {
+            setMessage('');
+        }
+    }, [editingMessage]);
+
     const handleSend = () => {
         if (message.trim() && !disabled) {
             onSend(message.trim());
-            setMessage('');
+            if (!editingMessage) {
+                setMessage('');
+            }
             inputRef.current?.focus();
         }
     };
 
     const handleCancelReply = () => {
         onCancelReply?.();
+    };
+
+    const handleCancelEdit = () => {
+        onCancelEdit?.();
+        setMessage('');
     };
 
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -44,7 +65,27 @@ export const SendInput: React.FC<SendInputProps> = ({
 
     return (
         <div className={styles.container}>
-            {replyMessage && (
+            {editingMessage && (
+                <div className={styles.replyPreview}>
+                    <div className={styles.replyLine} />
+                    <div className={styles.replyContent}>
+                        <div className={styles.replyText}>
+                            Editing: {editingMessage.textContent}
+                        </div>
+                    </div>
+                    <Button
+                        iconOnly
+                        icon={<ClearIcon />}
+                        onClick={handleCancelEdit}
+                        variant="text"
+                        theme="dark"
+                        size="small"
+                        className={styles.cancelReplyButton}
+                        aria-label="Cancel edit"
+                    />
+                </div>
+            )}
+            {replyMessage && !editingMessage && (
                 <div className={styles.replyPreview}>
                     <div className={styles.replyLine} />
                     <div className={styles.replyContent}>

@@ -82,6 +82,16 @@ export const chatApi = rtkApi.injectEndpoints({
       invalidatesTags: (_result, _error, messageId) => [{ type: 'Message', id: messageId }],
     }),
 
+    editMessage: builder.mutation<void, { messageId: number; textContent: string }>({
+      query: ({ messageId, textContent }) => ({
+        url: API_ENDPOINTS.chat.editMessage(messageId),
+        method: 'PUT',
+        body: { textContent },
+        withAuth: true,
+      }),
+      invalidatesTags: (_result, _error, { messageId }) => [{ type: 'Message', id: messageId }],
+    }),
+
     addUserToChat: builder.mutation<void, { chatId: number; userId: number }>({
       query: ({ chatId, userId }) => ({
         url: API_ENDPOINTS.chat.addUser(chatId, userId),
@@ -168,6 +178,7 @@ export const {
   useCreateChatMutation,
   useSendMessageMutation,
   useDeleteMessageMutation,
+  useEditMessageMutation,
   useAddUserToChatMutation,
   useLeaveChatMutation,
   useRemoveUserFromChatMutation,

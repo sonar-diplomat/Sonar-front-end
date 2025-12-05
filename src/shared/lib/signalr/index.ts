@@ -4,6 +4,7 @@ export {
   type MessageCreatedEvent,
   type MessageReadEvent,
   type MessageDeletedEvent,
+  type MessageUpdatedEvent,
   type ChatNameUpdatedEvent,
   type ChatCoverUpdatedEvent,
   type ChatUserAddedEvent,
