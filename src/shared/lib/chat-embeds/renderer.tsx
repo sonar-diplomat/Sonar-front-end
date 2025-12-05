@@ -1,7 +1,9 @@
 import React from 'react';
 import { splitTextWithEmbeds, shouldShowEmbed } from './parser';
+import { isStickerMessage, extractStickerId } from '@shared/lib/chat-stickers';
 import { TrackEmbed } from './widgets/TrackEmbed';
 import { CollectionEmbed } from './widgets/CollectionEmbed';
+import { StickerMessage } from '@widgets/StickerMessage';
 import type { EmbedMatch } from './types';
 import styles from './MessageContent.module.css';
 
@@ -10,6 +12,18 @@ export interface MessageContentRendererProps {
 }
 
 export const MessageContentRenderer: React.FC<MessageContentRendererProps> = ({ text }) => {
+  // Check if message is a sticker
+  if (isStickerMessage(text)) {
+    const stickerId = extractStickerId(text);
+    if (stickerId !== null) {
+      return (
+        <div className={styles.container}>
+          <StickerMessage stickerId={stickerId} />
+        </div>
+      );
+    }
+  }
+
   const showEmbed = shouldShowEmbed(text);
   const segments = splitTextWithEmbeds(text);
 
