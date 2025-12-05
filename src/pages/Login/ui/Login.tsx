@@ -6,14 +6,16 @@ import type { LoginFormData } from "@features/login";
 import {useNavigate} from "react-router-dom";
 import { useLogin, useVerify2FA } from "@features/auth/model/store.ts";
 import { authManager } from "@shared/lib/auth/auth-manager";
+import { useNotifications } from "@shared/store/notificationStore";
 
 export const Login: React.FC = () =>{
     const [showTwoFactor, setShowTwoFactor] = useState(false);
     const [userEmail, setUserEmail] = useState('');
     const navigate = useNavigate();
 
-    const { loading: loginLoading, error: loginError, mutate: login } = useLogin();
-    const { loading: verifyLoading, error: verifyError, mutate: verify2FA } = useVerify2FA();
+    const { loading: loginLoading, mutate: login } = useLogin();
+    const { loading: verifyLoading, mutate: verify2FA } = useVerify2FA();
+    const { showSuccess, showError } = useNotifications();
 
     const handleBack = () => {
         // Navigate back logic
@@ -29,6 +31,7 @@ export const Login: React.FC = () =>{
         const res = await login(data.emailOrLogin, data.password, deviceName);
 
         if (!res.success) {
+            showError(res.message || 'Login failed', res.status);
             return;
         }
 
@@ -39,9 +42,7 @@ export const Login: React.FC = () =>{
                 deviceName,
             });
 
-            // TODO: Remove after testing is done
-            authManager.clearCredentials();
-
+            showSuccess('Login successful!');
             navigate("/hello");
         } else {
             setUserEmail(data.emailOrLogin);
@@ -62,7 +63,10 @@ export const Login: React.FC = () =>{
                 deviceName,
             });
 
+            showSuccess('Two-factor authentication successful!');
             navigate("/hello");
+        } else {
+            showError(res.message || '2FA verification failed', res.status);
         }
     };
 
@@ -104,7 +108,6 @@ export const Login: React.FC = () =>{
                     onVerify={handleTwoFactorVerify}
                     onResend={handleTwoFactorResend}
                     isSubmitting={verifyLoading}
-                    error={verifyError}
                 />
             ) : (
                 <LoginForm
@@ -114,7 +117,6 @@ export const Login: React.FC = () =>{
                     onContinueWithApple={handleContinueWithApple}
                     onCreateAccount={handleCreateAccount}
                     isSubmitting={loginLoading}
-                    error={loginError}
                 />
             )}
         </div>

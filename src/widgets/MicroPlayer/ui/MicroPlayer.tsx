@@ -1,36 +1,67 @@
 import React, {useMemo} from "react";
 import styles from './MicroPlayer.module.css';
-import type { MicroPlayerProps } from '../model/types';
 import { MicroProgressBar } from './MicroProgressBar';
-import { PlayIcon, PauseIcon, NextIcon, HeartIcon } from '@widgets/MiniPlayer/lib/icons';
-import { useToggleTrackFavorite } from '@entities/Music';
+import { useToggleTrackFavoriteMutation } from '@entities/Music/api/rtkApi';
+import { usePlayer } from '@shared/store/features/player';
+import { useAudioSeek } from '@shared/lib/audio';
+import { getArtistNames } from '@widgets/MiniPlayer/lib/utils';
+import { PlayIcon, PauseIcon, NextIcon, HeartIcon } from '@shared/ui';
 
-export const MicroPlayer = ({
-  currentTrack,
-  isPlaying,
-  currentTime,
-  duration,
-  onPlayPause,
-  onNext,
-  onSeek,
-}: MicroPlayerProps) => {
+export const MicroPlayer = () => {
+  const {
+    currentTrack,
+    isPlaying,
+    currentTime,
+    duration,
+    togglePlayPause,
+    playNext,
+    collectionContext,
+    queue,
+    queueIndex,
+    favoriteTrackIds,
+    toggleFavoriteTrackLocal,
+  } = usePlayer();
+
+  const handleSeek = useAudioSeek();
   const hasTrack = currentTrack !== null;
+  const hasNextTrack = collectionContext !== null && queueIndex < queue.length - 1;
+  const isFavorite = currentTrack ? favoriteTrackIds.includes(currentTrack.id) : false;
 
-  const { mutate: toggleFavorite, loading: togglingFavorite } = useToggleTrackFavorite();
+    const coverUrl = useMemo(() => {
+        if (!currentTrack) return undefined;
+        if (currentTrack.cover?.url) {
+            return currentTrack.cover.url;
+        }
+        if (currentTrack.coverId) {
+            return getImageUrlById(currentTrack.coverId);
+        }
+        return undefined;
+    }, [currentTrack]);
 
   const coverUrl = useMemo(() =>
       currentTrack ? currentTrack.cover?.url : undefined,
     [currentTrack]
   );
 
-  const artistName = useMemo(() => {
-    return "Artist Name"; // TODO: Extract from currentTrack when artist data is available
-  }, []);
+    const handleToggleFavorite = async () => {
+        if (!currentTrack || togglingFavorite) return;
 
-  const handleToggleFavorite = () => {
-    if (!currentTrack || togglingFavorite) return;
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    toggleFavorite(currentTrack.id);
+        toggleFavoriteTrackLocal(currentTrack.id);
+
+        try {
+            await toggleFavoriteApi(currentTrack.id).unwrap();
+        } catch (error) {
+            toggleFavoriteTrackLocal(currentTrack.id);
+            console.error('Failed to toggle favorite:', error);
+        }
+    };
+
+    try {
+      await toggleFavoriteApi(currentTrack.id).unwrap();
+    } catch (error) {
+      toggleFavoriteTrackLocal(currentTrack.id);
+      console.error('Failed to toggle favorite:', error);
+    }
   };
 
   return (
@@ -50,33 +81,35 @@ export const MicroPlayer = ({
         <MicroProgressBar
           currentTime={currentTime}
           duration={duration}
-          onSeek={onSeek}
+          onSeek={handleSeek}
         />
       </div>
       <div className={styles.controls}>
         <button
-          onClick={onPlayPause}
+          onClick={togglePlayPause}
           disabled={!hasTrack}
           aria-label={isPlaying ? 'Pause' : 'Play'}
           className={styles.playButton}
         >
           {isPlaying ? <PauseIcon /> : <PlayIcon />}
         </button>
-        <button
-          onClick={onNext}
-          disabled={!hasTrack}
-          aria-label="Next track"
-          className={styles.controlButton}
-        >
-          <NextIcon />
-        </button>
+        {hasNextTrack && (
+          <button
+            onClick={playNext}
+            disabled={!hasTrack}
+            aria-label="Next track"
+            className={styles.controlButton}
+          >
+            <NextIcon />
+          </button>
+        )}
         <button
           onClick={handleToggleFavorite}
           disabled={!hasTrack || togglingFavorite}
-          aria-label="Toggle favorite"
+          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           className={styles.controlButton}
         >
-          <HeartIcon />
+          <HeartIcon isFilled={isFavorite} />
         </button>
       </div>
     </div>

@@ -108,7 +108,7 @@ export const AuthDistributorApi = {
      * @deprecated Use useDistributorRefreshTokenMutation from @shared/api/rtkApi instead
      */
     refreshToken: (token: string) =>
-        apiClient.post<RefreshTokenResponse>(API_ENDPOINTS.authDistributor.refreshToken, token, {
+        apiClient.post<RefreshTokenResponse>(API_ENDPOINTS.authDistributor.refreshToken, `"${token}"`, {
             bodyType: 'raw',
         }),
 

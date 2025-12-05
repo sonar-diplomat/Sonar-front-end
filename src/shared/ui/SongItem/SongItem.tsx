@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './SongItem.module.css';
-import type { SongItemProps } from './SongItem.types';
+import type { SongItemProps } from '@shared/ui';
 import { MoreIcon} from '@shared/ui';
 
 export const SongItem: React.FC<SongItemProps> = ({

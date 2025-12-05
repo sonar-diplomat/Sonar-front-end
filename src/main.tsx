@@ -4,12 +4,15 @@ import {RouterProvider} from 'react-router-dom'
 import { Provider } from 'react-redux'
 import './app/styles/index.css';
 import { router } from "./app/router/routes.tsx";
-import { store } from './shared/store';
+import { store } from '@shared/store';
+import { NotificationProvider } from './shared/store/notificationStore';
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <Provider store={store}>
-            <RouterProvider router={router} />
+            <NotificationProvider>
+                <RouterProvider router={router} />
+            </NotificationProvider>
         </Provider>
     </StrictMode>
 );

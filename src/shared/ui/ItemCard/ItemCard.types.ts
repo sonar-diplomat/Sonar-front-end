@@ -7,6 +7,8 @@ export interface ItemCardProps {
     backgroundColor?: string;
     image?: string;
     size?: ItemCardSize;
+    to?: string;
+    state?: Record<string, unknown>;
 }
 
 export interface ItemCardTextContent {

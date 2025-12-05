@@ -1,4 +1,4 @@
-import { authManager } from './auth-manager';
+import { authManager } from '@shared/lib';
 import { shouldRefreshToken } from './jwt-utils';
 import type { NormalizedApiResponse } from '@shared/types/api';
 

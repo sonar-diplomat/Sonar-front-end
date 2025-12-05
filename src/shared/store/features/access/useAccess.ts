@@ -42,7 +42,7 @@ export const useAccess = () => {
   /**
    * Загружает функции доступа для конкретного пользователя
    */
-  const loadUserAccessFeatures = useCallback(async (userId: number) => {
+  const loadUserAccessFeatures = useCallback(async () => {
     // Используем RTK Query hook для загрузки функций доступа пользователя
     // Это будет выполнено через useGetUserAccessFeaturesQuery в компоненте
     // Здесь мы просто возвращаем функцию для совместимости

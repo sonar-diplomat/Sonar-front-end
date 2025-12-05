@@ -51,7 +51,8 @@ export const BlockedAccounts: React.FC = () => {
                   </div>
                 </div>
                 <Button
-                  variant="light"
+                  variant="filled"
+                  theme="light"
                   size="small"
                   onClick={() => {
                     setSelectedUser(user);
@@ -81,10 +82,10 @@ export const BlockedAccounts: React.FC = () => {
             They will be able to view your profile and interact with your content again.
           </p>
           <div className={styles.modalActions}>
-            <Button variant="light" onClick={() => setShowUnblockModal(false)}>
+            <Button variant="filled" theme="light" onClick={() => setShowUnblockModal(false)}>
               Cancel
             </Button>
-            <Button variant="dark" onClick={handleUnblock}>
+            <Button variant="filled" theme="dark" onClick={handleUnblock}>
               Unblock
             </Button>
           </div>

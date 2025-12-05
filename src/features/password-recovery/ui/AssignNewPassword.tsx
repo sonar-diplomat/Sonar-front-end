@@ -8,7 +8,6 @@ type FormField = keyof AssignNewPasswordFormData;
 export const AssignNewPassword: React.FC<AssignNewPasswordProps> = ({
     onSubmit,
     isSubmitting,
-    error,
 }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showRepeatPassword, setShowRepeatPassword] = useState(false);
@@ -33,7 +32,6 @@ export const AssignNewPassword: React.FC<AssignNewPasswordProps> = ({
             <div className={styles.header}>
                 <h2>Assign new password</h2>
                 <p>Create a unique complex password that meets our standards.</p>
-                {error && <p className={styles.error}>{error}</p>}
             </div>
 
             <Form onSubmit={handleSubmit} className={styles.form}>

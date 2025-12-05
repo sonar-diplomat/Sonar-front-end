@@ -26,6 +26,19 @@ type CustomFetchBaseQueryError = FetchBaseQueryError & {
 import { toSearchParams } from './params-utils';
 
 /**
+ * Base URL for blob and stream endpoints
+ * Используется отдельный домен для медиа-контента
+ */
+const MEDIA_BASE_URL = 'https://sonar.pp.ua/api';
+
+/**
+ * Проверяет, является ли endpoint медиа-контентом (blob или stream)
+ */
+const isMediaEndpoint = (endpoint: string): boolean => {
+  return endpoint.includes('/blob/') || endpoint.includes('/stream');
+};
+
+/**
  * Кастомный baseQuery с поддержкой специфики API
  */
 export const rtkBaseQuery: BaseQueryFn<
@@ -47,7 +60,9 @@ export const rtkBaseQuery: BaseQueryFn<
   } = args as CustomFetchArgs;
 
   // Построение URL с параметрами
-  let fullUrl = `${API_BASE_URL}${url}`;
+  // Используем MEDIA_BASE_URL для blob и stream endpoints
+  const baseUrl = isMediaEndpoint(url) ? MEDIA_BASE_URL : API_BASE_URL;
+  let fullUrl = `${baseUrl}${url}`;
   if (params) {
     const qs = toSearchParams(params).toString();
     if (qs) fullUrl += `?${qs}`;
@@ -262,7 +277,7 @@ export const rtkBaseQuery: BaseQueryFn<
       const normalized = normalizeResponse(raw, status);
 
       // Проверка на ошибку
-      if (!response.ok || normalized.success === false) {
+      if (!response.ok || !normalized.success) {
         return {
           error: {
             status: normalized.status,

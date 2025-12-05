@@ -77,6 +77,11 @@ class AuthManager {
         console.warn('[authManager] refreshAccessToken: No refresh token available, logging out');
       }
       this.logout();
+      // Пытаемся auto-login перед редиректом
+      const loginSuccess = await this.autoLogin();
+      if (!loginSuccess) {
+        // autoLogin уже выполнит редирект, просто возвращаем null
+      }
       return null;
     }
 
@@ -102,13 +107,18 @@ class AuthManager {
           }
           return res.data.newAccessToken;
         } else {
-          // Refresh failed - logout
+          // Refresh failed - пытаемся auto-login
           const errorMsg = res.errors?.[0] || res.details?.[0] || res.message || 'Unknown error';
           console.error('[authManager] refreshAccessToken: Token refresh failed:', errorMsg);
           if (import.meta.env.DEV) {
             console.warn('[authManager] refreshAccessToken: ⚠️ Требуется новый логин - refresh token недействителен');
           }
           this.logout();
+          // Пытаемся auto-login перед редиректом
+          const loginSuccess = await this.autoLogin();
+          if (!loginSuccess) {
+            // autoLogin уже выполнит редирект, просто возвращаем null
+          }
           return null;
         }
       } catch (error) {
@@ -117,6 +127,11 @@ class AuthManager {
           console.warn('[authManager] refreshAccessToken: ⚠️ Требуется новый логин - ошибка при обновлении токена');
         }
         this.logout();
+        // Пытаемся auto-login перед редиректом
+        const loginSuccess = await this.autoLogin();
+        if (!loginSuccess) {
+          // autoLogin уже выполнит редирект, просто возвращаем null
+        }
         return null;
       } finally {
         this.refreshPromise = null;
@@ -156,8 +171,26 @@ class AuthManager {
   }
 
   /**
+   * Выполняет редирект на страницу логина
+   * Используется когда автоматический логин не удался
+   */
+  private redirectToLogin(): void {
+    // Проверяем, что мы в браузере
+    if (typeof window !== 'undefined') {
+      // Проверяем, что мы не уже на странице логина
+      if (window.location.pathname !== '/login') {
+        if (import.meta.env.DEV) {
+          console.log('[authManager] Redirecting to /login');
+        }
+        window.location.href = '/login';
+      }
+    }
+  }
+
+  /**
    * Автоматический логин используя сохраненные credentials
    * Вызывается хуками перед API запросами, если токена нет
+   * При неудаче выполняет редирект на /login
    */
   async autoLogin(): Promise<boolean> {
     const credentials = authStorage.getCredentials();
@@ -165,6 +198,7 @@ class AuthManager {
       if (import.meta.env.DEV) {
         console.warn('[authManager] autoLogin: ⚠️ Требуется новый логин - сохраненные credentials отсутствуют');
       }
+      this.redirectToLogin();
       return false;
     }
 
@@ -194,6 +228,7 @@ class AuthManager {
         console.warn('[authManager] autoLogin: ⚠️ Требуется новый логин - неверные credentials');
       }
       authStorage.clearCredentials();
+      this.redirectToLogin();
       return false;
     } catch (error) {
       console.error('[authManager] autoLogin: Auto-login error:', error);
@@ -201,6 +236,7 @@ class AuthManager {
         console.warn('[authManager] autoLogin: ⚠️ Требуется новый логин - ошибка при auto-login');
       }
       authStorage.clearCredentials();
+      this.redirectToLogin();
       return false;
     }
   }

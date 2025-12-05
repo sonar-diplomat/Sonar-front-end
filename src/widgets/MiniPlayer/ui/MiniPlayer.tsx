@@ -1,7 +1,6 @@
 import React, {useMemo} from "react";
 import styles from './MiniPlayer.module.css';
 import type { MiniPlayerProps } from '@widgets/MiniPlayer';
-
 import { PlayerControls } from './PlayerControls';
 import { ProgressBar } from './ProgressBar';
 import {TrackInfo} from "@widgets/MiniPlayer/ui/TrackInfo.tsx";

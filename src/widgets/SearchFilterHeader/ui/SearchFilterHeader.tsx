@@ -9,20 +9,28 @@ interface SearchFilterHeaderProps {
     selectedCategory: Category;
     onCategoryChange: (category: Category) => void;
     searchPlaceholder?: string;
+    searchValue?: string;
+    onSearch?: (value: string) => void;
 }
 
 export const SearchFilterHeader: React.FC<SearchFilterHeaderProps> = ({
     title,
     selectedCategory,
     onCategoryChange,
-    searchPlaceholder = "Search in library"
+    searchPlaceholder = "Search in library",
+    searchValue,
+    onSearch,
 }) => {
     return (
         <div className={styles.header}>
             <div className={styles.title}>
                 {title}
             </div>
-            <SearchBar placeholder={searchPlaceholder}/>
+            <SearchBar 
+                placeholder={searchPlaceholder}
+                value={searchValue}
+                onSearch={onSearch}
+            />
             <ChipsBar
                 selectedCategory={selectedCategory}
                 onCategoryChange={onCategoryChange}

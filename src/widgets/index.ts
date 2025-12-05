@@ -16,4 +16,6 @@ export * from './Message';
 export * from './SendInput';
 export * from './ChatList';
 export * from './ChatLayout';
+export * from './ReportComponent';
+export * from './ShareComponent';
 

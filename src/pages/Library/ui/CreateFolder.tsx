@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
 
 import {Button, Input, LeftArrow} from "@shared/ui";
+import { useCreateFolderMutation } from '@shared/api';
 
 import styles from './CreateFolder.module.css';
 
@@ -12,15 +13,33 @@ export interface CreateFolderProps {
 
 export const CreateFolder: React.FC<CreateFolderProps> = ({className = ''}) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const parentFolderId = location.state?.parentFolderId as number | undefined;
     const [folderName, setFolderName] = useState('My folder #1');
+    const [createFolder, { isLoading, error }] = useCreateFolderMutation();
 
     const handleBack = () => {
         navigate(-1);
     };
 
-    const handleCreateFolder = () => {
-        console.log('Create folder clicked with name:', folderName);
-        // TODO: Submit folder creation
+    const handleCreateFolder = async () => {
+        if (!folderName.trim()) {
+            console.warn('Folder name cannot be empty');
+            return;
+        }
+
+        try {
+            const result = await createFolder({
+                name: folderName.trim(),
+                parentFolderId: parentFolderId || undefined,
+            }).unwrap();
+            
+            console.log('Folder created successfully:', result);
+            // Переходим обратно в библиотеку после успешного создания
+            navigate('/library');
+        } catch (err) {
+            console.error('Failed to create folder:', err);
+        }
     };
 
     // Render 6 empty content squares (2 rows of 3)
@@ -72,15 +91,23 @@ export const CreateFolder: React.FC<CreateFolderProps> = ({className = ''}) => {
                     {renderContentGrid()}
                 </div>
 
+                {error && (
+                    <div style={{ color: 'red', marginBottom: '16px', padding: '8px' }}>
+                        Error: {error && 'data' in error && error.data && 'message' in error.data 
+                            ? String(error.data.message) 
+                            : 'Failed to create folder'}
+                    </div>
+                )}
                 <Button
                     variant="filled"
                     theme="light"
                     size="large"
                     shape="cr-16"
                     onClick={handleCreateFolder}
+                    disabled={isLoading || !folderName.trim()}
                     className={styles.createFolderButton}
                 >
-                    Create folder
+                    {isLoading ? 'Creating...' : 'Create folder'}
                 </Button>
             </div>
         </div>

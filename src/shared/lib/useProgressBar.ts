@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 
 export interface UseProgressBarProps {
   currentTime: number;
@@ -20,21 +20,13 @@ export function useProgressBar({ currentTime, duration, onSeek }: UseProgressBar
     return percentage * duration;
   }, [duration]);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    isDraggingRef.current = true;
-    setIsDragging(true);
-    const time = calculateTime(e);
-    setDragTime(time);
-  }, [calculateTime]);
-
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!isDraggingRef.current) return;
       const time = calculateTime(e as unknown as React.MouseEvent);
       setDragTime(time);
-      onSeek(time);
     },
-    [calculateTime, onSeek]
+    [calculateTime]
   );
 
   const handleMouseUp = useCallback(
@@ -44,21 +36,27 @@ export function useProgressBar({ currentTime, duration, onSeek }: UseProgressBar
       setIsDragging(false);
       const time = calculateTime(e as unknown as React.MouseEvent);
       setDragTime(time);
+
       onSeek(time);
+
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
     },
-    [calculateTime, onSeek]
+    [calculateTime, onSeek, handleMouseMove]
   );
 
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging, handleMouseMove, handleMouseUp]);
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    isDraggingRef.current = true;
+    setIsDragging(true);
+    const time = calculateTime(e);
+    setDragTime(time);
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }, [calculateTime, handleMouseMove, handleMouseUp]);
 
   const displayTime = isDragging ? dragTime : currentTime;
   const progress = duration > 0 ? (displayTime / duration) * 100 : 0;

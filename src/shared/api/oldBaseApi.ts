@@ -11,8 +11,21 @@ import { authManager } from '@shared/lib/auth/auth-manager';
 
 import { toSearchParams } from './params-utils';
 
+/**
+ * Base URL for blob and stream endpoints
+ * Используется отдельный домен для медиа-контента
+ */
+const MEDIA_BASE_URL = 'https://sonar.pp.ua/api/';
+
+/**
+ * Проверяет, является ли endpoint медиа-контентом (blob или stream)
+ */
+const isMediaEndpoint = (endpoint: string): boolean => {
+    return endpoint.includes('/blob/') || endpoint.includes('/stream');
+};
+
 class ApiClient {
-    private baseURL: string;
+    private readonly baseURL: string;
     private opts: ClientOptions;
 
     constructor(baseURL: string = API_BASE_URL, opts: ClientOptions = { retries: 0}) {
@@ -24,7 +37,9 @@ class ApiClient {
     }
 
     private buildURL(endpoint: string, params?: RequestConfig['params']) {
-        const base = `${this.baseURL}${endpoint}`;
+        // Используем MEDIA_BASE_URL для blob и stream endpoints
+        const baseUrl = isMediaEndpoint(endpoint) ? MEDIA_BASE_URL : this.baseURL;
+        const base = `${baseUrl}${endpoint}`;
         const qs = toSearchParams(params).toString();
         return qs ? `${base}?${qs}` : base;
     }
@@ -108,7 +123,7 @@ class ApiClient {
             }
             const normalized = normalizeResponse<T>(raw, status);
 
-            if (!resp.ok || normalized.success === false) {
+            if (!resp.ok || !normalized.success) {
                 return {
                     ...normalized,
                     success: false,

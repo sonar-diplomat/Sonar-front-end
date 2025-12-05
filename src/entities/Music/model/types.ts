@@ -31,6 +31,13 @@ export interface TrackDTO {
     highQualityAudioFile?: AudioFileDTO | null;
     visibilityState?: VisibilityStateDTO | null;
     cover?: ImageFileDTO | null;
+    artists?: Array<{
+        user?: {
+            firstName?: string;
+            lastName?: string;
+        };
+    }>;
+    isFavorite?: boolean;
 }
 
 export interface UpdateTrackDTO {

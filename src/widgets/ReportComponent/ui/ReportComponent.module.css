@@ -1,0 +1,125 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 16px 0 24px;
+}
+
+.header {
+    margin-bottom: 20px;
+    padding: 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #EAEAEA;
+    margin: 0 0 8px 0;
+}
+
+.description {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: rgba(234, 234, 234, 0.6);
+    margin: 0 0 24px 0;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.reasonsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.reasonsHelper {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    color: rgba(234, 234, 234, 0.7);
+    margin: 0 0 4px 0;
+}
+
+.reasonsList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.reasonItem {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.reasonItem:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.reasonItem:active {
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(0.98);
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.error {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #ff6b6b;
+    margin: 0;
+    padding: 12px 16px;
+    background: rgba(255, 107, 107, 0.1);
+    border-radius: 12px;
+}
+
+.success {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #51CF66;
+    margin: 0;
+    padding: 12px 16px;
+    background-color: rgba(81, 207, 102, 0.1);
+    border-radius: 12px;
+}
+
+.helpText {
+    text-align: center;
+    padding: 24px 8px 0 8px;
+    background: none;
+    border-radius: 0;
+}
+
+.helpText p {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 22px;
+    color: rgba(234, 234, 234, 0.6);
+    margin: 0 0 4px 0;
+}
+
+.helpSubtext {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+    color: rgba(234, 234, 234, 0.6);
+    margin: 0;
+}

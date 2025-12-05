@@ -5,7 +5,6 @@ export interface PasswordRecoveryFormData {
 export interface PasswordRecoveryProps {
     onSubmit?: (data: PasswordRecoveryFormData) => void;
     isSubmitting?: boolean;
-    error?: string;
 }
 
 export interface AssignNewPasswordFormData {
@@ -16,5 +15,4 @@ export interface AssignNewPasswordFormData {
 export interface AssignNewPasswordProps {
     onSubmit?: (data: AssignNewPasswordFormData) => void;
     isSubmitting?: boolean;
-    error?: string;
 }

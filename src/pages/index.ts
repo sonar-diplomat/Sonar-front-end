@@ -19,10 +19,10 @@ export {
     AppearanceSettings,
     PlaybackSettings,
     About,
-    ReportProblem,
     ActiveSessions,
 } from './Settings';
 
 export { Chats } from './Chats';
 export { Chat } from './Chat';
 export { UserInfo } from './UserInfo';
+export { MacroPlayer } from './MacroPlayer';

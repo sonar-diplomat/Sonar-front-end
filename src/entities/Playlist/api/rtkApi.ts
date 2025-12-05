@@ -1,7 +1,6 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
 import type { PlaylistDTO, CreatePlaylistDTO } from '../model/types';
-import type { ShareLinkDTO } from '@entities/Collection';
 
 /**
  * Playlist API endpoints
@@ -17,7 +16,7 @@ export const playlistApi = rtkApi.injectEndpoints({
       providesTags: (_result, _error, playlistId) => [{ type: 'Playlist', id: playlistId }],
     }),
 
-    getPlaylistShareLink: builder.query<ShareLinkDTO, number>({
+    getPlaylistShareLink: builder.query<string, number>({
       query: (playlistId) => ({
         url: API_ENDPOINTS.playlist.shareLink(playlistId),
         method: 'GET',
@@ -27,12 +26,22 @@ export const playlistApi = rtkApi.injectEndpoints({
     }),
 
     createPlaylist: builder.mutation<PlaylistDTO, CreatePlaylistDTO>({
-      query: (body) => ({
-        url: API_ENDPOINTS.playlist.create,
-        method: 'POST',
-        body,
-        withAuth: true,
-      }),
+      query: (body) => {
+        // Создаем FormData для отправки файла обложки
+        const formData = new FormData();
+        formData.append('Name', body.name);
+        if (body.cover) {
+          formData.append('Cover', body.cover);
+        }
+        
+        return {
+          url: API_ENDPOINTS.playlist.create,
+          method: 'POST',
+          body: formData,
+          bodyType: 'form',
+          withAuth: true,
+        };
+      },
       invalidatesTags: [{ type: 'Playlist', id: 'LIST' }],
     }),
 
@@ -133,6 +142,15 @@ export const playlistApi = rtkApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { playlistId }) => [{ type: 'Playlist', id: playlistId }],
     }),
+
+    getPlaylistTracks: builder.query<CursorPageDTO<TrackDTO>, number>({
+      query: (playlistId) => ({
+        url: API_ENDPOINTS.playlist.tracks(playlistId),
+        method: 'GET',
+        withAuth: true,
+      }),
+      providesTags: (_result, _error, playlistId) => [{ type: 'Playlist', id: playlistId }, { type: 'Track', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -150,5 +168,6 @@ export const {
   useRemoveTrackFromPlaylistMutation,
   useImportCollectionToPlaylistMutation,
   useUpdatePlaylistVisibilityMutation,
+  useGetPlaylistTracksQuery,
 } = playlistApi;
 

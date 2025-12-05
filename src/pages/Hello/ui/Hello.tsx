@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {Button, RightArrow} from "@shared/ui";
 import { CarouselDots } from "@widgets/CarouselDots";
+import { markFirstVisitComplete } from "@app/router/FirstVisitGuard";
 import styles from "./Hello.module.css";
 
 export const Hello: React.FC = () => {
@@ -32,6 +33,7 @@ export const Hello: React.FC = () => {
 
     const handleNext = () => {
         if (currentPage === textPage.length - 1) {
+            markFirstVisitComplete();
             navigate('/entry');
         } else {
             setCurrentPage((prevPage) => prevPage + 1);

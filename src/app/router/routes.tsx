@@ -14,7 +14,7 @@ import {
     Search,
     CreateFolder,
     UserProfile,
-    ArtistProfile, 
+    ArtistProfile,
     Collection,
     NotFound,
     Settings,
@@ -24,23 +24,28 @@ import {
     AppearanceSettings,
     PlaybackSettings,
     About,
-    ReportProblem,
     ActiveSessions,
     Chats,
     Chat,
     UserInfo,
+    MacroPlayer,
 } from "@pages";
 import {Login} from "@pages/Login";
 import {TermsOfService} from "@pages/Terms/TermsOfService/TermsOfService.tsx";
 import {ApiTestPage} from "@pages/TestPage";
 import {PageLayout} from "@widgets/PageLayout";
 import {ChatLayout} from "@widgets/ChatLayout";
+import {FirstVisitGuard} from "./FirstVisitGuard";
 
 export const router = createBrowserRouter([
     {
         element: <App />,
         //errorElement: <ErrorPage />,
         children: [
+            {
+                path: '/',
+                element: <FirstVisitGuard />,
+            },
             {
                 path: '/hello',
                 element: <Hello />,
@@ -68,6 +73,10 @@ export const router = createBrowserRouter([
             {
                 path: '/terms',
                 element: <TermsOfService />,
+            },
+            {
+                path: '/player/:trackId?',
+                element: <MacroPlayer />,
             },
             {
                 element: <PageLayout />,
@@ -109,7 +118,10 @@ export const router = createBrowserRouter([
                     },
                     {
                         path: 'collection/:id',
-                        element: <Collection />,
+                        element: <Collection/>,
+                    },
+                    {
+                        path: 'settings',
                         children: [
                             { index: true, element: <Settings /> },
                             { path: 'account', element: <AccountSettings /> },
@@ -119,7 +131,6 @@ export const router = createBrowserRouter([
                             { path: 'appearance', element: <AppearanceSettings /> },
                             { path: 'playback', element: <PlaybackSettings /> },
                             { path: 'about', element: <About /> },
-                            { path: 'report', element: <ReportProblem /> },
                         ],
                     },
                     {

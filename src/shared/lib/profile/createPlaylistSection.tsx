@@ -18,6 +18,8 @@ export const createPlaylistSection = (playlists: Playlist[]): ContentSection<Pla
                     title: playlist.name,
                     subtitle1: playlist.description
                 }}
+                to={`/collection/${playlist.id}`}
+                state={{ collectionType: playlist.type || 'Playlist' }}
             />
         ),
     };

@@ -1,4 +1,10 @@
-import { API_BASE_URL, API_ENDPOINTS } from '@shared/config';
+import { API_ENDPOINTS } from '@shared/config';
+
+/**
+ * Base URL for blob and stream endpoints
+ * Используется отдельный домен для медиа-контента
+ */
+const MEDIA_BASE_URL = 'https://sonar.pp.ua/api';
 
 /**
  * Converts image ID to blob API URL for image retrieval
@@ -8,9 +14,7 @@ import { API_BASE_URL, API_ENDPOINTS } from '@shared/config';
 export const getImageUrlById = (imageId: number | null | undefined): string | undefined => {
   if (!imageId || imageId <= 0) return undefined;
   
-  // Remove trailing slash from base URL if present
-  const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
-  return `${baseUrl}/${API_ENDPOINTS.blob.image(imageId)}`;
+  return `${MEDIA_BASE_URL}/${API_ENDPOINTS.blob.image(imageId)}`;
 };
 
 /**
@@ -73,5 +77,30 @@ export const getImageUrl = (
   }
   
   return undefined;
+};
+
+/**
+ * Converts track ID to stream API URL for audio streaming
+ * @param trackId - Track ID from API response
+ * @param params - Optional query parameters (startPosition, length, download)
+ * @returns Full URL to track stream endpoint
+ */
+export const getTrackStreamUrl = (
+  trackId: number,
+  params?: { startPosition?: string; length?: string; download?: boolean }
+): string => {
+  const baseUrl = `${MEDIA_BASE_URL}/${API_ENDPOINTS.track.stream(trackId)}`;
+  
+  if (!params || Object.keys(params).length === 0) {
+    return baseUrl;
+  }
+  
+  const searchParams = new URLSearchParams();
+  if (params.startPosition) searchParams.append('startPosition', params.startPosition);
+  if (params.length) searchParams.append('length', params.length);
+  if (params.download !== undefined) searchParams.append('download', String(params.download));
+  
+  const queryString = searchParams.toString();
+  return queryString ? `${baseUrl}?${queryString}` : baseUrl;
 };
 

@@ -11,8 +11,27 @@ export const FolderCard: React.FC<FolderCardProps> = ({ label, size = 'small', o
         className,
     ].filter(Boolean).join(' ');
 
+    const handleClick = () => {
+        if (onClick) {
+            onClick();
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            onClick();
+        }
+    };
+
     return (
-        <div className={wrapperClasses}>
+        <div 
+            className={wrapperClasses}
+            onClick={handleClick}
+            onKeyDown={handleKeyDown}
+            role={onClick ? 'button' : undefined}
+            tabIndex={onClick ? 0 : undefined}
+        >
             <div className={styles.layersContainer}>
                 <div className={`${styles.layer} ${styles.layer1}`} />
                 <div className={`${styles.layer} ${styles.layer2}`} />
@@ -21,7 +40,6 @@ export const FolderCard: React.FC<FolderCardProps> = ({ label, size = 'small', o
                     <ItemCard
                         size={size}
                         backgroundColor="#1F1F1F"
-                        onClick={onClick}
                     />
                 </div>
                 <div className={styles.label}>{label}</div>

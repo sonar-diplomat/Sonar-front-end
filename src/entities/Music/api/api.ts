@@ -37,7 +37,11 @@ export const Api = {
         apiClient.delete<void>(API_ENDPOINTS.track.delete(trackId), config),
     stream: async (
         trackId: number,
-        opts?: { download?: boolean },
+        opts?: {
+            startPosition?: string;
+            length?: string;
+            download?: boolean;
+        },
         config?: Omit<RequestConfig, 'bodyType'>
     ) => {
         // Для download нужно проверить авторизацию вручную, так как это не NormalizedApiResponse
@@ -79,9 +83,14 @@ export const Api = {
             }
         }
 
+        const queryParams: Record<string, any> = { ...(config?.params ?? {}) };
+        if (opts?.startPosition) queryParams.startPosition = opts.startPosition;
+        if (opts?.length) queryParams.length = opts.length;
+        if (opts?.download) queryParams.download = opts.download;
+
         return apiClient.download(API_ENDPOINTS.track.stream(trackId), {
             ...config,
-            params: { ...(config?.params ?? {}), download: Boolean(opts?.download) },
+            params: queryParams,
             withAuth: config?.withAuth ?? true,
         });
     },

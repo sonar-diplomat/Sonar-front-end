@@ -10,7 +10,6 @@ export interface LoginFormProps {
     onContinueWithApple?: () => void;
     onCreateAccount?: () => void;
     isSubmitting?: boolean;
-    error?: string;
 }
 
 export interface TwoFactorVerificationProps {
@@ -18,5 +17,4 @@ export interface TwoFactorVerificationProps {
     onVerify: (code: string) => void;
     onResend?: () => void;
     isSubmitting?: boolean;
-    error?: string;
 }

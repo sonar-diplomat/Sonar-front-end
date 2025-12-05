@@ -1,4 +1,5 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
+//export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sonar.pp.ua/api/';
 
 export const API_ENDPOINTS = {
     auth: {
@@ -20,6 +21,12 @@ export const API_ENDPOINTS = {
         update: 'User/update',
         updateAvatar: 'User/update-avatar',
         updateVisibility: (collectionId: number) => `User/${collectionId}/visibility`,
+        sendFriendRequest: (toUserId: number) => `User/friend-request/${toUserId}`,
+        getPendingFriendRequests: 'User/friend-requests/pending',
+        getSentFriendRequests: 'User/friend-requests/sent',
+        resolveFriendRequest: (requestId: number) => `User/friend-request/${requestId}/resolve`,
+        removeFriend: (friendId: number) => `User/friends/${friendId}`,
+        getFriends: 'User/friends',
     },
     accessFeature: {
         list: 'AccessFeature',
@@ -86,6 +93,7 @@ export const API_ENDPOINTS = {
         delete: (albumId: number) => `Album/${albumId}`,
         updateName: (albumId: number) => `Album/${albumId}/name`,
         addTrack: (albumId: number) => `Album/${albumId}/add`,
+        tracks: (albumId: number) => `Album/${albumId}/tracks`,
         updateCover: (albumId: number) => `Album/${albumId}/cover`,
         shareLink: (albumId: number) => `Album/${albumId}/share-link`,
         shareQr: (albumId: number) => `Album/${albumId}/share-qr`,
@@ -194,5 +202,15 @@ export const API_ENDPOINTS = {
     },
     blob: {
         image: (id: number) => `blob/${id}`,
+    },
+    search: {
+        search: 'Search',
+        tracks: 'Search/tracks',
+        albums: 'Search/albums',
+        playlists: 'Search/playlists',
+        artists: 'Search/artists',
+        users: 'Search/users',
+        suggestions: 'Search/suggestions',
+        popular: 'Search/popular',
     },
 } as const;

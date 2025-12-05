@@ -1,4 +1,4 @@
-import type { Message } from '../types/Message';
+import type { Message } from '@entities/Chat';
 import type { Chat } from '../types/Chat';
 import type { User } from '@entities/User';
 
