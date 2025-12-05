@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, Input, SendRight, PlusIcon, ClearIcon } from '@shared/ui';
 import type { Message } from '@entities/Chat';
+import { StickerPicker } from '@widgets/StickerPicker';
 import styles from './SendInput.module.css';
 
 export interface SendInputProps {
@@ -25,6 +26,7 @@ export const SendInput: React.FC<SendInputProps> = ({
     onCancelEdit,
 }) => {
     const [message, setMessage] = useState('');
+    const [isStickerPickerOpen, setIsStickerPickerOpen] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Update message when editing
@@ -61,6 +63,20 @@ export const SendInput: React.FC<SendInputProps> = ({
             e.preventDefault();
             handleSend();
         }
+    };
+
+    const handleAttachClick = () => {
+        setIsStickerPickerOpen(prev => !prev);
+        onAttach?.();
+    };
+
+    const handleStickerSelect = (stickerId: number) => {
+        onSend(`:sticker:${stickerId}:`);
+        setIsStickerPickerOpen(false);
+    };
+
+    const handleCloseStickerPicker = () => {
+        setIsStickerPickerOpen(false);
     };
 
     return (
@@ -106,40 +122,50 @@ export const SendInput: React.FC<SendInputProps> = ({
                 </div>
             )}
             <div className={styles.inputWrapper}>
-                {onAttach && (
+                {onAttach && !isStickerPickerOpen && (
                     <Button
                         iconOnly
                         icon={<PlusIcon />}
-                        onClick={onAttach}
+                        onClick={handleAttachClick}
                         disabled={disabled}
                         variant="text"
                         theme="dark"
                         size="large"
                         className={styles.iconButton}
-                        aria-label="Attach"
+                        aria-label="Stickers"
                     />
                 )}
-                <Input
-                    ref={inputRef}
-                    className={styles.input}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder={placeholder}
-                    disabled={disabled}
-                />
-                <Button
-                    iconOnly
-                    icon={<SendRight />}
-                    onClick={handleSend}
-                    disabled={disabled || !message.trim()}
-                    variant="text"
-                    theme="dark"
-                    size="large"
-                    className={styles.iconButton}
-                    aria-label="Send"
-                />
+                {!isStickerPickerOpen && (
+                    <Input
+                        ref={inputRef}
+                        className={styles.input}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        placeholder={placeholder}
+                        disabled={disabled}
+                    />
+                )}
+                {!isStickerPickerOpen && (
+                    <Button
+                        iconOnly
+                        icon={<SendRight />}
+                        onClick={handleSend}
+                        disabled={disabled || !message.trim()}
+                        variant="text"
+                        theme="dark"
+                        size="large"
+                        className={styles.iconButton}
+                        aria-label="Send"
+                    />
+                )}
             </div>
+            {isStickerPickerOpen && (
+                <StickerPicker
+                    onSelect={handleStickerSelect}
+                    onClose={handleCloseStickerPicker}
+                />
+            )}
         </div>
     );
 };

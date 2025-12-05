@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import type { Message as MessageType } from '@entities/Chat';
 import { CheckMark, ClockIcon, ErrorIcon, ReplyIcon, CopyIcon, EditIcon, DeleteIcon, Info, Button } from '@shared/ui';
 import { MessageContentRenderer, shouldShowEmbed } from '@shared/lib/chat-embeds';
+import { isStickerMessage } from '@shared/lib/chat-stickers';
 import styles from './Message.module.css';
 
 export interface MessageProps {
@@ -170,11 +171,12 @@ export const Message: React.FC<MessageProps> = ({
     const showSenderName = !isOwn && isGroupChat && senderName;
     const showAvatar = !isOwn && isGroupChat;
     const hasEmbed = shouldShowEmbed(message.textContent);
+    const hasSticker = isStickerMessage(message.textContent);
 
     return (
         <div
             ref={messageRef}
-            className={`${styles.message} ${isOwn ? styles.own : styles.other} ${showAvatar ? styles.withAvatar : ''} ${hasEmbed ? styles.withEmbed : ''}`}
+            className={`${styles.message} ${isOwn ? styles.own : styles.other} ${showAvatar ? styles.withAvatar : ''} ${hasEmbed ? styles.withEmbed : ''} ${hasSticker ? styles.withSticker : ''}`}
             onContextMenu={handleContextMenu}
         >
             {showAvatar && (

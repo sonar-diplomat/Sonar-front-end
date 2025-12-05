@@ -149,6 +149,9 @@ export const API_ENDPOINTS = {
         readMessages: (chatId: number) => `Chat/${chatId}/read`,
         readAllMessages: (chatId: number) => `Chat/${chatId}/read-all`,
     },
+    chatSticker: {
+        list: 'ChatSticker',
+    },
     folder: {
         byId: (folderId: number) => `Folder/${folderId}`,
         list: 'Folder',

@@ -15,6 +15,8 @@ export * from './ProfileActionButtons';
 export * from './Message';
 export * from './SendInput';
 export * from './ChatList';
+export * from './StickerPicker';
+export * from './StickerMessage';
 export * from './ChatLayout';
 export * from './ReportComponent';
 export * from './ShareComponent';

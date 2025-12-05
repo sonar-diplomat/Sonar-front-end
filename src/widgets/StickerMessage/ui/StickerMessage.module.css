@@ -1,0 +1,54 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 100%;
+  position: relative;
+}
+
+.stickerImage {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+  display: block;
+}
+
+.stickerImage:hover {
+  transform: scale(1.02);
+}
+
+.loadingSkeleton {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(
+    90deg,
+    var(--input-border-hover) 0%,
+    var(--input-bg) 50%,
+    var(--input-border-hover) 100%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.error {
+  padding: 16px;
+  text-align: center;
+  color: #ff4444;
+  font-size: 14px;
+}
+
