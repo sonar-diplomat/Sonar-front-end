@@ -28,6 +28,14 @@ export interface MessageDeletedEvent {
   initiatorId: number;
 }
 
+export interface MessageUpdatedEvent {
+  chatId: number;
+  messageId: number;
+  senderId: number;
+  textContent: string;
+  updatedAtUtc: string;
+}
+
 export interface ChatNameUpdatedEvent {
   chatId: number;
   name: string;
@@ -61,6 +69,7 @@ export const useSignalR = () => {
     onMessageCreated?: (event: MessageCreatedEvent) => void;
     onMessageRead?: (event: MessageReadEvent) => void;
     onMessageDeleted?: (event: MessageDeletedEvent) => void;
+    onMessageUpdated?: (event: MessageUpdatedEvent) => void;
     onChatNameUpdated?: (event: ChatNameUpdatedEvent) => void;
     onChatCoverUpdated?: (event: ChatCoverUpdatedEvent) => void;
     onChatUserAdded?: (event: ChatUserAddedEvent) => void;
@@ -110,6 +119,11 @@ export const useSignalR = () => {
         callbacksRef.current.onMessageDeleted(event);
       }
     };
+    const messageUpdatedWrapper = (event: MessageUpdatedEvent) => {
+      if (callbacksRef.current.onMessageUpdated) {
+        callbacksRef.current.onMessageUpdated(event);
+      }
+    };
     const chatNameUpdatedWrapper = (event: ChatNameUpdatedEvent) => {
       if (callbacksRef.current.onChatNameUpdated) {
         callbacksRef.current.onChatNameUpdated(event);
@@ -140,6 +154,7 @@ export const useSignalR = () => {
     signalRManager.on<MessageCreatedEvent>('message.created', messageCreatedWrapper);
     signalRManager.on<MessageReadEvent>('message.read', messageReadWrapper);
     signalRManager.on<MessageDeletedEvent>('message.deleted', messageDeletedWrapper);
+    signalRManager.on<MessageUpdatedEvent>('message.updated', messageUpdatedWrapper);
     signalRManager.on<ChatNameUpdatedEvent>('chat.name.updated', chatNameUpdatedWrapper);
     signalRManager.on<ChatCoverUpdatedEvent>('chat.cover.updated', chatCoverUpdatedWrapper);
     signalRManager.on<ChatUserAddedEvent>('chat.user.added', chatUserAddedWrapper);
@@ -150,6 +165,7 @@ export const useSignalR = () => {
       signalRManager.off('message.created', messageCreatedWrapper);
       signalRManager.off('message.read', messageReadWrapper);
       signalRManager.off('message.deleted', messageDeletedWrapper);
+      signalRManager.off('message.updated', messageUpdatedWrapper);
       signalRManager.off('chat.name.updated', chatNameUpdatedWrapper);
       signalRManager.off('chat.cover.updated', chatCoverUpdatedWrapper);
       signalRManager.off('chat.user.added', chatUserAddedWrapper);

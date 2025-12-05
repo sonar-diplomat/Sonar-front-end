@@ -123,6 +123,7 @@ export const API_ENDPOINTS = {
         create: 'Chat',
         sendMessage: (chatId: number) => `Chat/${chatId}/send`,
         deleteMessage: (messageId: number) => `Chat/message/${messageId}`,
+        editMessage: (messageId: number) => `Chat/message/${messageId}`,
         getMessage: (messageId: number) => `Chat/message/${messageId}`,
         getInfo: (chatId: number) => `Chat/${chatId}/info`,
         getMessages: (chatId: number) => `Chat/${chatId}/messages`,

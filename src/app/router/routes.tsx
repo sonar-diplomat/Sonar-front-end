@@ -110,7 +110,6 @@ export const router = createBrowserRouter([
                     {
                         path: 'collection/:id',
                         element: <Collection />,
-                        path: 'settings',
                         children: [
                             { index: true, element: <Settings /> },
                             { path: 'account', element: <AccountSettings /> },
@@ -144,11 +143,7 @@ export const router = createBrowserRouter([
                     {
                         path: 'api',
                         element: <ApiTestPage />,
-                    },
-                    {
-                        path: 'collection',
-                        element: <CollectionViewExample />,
-                    },
+                    }
                 ],
             },
             {

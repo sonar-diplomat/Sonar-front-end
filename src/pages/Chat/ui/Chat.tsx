@@ -2,17 +2,19 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 import { Message } from '@widgets/Message';
 import { SendInput } from '@widgets/SendInput';
-import { ErrorIcon } from '@shared/ui';
+import { ErrorIcon, Modal, Button } from '@shared/ui';
 import { DownArrow } from '@shared/ui/icons';
 import type { Message as MessageType } from '@entities/Chat/model/types/Message';
 import type { MessageDTO, MessageReadDTO } from '@entities/Chat/model/types';
 import { 
     useGetChatMessagesQuery, 
     useSendMessageMutation,
+    useDeleteMessageMutation,
+    useEditMessageMutation,
     useReadAllMessagesMutation,
     chatApi
 } from '@entities/Chat/api/rtkApi';
-import { useSignalR, type MessageCreatedEvent, type MessageDeletedEvent, type MessageReadEvent, type ChatNameUpdatedEvent, type ChatCoverUpdatedEvent } from '@shared/lib/signalr';
+import { useSignalR, type MessageCreatedEvent, type MessageDeletedEvent, type MessageUpdatedEvent, type MessageReadEvent, type ChatNameUpdatedEvent, type ChatCoverUpdatedEvent } from '@shared/lib/signalr';
 import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
 import { decodeJWT } from '@shared/lib/auth/jwt-utils';
 import styles from './Chat.module.css';
@@ -24,6 +26,8 @@ export const Chat: React.FC = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const [replyMessage, setReplyMessage] = useState<MessageType | null>(null);
+    const [editingMessage, setEditingMessage] = useState<MessageType | null>(null);
+    const [messageToDelete, setMessageToDelete] = useState<number | null>(null);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     const [allMessages, setAllMessages] = useState<MessageType[]>([]);
@@ -87,6 +91,8 @@ export const Chat: React.FC = () => {
     );
     
     const [sendMessage] = useSendMessageMutation();
+    const [deleteMessage] = useDeleteMessageMutation();
+    const [editMessage] = useEditMessageMutation();
     const { joinChat, leaveChat, setCallbacks, readAllMessages: readAllMessagesViaSignalR, isConnected: isSignalRConnected } = useSignalR();
     
     // Fallback to HTTP if SignalR is not connected
@@ -275,6 +281,21 @@ export const Chat: React.FC = () => {
                     setAllMessages((prev) => prev.filter(m => m.id !== event.messageId));
                 }
             },
+            onMessageUpdated: (event: MessageUpdatedEvent) => {
+                if (event.chatId === chatIdNumber) {
+                    setAllMessages((prev) =>
+                        prev.map((msg) =>
+                            msg.id === event.messageId
+                                ? { ...msg, textContent: event.textContent }
+                                : msg
+                        )
+                    );
+                    // Cancel editing if the message being edited was updated
+                    if (editingMessage?.id === event.messageId) {
+                        setEditingMessage(null);
+                    }
+                }
+            },
             onMessageRead: (event: MessageReadEvent) => {
                 // Update read status in local state via SignalR event
                 if (event.chatId === chatIdNumber) {
@@ -342,7 +363,7 @@ export const Chat: React.FC = () => {
                 }
             },
         });
-    }, [chatIdNumber, dispatch, setCallbacks, currentUserId, getMessageStatus]);
+    }, [chatIdNumber, dispatch, setCallbacks, currentUserId, getMessageStatus, editingMessage]);
 
     // Determine if there are more messages to load
     const hasMoreMessages = useMemo(() => {
@@ -631,16 +652,26 @@ export const Chat: React.FC = () => {
         if (!chatIdNumber || !text.trim()) return;
         
         try {
-            await sendMessage({
-                chatId: chatIdNumber,
-                message: {
+            if (editingMessage) {
+                // Edit existing message
+                await editMessage({
+                    messageId: editingMessage.id,
                     textContent: text,
-                    replyMessageId: replyMessage?.id,
-                },
-            }).unwrap();
-            setReplyMessage(null);
+                }).unwrap();
+                setEditingMessage(null);
+            } else {
+                // Send new message
+                await sendMessage({
+                    chatId: chatIdNumber,
+                    message: {
+                        textContent: text,
+                        replyMessageId: replyMessage?.id,
+                    },
+                }).unwrap();
+                setReplyMessage(null);
+            }
         } catch (error) {
-            console.error('Failed to send message:', error);
+            console.error('Failed to send/edit message:', error);
         }
     };
 
@@ -659,12 +690,35 @@ export const Chat: React.FC = () => {
         navigator.clipboard.writeText(text);
     };
 
-    const handleEdit = (_messageId: number) => {
-        // TODO: Implement edit message functionality
+    const handleEdit = (messageId: number) => {
+        const message = messages.find(m => m.id === messageId);
+        if (message) {
+            setEditingMessage(message);
+            setReplyMessage(null); // Cancel reply if editing
+        }
     };
 
-    const handleDelete = async (_messageId: number) => {
-        // TODO: Implement delete message mutation
+    const handleDelete = (messageId: number) => {
+        setMessageToDelete(messageId);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!messageToDelete) return;
+        
+        try {
+            await deleteMessage(messageToDelete).unwrap();
+            setMessageToDelete(null);
+        } catch (error) {
+            console.error('Failed to delete message:', error);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setMessageToDelete(null);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingMessage(null);
     };
 
     const handleReport = (messageId: number) => {
@@ -747,7 +801,43 @@ export const Chat: React.FC = () => {
                 onAttach={handleAttach}
                 replyMessage={replyMessage}
                 onCancelReply={handleCancelReply}
+                editingMessage={editingMessage}
+                onCancelEdit={handleCancelEdit}
             />
+            <Modal
+                isOpen={messageToDelete !== null}
+                onClose={handleCancelDelete}
+                title="Delete Message"
+                closeOnBackdropClick={true}
+            >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%' }}>
+                    <p style={{ color: '#EAEAEA', textAlign: 'center', margin: 0 }}>
+                        Are you sure you want to delete this message? This action cannot be undone.
+                    </p>
+                    <div style={{ display: 'flex', gap: '12px', width: '100%' }}>
+                        <Button
+                            variant="filled"
+                            theme="dark"
+                            size="large"
+                            shape="cr-16"
+                            fullWidth
+                            onClick={handleCancelDelete}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="filled"
+                            theme="light"
+                            size="large"
+                            shape="cr-16"
+                            fullWidth
+                            onClick={handleConfirmDelete}
+                        >
+                            Delete
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 };
