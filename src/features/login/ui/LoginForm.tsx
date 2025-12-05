@@ -37,17 +37,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 <div className={styles.inputContainer}>
                     <Input
                         label="Email or Login"
-                        placeholder="vanessa_sonar@gmail.com"
+                        placeholder="example@sonar.com"
                         value={formData.emailOrLogin}
                         onChange={(e) => updateField('emailOrLogin', e.target.value)}
-                        helperText="Enter your email or login"
                         required={true}
                     />
 
                     <Input
                         label="Password"
                         type={showPassword ? 'text' : 'password'}
-                        placeholder="Vanessa1234"
+                        placeholder="Example1234"
                         value={formData.password}
                         onChange={(e) => updateField('password', e.target.value)}
                         icon={showPassword ? <EyeIcon/> : <EyeOffIcon/>}

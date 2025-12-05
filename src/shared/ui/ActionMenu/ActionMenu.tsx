@@ -62,6 +62,7 @@ interface ActionHelpers {
   navigate: ReturnType<typeof useNavigate>;
   addToQueue: (trackId: number) => void;
   toggleFavorite: (collectionType: string, collectionId: number) => Promise<void>;
+
   showSuccess: (message: string) => void;
   showError: (message: string) => void;
   closeMenu: () => void;
@@ -84,8 +85,8 @@ const contextualActions: ActionConfig[] = [
     },
   },
   {
-    id: 'add-to-collection',
-    label: 'Add to Collection',
+    id: 'add-to-playlist',
+    label: 'Add to Playlist',
     icon: <PlusIcon />,
     handler: (context, helpers) => {
       // TODO: Open collection selector modal
@@ -102,41 +103,28 @@ const contextualActions: ActionConfig[] = [
       helpers.closeMenu();
     },
   },
-  {
-    id: 'go-to-profile',
-    label: 'Go to Profile',
-    icon: <ProfileIcon />,
-    handler: (context, helpers) => {
-      helpers.navigate(`/${context.type}/${context.entityId}`);
-      helpers.closeMenu();
-    },
-  },
 ];
 
-const TRACK_ACTIONS: ActionConfig[] = [
-  contextualActions[0], contextualActions[1], contextualActions[2], contextualActions[3]
-];
+// 0 - add to library
+// 1 - add to playlist
+// 2 - add to queue
 
-const ALBUM_ACTIONS: ActionConfig[] = [
-  contextualActions[0], contextualActions[1], contextualActions[2], contextualActions[3]
-];
-
-const PLAYLIST_ACTIONS: ActionConfig[] = [
-  contextualActions[0], contextualActions[1], contextualActions[2], contextualActions[3]
+const MUSIC_ACTIONS: ActionConfig[] = [
+  contextualActions[0], contextualActions[1], contextualActions[2]
 ];
 
 const ARTIST_ACTIONS: ActionConfig[] = [
-  contextualActions[0], contextualActions[1], contextualActions[2], contextualActions[3]
+
 ];
 
 const USER_ACTIONS: ActionConfig[] = [
-  contextualActions[0], contextualActions[1], contextualActions[2], contextualActions[3]
+
 ];
 
 const ACTION_CONFIGS: Record<ActionMenuContextType, ActionConfig[]> = {
-  track: TRACK_ACTIONS,
-  album: ALBUM_ACTIONS,
-  playlist: PLAYLIST_ACTIONS,
+  track: MUSIC_ACTIONS,
+  album: MUSIC_ACTIONS,
+  playlist: MUSIC_ACTIONS,
   artist: ARTIST_ACTIONS,
   user: USER_ACTIONS,
 };

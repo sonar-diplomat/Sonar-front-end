@@ -1,8 +1,9 @@
 import React, {useState, useCallback, useMemo, useEffect} from 'react';
 import styles from './RegistrationForm.module.css';
-import {Button, Input, RightArrow, Info, Checkbox, Form, DropDown} from '@shared/ui';
+import {Button, Input, RightArrow, Checkbox, Form, DropDown} from '@shared/ui';
 import type { RegistrationFormData } from "@features/registration";
 import { ModalDatePicker } from "@widgets/ModalDatePicker/ui/ModalDatePicker.tsx";
+import {useNotifications} from "@shared/store/notificationStore.tsx";
 
 export interface RegistrationFormProps {
   onSubmit?: (data: RegistrationFormData) => void;
@@ -15,12 +16,13 @@ type FormField = keyof RegistrationFormData;
 export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, data, onDataChange }) => {
   const [isAgreed, setIsAgreed] = useState(false);
   const [formData, setFormData] = useState<RegistrationFormData>(data ?? {
-    email: '',  
+    email: '',
     username: '',
     login: '',
     dateOfBirth: ''
   });
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+    const { showError } = useNotifications();
 
   const updateField = useCallback((field: FormField, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -31,11 +33,10 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
     }, [formData, onDataChange]);
 
   const handleSubmit = useCallback(() => {
-    if (!isAgreed) {
-        // TODO: Implement proper UI feedback for errors
-      console.log('Agree to the terms before continuing');
-      return;
-    }
+      if (!isAgreed) {
+          showError('You must agree to the terms to proceed.');
+          return;
+      }
 
     onSubmit?.(formData);
   }, [isAgreed, formData, onSubmit]);
@@ -52,12 +53,12 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
     <Form onSubmit={handleSubmit} className={styles.form}>
       <div className={styles.welcome}>
         <h2>Sign up</h2>
-        <p>Fill in the information quickly and create an account to get started!</p>
+        <p>Fill in the information to create an account and get started!</p>
       </div>
 
       <Input
         label="Email"
-        placeholder="vanessa_sonar@gmail.com"
+        placeholder="example@sonar.com"
         value={formData.email}
         required={true}
         onChange={(e) => updateField('email', e.target.value)}
@@ -65,9 +66,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
 
       <Input
         label="Username"
-        placeholder="vanessa_ortiz"
-        helperText="Why is this needed and requirements"
-        helperIcon={<Info />}
+        placeholder="Example1234"
         value={formData.username}
         required={true}
         onChange={(e) => updateField('username', e.target.value)}
@@ -75,9 +74,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
 
       <Input
         label="Login"
-        placeholder="Vanessa"
-        helperText="Why is this needed and requirements"
-        helperIcon={<Info />}
+        placeholder="ExampleLogin"
         value={formData.login}
         required={true}
         onChange={(e) => updateField('login', e.target.value)}
@@ -122,4 +119,3 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
     </Form>
   );
 };
-//TODO Fix dropdown text with icon, refactor if dropdown don't need at all
