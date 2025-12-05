@@ -12,6 +12,39 @@
     max-width: 85%;
 }
 
+.message.withEmbed {
+    max-width: 95% !important;
+    width: 95% !important;
+}
+
+.message.withAvatar.withEmbed {
+    max-width: 98% !important;
+    width: 98% !important;
+}
+
+.message.withEmbed .messageContent {
+    padding: 8px 12px !important;
+    background-color: var(--input-bg) !important;
+    border-radius: 16px !important;
+}
+
+.message.withEmbed .contentWrapper {
+    width: 100%;
+}
+
+.message.withEmbed .content {
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+}
+
+.message.withEmbed .metaRight,
+.message.withEmbed .timestamp {
+    align-self: flex-end;
+    margin-top: 4px;
+}
+
 .own {
     align-self: flex-end;
     flex-direction: row-reverse;

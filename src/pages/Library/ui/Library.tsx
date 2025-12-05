@@ -175,8 +175,7 @@ export const Library: React.FC<LibraryProps> = () => {
                         title: playlist.name,
                         subtitle1: playlist.description
                     }}
-                    to={`/collection/${playlist.id}`}
-                    state={{ collectionType: playlist.type || 'Playlist' }}
+                    to={`/playlist/${playlist.id}`}
                     onClick={() => handlePlaylistClick(playlist)}
                 />
             )

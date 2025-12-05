@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  word-wrap: break-word;
+  word-break: break-word;
+  width: 100%;
+}
+
+.text {
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.link {
+  color: var(--input-helper-link, #4a9eff);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.link:hover {
+  text-decoration: underline;
+  color: var(--input-helper-link-hover, #5bb0ff);
+}
+

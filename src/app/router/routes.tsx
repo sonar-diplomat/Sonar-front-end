@@ -117,8 +117,12 @@ export const router = createBrowserRouter([
                         element: <ArtistProfile />,
                     },
                     {
-                        path: 'collection/:id',
-                        element: <Collection/>,
+                        path: 'playlist/:id',
+                        element: <Collection type="playlist" />,
+                    },
+                    {
+                        path: 'album/:id',
+                        element: <Collection type="album" />,
                     },
                     {
                         path: 'settings',
