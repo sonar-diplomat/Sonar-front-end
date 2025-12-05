@@ -18,10 +18,17 @@ export const Library: React.FC<LibraryProps> = () => {
     const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);
 
     // Загрузка данных для корневой папки (когда currentFolderId === null)
-    const { folders: foldersData, isLoading: foldersLoading, refetchFolders } = useFolders();
+    const { folders: foldersData, isLoading: foldersLoading, refetchFolders, isDirty } = useFolders();
 
     // Загрузка данных для конкретной папки (когда currentFolderId !== null)
     const { folder: folderData, isLoading: folderLoading, error: folderError } = useFolder(currentFolderId);
+
+    // Автоматически обновляем данные при возврате на страницу, если библиотека помечена как "грязная"
+    useEffect(() => {
+        if (isDirty && !foldersLoading && currentFolderId === null) {
+            void refetchFolders();
+        }
+    }, [isDirty, foldersLoading, currentFolderId, refetchFolders]);
 
     const [folders, setFolders] = useState<Folder[]>([]);
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
