@@ -154,7 +154,7 @@ export const router = createBrowserRouter([
                     {
                         path: 'api',
                         element: <ApiTestPage />,
-                    },
+                    }
                 ],
             },
             {
