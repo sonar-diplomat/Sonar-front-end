@@ -7,12 +7,13 @@ import type { Category } from '@widgets/ChipsBar';
 import { ContentSections, type ContentSection } from '@widgets/ContentSections';
 import { SearchFilterHeader } from '@widgets/SearchFilterHeader';
 import {
-  useSearchQuery,
-  useSearchTracksQuery,
-  useSearchPlaylistsQuery,
-  useSearchArtistsQuery,
-  useSearchUsersQuery,
-} from '@shared/api';
+  useSearchTracks,
+  useSearchAlbums,
+  useSearchPlaylists,
+  useSearchArtists,
+  useSearchUsers,
+} from '@shared/store/features/search/useSearch';
+import { useSearchQuery } from '@shared/api';
 import type {
   TrackSearchItemDTO,
   AlbumSearchItemDTO,
@@ -33,7 +34,14 @@ export const Search: React.FC = () => {
   // Определяем, нужно ли выполнять поиск
   const shouldSearch = debouncedSearchQuery.trim().length > 0;
 
-  // Основной поиск для категории "All"
+  // Используем новые хуки с кэшированием для всех категорий
+  const tracksResult = useSearchTracks(debouncedSearchQuery, 20);
+  const playlistsResult = useSearchPlaylists(debouncedSearchQuery, 20);
+  const artistsResult = useSearchArtists(debouncedSearchQuery, 20);
+  const usersResult = useSearchUsers(debouncedSearchQuery, 20);
+  const albumsResult = useSearchAlbums(debouncedSearchQuery, 20);
+
+  // Для категории "All" используем общий поиск, но также используем кэш из отдельных хуков
   const {
     data: searchData,
     isLoading: isSearchLoading,
@@ -47,46 +55,70 @@ export const Search: React.FC = () => {
     { skip: !shouldSearch || selectedCategory !== 'All' }
   );
 
-  // Поиск по категориям
-  const {
-    data: tracksData,
-    isLoading: isTracksLoading,
-  } = useSearchTracksQuery(
-    { query: debouncedSearchQuery, limit: 20 },
-    { skip: !shouldSearch || selectedCategory !== 'Radio' }
-  );
-
-  const {
-    data: playlistsData,
-    isLoading: isPlaylistsLoading,
-  } = useSearchPlaylistsQuery(
-    { query: debouncedSearchQuery, limit: 20 },
-    { skip: !shouldSearch || selectedCategory !== 'Playlists' }
-  );
-
-  const {
-    data: artistsData,
-    isLoading: isArtistsLoading,
-  } = useSearchArtistsQuery(
-    { query: debouncedSearchQuery, limit: 20 },
-    { skip: !shouldSearch || selectedCategory !== 'Creators' }
-  );
-
-  const {
-    data: usersData,
-    isLoading: isUsersLoading,
-  } = useSearchUsersQuery(
-    { query: debouncedSearchQuery, limit: 20 },
-    { skip: !shouldSearch || selectedCategory !== 'Creators' }
-  );
+  // Подготавливаем данные для категорий
+  const tracksData = selectedCategory === 'Radio' || selectedCategory === 'All' 
+    ? { items: tracksResult.tracks, total: tracksResult.tracks.length } 
+    : null;
+  const playlistsData = selectedCategory === 'Playlists' || selectedCategory === 'All'
+    ? { items: playlistsResult.playlists, total: playlistsResult.playlists.length }
+    : null;
+  const artistsData = selectedCategory === 'Creators' || selectedCategory === 'All'
+    ? { items: artistsResult.artists, total: artistsResult.artists.length }
+    : null;
+  const usersData = selectedCategory === 'Creators' || selectedCategory === 'All'
+    ? { items: usersResult.users, total: usersResult.users.length }
+    : null;
+  const albumsData = selectedCategory === 'All'
+    ? { items: albumsResult.albums, total: albumsResult.albums.length }
+    : null;
 
   // Определяем данные в зависимости от категории
+  // Для категории "All" используем данные из общего поиска, но объединяем с кэшем
   const getDataForCategory = (): SearchResultDTO | null => {
     if (!shouldSearch) return null;
 
     switch (selectedCategory) {
-      case 'All':
-        return searchData || null;
+      case 'All': {
+        // Для "All" используем данные из общего поиска, если они есть и соответствуют текущему запросу
+        // Если данных из API еще нет, показываем кэш из отдельных хуков
+        if (searchData && searchData.query === debouncedSearchQuery) {
+          // Данные из API соответствуют текущему запросу - используем их
+          // Объединяем с кэшем из отдельных хуков для полноты
+          const hasCache = tracksData || playlistsData || artistsData || usersData || albumsData;
+          
+          if (hasCache) {
+            // Объединяем результаты из API с кэшем, приоритет у данных из API
+            return {
+              query: debouncedSearchQuery,
+              totalResults: searchData.totalResults,
+              tracks: searchData.tracks || tracksData || undefined,
+              albums: searchData.albums || albumsData || undefined,
+              playlists: searchData.playlists || playlistsData || undefined,
+              artists: searchData.artists || artistsData || undefined,
+              users: searchData.users || usersData || undefined,
+            };
+          }
+          
+          // Если кэша нет, используем только данные из API
+          return searchData;
+        }
+        
+        // Если данных из API нет или они не соответствуют текущему запросу, показываем кэш
+        const hasCache = tracksData || playlistsData || artistsData || usersData || albumsData;
+        if (hasCache) {
+          return {
+            query: debouncedSearchQuery,
+            totalResults: (tracksData?.total || 0) + (albumsData?.total || 0) + (playlistsData?.total || 0) + (artistsData?.total || 0) + (usersData?.total || 0),
+            tracks: tracksData || undefined,
+            albums: albumsData || undefined,
+            playlists: playlistsData || undefined,
+            artists: artistsData || undefined,
+            users: usersData || undefined,
+          };
+        }
+        
+        return null;
+      }
       case 'Radio':
         return tracksData ? { query: debouncedSearchQuery, totalResults: tracksData.total, tracks: tracksData } : null;
       case 'Playlists':
@@ -107,12 +139,12 @@ export const Search: React.FC = () => {
   };
 
   const currentData = getDataForCategory();
-  const isLoading =
-    isSearchLoading ||
-    isTracksLoading ||
-    isPlaylistsLoading ||
-    isArtistsLoading ||
-    isUsersLoading;
+  const isLoading = isSearchLoading || 
+    tracksResult.isLoading || 
+    playlistsResult.isLoading || 
+    artistsResult.isLoading || 
+    usersResult.isLoading ||
+    albumsResult.isLoading;
 
   // Обработчики кликов
   const handleTrackClick = useCallback(async (track: TrackSearchItemDTO) => {
@@ -335,15 +367,9 @@ export const Search: React.FC = () => {
       {isLoading && shouldSearch && (
         <div className={styles.loading}>Loading...</div>
       )}
-      {searchError && (
+      {(searchError || tracksResult.error || playlistsResult.error || artistsResult.error || usersResult.error) && (
         <div className={styles.error}>
-          Error:{' '}
-          {searchError &&
-          'data' in searchError &&
-          searchError.data &&
-          'message' in searchError.data
-            ? searchError.data.message
-            : 'Failed to search'}
+          Error: Failed to search
         </div>
       )}
       {!shouldSearch && (

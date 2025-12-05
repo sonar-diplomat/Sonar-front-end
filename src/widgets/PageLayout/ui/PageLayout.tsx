@@ -40,7 +40,7 @@ export const PageLayout = () => {
         <Outlet />
       </div>
       <div className={styles.fixedBottomBars}>
-          {currentTrack && isPlaying && (
+          {currentTrack && (
               <MicroPlayer
                   duration={duration}
                   currentTime={currentTime}
