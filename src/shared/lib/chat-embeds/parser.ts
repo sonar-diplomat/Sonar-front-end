@@ -40,17 +40,17 @@ const EMBED_RULES: EmbedRule[] = [
   },
   {
     type: 'album',
-    pattern: /^\/collection\/(\d+)/,
+    pattern: /^\/album\/(\d+)/,
     extractId: (url) => {
-      const match = url.pathname.match(/^\/collection\/(\d+)/);
+      const match = url.pathname.match(/^\/album\/(\d+)/);
       return match ? parseInt(match[1], 10) : null;
     },
   },
   {
     type: 'playlist',
-    pattern: /^\/collection\/(\d+)/,
+    pattern: /^\/playlist\/(\d+)/,
     extractId: (url) => {
-      const match = url.pathname.match(/^\/collection\/(\d+)/);
+      const match = url.pathname.match(/^\/playlist\/(\d+)/);
       return match ? parseInt(match[1], 10) : null;
     },
   },

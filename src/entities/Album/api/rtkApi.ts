@@ -90,7 +90,7 @@ export const albumApi = rtkApi.injectEndpoints({
       query: (albumId) => ({
         url: API_ENDPOINTS.album.tracks(albumId),
         method: 'GET',
-        withAuth: true,
+        withAuth: false,
       }),
       providesTags: (_result, _error, albumId) => [{ type: 'Album', id: albumId }, { type: 'Track', id: 'LIST' }],
     }),
@@ -99,7 +99,7 @@ export const albumApi = rtkApi.injectEndpoints({
       query: (albumId) => ({
         url: API_ENDPOINTS.album.byId(albumId),
         method: 'GET',
-        withAuth: true,
+        withAuth: false,
       }),
       providesTags: (_result, _error, albumId) => [{ type: 'Album', id: albumId }],
     }),

@@ -141,7 +141,6 @@
   color: inherit;
 }
 
-/* Skeleton */
 
 .loadingSkeleton {
   width: 100%;
@@ -197,7 +196,6 @@
   }
 }
 
-/* Линк, если показываешь просто URL */
 
 .fallbackLink {
   color: var(--input-helper-link, #4a9eff);
@@ -210,11 +208,10 @@
   text-decoration: underline;
 }
 
-/* Адаптив под узкие экраны */
 
 @media (max-width: 480px) {
   .embed {
-    padding: 16px;
+    padding: 5px;
     gap: 14px;
     max-width: 100%;
   }
