@@ -22,7 +22,7 @@ function getFrontendDomain(): string {
   try {
     return normalizeDomain(FRONTEND_BASE_URL);
   } catch {
-    return 'sonar.pp.ua';
+    return 'sonar-dev.pp.ua';
   }
 }
 
