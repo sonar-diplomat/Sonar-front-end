@@ -49,10 +49,15 @@ export const AlbumEmbed: React.FC<AlbumEmbedProps> = ({ albumId, url }) => {
   return (
     <div className={styles.embed} onClick={handleClick} role="button" tabIndex={0}>
       <div className={styles.type}>Album</div>
-      <div
-        className={styles.cover}
-        style={{ backgroundImage: coverImageUrl ? `url(${coverImageUrl})` : 'none' }}
-      />
+      <div className={styles.cover}>
+        {coverImageUrl && (
+          <img
+            src={coverImageUrl}
+            alt={album.name}
+            className={styles.coverImage}
+          />
+        )}
+      </div>
       <div className={styles.content}>
         <div className={styles.titleRow}>
           <span className={styles.title}>{album.name}</span>

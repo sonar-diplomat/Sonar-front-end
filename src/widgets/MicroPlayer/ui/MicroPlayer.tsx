@@ -5,6 +5,7 @@ import { useToggleTrackFavoriteMutation } from '@entities/Music/api/rtkApi';
 import { usePlayer } from '@shared/store/features/player';
 import { useAudioSeek } from '@shared/lib/audio';
 import { getArtistNames } from '@widgets/MiniPlayer/lib/utils';
+import { getImageUrlById } from '@shared/lib/image-utils';
 import { PlayIcon, PauseIcon, NextIcon, HeartIcon } from '@shared/ui';
 
 export const MicroPlayer = () => {
@@ -29,10 +30,10 @@ export const MicroPlayer = () => {
 
     const [toggleFavoriteApi, { isLoading: togglingFavorite }] = useToggleTrackFavoriteMutation();
 
-    const coverUrl = useMemo(() =>
-            currentTrack ? currentTrack.cover?.url : undefined,
-        [currentTrack]
-    );
+    const coverUrl = useMemo(() => {
+        if (!currentTrack) return undefined;
+        return currentTrack.cover?.url || getImageUrlById(currentTrack.coverId);
+    }, [currentTrack]);
 
     const artistName = useMemo(() => {
         return currentTrack ? getArtistNames(currentTrack) : '';
