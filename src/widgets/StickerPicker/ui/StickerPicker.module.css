@@ -93,12 +93,6 @@
   word-break: break-word;
 }
 
-.loading {
-  padding: 48px 24px;
-  text-align: center;
-  color: var(--input-placeholder, #8b8b8b);
-  font-size: 14px;
-}
 
 .emptyState {
   display: flex;

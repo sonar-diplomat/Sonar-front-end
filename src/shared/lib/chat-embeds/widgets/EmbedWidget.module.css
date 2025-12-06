@@ -142,59 +142,6 @@
 }
 
 
-.loadingSkeleton {
-  width: 100%;
-  height: 450px;
-  min-height: 450px;
-  border-radius: 14px;
-  background: linear-gradient(
-    120deg,
-    var(--input-bg, #262626),
-    #303030,
-    var(--input-bg, #262626)
-  );
-  background-size: 200% 100%;
-  animation: skeletonWave 1.3s ease-in-out infinite;
-}
-
-.loadingContent {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.loadingLine,
-.loadingLineShort {
-  border-radius: 999px;
-  background: linear-gradient(
-    120deg,
-    var(--input-bg, #262626),
-    #303030,
-    var(--input-bg, #262626)
-  );
-  background-size: 200% 100%;
-  animation: skeletonWave 1.3s ease-in-out infinite;
-}
-
-.loadingLine {
-  height: 14px;
-  width: 80%;
-}
-
-.loadingLineShort {
-  height: 12px;
-  width: 55%;
-}
-
-@keyframes skeletonWave {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
 
 
 .fallbackLink {
@@ -216,8 +163,7 @@
     max-width: 100%;
   }
 
-  .cover,
-  .loadingSkeleton {
+  .cover {
     height: 320px;
     min-height: 320px;
   }

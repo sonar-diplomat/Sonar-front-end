@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGetChatStickersQuery } from '@entities/ChatSticker';
 import { getImageUrlById } from '@shared/lib/image-utils';
+import { LoadingPlaceholder } from '@shared/ui';
 import styles from './StickerMessage.module.css';
 
 export interface StickerMessageProps {
@@ -16,7 +17,7 @@ export const StickerMessage: React.FC<StickerMessageProps> = ({ stickerId }) => 
   if (isLoading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loadingSkeleton} />
+        <LoadingPlaceholder variant="skeleton" size="large" style={{ width: '200px', height: '200px' }} />
       </div>
     );
   }

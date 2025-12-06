@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetAlbumQuery } from '@entities/Album/api/rtkApi';
 import { API_BASE_URL, API_ENDPOINTS } from '@shared/config';
+import { LoadingPlaceholder } from '@shared/ui';
 import styles from './EmbedWidget.module.css';
 
 export interface AlbumEmbedProps {
@@ -21,10 +22,10 @@ export const AlbumEmbed: React.FC<AlbumEmbedProps> = ({ albumId, url }) => {
   if (isLoading) {
     return (
       <div className={styles.embed}>
-        <div className={styles.loadingSkeleton} />
-        <div className={styles.loadingContent}>
-          <div className={styles.loadingLine} />
-          <div className={styles.loadingLineShort} />
+        <LoadingPlaceholder variant="skeleton" size="medium" className={styles.cover} />
+        <div className={styles.content}>
+          <LoadingPlaceholder variant="skeleton" size="small" />
+          <LoadingPlaceholder variant="skeleton" size="small" style={{ width: '60%', marginTop: '8px' }} />
         </div>
       </div>
     );

@@ -3,6 +3,7 @@ import { useGetAlbumQuery } from '@entities/Album/api/rtkApi';
 import { useGetPlaylistQuery } from '@entities/Playlist/api/rtkApi';
 import { AlbumEmbed } from './AlbumEmbed';
 import { PlaylistEmbed } from './PlaylistEmbed';
+import { LoadingPlaceholder } from '@shared/ui';
 import styles from './EmbedWidget.module.css';
 
 export interface CollectionEmbedProps {
@@ -31,10 +32,10 @@ export const CollectionEmbed: React.FC<CollectionEmbedProps> = ({ collectionId, 
   if (albumQuery.isLoading || playlistQuery.isLoading) {
     return (
       <div className={styles.embed}>
-        <div className={styles.loadingSkeleton} />
-        <div className={styles.loadingContent}>
-          <div className={styles.loadingLine} />
-          <div className={styles.loadingLineShort} />
+        <LoadingPlaceholder variant="skeleton" size="medium" className={styles.cover} />
+        <div className={styles.content}>
+          <LoadingPlaceholder variant="skeleton" size="small" />
+          <LoadingPlaceholder variant="skeleton" size="small" style={{ width: '60%', marginTop: '8px' }} />
         </div>
       </div>
     );
