@@ -26,11 +26,13 @@ export const SearchFilterHeader: React.FC<SearchFilterHeaderProps> = ({
             <div className={styles.title}>
                 {title}
             </div>
-            <SearchBar 
-                placeholder={searchPlaceholder}
-                value={searchValue}
-                onSearch={onSearch}
-            />
+            <div className={styles.searchWrapper}>
+                <SearchBar 
+                    placeholder={searchPlaceholder}
+                    value={searchValue}
+                    onSearch={onSearch}
+                />
+            </div>
             <ChipsBar
                 selectedCategory={selectedCategory}
                 onCategoryChange={onCategoryChange}

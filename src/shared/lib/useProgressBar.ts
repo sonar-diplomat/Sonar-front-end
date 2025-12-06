@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
+import { flushSync } from 'react-dom';
 
 export interface UseProgressBarProps {
   currentTime: number;
@@ -11,6 +12,7 @@ export function useProgressBar({ currentTime, duration, onSeek }: UseProgressBar
   const [dragTime, setDragTime] = useState(0);
   const progressRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
+  const dragTimeRef = useRef(0);
 
   const calculateTime = useCallback((e: React.MouseEvent | MouseEvent): number => {
     if (!progressRef.current) return 0;
@@ -24,7 +26,11 @@ export function useProgressBar({ currentTime, duration, onSeek }: UseProgressBar
     (e: MouseEvent) => {
       if (!isDraggingRef.current) return;
       const time = calculateTime(e as unknown as React.MouseEvent);
-      setDragTime(time);
+      dragTimeRef.current = time;
+      // Используем flushSync для принудительной синхронизации обновления
+      flushSync(() => {
+        setDragTime(time);
+      });
     },
     [calculateTime]
   );
@@ -50,9 +56,13 @@ export function useProgressBar({ currentTime, duration, onSeek }: UseProgressBar
     e.stopPropagation();
 
     isDraggingRef.current = true;
-    setIsDragging(true);
     const time = calculateTime(e);
-    setDragTime(time);
+    dragTimeRef.current = time;
+    // Используем flushSync для принудительной синхронизации обновления
+    flushSync(() => {
+      setIsDragging(true);
+      setDragTime(time);
+    });
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);

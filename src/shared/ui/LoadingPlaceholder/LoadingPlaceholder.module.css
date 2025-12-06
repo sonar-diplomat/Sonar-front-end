@@ -1,0 +1,86 @@
+.spinnerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px 16px;
+}
+
+.spinnerContainer.fullWidth {
+  width: 100%;
+  min-height: 200px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--input-text, #ffffff);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.text {
+  font-size: 14px;
+  color: var(--input-label-color, #999999);
+  margin: 0;
+  text-align: center;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.skeleton {
+  position: relative;
+  background-color: var(--input-bg, rgba(255, 255, 255, 0.05));
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.skeleton.fullWidth {
+  width: 100%;
+}
+
+.skeleton.small {
+  height: 20px;
+  min-width: 60px;
+}
+
+.skeleton.medium {
+  height: 40px;
+  min-width: 100px;
+}
+
+.skeleton.large {
+  height: 60px;
+  min-width: 150px;
+}
+
+.skeletonShimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+

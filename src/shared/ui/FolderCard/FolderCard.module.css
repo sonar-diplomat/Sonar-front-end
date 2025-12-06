@@ -102,3 +102,22 @@
 .folderWrapper:focus-within .layer2 {
     transform: translateX(-50%) translateY(-1px);
 }
+
+.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+    transform: scale(0.95);
+}
+
+.draggingOver {
+    border: 2px solid #4CAF50;
+    border-radius: 16px;
+    background-color: rgba(76, 175, 80, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+.draggingOver .layer1,
+.draggingOver .layer2,
+.draggingOver .layer3 {
+    background-color: rgba(76, 175, 80, 0.2);
+}

@@ -7,8 +7,11 @@ import {Button, FolderCard, ItemCard, PlusIcon, LeftArrow} from "@shared/ui";
 import type {Category} from "@widgets/ChipsBar";
 import {ContentSections, type ContentSection} from "@widgets/ContentSections";
 import {SearchFilterHeader} from "@widgets/SearchFilterHeader";
-import { useGetFoldersQuery, useGetFolderQuery } from '@shared/api';
+import {LibrarySkeleton} from "@widgets/LibrarySkeleton";
 import { getImageUrlById } from '@shared/lib/image-utils';
+import { useFolders, useFolder } from '@shared/store/features/library/useLibrary';
+import { useAddCollectionToFolderMutation, useMoveFolderMutation } from '@entities/Library/api/rtkApi';
+import type { DraggedItem } from '@shared/ui/FolderCard/FolderCard.types';
 
 import styles from './Library.module.css';
 
@@ -18,14 +21,21 @@ export const Library: React.FC<LibraryProps> = () => {
     const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);
 
     // Загрузка данных для корневой папки (когда currentFolderId === null)
-    const { data: foldersData, isLoading: foldersLoading, refetch: refetchFolders } = useGetFoldersQuery(undefined, {
-        skip: currentFolderId !== null,
-    });
+    const { folders: foldersData, isLoading: foldersLoading, refetchFolders, isDirty } = useFolders();
 
     // Загрузка данных для конкретной папки (когда currentFolderId !== null)
-    const { data: folderData, isLoading: folderLoading, error: folderError } = useGetFolderQuery(currentFolderId!, {
-        skip: currentFolderId === null,
-    });
+    const { folder: folderData, isLoading: folderLoading, error: folderError } = useFolder(currentFolderId);
+
+    // API мутации для drag-and-drop
+    const [addCollectionToFolder] = useAddCollectionToFolderMutation();
+    const [moveFolder] = useMoveFolderMutation();
+
+    // Автоматически обновляем данные при возврате на страницу, если библиотека помечена как "грязная"
+    useEffect(() => {
+        if (isDirty && !foldersLoading && currentFolderId === null) {
+            void refetchFolders();
+        }
+    }, [isDirty, foldersLoading, currentFolderId, refetchFolders]);
 
     const [folders, setFolders] = useState<Folder[]>([]);
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
@@ -120,11 +130,7 @@ export const Library: React.FC<LibraryProps> = () => {
         }
     }, [folderData, currentFolderId, folderLoading, folderError]);
 
-    useEffect(() => {
-        if (currentFolderId === null) {
-            void refetchFolders();
-        }
-    }, [refetchFolders, currentFolderId]);
+    // Удален useEffect с refetchFolders, так как теперь запросы управляются через isDirty флаг
 
     const handleFolderClick = useCallback((folder: Folder) => {
         setCurrentFolderId(Number(folder.id));
@@ -147,6 +153,61 @@ export const Library: React.FC<LibraryProps> = () => {
         });
     }, [navigate, selectedCategory, currentFolderId]);
 
+    // Вспомогательная функция для проверки, является ли папка дочерней (рекурсивно)
+    const isChildFolder = useCallback((parentFolderId: number, childFolderId: number, allFolders: typeof foldersData): boolean => {
+        if (!allFolders) return false;
+        
+        const parentFolder = allFolders.find(f => f.id === parentFolderId);
+        if (!parentFolder) return false;
+        
+        // Проверяем прямых потомков
+        if (parentFolder.subFolders.some(sf => sf.id === childFolderId)) {
+            return true;
+        }
+        
+        // Рекурсивно проверяем всех потомков
+        return parentFolder.subFolders.some(subFolder => {
+            const fullSubFolder = allFolders.find(f => f.id === subFolder.id);
+            if (fullSubFolder) {
+                return isChildFolder(fullSubFolder.id, childFolderId, allFolders);
+            }
+            return false;
+        });
+    }, []);
+
+    const handleDrop = useCallback(async (draggedItem: DraggedItem, targetFolderId: number) => {
+        // Предотвращаем перетаскивание папки в саму себя
+        if (draggedItem.type === 'folder' && draggedItem.id === targetFolderId) {
+            console.warn('Cannot move folder into itself');
+            return;
+        }
+
+        // Предотвращаем циклические ссылки - проверяем, что целевая папка не является дочерней
+        if (draggedItem.type === 'folder' && foldersData) {
+            if (isChildFolder(draggedItem.id, targetFolderId, foldersData)) {
+                console.warn('Cannot move folder into its child folder');
+                return;
+            }
+        }
+
+        try {
+            if (draggedItem.type === 'collection') {
+                await addCollectionToFolder({
+                    folderId: targetFolderId,
+                    collectionId: draggedItem.id,
+                }).unwrap();
+            } else if (draggedItem.type === 'folder') {
+                await moveFolder({
+                    folderId: draggedItem.id,
+                    newParentFolderId: targetFolderId,
+                }).unwrap();
+            }
+        } catch (error) {
+            console.error('Error during drag-and-drop:', error);
+            // TODO: Показать уведомление об ошибке пользователю
+        }
+    }, [addCollectionToFolder, moveFolder, foldersData, isChildFolder]);
+
     const sections = useMemo<ContentSection[]>(() => [
         {
             id: 'folders',
@@ -154,13 +215,16 @@ export const Library: React.FC<LibraryProps> = () => {
             countLabel: 'folders',
             shouldShow: selectedCategory === 'All',
             items: folders,
-            renderItem: (folder: Folder) => (
-                <FolderCard
-                    key={folder.id}
-                    label={folder.name}
-                    onClick={() => handleFolderClick(folder)}
-                />
-            )
+            renderItem: (folder: unknown) => {
+                const folderItem = folder as Folder;
+                return (
+                    <FolderCard
+                        key={folderItem.id}
+                        label={folderItem.name}
+                        onClick={() => handleFolderClick(folderItem)}
+                    />
+                );
+            }
         },
         {
             id: 'playlists',
@@ -168,19 +232,21 @@ export const Library: React.FC<LibraryProps> = () => {
             countLabel: 'playlists',
             shouldShow: selectedCategory === 'All' || selectedCategory === 'Playlists',
             items: playlists,
-            renderItem: (playlist: Playlist) => (
-                <ItemCard
-                    key={playlist.id}
-                    image={playlist.coverImage}
-                    textContent={{
-                        title: playlist.name,
-                        subtitle1: playlist.description
-                    }}
-                    to={`/collection/${playlist.id}`}
-                    state={{ collectionType: playlist.type || 'Playlist' }}
-                    onClick={() => handlePlaylistClick(playlist)}
-                />
-            )
+            renderItem: (playlist: unknown) => {
+                const playlistItem = playlist as Playlist;
+                return (
+                    <ItemCard
+                        key={playlistItem.id}
+                        image={playlistItem.coverImage}
+                        textContent={{
+                            title: playlistItem.name,
+                            subtitle1: playlistItem.description
+                        }}
+                        to={`/playlist/${playlistItem.id}`}
+                        onClick={() => handlePlaylistClick(playlistItem)}
+                    />
+                );
+            }
         }
     ], [selectedCategory, folders, playlists, handleFolderClick, handlePlaylistClick]);
 
@@ -223,7 +289,11 @@ export const Library: React.FC<LibraryProps> = () => {
             >
                 Create New
             </Button>
-            <ContentSections sections={sections} />
+            {isLoading ? (
+                <LibrarySkeleton />
+            ) : (
+                <ContentSections sections={sections} />
+            )}
         </div>
     );
 };

@@ -35,6 +35,9 @@ export const searchApi = rtkApi.injectEndpoints({
         },
         withAuth: false, // Опционально для некоторых категорий
       }),
+      serializeQueryArgs: ({ queryArgs }) => {
+        return `search_${queryArgs.query}_${queryArgs.category || 'All'}_${queryArgs.limit || 20}_${queryArgs.offset || 0}`;
+      },
     }),
 
     // Search by category
@@ -49,6 +52,10 @@ export const searchApi = rtkApi.injectEndpoints({
         },
         withAuth: false,
       }),
+      serializeQueryArgs: ({ queryArgs }) => {
+        // Правильная сериализация ключа запроса для уникальности
+        return `searchTracks_${queryArgs.query}_${queryArgs.limit || 20}_${queryArgs.offset || 0}`;
+      },
     }),
 
     searchAlbums: builder.query<SearchAlbumsResultDTO, SearchAlbumsParams>({
@@ -62,6 +69,9 @@ export const searchApi = rtkApi.injectEndpoints({
         },
         withAuth: false,
       }),
+      serializeQueryArgs: ({ queryArgs }) => {
+        return `searchAlbums_${queryArgs.query}_${queryArgs.limit || 20}_${queryArgs.offset || 0}`;
+      },
     }),
 
     searchPlaylists: builder.query<SearchPlaylistsResultDTO, SearchPlaylistsParams>({
@@ -75,6 +85,9 @@ export const searchApi = rtkApi.injectEndpoints({
         },
         withAuth: false,
       }),
+      serializeQueryArgs: ({ queryArgs }) => {
+        return `searchPlaylists_${queryArgs.query}_${queryArgs.limit || 20}_${queryArgs.offset || 0}`;
+      },
     }),
 
     searchArtists: builder.query<SearchArtistsResultDTO, SearchArtistsParams>({
@@ -88,6 +101,9 @@ export const searchApi = rtkApi.injectEndpoints({
         },
         withAuth: false,
       }),
+      serializeQueryArgs: ({ queryArgs }) => {
+        return `searchArtists_${queryArgs.query}_${queryArgs.limit || 20}_${queryArgs.offset || 0}`;
+      },
     }),
 
     searchUsers: builder.query<SearchUsersResultDTO, SearchUsersParams>({
@@ -101,6 +117,9 @@ export const searchApi = rtkApi.injectEndpoints({
         },
         withAuth: false,
       }),
+      serializeQueryArgs: ({ queryArgs }) => {
+        return `searchUsers_${queryArgs.query}_${queryArgs.limit || 20}_${queryArgs.offset || 0}`;
+      },
     }),
 
     // Search suggestions

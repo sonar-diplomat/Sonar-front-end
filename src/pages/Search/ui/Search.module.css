@@ -6,7 +6,6 @@
     padding: 8px;
 }
 
-.loading,
 .error,
 .emptyState {
     display: flex;

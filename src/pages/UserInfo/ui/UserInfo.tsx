@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Checkbox, ProfileIcon, Info, PlusIcon, ErrorIcon } from '@shared/ui';
+import { Checkbox, ProfileIcon, Info, PlusIcon, ErrorIcon, LoadingPlaceholder } from '@shared/ui';
 import { 
     useGetChatInfoQuery,
     useLeaveChatMutation,
@@ -42,8 +42,7 @@ export const UserInfo: React.FC = () => {
         return (
             <div className={styles.container}>
                 <div className={styles.emptyState}>
-                    <div className={styles.loadingSpinner}></div>
-                    <p className={styles.emptyText}>Loading chat info...</p>
+                    <LoadingPlaceholder variant="spinner" text="Loading chat info..." />
                 </div>
             </div>
         );

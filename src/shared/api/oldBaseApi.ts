@@ -1,5 +1,5 @@
 // src/shared/api/oldBaseApi.ts
-import { API_BASE_URL } from '@shared/config';
+import { API_BASE_URL, MEDIA_BASE_URL } from '@shared/config';
 import type {
     ApiResponse,
     NormalizedApiResponse,
@@ -10,12 +10,6 @@ import { normalizeResponse } from '@shared/types/api';
 import { authManager } from '@shared/lib/auth/auth-manager';
 
 import { toSearchParams } from './params-utils';
-
-/**
- * Base URL for blob and stream endpoints
- * Используется отдельный домен для медиа-контента
- */
-const MEDIA_BASE_URL = 'https://sonar.pp.ua/api/';
 
 /**
  * Проверяет, является ли endpoint медиа-контентом (blob или stream)

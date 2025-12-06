@@ -37,10 +37,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             value={currentValue}
             onChange={handleChange}
             type="search"
-            icon={showClear ? <ClearIcon /> : <SearchIcon />}
+            icon={<SearchIcon />}
             iconPosition="suffix"
-            iconClickable={showClear}
-            onIconClick={showClear ? handleClear : undefined}
+            iconClickable={false}
             {...props}
         />
     );

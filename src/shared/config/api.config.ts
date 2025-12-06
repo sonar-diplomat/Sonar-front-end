@@ -1,6 +1,11 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
 //export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sonar.pp.ua/api/';
 
+export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://localhost:7124/api/';
+//export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://sonar.pp.ua/api/';
+
+export const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || 'https://sonar.pp.ua';
+
 export const API_ENDPOINTS = {
     auth: {
         register: 'Auth/register',
@@ -89,6 +94,7 @@ export const API_ENDPOINTS = {
         updateVisibility: (playlistId: number) => `Playlist/${playlistId}/visibility`,
     },
     album: {
+        byId: (albumId: number) => `Album/${albumId}`,
         upload: 'Album',
         delete: (albumId: number) => `Album/${albumId}`,
         updateName: (albumId: number) => `Album/${albumId}/name`,
@@ -131,6 +137,7 @@ export const API_ENDPOINTS = {
         create: 'Chat',
         sendMessage: (chatId: number) => `Chat/${chatId}/send`,
         deleteMessage: (messageId: number) => `Chat/message/${messageId}`,
+        editMessage: (messageId: number) => `Chat/message/${messageId}`,
         getMessage: (messageId: number) => `Chat/message/${messageId}`,
         getInfo: (chatId: number) => `Chat/${chatId}/info`,
         getMessages: (chatId: number) => `Chat/${chatId}/messages`,
@@ -141,6 +148,9 @@ export const API_ENDPOINTS = {
         updateName: (chatId: number) => `Chat/${chatId}/name`,
         readMessages: (chatId: number) => `Chat/${chatId}/read`,
         readAllMessages: (chatId: number) => `Chat/${chatId}/read-all`,
+    },
+    chatSticker: {
+        list: 'ChatSticker',
     },
     folder: {
         byId: (folderId: number) => `Folder/${folderId}`,

@@ -9,6 +9,8 @@ export interface ItemCardProps {
     size?: ItemCardSize;
     to?: string;
     state?: Record<string, unknown>;
+    collectionId?: number;
+    collectionName?: string;
 }
 
 export interface ItemCardTextContent {
