@@ -15,9 +15,10 @@ class SignalRManager {
       return '/hubs/chat';
     }
     
-    // Используем API_BASE_URL из конфига, который уже содержит правильный путь с /api/
-    // Hub доступен по пути /api/hubs/chat (с префиксом /api/)
-    return `${API_BASE_URL}hubs/chat`;
+    // Hub замаплен на /hubs/chat (БЕЗ /api/) на бэкенде
+    // Используем базовый URL без /api/
+    const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
+    return `${baseUrl}/hubs/chat`;
   }
 
   private createConnection(): HubConnection {
