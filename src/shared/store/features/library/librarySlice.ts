@@ -52,9 +52,27 @@ const librarySlice = createSlice({
     builder.addMatcher(
       libraryApi.endpoints.getFolders.matchFulfilled,
       (state, action) => {
-        state.foldersList = action.payload;
-        state.isDirty = false;
-        state.lastUpdated = Date.now();
+        // Убеждаемся, что payload является массивом
+        if (Array.isArray(action.payload)) {
+          state.foldersList = action.payload;
+          state.isDirty = false;
+          state.lastUpdated = Date.now();
+        } else {
+          console.error('[librarySlice] getFolders returned non-array data:', {
+            type: typeof action.payload,
+            isArray: Array.isArray(action.payload),
+            payload: action.payload,
+          });
+          // Пытаемся извлечь массив из объекта, если данные обернуты
+          if (action.payload && typeof action.payload === 'object' && 'data' in action.payload && Array.isArray(action.payload.data)) {
+            console.warn('[librarySlice] Extracting array from wrapped response');
+            state.foldersList = action.payload.data;
+            state.isDirty = false;
+            state.lastUpdated = Date.now();
+          } else {
+            state.foldersList = null;
+          }
+        }
       }
     );
 

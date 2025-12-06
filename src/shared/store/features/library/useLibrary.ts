@@ -31,11 +31,14 @@ export const useFolders = () => {
   // Когда запрос завершится, extraReducers обновит кэш и данные обновятся автоматически
   const folders = useMemo(() => {
     // Если есть данные в кэше, показываем их (даже во время загрузки)
-    if (foldersList) {
+    if (foldersList && Array.isArray(foldersList)) {
       return foldersList;
     }
-    // Если кэша нет, показываем данные из запроса
-    return foldersData || null;
+    // Если кэша нет, показываем данные из запроса, но только если это массив
+    if (foldersData && Array.isArray(foldersData)) {
+      return foldersData;
+    }
+    return null;
   }, [foldersList, foldersData]);
 
   return {
