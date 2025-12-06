@@ -39,8 +39,8 @@ jobs:
       - name: "[5/6] Build and push frontend image to ECR"
         uses: docker/build-push-action@v6
         with:
-          context: Sonar-front-end
-          file: Sonar-front-end/Dockerfile
+          context: .
+          file: ./Dockerfile
           push: true
           build-args: |
             VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
