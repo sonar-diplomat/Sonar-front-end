@@ -15,7 +15,7 @@ class SignalRManager {
     }
     
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
-    return `${apiBaseUrl}/hubs/chat`;
+    return `${apiBaseUrl}hubs/chat`;
   }
 
   private createConnection(): HubConnection {
