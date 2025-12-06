@@ -67,7 +67,6 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 onClick={hasAction ? handleClick : undefined}
                 style={{
                     backgroundColor: image ? 'transparent' : backgroundColor,
-                    backgroundImage: image ? `url(${image})` : undefined,
                 }}
                 role={hasAction ? 'button' : undefined}
                 tabIndex={hasAction ? 0 : undefined}
@@ -75,7 +74,15 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 draggable={isDraggable}
                 onDragStart={isDraggable ? handleDragStart : undefined}
                 onDragEnd={isDraggable ? handleDragEnd : undefined}
-            />
+            >
+                {image && (
+                    <img
+                        src={image}
+                        alt={textContent?.title || ''}
+                        className={styles.cardImage}
+                    />
+                )}
+            </div>
             {textContent && (
                 <div className={`${styles.textContent} ${styles[`textContent_${size}`]}`}>
                     <h3 className={styles.title}>{textContent.title}</h3>

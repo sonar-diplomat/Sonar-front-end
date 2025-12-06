@@ -16,14 +16,14 @@ export const CollectionCover: React.FC<CollectionCoverProps> = ({
     ].filter(Boolean).join(' ');
 
     return (
-        <div
-            className={wrapperClasses}
-            style={{
-                backgroundImage: imageSrc ? `url(${imageSrc})` : undefined,
-            }}
-            role="img"
-            aria-label={imageAlt}
-        >
+        <div className={wrapperClasses}>
+            {imageSrc && (
+                <img
+                    src={imageSrc}
+                    alt={imageAlt}
+                    className={styles.coverImage}
+                />
+            )}
             <div className={styles.playControls}>
                 <div className={styles.leftControls}>
                     {onPlayClick && (

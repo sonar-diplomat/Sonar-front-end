@@ -63,10 +63,12 @@ export const ArtistMessageCard: React.FC<ArtistMessageCardProps> = ({
         <div className={styles.card}>
             {/* Track Preview (if exists) */}
             {message.track && (
-                <div
-                    className={styles.trackPreview}
-                    style={{ backgroundImage: `url(${message.track.coverImage})` }}
-                >
+                <div className={styles.trackPreview}>
+                    <img
+                        src={message.track.coverImage}
+                        alt={message.track.title}
+                        className={styles.trackImage}
+                    />
                     <div className={styles.trackOverlay}>
                         <Button
                             variant="text"

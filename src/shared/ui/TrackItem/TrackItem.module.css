@@ -20,9 +20,9 @@
     height: 44px;
     border-radius: 16px;
     background-color: #898989;
-    background-size: cover;
-    background-position: center;
     flex-shrink: 0;
+    object-fit: cover;
+    object-position: center;
 }
 
 .textContainer {
