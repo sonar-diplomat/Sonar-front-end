@@ -11,7 +11,6 @@ export interface ReportComponentProps {
   isModal?: boolean;
   onSuccess?: () => void;
   onCancel?: () => void;
-  title?: string;
   description?: string;
 }
 
@@ -21,7 +20,6 @@ export const ReportComponent: React.FC<ReportComponentProps> = ({
   isModal = false,
   onSuccess,
   onCancel,
-  title = 'Report Content',
   description = 'Help us keep Sonar safe. Select the reason(s) why you\'re reporting this content.',
 }) => {
   const [createReport, { isLoading: isSubmitting }] = useCreateReportMutation();
@@ -65,7 +63,6 @@ export const ReportComponent: React.FC<ReportComponentProps> = ({
   const renderContent = () => (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h3 className={styles.title}>{title}</h3>
         <p className={styles.description}>{description}</p>
       </div>
 

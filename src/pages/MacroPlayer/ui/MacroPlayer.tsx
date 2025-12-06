@@ -99,7 +99,6 @@ export const MacroPlayer: React.FC = () => {
                     </div>
                 </div>
             </div>
-            {/*TODO Lyrics Section */}
 
             {/* What Next Section */}
             <div className={styles.whatNextSection}>

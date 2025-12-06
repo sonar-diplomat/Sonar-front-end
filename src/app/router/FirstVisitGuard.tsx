@@ -12,7 +12,6 @@ export const FirstVisitGuard: React.FC = () => {
         if (!hasVisited) {
             navigate('/hello', { replace: true });
         } else {
-
             navigate('/entry', { replace: true });
         }
     }, [navigate]);

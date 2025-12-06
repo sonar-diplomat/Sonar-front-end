@@ -52,6 +52,9 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    max-height: 230px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .reasonItem {
