@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 import { Message } from '@widgets/Message';
 import { SendInput } from '@widgets/SendInput';
-import { ErrorIcon, Modal, Button } from '@shared/ui';
+import { ErrorIcon, Modal, Button, LoadingPlaceholder } from '@shared/ui';
 import { DownArrow } from '@shared/ui/icons';
 import type { Message as MessageType } from '@entities/Chat/model/types/Message';
 import type { MessageDTO, MessageReadDTO } from '@entities/Chat/model/types';
@@ -733,8 +733,7 @@ export const Chat: React.FC = () => {
         return (
             <div className={styles.container}>
                 <div className={styles.emptyState}>
-                    <div className={styles.loadingSpinner}></div>
-                    <p className={styles.emptyText}>Loading chat...</p>
+                    <LoadingPlaceholder variant="spinner" text="Loading chat..." />
                 </div>
             </div>
         );

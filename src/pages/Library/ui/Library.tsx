@@ -7,6 +7,7 @@ import {Button, FolderCard, ItemCard, PlusIcon, LeftArrow} from "@shared/ui";
 import type {Category} from "@widgets/ChipsBar";
 import {ContentSections, type ContentSection} from "@widgets/ContentSections";
 import {SearchFilterHeader} from "@widgets/SearchFilterHeader";
+import {LibrarySkeleton} from "@widgets/LibrarySkeleton";
 import { getImageUrlById } from '@shared/lib/image-utils';
 import { useFolders, useFolder } from '@shared/store/features/library/useLibrary';
 import { useAddCollectionToFolderMutation, useMoveFolderMutation } from '@entities/Library/api/rtkApi';
@@ -214,15 +215,16 @@ export const Library: React.FC<LibraryProps> = () => {
             countLabel: 'folders',
             shouldShow: selectedCategory === 'All',
             items: folders,
-            renderItem: (folder: Folder) => (
-                <FolderCard
-                    key={folder.id}
-                    label={folder.name}
-                    folderId={Number(folder.id)}
-                    onClick={() => handleFolderClick(folder)}
-                    onDrop={(draggedItem) => handleDrop(draggedItem, Number(folder.id))}
-                />
-            )
+            renderItem: (folder: unknown) => {
+                const folderItem = folder as Folder;
+                return (
+                    <FolderCard
+                        key={folderItem.id}
+                        label={folderItem.name}
+                        onClick={() => handleFolderClick(folderItem)}
+                    />
+                );
+            }
         },
         {
             id: 'playlists',
@@ -230,20 +232,21 @@ export const Library: React.FC<LibraryProps> = () => {
             countLabel: 'playlists',
             shouldShow: selectedCategory === 'All' || selectedCategory === 'Playlists',
             items: playlists,
-            renderItem: (playlist: Playlist) => (
-                <ItemCard
-                    key={playlist.id}
-                    image={playlist.coverImage}
-                    textContent={{
-                        title: playlist.name,
-                        subtitle1: playlist.description
-                    }}
-                    to={`/playlist/${playlist.id}`}
-                    onClick={() => handlePlaylistClick(playlist)}
-                    collectionId={Number(playlist.id)}
-                    collectionName={playlist.name}
-                />
-            )
+            renderItem: (playlist: unknown) => {
+                const playlistItem = playlist as Playlist;
+                return (
+                    <ItemCard
+                        key={playlistItem.id}
+                        image={playlistItem.coverImage}
+                        textContent={{
+                            title: playlistItem.name,
+                            subtitle1: playlistItem.description
+                        }}
+                        to={`/playlist/${playlistItem.id}`}
+                        onClick={() => handlePlaylistClick(playlistItem)}
+                    />
+                );
+            }
         }
     ], [selectedCategory, folders, playlists, handleFolderClick, handlePlaylistClick]);
 
@@ -286,7 +289,11 @@ export const Library: React.FC<LibraryProps> = () => {
             >
                 Create New
             </Button>
-            <ContentSections sections={sections} />
+            {isLoading ? (
+                <LibrarySkeleton />
+            ) : (
+                <ContentSections sections={sections} />
+            )}
         </div>
     );
 };

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useDebounce } from '@shared/lib/hooks/useDebounce';
 import { getImageUrlById } from '@shared/lib/image-utils';
 import { useUserState } from '@shared/store/features/userState/useUserState';
-import { ItemCard } from '@shared/ui';
+import { ItemCard, LoadingPlaceholder } from '@shared/ui';
 import type { Category } from '@widgets/ChipsBar';
 import { ContentSections, type ContentSection } from '@widgets/ContentSections';
 import { SearchFilterHeader } from '@widgets/SearchFilterHeader';
@@ -199,46 +199,52 @@ export const Search: React.FC = () => {
           countLabel: 'tracks',
           shouldShow: selectedCategory === 'All' || selectedCategory === 'Radio',
           items: tracks,
-          renderItem: (track: TrackSearchItemDTO) => (
+          renderItem: (track: unknown) => {
+            const trackItem = track as TrackSearchItemDTO;
+            return (
             <ItemCard
               size="large"
-              key={track.id}
-              image={getImageUrlById(track.coverId)}
+              key={trackItem.id}
+              image={getImageUrlById(trackItem.coverId)}
               textContent={{
-                title: track.title,
-                subtitle1: track.artists.map((a) => a.pseudonym).join(', '),
-                subtitle2: track.albumName,
+                title: trackItem.title,
+                subtitle1: trackItem.artists.map((a) => a.pseudonym).join(', '),
+                subtitle2: trackItem.albumName,
               }}
-              onClick={() => handleTrackClick(track)}
+              onClick={() => handleTrackClick(trackItem)}
             />
-          ),
+            );
+          },
         });
       }
     }
 
     // Секция альбомов (только для All)
     if (selectedCategory === 'All' && currentData?.albums && currentData.albums.items.length > 0) {
-      result.push({
-        id: 'albums',
-        title: 'Albums',
-        countLabel: 'albums',
-        shouldShow: true,
-        items: currentData.albums.items,
-        renderItem: (album: AlbumSearchItemDTO) => (
-          <ItemCard
-            size="large"
-            key={album.id}
-            image={getImageUrlById(album.coverId)}
-            textContent={{
-              title: album.name,
-              subtitle1: album.authors.map((a) => a.pseudonym).join(', '),
-              subtitle2: `${album.trackCount} tracks`,
-            }}
-            to={`/album/${album.id}`}
-            onClick={() => handleAlbumClick(album)}
-          />
-        ),
-      });
+        result.push({
+          id: 'albums',
+          title: 'Albums',
+          countLabel: 'albums',
+          shouldShow: true,
+          items: currentData.albums.items,
+          renderItem: (album: unknown) => {
+            const albumItem = album as AlbumSearchItemDTO;
+            return (
+            <ItemCard
+              size="large"
+              key={albumItem.id}
+              image={getImageUrlById(albumItem.coverId)}
+              textContent={{
+                title: albumItem.name,
+                subtitle1: albumItem.authors.map((a) => a.pseudonym).join(', '),
+                subtitle2: `${albumItem.trackCount} tracks`,
+              }}
+              to={`/album/${albumItem.id}`}
+              onClick={() => handleAlbumClick(albumItem)}
+            />
+          );
+          },
+        });
     }
 
     // Секция плейлистов
@@ -255,20 +261,23 @@ export const Search: React.FC = () => {
           countLabel: 'playlists',
           shouldShow: selectedCategory === 'All' || selectedCategory === 'Playlists',
           items: playlists,
-          renderItem: (playlist: PlaylistSearchItemDTO) => (
+          renderItem: (playlist: unknown) => {
+            const playlistItem = playlist as PlaylistSearchItemDTO;
+            return (
             <ItemCard
               size="large"
-              key={playlist.id}
-              image={getImageUrlById(playlist.coverId)}
+              key={playlistItem.id}
+              image={getImageUrlById(playlistItem.coverId)}
               textContent={{
-                title: playlist.name,
-                subtitle1: `by ${playlist.creatorName}`,
-                subtitle2: `${playlist.trackCount} tracks`,
+                title: playlistItem.name,
+                subtitle1: `by ${playlistItem.creatorName}`,
+                subtitle2: `${playlistItem.trackCount} tracks`,
               }}
-              to={`/playlist/${playlist.id}`}
-              onClick={() => handlePlaylistClick(playlist)}
+              to={`/playlist/${playlistItem.id}`}
+              onClick={() => handlePlaylistClick(playlistItem)}
             />
-          ),
+            );
+          },
         });
       }
     }
@@ -287,18 +296,21 @@ export const Search: React.FC = () => {
           countLabel: 'artists',
           shouldShow: selectedCategory === 'All' || selectedCategory === 'Creators',
           items: artists,
-          renderItem: (artist: ArtistSearchItemDTO) => (
+          renderItem: (artist: unknown) => {
+            const artistItem = artist as ArtistSearchItemDTO;
+            return (
             <ItemCard
               size="large"
-              key={artist.id}
-              image={getImageUrlById(artist.avatarImageId)}
+              key={artistItem.id}
+              image={getImageUrlById(artistItem.avatarImageId)}
               textContent={{
-                title: artist.artistName,
-                subtitle1: `${artist.trackCount} tracks, ${artist.albumCount} albums`,
+                title: artistItem.artistName,
+                subtitle1: `${artistItem.trackCount} tracks, ${artistItem.albumCount} albums`,
               }}
-              onClick={() => handleArtistClick(artist)}
+              onClick={() => handleArtistClick(artistItem)}
             />
-          ),
+            );
+          },
         });
       }
     }
@@ -316,18 +328,21 @@ export const Search: React.FC = () => {
           countLabel: 'users',
           shouldShow: selectedCategory === 'All' || selectedCategory === 'Creators',
           items: users,
-          renderItem: (user: UserSearchItemDTO) => (
+          renderItem: (user: unknown) => {
+            const userItem = user as UserSearchItemDTO;
+            return (
             <ItemCard
               size="large"
-              key={user.id}
-              image={getImageUrlById(user.avatarImageId)}
+              key={userItem.id}
+              image={getImageUrlById(userItem.avatarImageId)}
               textContent={{
-                title: user.userName,
-                subtitle1: user.isArtist ? `Artist: ${user.artistName}` : user.publicIdentifier,
+                title: userItem.userName,
+                subtitle1: userItem.isArtist ? `Artist: ${userItem.artistName}` : userItem.publicIdentifier,
               }}
-              onClick={() => handleUserClick(user)}
+              onClick={() => handleUserClick(userItem)}
             />
-          ),
+            );
+          },
         });
       }
     }
@@ -363,7 +378,7 @@ export const Search: React.FC = () => {
         searchPlaceholder="Search for tracks, albums, playlists, artists..."
       />
       {isLoading && shouldSearch && (
-        <div className={styles.loading}>Loading...</div>
+        <LoadingPlaceholder variant="spinner" fullWidth />
       )}
       {(searchError || tracksResult.error || playlistsResult.error || artistsResult.error || usersResult.error) && (
         <div className={styles.error}>

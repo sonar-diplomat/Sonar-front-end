@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGetChatStickersQuery } from '@entities/ChatSticker';
 import { getImageUrlById } from '@shared/lib/image-utils';
+import { LoadingPlaceholder } from '@shared/ui';
 import styles from './StickerPicker.module.css';
 
 export interface StickerPickerProps {
@@ -20,7 +21,7 @@ export const StickerPicker: React.FC<StickerPickerProps> = ({ onSelect, onClose 
         </button>
       </div>
       {isLoading && (
-        <div className={styles.loading}>Loading stickers...</div>
+        <LoadingPlaceholder variant="spinner" text="Loading stickers..." />
       )}
       {(isError || !stickers || stickers.length === 0) && !isLoading && (
         <div className={styles.emptyState}>

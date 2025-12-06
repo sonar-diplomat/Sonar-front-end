@@ -9,8 +9,9 @@ import { usePlayTracks } from '@shared/lib/audio/usePlaybackActions';
 import { getImageUrlById } from '@shared/lib/image-utils';
 import type { TrackDTO } from '@entities/Music';
 import { getArtistNames } from '@widgets/MiniPlayer/lib/utils';
+import { LoadingPlaceholder } from '@shared/ui';
 
-interface CollectionProps {
+export interface CollectionProps {
     type: 'playlist' | 'album';
 }
 
@@ -141,7 +142,7 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
     if (isLoading) {
         return (
             <div className={styles.collection}>
-                <div>Loading...</div>
+                <LoadingPlaceholder variant="spinner" text="Loading..." fullWidth />
             </div>
         );
     }

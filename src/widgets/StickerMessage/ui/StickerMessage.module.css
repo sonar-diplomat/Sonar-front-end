@@ -22,28 +22,6 @@
   transform: scale(1.02);
 }
 
-.loadingSkeleton {
-  width: 200px;
-  height: 200px;
-  background: linear-gradient(
-    90deg,
-    var(--input-border-hover) 0%,
-    var(--input-bg) 50%,
-    var(--input-border-hover) 100%
-  );
-  background-size: 200% 100%;
-  animation: loading 1.5s ease-in-out infinite;
-  border-radius: 8px;
-}
-
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
 
 .error {
   padding: 16px;
