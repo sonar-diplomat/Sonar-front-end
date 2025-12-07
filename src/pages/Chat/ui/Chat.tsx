@@ -16,7 +16,7 @@ import {
 } from '@entities/Chat/api/rtkApi';
 import { useSignalR, type MessageCreatedEvent, type MessageDeletedEvent, type MessageUpdatedEvent, type MessageReadEvent, type ChatNameUpdatedEvent, type ChatCoverUpdatedEvent } from '@shared/lib/signalr';
 import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
-import { decodeJWT } from '@shared/lib/auth/jwt-utils';
+import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
 import styles from './Chat.module.css';
 
 export const Chat: React.FC = () => {
@@ -41,13 +41,7 @@ export const Chat: React.FC = () => {
     const signalRReadAllDisabledRef = useRef(false); // Disable SignalR ReadAllMessages after first error
     
     const accessToken = useAppSelector((state) => state.auth.accessToken);
-    const currentUserId = useMemo(() => {
-        if (!accessToken) return null;
-        const decoded = decodeJWT(accessToken);
-        if (!decoded) return null;
-        const userId = decoded.sub || decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
-        return userId ? Number(userId) : null;
-    }, [accessToken]);
+    const currentUserId = useCurrentUserId();
 
     const chatIdNumber = chatId ? Number(chatId) : 0;
     

@@ -98,7 +98,10 @@ export const chatApi = rtkApi.injectEndpoints({
         method: 'POST',
         withAuth: true,
       }),
-      invalidatesTags: (_result, _error, { chatId }) => [{ type: 'Chat', id: chatId }],
+      invalidatesTags: (_result, _error, { chatId }) => [
+        { type: 'Chat', id: chatId },
+        { type: 'Chat', id: 'LIST' },
+      ],
     }),
 
     leaveChat: builder.mutation<void, number>({

@@ -1,0 +1,63 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px;
+}
+
+.profileCard {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.avatarSkeleton {
+    align-self: flex-start;
+}
+
+.statsSkeleton {
+    display: flex;
+    gap: 24px;
+}
+
+.statItem {
+    width: 80px;
+    height: 60px;
+    border-radius: 4px;
+}
+
+.actionButtonsSkeleton {
+    display: flex;
+    gap: 12px;
+}
+
+.buttonSkeleton {
+    width: 120px;
+    height: 40px;
+    border-radius: 4px;
+}
+
+.contentSkeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.sectionSkeleton {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+}
+
+.bioSkeleton {
+    width: 100%;
+    height: 150px;
+    border-radius: 8px;
+}
+
+.widgetSkeleton {
+    width: 100%;
+    height: 300px;
+    border-radius: 8px;
+}
+

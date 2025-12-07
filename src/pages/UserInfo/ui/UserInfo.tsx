@@ -1,41 +1,174 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Checkbox, ProfileIcon, Info, PlusIcon, ErrorIcon, LoadingPlaceholder } from '@shared/ui';
+import { Checkbox, ProfileIcon, Info, PlusIcon, ErrorIcon, LoadingPlaceholder, VerifyIcon, NotificationIcon, RightArrow, BlockIcon, DeleteIcon, Button } from '@shared/ui';
 import { 
     useGetChatInfoQuery,
     useLeaveChatMutation,
+    useRemoveUserFromChatMutation,
 } from '@entities/Chat/api/rtkApi';
+import { useGetUserByIdQuery, useGetUserProfileByIdentifierQuery } from '@entities/User/api/rtkApi';
+import { usePatchClientSettingsMutation, useGetClientSettingsQuery } from '@entities/ClientSettings/api/rtkApi';
+import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
+import { MemberContextMenu } from '@widgets/MemberContextMenu';
+import { AddMembersModal } from '@widgets/AddMembersModal';
+import { MemberItem } from './MemberItem';
 import styles from './UserInfo.module.css';
 
 export const UserInfo: React.FC = () => {
     const { chatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-    const currentUserId = 1;
+    const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
+    const [isMemberMenuOpen, setIsMemberMenuOpen] = useState(false);
+    const [isAddMembersModalOpen, setIsAddMembersModalOpen] = useState(false);
+    const currentUserId = useCurrentUserId();
 
     const chatIdNumber = chatId ? Number(chatId) : 0;
     
-    // RTK Query hooks
-    const { data: chatInfo, isLoading, error } = useGetChatInfoQuery(chatIdNumber, {
+    const { data: chatInfo, isLoading, error, refetch: refetchChatInfo } = useGetChatInfoQuery(chatIdNumber, {
         skip: !chatIdNumber,
     });
     
-    const [leaveChat] = useLeaveChatMutation();
+    const [leaveChat, { isLoading: isLeavingChat }] = useLeaveChatMutation();
+    const [removeUserFromChat] = useRemoveUserFromChatMutation();
+    const [patchSettings, { isLoading: isBlockingUser }] = usePatchClientSettingsMutation();
+    const { data: currentSettings } = useGetClientSettingsQuery(undefined, {
+        skip: !currentUserId,
+    });
+
+    const isAdmin = useMemo(() => {
+        if (!chatInfo || !currentUserId) return false;
+        return chatInfo.creatorId === currentUserId || chatInfo.adminIds?.includes(currentUserId);
+    }, [chatInfo, currentUserId]);
+
+    const otherUserId = useMemo(() => {
+        if (!chatInfo || !currentUserId || chatInfo.isGroup) return null;
+        const otherUser = chatInfo.userIds?.find(id => id !== currentUserId);
+        return otherUser || null;
+    }, [chatInfo, currentUserId]);
+
+    const { data: otherUserData } = useGetUserByIdQuery(otherUserId!, {
+        skip: !otherUserId,
+    });
+
+    const { data: selectedMemberUserData } = useGetUserByIdQuery(selectedMemberId!, {
+        skip: !selectedMemberId,
+    });
+
+    const { data: selectedMemberProfileData } = useGetUserProfileByIdentifierQuery(
+        selectedMemberUserData?.publicIdentifier || '',
+        {
+            skip: !selectedMemberUserData?.publicIdentifier,
+        }
+    );
 
     const handleGoToProfile = () => {
-        console.log('Go to profile');
+        if (otherUserData?.publicIdentifier) {
+            navigate(`/user/${otherUserData.publicIdentifier}`);
+        }
     };
 
     const handleReport = () => {
         console.log('Report user');
     };
 
-    const handleBlockUser = () => {
-        console.log('Block user');
+    const handleBlockUser = async () => {
+        if (!otherUserId || !currentSettings) {
+            console.warn('Cannot block user: missing otherUserId or currentSettings');
+            return;
+        }
+        
+        try {
+            const currentBlockedIds = currentSettings.blockedUserIds || [];
+            
+            if (currentBlockedIds.includes(otherUserId)) {
+                console.log('User is already blocked');
+                return;
+            }
+            
+            const updatedBlockedIds = [...currentBlockedIds, otherUserId];
+            
+            console.log('Blocking user:', { otherUserId, updatedBlockedIds });
+            
+            await patchSettings({
+                blockedUserIds: updatedBlockedIds,
+            }).unwrap();
+            
+            console.log('User blocked successfully');
+            
+            navigate('/chats');
+        } catch (error) {
+            console.error('Failed to block user:', error);
+        }
     };
 
-    const handleDeleteChat = () => {
-        console.log('Delete chat');
+    const handleDeleteChat = async () => {
+        if (!chatIdNumber) return;
+        
+        try {
+            await leaveChat(chatIdNumber).unwrap();
+            navigate('/chats');
+        } catch (error) {
+            console.error('Failed to delete chat:', error);
+        }
+    };
+
+    const handleAddMembers = () => {
+        setIsAddMembersModalOpen(true);
+    };
+
+    const handleMemberClick = (userId: number) => {
+        setSelectedMemberId(userId);
+        setIsMemberMenuOpen(true);
+    };
+
+    const handleGoToMemberProfile = () => {
+        if (!selectedMemberUserData?.publicIdentifier) return;
+        navigate(`/user/${selectedMemberUserData.publicIdentifier}`);
+    };
+
+    const selectedMemberUserName = selectedMemberProfileData?.userName || (selectedMemberId ? `User ${selectedMemberId}` : '');
+
+    const handleBlockMember = async () => {
+        if (!selectedMemberId || !currentSettings) return;
+        
+        try {
+            const currentBlockedIds = currentSettings.blockedUserIds || [];
+            const updatedBlockedIds = [...currentBlockedIds, selectedMemberId];
+            
+            await patchSettings({
+                blockedUserIds: updatedBlockedIds,
+            }).unwrap();
+            
+            navigate('/chats');
+        } catch (error) {
+            console.error('Failed to block user:', error);
+        }
+    };
+
+    const handleRemoveMemberFromChat = async () => {
+        if (!selectedMemberId || !chatIdNumber) return;
+        
+        try {
+            await removeUserFromChat({
+                chatId: chatIdNumber,
+                userId: selectedMemberId,
+            }).unwrap();
+            await refetchChatInfo();
+        } catch (error) {
+            console.error('Failed to remove user from chat:', error);
+        }
+    };
+
+    const handleLeaveGroup = async () => {
+        if (!chatIdNumber) return;
+        
+        try {
+            await leaveChat(chatIdNumber).unwrap();
+            navigate('/chats');
+        } catch (error) {
+            console.error('Failed to leave chat:', error);
+        }
     };
 
     if (isLoading) {
@@ -66,20 +199,6 @@ export const UserInfo: React.FC = () => {
     const isGroup = chatInfo.isGroup;
     const membersCount = chatInfo.userIds?.length || 0;
 
-    const handleAddMembers = () => {
-        console.log('Add members');
-    };
-
-    const handleLeaveGroup = async () => {
-        if (!chatIdNumber) return;
-        
-        try {
-            await leaveChat(chatIdNumber).unwrap();
-            navigate('/chats');
-        } catch (error) {
-            console.error('Failed to leave chat:', error);
-        }
-    };
 
     return (
         <div className={styles.container}>
@@ -94,12 +213,7 @@ export const UserInfo: React.FC = () => {
                         <h2 className={styles.name}>{chatName}</h2>
                         {!isGroup && (
                             <div className={styles.verifiedBadge}>
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                    <path
-                                        d="M8 0L9.79741 3.20259L13.2026 4.79741L10 6.59482L11.5954 10L8 8L4.40418 10L6 6.59482L2.79741 4.79741L6.20259 3.20259L8 0Z"
-                                        fill="currentColor"
-                                    />
-                                </svg>
+                                <VerifyIcon />
                             </div>
                         )}
                     </div>
@@ -117,16 +231,12 @@ export const UserInfo: React.FC = () => {
                     </div>
                     <div className={styles.membersList}>
                         {chatInfo.userIds.map((userId) => (
-                            <div key={userId} className={styles.memberItem}>
-                                <div className={styles.memberAvatar}>
-                                    <div className={styles.memberAvatarPlaceholder}>
-                                        {userId === currentUserId ? 'Y' : 'U'}
-                                    </div>
-                                </div>
-                                <span className={styles.memberName}>
-                                    {userId === currentUserId ? 'You' : `User ${userId}`}
-                                </span>
-                            </div>
+                            <MemberItem
+                                key={userId}
+                                userId={userId}
+                                currentUserId={currentUserId}
+                                onClick={() => handleMemberClick(userId)}
+                            />
                         ))}
                     </div>
                 </div>
@@ -135,12 +245,7 @@ export const UserInfo: React.FC = () => {
             <div className={styles.optionsList}>
                 <div className={styles.optionItem}>
                     <div className={styles.optionLeft}>
-                        <svg className={styles.optionIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path
-                                d="M10 2C8.89543 2 8 2.89543 8 4V6H4C3.44772 6 3 6.44772 3 7V15C3 16.1046 3.89543 17 5 17H15C16.1046 17 17 16.1046 17 15V7C17 6.44772 16.5523 6 16 6H12V4C12 2.89543 11.1046 2 10 2ZM10 4C10.5523 4 11 4.44772 11 5V6H9V5C9 4.44772 9.44772 4 10 4ZM5 8H15V15H5V8Z"
-                                fill="currentColor"
-                            />
-                        </svg>
+                        <NotificationIcon className={styles.optionIcon} color="#fff" />
                         <span className={styles.optionText}>Notification</span>
                     </div>
                     <Checkbox
@@ -152,76 +257,48 @@ export const UserInfo: React.FC = () => {
                 {!isGroup && (
                     <button className={styles.optionItem} onClick={handleGoToProfile}>
                         <div className={styles.optionLeft}>
-                            <ProfileIcon className={styles.optionIcon} />
+                            <ProfileIcon className={styles.optionIcon} color="#fff" />
                             <span className={styles.optionText}>Go to profile</span>
                         </div>
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                            <path
-                                d="M4.5 9L7.5 6L4.5 3"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
+                        <RightArrow className={styles.arrowIcon} color="#fff" />
                     </button>
                 )}
 
-                {isGroup && (
-                    <button className={styles.optionItem} onClick={handleAddMembers}>
+                {isGroup && isAdmin && (
+                    <Button 
+                        variant="text" 
+                        theme="dark" 
+                        className={styles.optionItem} 
+                        onClick={handleAddMembers}
+                    >
                         <div className={styles.optionLeft}>
-                            <PlusIcon className={styles.optionIcon} />
+                            <PlusIcon className={styles.optionIcon} color="#fff" />
                             <span className={styles.optionText}>Add members</span>
                         </div>
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                            <path
-                                d="M4.5 9L7.5 6L4.5 3"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
-                    </button>
+                        <RightArrow className={styles.arrowIcon} color="#fff" />
+                    </Button>
                 )}
 
                 {!isGroup && (
                     <>
                         <button className={styles.optionItem} onClick={handleReport}>
                             <div className={styles.optionLeft}>
-                                <Info className={styles.optionIcon} />
+                                <Info className={styles.optionIcon} color="#fff" />
                                 <span className={styles.optionText}>Report</span>
                             </div>
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                <path
-                                    d="M4.5 9L7.5 6L4.5 3"
-                                    stroke="currentColor"
-                                    strokeWidth="1.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                            </svg>
+                            <RightArrow className={styles.arrowIcon} color="#fff" />
                         </button>
 
-                        <button className={styles.optionItem} onClick={handleBlockUser}>
+                        <button 
+                            className={styles.optionItem} 
+                            onClick={handleBlockUser}
+                            disabled={!otherUserId || !currentSettings || isBlockingUser}
+                        >
                             <div className={styles.optionLeft}>
-                                <svg className={styles.optionIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                    <path
-                                        d="M10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2ZM10 4C13.3137 4 16 6.68629 16 10C16 11.2958 15.5892 12.4957 14.8906 13.4766L6.52344 5.10938C7.50433 4.41083 8.70418 4 10 4ZM4 10C4 8.70418 4.41083 7.50433 5.10938 6.52344L13.4766 14.8906C12.4957 15.5892 11.2958 16 10 16C6.68629 16 4 13.3137 4 10Z"
-                                        fill="currentColor"
-                                    />
-                                </svg>
+                                <BlockIcon className={styles.optionIcon} color="#fff" />
                                 <span className={styles.optionText}>Block user</span>
                             </div>
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                <path
-                                    d="M4.5 9L7.5 6L4.5 3"
-                                    stroke="currentColor"
-                                    strokeWidth="1.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                            </svg>
+                            <RightArrow className={styles.arrowIcon} color="#fff" />
                         </button>
                     </>
                 )}
@@ -229,50 +306,56 @@ export const UserInfo: React.FC = () => {
                 {isGroup && (
                     <button className={`${styles.optionItem} ${styles.danger}`} onClick={handleLeaveGroup}>
                         <div className={styles.optionLeft}>
-                            <svg className={styles.optionIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <path
-                                    d="M10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2ZM10 4C13.3137 4 16 6.68629 16 10C16 11.2958 15.5892 12.4957 14.8906 13.4766L6.52344 5.10938C7.50433 4.41083 8.70418 4 10 4ZM4 10C4 8.70418 4.41083 7.50433 5.10938 6.52344L13.4766 14.8906C12.4957 15.5892 11.2958 16 10 16C6.68629 16 4 13.3137 4 10Z"
-                                    fill="currentColor"
-                                />
-                            </svg>
+                            <BlockIcon className={styles.optionIcon} color="#FF3B30" />
                             <span className={styles.optionText}>Leave group</span>
                         </div>
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                            <path
-                                d="M4.5 9L7.5 6L4.5 3"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
+                        <RightArrow className={styles.arrowIcon} color="#FF3B30" />
                     </button>
                 )}
 
-                <button className={`${styles.optionItem} ${styles.danger}`} onClick={handleDeleteChat}>
+                <Button 
+                    variant="text" 
+                    theme="dark" 
+                    className={`${styles.optionItem} ${styles.danger}`} 
+                    onClick={handleDeleteChat}
+                    disabled={isLeavingChat}
+                >
                     <div className={styles.optionLeft}>
-                        <svg className={styles.optionIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path
-                                d="M6 6V16C6 17.1046 6.89543 18 8 18H12C13.1046 18 14 17.1046 14 16V6M8 6V4C8 2.89543 8.89543 2 10 2C11.1046 2 12 2.89543 12 4V6M4 6H16"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
+                        <DeleteIcon className={styles.optionIcon} color="#FF3B30" />
                         <span className={styles.optionText}>{isGroup ? 'Delete group' : 'Delete chat'}</span>
                     </div>
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path
-                            d="M4.5 9L7.5 6L4.5 3"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-                    </svg>
-                </button>
+                    <RightArrow className={styles.arrowIcon} color="#FF3B30" />
+                </Button>
             </div>
+
+            {selectedMemberId && selectedMemberUserData && (
+                <MemberContextMenu
+                    isOpen={isMemberMenuOpen}
+                    onClose={() => {
+                        setIsMemberMenuOpen(false);
+                        setSelectedMemberId(null);
+                    }}
+                    memberId={selectedMemberId}
+                    memberUserName={selectedMemberUserName}
+                    memberPublicIdentifier={selectedMemberUserData.publicIdentifier || ''}
+                    isAdmin={isAdmin}
+                    onGoToProfile={handleGoToMemberProfile}
+                    onBlockUser={isAdmin ? handleBlockMember : undefined}
+                    onRemoveFromChat={isAdmin ? handleRemoveMemberFromChat : undefined}
+                />
+            )}
+
+            {isGroup && (
+                <AddMembersModal
+                    isOpen={isAddMembersModalOpen}
+                    onClose={() => setIsAddMembersModalOpen(false)}
+                    chatId={chatIdNumber}
+                    existingUserIds={chatInfo?.userIds || []}
+                    onSuccess={() => {
+                        refetchChatInfo();
+                    }}
+                />
+            )}
         </div>
     );
 };

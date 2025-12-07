@@ -4,7 +4,6 @@ export interface AccessFeatureDTO {
 }
 
 export const AccessFeatureStruct = {
-    SendFriendRequest: 'SendFriendRequest',
     SendMessage: 'SendMessage',
     ReportContent: 'ReportContent',
     ListenContent: 'ListenContent',

@@ -37,6 +37,19 @@ export interface NonSensitiveUserDTO {
     accessFeatures: AccessFeature[]
 }
 
+export interface UserProfileDTO {
+    id: number
+    userName: string
+    publicIdentifier: string
+    biography?: string | null
+    avatarImageId: number
+    imageUrl?: string | null
+    registrationDate: ISODate
+    followersCount: number
+    followingCount: number
+    accessFeatures: AccessFeature[]
+}
+
 export interface UserUpdateDTO {
     PublicIdentifier?: string | null
     Biography?: string | null
@@ -45,34 +58,33 @@ export interface UserUpdateDTO {
     FirstName?: string | null
 }
 
-export interface UserFriendRequestDTO {
-    id: number
-    requestedAt: ISODate
-    fromUserId: number
-    fromUserName: string
-    toUserId: number
-    toUserName: string
-}
-
-export interface UserReceivedFriendRequestDTO {
-    id: number
-    requestedAt: ISODate
-    fromUserId: number
-    fromUserName: string
-}
-
-export interface UserSentFriendRequestDTO {
-    id: number
-    toUserId: number
-    toUserName: string
-    requestedAt: ISODate
-}
-
 export interface UserFriendDTO {
     id: number
     userName: string
     publicIdentifier: string
     avatarImageId: number | null
+}
+
+export interface UserFollowerDTO {
+    id: number
+    userName: string
+    publicIdentifier: string
+    avatarImageId: number
+    followedAt: ISODate
+}
+
+export interface UserFollowingDTO {
+    id: number
+    userName: string
+    publicIdentifier: string
+    avatarImageId: number
+    followedAt: ISODate
+}
+
+export interface UserProfileStatsDTO {
+    followersCount: number
+    followingCount: number
+    publicPlaylistsCount: number
 }
 
 export interface User {

@@ -166,6 +166,11 @@
     flex-shrink: 0;
 }
 
+.arrowIcon {
+    width: 12px;
+    height: 12px;
+}
+
 .optionText {
     font-size: 16px;
     color: currentColor;
@@ -200,6 +205,7 @@
 }
 
 .memberItem {
+    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 12px;

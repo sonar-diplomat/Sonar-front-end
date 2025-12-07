@@ -34,7 +34,6 @@ export const rtkApi = createApi({
     'ArtistRegistrationRequest',
     'Share',
     'Session',
-    'FriendRequest',
     'Friend',
     'ChatSticker',
   ],
