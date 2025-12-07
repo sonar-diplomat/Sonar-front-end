@@ -9,6 +9,8 @@ import type {
   RefreshTokenResponse,
   ConfirmEmailChangeDTO,
   ConfirmPasswordChangeDTO,
+  ForgotPasswordDTO,
+  ResetPasswordDTO,
 } from '../model/types';
 
 /**
@@ -109,6 +111,24 @@ export const authApi = rtkApi.injectEndpoints({
       }),
     }),
 
+    forgotPassword: builder.mutation<void, ForgotPasswordDTO>({
+      query: (data) => ({
+        url: API_ENDPOINTS.auth.forgotPassword,
+        method: 'POST',
+        body: data,
+        withAuth: false,
+      }),
+    }),
+
+    resetPassword: builder.mutation<void, ResetPasswordDTO>({
+      query: (data) => ({
+        url: API_ENDPOINTS.auth.resetPassword,
+        method: 'POST',
+        body: data,
+        withAuth: false,
+      }),
+    }),
+
     revokeSession: builder.mutation<void, number>({
       query: (sessionId) => ({
         url: API_ENDPOINTS.auth.revokeSession(sessionId),
@@ -141,6 +161,8 @@ export const {
   useConfirmEmailMutation,
   useConfirmPasswordChangeMutation,
   useRequestPasswordChangeMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
   useRevokeSessionMutation,
   useRevokeAllSessionsMutation,
 } = authApi;

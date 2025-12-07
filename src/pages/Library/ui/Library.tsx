@@ -12,6 +12,7 @@ import { getImageUrlById } from '@shared/lib/image-utils';
 import { useFolders, useFolder } from '@shared/store/features/library/useLibrary';
 import { useMoveCollectionToFolderMutation, useMoveFolderMutation } from '@entities/Library/api/rtkApi';
 import type { DraggedItem } from '@shared/ui/FolderCard/FolderCard.types';
+import { useNotifications } from '@shared/store/notificationStore';
 
 import styles from './Library.module.css';
 
@@ -29,6 +30,7 @@ export const Library: React.FC<LibraryProps> = () => {
     // API мутации для drag-and-drop
     const [moveCollectionToFolder] = useMoveCollectionToFolderMutation();
     const [moveFolder] = useMoveFolderMutation();
+    const { showError } = useNotifications();
 
     // Автоматически обновляем данные при возврате на страницу, если библиотека помечена как "грязная"
     useEffect(() => {
@@ -185,9 +187,19 @@ export const Library: React.FC<LibraryProps> = () => {
     }, []);
 
     const handleDrop = useCallback(async (draggedItem: DraggedItem, targetFolderId: number) => {
+        // Проверяем, является ли коллекция favorites
+        if (draggedItem.type === 'collection') {
+            const collectionName = draggedItem.name?.toLowerCase().trim();
+            if (collectionName === 'favorites' || collectionName === 'избранное') {
+                showError('Cannot move favorites collection', ['The favorites collection cannot be moved to folders']);
+                return;
+            }
+        }
+
         // Предотвращаем перетаскивание папки в саму себя
         if (draggedItem.type === 'folder' && draggedItem.id === targetFolderId) {
             console.warn('Cannot move folder into itself');
+            showError('Cannot move folder', ['You cannot move a folder into itself']);
             return;
         }
 
@@ -195,6 +207,7 @@ export const Library: React.FC<LibraryProps> = () => {
         if (draggedItem.type === 'folder' && foldersData) {
             if (isChildFolder(draggedItem.id, targetFolderId, foldersData)) {
                 console.warn('Cannot move folder into its child folder');
+                showError('Cannot move folder', ['You cannot move a folder into its child folder']);
                 return;
             }
         }
@@ -214,11 +227,13 @@ export const Library: React.FC<LibraryProps> = () => {
             
             // Данные обновляются автоматически через invalidatesTags в RTK Query
             // и через isDirty флаг, который устанавливается в onQueryStarted
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error during drag-and-drop:', error);
-            // TODO: Показать уведомление об ошибке пользователю
+            const errorMessage = error?.data?.message || error?.message || 'Failed to move item';
+            const errors = error?.data?.errors || [errorMessage];
+            showError(errorMessage, errors);
         }
-    }, [moveCollectionToFolder, moveFolder, foldersData, isChildFolder]);
+    }, [moveCollectionToFolder, moveFolder, foldersData, isChildFolder, showError]);
 
     const sections = useMemo<ContentSection[]>(() => [
         {
@@ -227,6 +242,7 @@ export const Library: React.FC<LibraryProps> = () => {
             countLabel: 'folders',
             shouldShow: selectedCategory === 'All',
             items: folders,
+            className: styles.foldersSection,
             renderItem: (folder: unknown) => {
                 const folderItem = folder as Folder;
                 return (
@@ -293,6 +309,7 @@ export const Library: React.FC<LibraryProps> = () => {
                     title={headerTitle}
                     selectedCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
+                    categories={['All', 'Albums', 'Playlists', 'Artists']}
                 />
             </div>
             <Button

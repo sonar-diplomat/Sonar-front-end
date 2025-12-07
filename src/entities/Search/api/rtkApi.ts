@@ -24,17 +24,37 @@ export const searchApi = rtkApi.injectEndpoints({
   endpoints: (builder) => ({
     // Main search endpoint
     search: builder.query<SearchResultDTO, SearchParams>({
-      query: ({ query, category, limit, offset }) => ({
-        url: API_ENDPOINTS.search.search,
-        method: 'GET',
-        params: {
-          query,
-          ...(category ? { category } : {}),
-          ...(limit !== undefined ? { limit } : {}),
-          ...(offset !== undefined ? { offset } : {}),
-        },
-        withAuth: false, // Опционально для некоторых категорий
-      }),
+      query: ({ query, category, limit, offset }) => {
+        // Преобразуем категорию в lowercase для бэкенда
+        // Бэкенд ожидает: "all", "tracks", "album", "playlist", "artist", "users"
+        const backendCategory = category 
+          ? category === 'All' 
+            ? 'all'
+            : category === 'Tracks'
+            ? 'tracks'
+            : category === 'Albums'
+            ? 'album'
+            : category === 'Playlists'
+            ? 'playlist'
+            : category === 'Artists'
+            ? 'artist'
+            : category === 'Users'
+            ? 'users'
+            : category.toLowerCase()
+          : undefined;
+        
+        return {
+          url: API_ENDPOINTS.search.search,
+          method: 'GET',
+          params: {
+            query,
+            ...(backendCategory ? { category: backendCategory } : {}),
+            ...(limit !== undefined ? { limit } : {}),
+            ...(offset !== undefined ? { offset } : {}),
+          },
+          withAuth: false, // Опционально для некоторых категорий
+        };
+      },
       serializeQueryArgs: ({ queryArgs }) => {
         return `search_${queryArgs.query}_${queryArgs.category || 'All'}_${queryArgs.limit || 20}_${queryArgs.offset || 0}`;
       },

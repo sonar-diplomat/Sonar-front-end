@@ -1,4 +1,4 @@
-export type Category = 'All' | 'Creators' | 'Playlists' | 'Radio';
+export type Category = 'All' | 'Tracks' | 'Albums' | 'Playlists' | 'Artists' | 'Users';
 
 export interface ChipsBarProps {
     selectedCategory?: Category;

@@ -24,10 +24,6 @@ export const AudioPlayerController = () => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const handleTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-    };
-
     const handleDurationChange = () => {
       setDuration(audio.duration);
     };
@@ -70,18 +66,49 @@ export const AudioPlayerController = () => {
       }
     };
 
-    audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('durationchange', handleDurationChange);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('error', handleError as any);
 
     return () => {
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('durationchange', handleDurationChange);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('error', handleError as any);
     };
-  }, [setCurrentTime, setDuration, playNext]);
+  }, [setDuration, playNext]);
+
+  // Используем requestAnimationFrame для более частого обновления времени воспроизведения
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !isPlaying) return;
+
+    let animationFrameId: number;
+    let lastTime = audio.currentTime;
+
+    const updateTime = () => {
+      if (!audio || audio.paused) {
+        return;
+      }
+
+      const currentAudioTime = audio.currentTime;
+      
+      // Обновляем только если время изменилось (избегаем лишних обновлений)
+      if (Math.abs(currentAudioTime - lastTime) > 0.01) {
+        setCurrentTime(currentAudioTime);
+        lastTime = currentAudioTime;
+      }
+
+      animationFrameId = requestAnimationFrame(updateTime);
+    };
+
+    animationFrameId = requestAnimationFrame(updateTime);
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [isPlaying, setCurrentTime]);
 
   // Загрузка текущего трека (если нет pendingTrack)
   useEffect(() => {

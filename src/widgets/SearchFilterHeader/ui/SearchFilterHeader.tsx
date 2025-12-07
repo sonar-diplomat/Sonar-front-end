@@ -11,6 +11,7 @@ interface SearchFilterHeaderProps {
     searchPlaceholder?: string;
     searchValue?: string;
     onSearch?: (value: string) => void;
+    categories?: Category[];
 }
 
 export const SearchFilterHeader: React.FC<SearchFilterHeaderProps> = ({
@@ -20,6 +21,7 @@ export const SearchFilterHeader: React.FC<SearchFilterHeaderProps> = ({
     searchPlaceholder = "Search in library",
     searchValue,
     onSearch,
+    categories,
 }) => {
     return (
         <div className={styles.header}>
@@ -36,6 +38,7 @@ export const SearchFilterHeader: React.FC<SearchFilterHeaderProps> = ({
             <ChipsBar
                 selectedCategory={selectedCategory}
                 onCategoryChange={onCategoryChange}
+                categories={categories}
             />
         </div>
     );

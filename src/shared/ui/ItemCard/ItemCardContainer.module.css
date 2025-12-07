@@ -71,3 +71,23 @@
   padding-bottom: 8px;
 }
 
+/* Стили для секции Folders в библиотеке - выходит за пределы 425px */
+@media (min-width: 426px) {
+  :global(.foldersSection).container .cardsScroll {
+    width: 100vw !important;
+    max-width: none !important;
+    margin-left: calc((425px - 100vw) / 2 - 16px) !important;
+    margin-right: calc((425px - 100vw) / 2 - 16px) !important;
+    padding-left: calc((100vw - 425px) / 2 + 16px) !important;
+    padding-right: calc((100vw - 425px) / 2 + 16px) !important;
+    box-sizing: border-box;
+  }
+  
+  :global(.foldersSection).container .header {
+    max-width: 425px;
+    margin: 0 auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+

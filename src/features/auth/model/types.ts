@@ -50,3 +50,13 @@ export interface Verify2FaResponseDTO {
     newAccessToken: string;
     refreshToken: string;
 }
+
+export interface ForgotPasswordDTO {
+    Email: string;
+}
+
+export interface ResetPasswordDTO {
+    Email: string;
+    Token: string;
+    NewPassword: string;
+}

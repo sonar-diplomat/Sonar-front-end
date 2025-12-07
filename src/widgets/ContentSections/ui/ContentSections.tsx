@@ -11,6 +11,7 @@ export interface ContentSection<T = unknown> {
     shouldShow: boolean;
     items: T[];
     renderItem: (item: T) => React.ReactNode;
+    className?: string;
 }
 
 interface ContentSectionsProps {
@@ -28,6 +29,7 @@ export const ContentSections: React.FC<ContentSectionsProps> = ({sections}) => {
                         title={section.title}
                         count={section.items.length}
                         countLabel={section.countLabel}
+                        className={section.className}
                     >
                         {section.items.map((item) => section.renderItem(item))}
                     </ItemCardContainer>
