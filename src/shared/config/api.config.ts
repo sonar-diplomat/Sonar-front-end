@@ -1,8 +1,8 @@
-//export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sonar-dev.pp.ua/api/';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
+//export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sonar-dev.pp.ua/api/';
 
-//export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://localhost:7124/api/';
-export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://sonar-dev.pp.ua/api/';
+export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://localhost:7124/api/';
+//export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://sonar-dev.pp.ua/api/';
 
 export const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || 'https://sonar-dev.pp.ua/';
 
@@ -15,6 +15,7 @@ export const API_ENDPOINTS = {
         changePassword: 'Auth/confirm-password-change',
         requestPasswordChange: 'Auth/request-password-change',
         confirmEmailChange: 'Auth/confirm-email-change',
+        confirmEmail: 'Auth/confirm-email',
         getMailChangeToken: 'Auth/request-email-change',
         getSessions: 'Auth/sessions',
         revokeSession: (sessionId: number) => `Auth/sessions/${sessionId}/revoke`,

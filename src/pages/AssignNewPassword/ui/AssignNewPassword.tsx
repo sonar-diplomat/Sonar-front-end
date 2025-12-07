@@ -30,7 +30,7 @@ export const AssignNewPassword: React.FC = () => {
             showSuccess('Password updated successfully!');
             navigate("/login");
         } else {
-            showError(res.message || 'Failed to update password', res.status);
+            showError(res.message || 'Failed to update password', res.errors || res.details);
         }
     };
 

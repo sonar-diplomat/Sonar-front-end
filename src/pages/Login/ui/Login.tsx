@@ -31,7 +31,7 @@ export const Login: React.FC = () =>{
         const res = await login(data.emailOrLogin, data.password, deviceName);
 
         if (!res.success) {
-            showError(res.message || 'Login failed', res.status);
+            showError(res.message || 'Login failed', res.errors || res.details);
             return;
         }
 
@@ -66,7 +66,7 @@ export const Login: React.FC = () =>{
             showSuccess('Two-factor authentication successful!');
             navigate("/hello");
         } else {
-            showError(res.message || '2FA verification failed', res.status);
+            showError(res.message || '2FA verification failed', res.errors || res.details);
         }
     };
 

@@ -8,6 +8,14 @@
     background-color: #000;
 }
 
+@media (min-width: 426px) {
+    .container {
+        max-width: 425px;
+        margin: 0 auto;
+        justify-content: center;
+    }
+}
+
 .header {
     display: flex;
     flex-direction: column;
@@ -38,9 +46,16 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    margin-top: 32px;
+    width: 100%;
+}
+
+.buttonGroup > * {
+    width: 100%;
 }
 
 .guestLink {
+    display: none !important;
     background: none;
     border: none;
     color: #EAEAEA;

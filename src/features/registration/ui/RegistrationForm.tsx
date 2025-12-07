@@ -29,6 +29,12 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
   }, []);
 
   useEffect(() => {
+    if (data) {
+      setFormData(data);
+    }
+  }, [data]);
+
+  useEffect(() => {
         onDataChange?.(formData);
     }, [formData, onDataChange]);
 

@@ -56,7 +56,7 @@ export const ReportComponent: React.FC<ReportComponentProps> = ({
       setSelectedReasons([]);
       onSuccess?.();
     } catch (err: any) {
-      showError(err?.data?.message || 'Failed to submit report. Please try again.');
+      showError(err?.data?.message || 'Failed to submit report. Please try again.', err?.data?.errors || err?.data?.details);
     }
   };
 

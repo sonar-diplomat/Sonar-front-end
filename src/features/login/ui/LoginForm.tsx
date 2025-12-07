@@ -52,6 +52,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                         icon={showPassword ? <EyeIcon/> : <EyeOffIcon/>}
                         onIconClick={() => setShowPassword(!showPassword)}
                         iconPosition={"suffix"}
+                        iconClickable={true}
                         helperText={"Forgot Password?"}
                         required={true}
                         {...(onForgotPassword && {
@@ -76,10 +77,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                         />
                         <Button icon={<GoogleIcon/>} children={"Continue with Google"} variant={"filled"} theme={"dark"} size={"large"}
                                 onClick={onContinueWithGoogle}
-                                fullWidth/>
+                                fullWidth
+                                className={styles.hiddenButton}/>
                         <Button icon={<AppleIcon/>} children={"Continue with Apple"} variant={"filled"} theme={"dark"} size={"large"}
                                 onClick={onContinueWithApple}
-                                fullWidth/>
+                                fullWidth
+                                className={styles.hiddenButton}/>
                     </div>
                     <button
                         type="button"
