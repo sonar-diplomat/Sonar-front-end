@@ -16,6 +16,7 @@ export interface Settings {
  notificationTypeId: number;
  userId: number;
  userPrivacySettingsId: number;
+ blockedUserIds?: number[];
  /*
  *
  *

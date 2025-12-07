@@ -109,7 +109,7 @@ export const router = createBrowserRouter([
                         element: <Search />,
                     },
                     {
-                        path: 'user/:id',
+                        path: 'user/:identifier',
                         element: <UserProfile />,
                     },
                     {

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDebounce } from '@shared/lib/hooks/useDebounce';
 import { getImageUrlById } from '@shared/lib/image-utils';
 import { useUserState } from '@shared/store/features/userState/useUserState';
@@ -26,6 +27,7 @@ import type {
 import styles from './Search.module.css';
 
 export const Search: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -174,9 +176,8 @@ export const Search: React.FC = () => {
   }, []);
 
   const handleUserClick = useCallback((user: UserSearchItemDTO) => {
-    console.log('Opening user:', user);
-    // TODO: Navigate to user page when routing is implemented
-  }, []);
+    navigate(`/user/${user.publicIdentifier}`);
+  }, [navigate]);
 
   // Формирование секций для отображения
   const sections = useMemo<ContentSection[]>(() => {

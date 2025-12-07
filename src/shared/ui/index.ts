@@ -51,6 +51,8 @@ export {
     CopyIcon,
     EditIcon,
     DeleteIcon,
+    NotificationIcon,
+    BlockIcon,
     SendRight,
     QRCode,
     GoogleIcon,
