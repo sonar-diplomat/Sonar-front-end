@@ -28,7 +28,6 @@ import {
     Chats,
     Chat,
     UserInfo,
-    MacroPlayer,
 } from "@pages";
 import {Login} from "@pages/Login";
 import {TermsOfService} from "@pages/Terms/TermsOfService/TermsOfService.tsx";
@@ -73,10 +72,6 @@ export const router = createBrowserRouter([
             {
                 path: '/terms',
                 element: <TermsOfService />,
-            },
-            {
-                path: '/player/:trackId?',
-                element: <MacroPlayer />,
             },
             {
                 element: <PageLayout />,

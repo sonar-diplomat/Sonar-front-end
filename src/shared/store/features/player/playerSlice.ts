@@ -1,12 +1,15 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { TrackDTO } from '@entities/Music';
 
+export type QueueTrack = TrackDTO & { _queueId: number };
+
 export interface PlayerState {
   currentTrack: TrackDTO | null;
   pendingTrack: TrackDTO | null; // Трек, который загружается, но еще не готов к воспроизведению
   isLoadingNextTrack: boolean; // Флаг загрузки следующего трека
-  queue: TrackDTO[];
+  queue: QueueTrack[];
   queueIndex: number;
+  queueItemIdCounter: number;
   isPlaying: boolean;
   currentTime: number;
   duration: number;
@@ -14,7 +17,7 @@ export interface PlayerState {
   isMuted: boolean;
   repeatMode: 'off' | 'one' | 'all';
   isShuffled: boolean;
-  originalQueue: TrackDTO[];
+  originalQueue: QueueTrack[];
   collectionContext: {
     type: 'playlist' | 'album' | 'blend' | null;
     id: number | null;
@@ -46,6 +49,7 @@ const initialState: PlayerState = {
   isLoadingNextTrack: false,
   queue: [],
   queueIndex: -1,
+  queueItemIdCounter: 0,
   isPlaying: false,
   currentTime: 0,
   duration: 0,
@@ -68,11 +72,14 @@ const playerSlice = createSlice({
     },
     
     setQueue: (state, action: PayloadAction<{ tracks: TrackDTO[]; startIndex?: number; collectionContext?: { type: 'playlist' | 'album' | 'blend'; id: number } }>) => {
-      state.queue = action.payload.tracks;
+      state.queue = action.payload.tracks.map(track => ({
+        ...track,
+        _queueId: state.queueItemIdCounter++
+      }));
       state.queueIndex = action.payload.startIndex ?? 0;
-      state.currentTrack = action.payload.tracks[state.queueIndex] || null;
+      state.currentTrack = state.queue[state.queueIndex] || null;
       state.currentTime = 0;
-      state.originalQueue = action.payload.tracks;
+      state.originalQueue = [...state.queue];
       state.collectionContext = action.payload.collectionContext ?? null;
 
       let favoritesChanged = false;
@@ -98,16 +105,24 @@ const playerSlice = createSlice({
     },
     
     addToQueue: (state, action: PayloadAction<TrackDTO>) => {
-      state.queue.push(action.payload);
+      const queueTrack: QueueTrack = {
+        ...action.payload,
+        _queueId: state.queueItemIdCounter++
+      };
+      state.queue.push(queueTrack);
       if (state.queue.length === 1) {
         state.queueIndex = 0;
-        state.currentTrack = action.payload;
+        state.currentTrack = queueTrack;
       }
     },
     
     addToQueueNext: (state, action: PayloadAction<TrackDTO>) => {
       const insertIndex = state.queueIndex + 1;
-      state.queue.splice(insertIndex, 0, action.payload);
+      const queueTrack: QueueTrack = {
+        ...action.payload,
+        _queueId: state.queueItemIdCounter++
+      };
+      state.queue.splice(insertIndex, 0, queueTrack);
     },
     
     removeFromQueue: (state, action: PayloadAction<number>) => {
@@ -143,10 +158,18 @@ const playerSlice = createSlice({
     
 
     playTrack: (state, action: PayloadAction<TrackDTO>) => {
-        state.currentTrack = action.payload;
+        const queueTrack: QueueTrack = {
+            ...action.payload,
+            _queueId: state.queueItemIdCounter++
+        };
+
+        state.queue = [queueTrack];
+        state.queueIndex = 0;
+        state.currentTrack = queueTrack;
         state.isPlaying = true;
         state.currentTime = 0;
         state.collectionContext = null;
+        state.originalQueue = [queueTrack];
 
         if (action.payload.isFavorite !== undefined) {
             const trackId = action.payload.id;
@@ -177,12 +200,15 @@ const playerSlice = createSlice({
         state.isPlaying = true;
         state.currentTime = 0;
 
-
         const existingIndex = state.queue.findIndex(t => t.id === state.currentTrack!.id);
         if (existingIndex >= 0) {
           state.queueIndex = existingIndex;
         } else {
-          state.queue.push(state.currentTrack);
+          const queueTrack: QueueTrack = {
+            ...state.currentTrack,
+            _queueId: state.queueItemIdCounter++
+          };
+          state.queue.push(queueTrack);
           state.queueIndex = state.queue.length - 1;
         }
       }
@@ -229,7 +255,35 @@ const playerSlice = createSlice({
         state.isPlaying = true;
       }
     },
-    
+
+    playFromQueue: (state, action: PayloadAction<number>) => {
+      const queueId = action.payload;
+      const trackIndex = state.queue.findIndex(t => t._queueId === queueId);
+
+      if (trackIndex !== -1) {
+        if (state.collectionContext) {
+          state.queueIndex = trackIndex;
+          state.currentTrack = state.queue[trackIndex];
+          state.currentTime = 0;
+          state.isPlaying = true;
+        } else {
+          state.queue = state.queue.slice(trackIndex);
+          state.queueIndex = 0;
+          state.currentTrack = state.queue[0];
+          state.currentTime = 0;
+          state.isPlaying = true;
+
+          if (state.isShuffled) {
+            state.originalQueue = state.originalQueue.filter(t =>
+              state.queue.some(qt => qt._queueId === t._queueId)
+            );
+          } else {
+            state.originalQueue = [...state.queue];
+          }
+        }
+      }
+    },
+
     togglePlayPause: (state) => {
       state.isPlaying = !state.isPlaying;
     },
@@ -322,6 +376,7 @@ export const {
   playTrack,
   playNext,
   playPrevious,
+  playFromQueue,
   togglePlayPause,
   play,
   pause,

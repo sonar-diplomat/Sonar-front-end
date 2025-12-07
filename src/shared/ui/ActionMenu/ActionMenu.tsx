@@ -159,10 +159,35 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
     onClose();
   }, [onClose]);
 
-  const addToQueue = useCallback((_trackId: number) => {
-    // TODO: Implement adding track to player queue
-    showSuccess('Track added to queue');
-  }, [showSuccess]);
+  const addToQueue = useCallback(async (trackId: number) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/Track/${trackId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken') || ''}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch track data');
+      }
+
+      const result = await response.json();
+      const trackData = result.data;
+
+      if (!trackData) {
+        throw new Error('Track data not found');
+      }
+
+      const { store } = await import('@shared/store');
+      const { addToQueue: addToQueueAction } = await import('@shared/store/features/player');
+      store.dispatch(addToQueueAction(trackData));
+
+      showSuccess('Track added to queue');
+    } catch (error) {
+      console.error('Failed to add track to queue:', error);
+      showError('Failed to add track to queue');
+    }
+  }, [showSuccess, showError]);
 
   const toggleFavorite = useCallback(async (collectionType: string, collectionId: number) => {
     await toggleCollectionFavorite(collectionType, collectionId);

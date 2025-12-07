@@ -6,19 +6,24 @@ import React from "react";
 export const AudioPlayerController = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const pendingAudioRef = useRef<HTMLAudioElement | null>(null);
+  const isPlayingRef = useRef<boolean>(false);
   const {
     currentTrack,
     pendingTrack,
     isLoadingNextTrack,
     isPlaying,
-    currentTime,
     volume,
     isMuted,
+    queueIndex,
     setCurrentTime,
     setDuration,
     confirmTrackSwitch,
     playNext,
   } = usePlayer();
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -100,14 +105,9 @@ export const AudioPlayerController = () => {
       return;
     }
 
-    // Проверяем, не загружен ли уже этот трек
-    const currentTrackId = currentTrack.id;
-    const isTrackAlreadyLoaded = audio.src && audio.src.includes(`blob:`) && audio.readyState > 0;
-
-    // Если трек уже загружен и это тот же трек, не перезагружаем
-    if (isTrackAlreadyLoaded) {
-      return;
-    }
+    audio.pause();
+    audio.currentTime = 0;
+    setCurrentTime(0);
 
     let blobUrl: string | null = null;
 
@@ -127,32 +127,23 @@ export const AudioPlayerController = () => {
         console.log('[AudioPlayer] Current track stream loaded successfully');
 
         audio.src = blobUrl;
-        
-        // Восстанавливаем позицию воспроизведения после загрузки метаданных
-        const handleLoadedMetadata = () => {
-          audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-          if (currentTime > 0 && currentTime < audio.duration) {
-            audio.currentTime = currentTime;
-          }
-        };
-        
-        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
         audio.load();
 
-        if (isPlaying) {
-          // Ждем, пока трек будет готов к воспроизведению
-          await new Promise<void>((resolve) => {
-            const handleCanPlay = () => {
-              audio.removeEventListener('canplay', handleCanPlay);
-              resolve();
-            };
-            if (audio.readyState >= 3) {
-              resolve();
-            } else {
-              audio.addEventListener('canplay', handleCanPlay);
-            }
-          });
-          await audio.play();
+        if (isPlayingRef.current) {
+          const handleCanPlay = () => {
+            audio.removeEventListener('canplay', handleCanPlay);
+            audio.play().catch((error) => {
+              console.error('[AudioPlayer] Error auto-playing new track:', error);
+            });
+          };
+
+          if (audio.readyState >= 3) {
+            audio.play().catch((error) => {
+              console.error('[AudioPlayer] Error auto-playing new track:', error);
+            });
+          } else {
+            audio.addEventListener('canplay', handleCanPlay);
+          }
         }
       } catch (error) {
         console.error('[AudioPlayer] Error loading current track:', error);
@@ -167,7 +158,7 @@ export const AudioPlayerController = () => {
         URL.revokeObjectURL(blobUrl);
       }
     };
-  }, [currentTrack, pendingTrack]); // Убрали isPlaying из зависимостей, чтобы не перезагружать трек при паузе
+  }, [queueIndex, currentTrack?.id, pendingTrack, setCurrentTime]);
 
   // Предзагрузка pendingTrack в фоне
   useEffect(() => {
@@ -392,17 +383,13 @@ export const AudioPlayerController = () => {
     }
 
     if (isPlaying) {
-      // Восстанавливаем позицию воспроизведения перед возобновлением
-      if (currentTime > 0 && Math.abs(audio.currentTime - currentTime) > 0.5) {
-        audio.currentTime = currentTime;
-      }
       audio.play().catch((error) => {
         console.error('[AudioPlayer] Error playing audio:', error);
       });
     } else {
       audio.pause();
     }
-  }, [isPlaying, currentTime]);
+  }, [isPlaying]);
 
   useEffect(() => {
     const audio = audioRef.current;
