@@ -14,6 +14,7 @@ import {
   useSearchArtists,
   useSearchUsers,
 } from '@shared/store/features/search/useSearch';
+import { useInfiniteSearchTracks } from '@shared/store/features/search/useInfiniteSearchTracks';
 import { useSearchQuery } from '@shared/api';
 import type {
   TrackSearchItemDTO,
@@ -32,11 +33,16 @@ export const Search: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const { updateListeningTarget } = useUserState();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const tracksSectionRef = useRef<HTMLDivElement>(null);
 
   // Определяем, нужно ли выполнять поиск
   const shouldSearch = debouncedSearchQuery.trim().length > 0;
 
-  // Используем новые хуки с кэшированием для всех категорий
+  // Используем хук для бесконечной прокрутки треков
+  const infiniteTracksResult = useInfiniteSearchTracks(debouncedSearchQuery);
+
+  // Используем новые хуки с кэшированием для всех категорий (для обратной совместимости)
   const tracksResult = useSearchTracks(debouncedSearchQuery, 20);
   const playlistsResult = useSearchPlaylists(debouncedSearchQuery, 20);
   const artistsResult = useSearchArtists(debouncedSearchQuery, 20);
@@ -58,8 +64,12 @@ export const Search: React.FC = () => {
   );
 
   // Подготавливаем данные для категорий
+  // Для треков используем данные из бесконечной прокрутки, если они доступны
   const tracksData = selectedCategory === 'Radio' || selectedCategory === 'All' 
-    ? { items: tracksResult.tracks, total: tracksResult.tracks.length } 
+    ? { 
+        items: infiniteTracksResult.tracks.length > 0 ? infiniteTracksResult.tracks : tracksResult.tracks, 
+        total: infiniteTracksResult.tracks.length > 0 ? infiniteTracksResult.tracks.length : tracksResult.tracks.length 
+      } 
     : null;
   const playlistsData = selectedCategory === 'Playlists' || selectedCategory === 'All'
     ? { items: playlistsResult.playlists, total: playlistsResult.playlists.length }
@@ -142,6 +152,7 @@ export const Search: React.FC = () => {
 
   const currentData = getDataForCategory();
   const isLoading = isSearchLoading || 
+    (infiniteTracksResult.isLoading && infiniteTracksResult.tracks.length === 0) ||
     tracksResult.isLoading || 
     playlistsResult.isLoading || 
     artistsResult.isLoading || 
@@ -192,7 +203,10 @@ export const Search: React.FC = () => {
       (selectedCategory === 'All' && currentData.tracks) ||
       (selectedCategory === 'Radio' && tracksData)
     ) {
-      const tracks = selectedCategory === 'All' ? currentData.tracks?.items : tracksData?.items;
+      // Используем данные из бесконечной прокрутки, если они доступны
+      const tracks = selectedCategory === 'All' 
+        ? (infiniteTracksResult.tracks.length > 0 ? infiniteTracksResult.tracks : currentData.tracks?.items)
+        : tracksData?.items;
       if (tracks && tracks.length > 0) {
         result.push({
           id: 'tracks',
@@ -368,8 +382,61 @@ export const Search: React.FC = () => {
     setSearchQuery(value);
   }, []);
 
+  // Обработчик прокрутки для бесконечной загрузки треков
+  useEffect(() => {
+    // Ищем контейнер прокрутки - это может быть .scrollableContent из PageLayout
+    const findScrollContainer = (): HTMLElement | null => {
+      if (!scrollContainerRef.current) return null;
+      
+      // Пытаемся найти родительский контейнер с классом scrollableContent
+      let element: HTMLElement | null = scrollContainerRef.current.parentElement;
+      while (element) {
+        if (element.classList.contains('scrollableContent')) {
+          return element;
+        }
+        element = element.parentElement;
+      }
+      
+      return null;
+    };
+
+    const container = findScrollContainer();
+    if (!container) return;
+
+    const handleScroll = () => {
+      // Проверяем, нужно ли загружать больше треков
+      if (
+        (selectedCategory === 'All' || selectedCategory === 'Radio') &&
+        infiniteTracksResult.hasMore &&
+        !infiniteTracksResult.isLoadingMore &&
+        !infiniteTracksResult.isLoading
+      ) {
+        const scrollTop = container.scrollTop;
+        const scrollHeight = container.scrollHeight;
+        const clientHeight = container.clientHeight;
+        const scrollBottom = scrollHeight - scrollTop - clientHeight;
+
+        // Загружаем следующую страницу, если пользователь прокрутил до 200px от конца
+        if (scrollBottom < 200) {
+          void infiniteTracksResult.loadMore();
+        }
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [
+    selectedCategory,
+    infiniteTracksResult.hasMore,
+    infiniteTracksResult.isLoadingMore,
+    infiniteTracksResult.isLoading,
+    infiniteTracksResult.loadMore,
+  ]);
+
   return (
-    <div className={styles.container}>
+    <div className={styles.container} ref={scrollContainerRef}>
       <SearchFilterHeader
         title="Search"
         selectedCategory={selectedCategory}
@@ -395,7 +462,14 @@ export const Search: React.FC = () => {
         <div className={styles.emptyState}>No results found</div>
       )}
       {shouldSearch && !isLoading && sections.length > 0 && (
-        <ContentSections sections={sections} />
+        <>
+          <ContentSections sections={sections} />
+          {infiniteTracksResult.isLoadingMore && (selectedCategory === 'All' || selectedCategory === 'Radio') && (
+            <div style={{ padding: '20px', textAlign: 'center' }}>
+              <LoadingPlaceholder variant="spinner" />
+            </div>
+          )}
+        </>
       )}
     </div>
   );
