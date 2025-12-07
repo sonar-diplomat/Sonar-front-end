@@ -4,8 +4,9 @@ import type { NormalizedApiResponse } from '@shared/types';
 export interface NotificationItem {
   id: string;
   type: 'success' | 'error';
-  message: string;
-  statusCode?: number;
+  message: string; // Показывается вместо statusCode
+  errors?: string[]; // Показывается вместо message
+  details?: string[]; // Показывается вместо message (если нет errors)
   duration?: number;
 }
 
@@ -13,8 +14,8 @@ interface NotificationContextType {
   notifications: NotificationItem[];
   addNotification: (notification: Omit<NotificationItem, 'id'>) => void;
   removeNotification: (id: string) => void;
-  showSuccess: (message: string, statusCode?: number) => void;
-  showError: (message: string, statusCode?: number) => void;
+  showSuccess: (message: string) => void;
+  showError: (message: string, errorsOrDetails?: string[] | string) => void;
   showApiResponse: <T>(response: NormalizedApiResponse<T>) => void;
   clearAll: () => void;
 }
@@ -35,19 +36,20 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   }, []);
 
-  const showSuccess = useCallback((message: string, statusCode?: number) => {
+  const showSuccess = useCallback((message: string) => {
     const id = generateId();
     setNotifications((prev) => [
       ...prev,
-      { id, type: 'success', message, statusCode },
+      { id, type: 'success', message },
     ]);
   }, []);
 
-  const showError = useCallback((message: string, statusCode?: number) => {
+  const showError = useCallback((message: string, errorsOrDetails?: string[] | string) => {
     const id = generateId();
+    const errors = Array.isArray(errorsOrDetails) ? errorsOrDetails : errorsOrDetails ? [errorsOrDetails] : undefined;
     setNotifications((prev) => [
       ...prev,
-      { id, type: 'error', message, statusCode },
+      { id, type: 'error', message, errors },
     ]);
   }, []);
 
@@ -55,10 +57,12 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     const id = generateId();
     const message = response.message || (response.success ? 'Success' : 'An error occurred');
     const type = response.success ? 'success' : 'error';
+    const errors = response.errors && response.errors.length > 0 ? response.errors : undefined;
+    const details = !errors && response.details && response.details.length > 0 ? response.details : undefined;
 
     setNotifications((prev) => [
       ...prev,
-      { id, type, message, statusCode: response.status },
+      { id, type, message, errors, details },
     ]);
   }, []);
 

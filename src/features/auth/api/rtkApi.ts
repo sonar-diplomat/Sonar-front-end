@@ -83,6 +83,15 @@ export const authApi = rtkApi.injectEndpoints({
       }),
     }),
 
+    confirmEmail: builder.mutation<void, { email: string; token: string }>({
+      query: ({ email, token }) => ({
+        url: API_ENDPOINTS.auth.confirmEmail,
+        method: 'POST',
+        params: { email, token },
+        withAuth: false,
+      }),
+    }),
+
     confirmPasswordChange: builder.mutation<void, ConfirmPasswordChangeDTO>({
       query: (data) => ({
         url: API_ENDPOINTS.auth.changePassword,
@@ -129,6 +138,7 @@ export const {
   useRefreshTokenMutation,
   useRequestEmailChangeMutation,
   useConfirmEmailChangeMutation,
+  useConfirmEmailMutation,
   useConfirmPasswordChangeMutation,
   useRequestPasswordChangeMutation,
   useRevokeSessionMutation,

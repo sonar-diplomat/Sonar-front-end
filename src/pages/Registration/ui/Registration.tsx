@@ -30,6 +30,10 @@ export const Registration: React.FC = () => {
     setCurrentStep('password');
   };
 
+  const handleRegistrationDataChange = (data: RegistrationFormData) => {
+    setRegistrationData(data);
+  };
+
   const handlePasswordSubmit = async (data: PasswordFormData) => {
     if (!registrationData) return;
 
@@ -50,18 +54,10 @@ export const Registration: React.FC = () => {
       showSuccess('Registration successful! Please check your email for verification.');
       setCurrentStep('confirmation');
     } else {
-      showError(res.message || 'Registration failed', res.status);
+      showError(res.message || 'Registration failed', res.errors || res.details);
     }
   };
 
-  const handleEmailConfirm = (code: string) => {
-    console.log('Email confirmed with code:', code);
-    navigate('/login');
-  };
-
-  const handleResendCode = () => {
-    console.log('Resending verification code to:', email);
-  };
 
   const handleBack = () => {
     if (currentStep === 'registration') {
@@ -76,17 +72,23 @@ export const Registration: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <Button
-        icon={<LeftArrow/>}
-        children={'Back'}
-        size={'small'}
-        variant={'filled'}
-        theme={'dark'}
-        onClick={handleBack}
-      />
+      {currentStep !== 'confirmation' && (
+        <Button
+          icon={<LeftArrow/>}
+          children={'Back'}
+          size={'small'}
+          variant={'filled'}
+          theme={'dark'}
+          onClick={handleBack}
+        />
+      )}
 
       {currentStep === 'registration' && (
-        <RegistrationForm onSubmit={handleRegistrationSubmit} />
+        <RegistrationForm 
+          onSubmit={handleRegistrationSubmit}
+          data={registrationData}
+          onDataChange={handleRegistrationDataChange}
+        />
       )}
 
       {currentStep === 'password' && (
@@ -94,11 +96,7 @@ export const Registration: React.FC = () => {
       )}
 
       {currentStep === 'confirmation' && (
-        <EmailConfirmation
-          email={email}
-          onConfirm={handleEmailConfirm}
-          onResend={handleResendCode}
-        />
+        <EmailConfirmation />
       )}
     </div>
   );

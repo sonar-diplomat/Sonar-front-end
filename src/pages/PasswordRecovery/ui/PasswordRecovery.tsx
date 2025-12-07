@@ -23,7 +23,7 @@ export const PasswordRecovery: React.FC = () => {
             showSuccess('Password recovery email sent!');
             setShowConfirmation(true);
         } else {
-            showError(res.message || 'Failed to send password recovery email', res.status);
+            showError(res.message || 'Failed to send password recovery email', res.errors || res.details);
         }
     };
 

@@ -8,6 +8,7 @@ import {
     TestPage,
     PasswordRecovery,
     AssignNewPassword,
+    ConfirmEmail,
     Library,
     Create,
     CreatePlaylist,
@@ -69,6 +70,10 @@ export const router = createBrowserRouter([
             {
                 path: '/assign-new-password',
                 element: <AssignNewPassword/>
+            },
+            {
+                path: '/confirm-email',
+                element: <ConfirmEmail/>
             },
             {
                 path: '/terms',
