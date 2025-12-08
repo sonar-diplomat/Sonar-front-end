@@ -13,6 +13,7 @@ import {
   playTrack,
   playNext,
   playPrevious,
+  playFromQueue,
   togglePlayPause,
   play,
   pause,
@@ -96,6 +97,13 @@ export const usePlayer = () => {
     dispatch(playPrevious());
   }, [dispatch]);
 
+  const handlePlayFromQueue = useCallback(
+    (queueId: number) => {
+      dispatch(playFromQueue(queueId));
+    },
+    [dispatch]
+  );
+
   const handleTogglePlayPause = useCallback(() => {
     dispatch(togglePlayPause());
   }, [dispatch]);
@@ -171,6 +179,7 @@ export const usePlayer = () => {
     playTrack: handlePlayTrack,
     playNext: handlePlayNext,
     playPrevious: handlePlayPrevious,
+    playFromQueue: handlePlayFromQueue,
     togglePlayPause: handleTogglePlayPause,
     play: handlePlay,
     pause: handlePause,
