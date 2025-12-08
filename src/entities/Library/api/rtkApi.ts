@@ -97,14 +97,30 @@ export const libraryApi = rtkApi.injectEndpoints({
       },
     }),
 
+    moveCollectionToFolder: builder.mutation<void, { collectionId: number; targetFolderId: number }>({
+      query: ({ collectionId, targetFolderId }) => ({
+        url: API_ENDPOINTS.folder.moveCollection(collectionId, targetFolderId),
+        method: 'PUT',
+        withAuth: true,
+      }),
+      invalidatesTags: (_result, _error, { targetFolderId }) => [
+        { type: 'Folder', id: targetFolderId },
+        { type: 'Folder', id: 'LIST' },
+      ],
+      async onQueryStarted(_arg, { dispatch }) {
+        store.dispatch(markDirty());
+      },
+    }),
+
     moveFolder: builder.mutation<void, { folderId: number; newParentFolderId: number }>({
       query: ({ folderId, newParentFolderId }) => ({
         url: API_ENDPOINTS.folder.move(folderId, newParentFolderId),
         method: 'PUT',
         withAuth: true,
       }),
-      invalidatesTags: (_result, _error, { folderId }) => [
+      invalidatesTags: (_result, _error, { folderId, newParentFolderId }) => [
         { type: 'Folder', id: folderId },
+        { type: 'Folder', id: newParentFolderId },
         { type: 'Folder', id: 'LIST' },
       ],
       async onQueryStarted(_arg, { dispatch }) {
@@ -123,6 +139,7 @@ export const {
   useDeleteFolderMutation,
   useAddCollectionToFolderMutation,
   useRemoveCollectionFromFolderMutation,
+  useMoveCollectionToFolderMutation,
   useMoveFolderMutation,
 } = libraryApi;
 

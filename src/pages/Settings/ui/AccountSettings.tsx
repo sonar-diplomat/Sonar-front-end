@@ -57,7 +57,7 @@ export const AccountSettings: React.FC = () => {
       setNewUsername('');
       showSuccess('Username updated successfully!');
     } catch (err: any) {
-      showError(err?.data?.message || 'Failed to update username');
+      showError(err?.data?.message || 'Failed to update username', err?.data?.errors || err?.data?.details);
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +77,7 @@ export const AccountSettings: React.FC = () => {
       setNewEmail('');
       showSuccess('Verification email sent. Please check your inbox and click the confirmation link.');
     } catch (err: any) {
-      showError(err?.data?.message || 'Failed to request email change');
+      showError(err?.data?.message || 'Failed to request email change', err?.data?.errors || err?.data?.details);
     } finally {
       setIsLoading(false);
     }
@@ -116,7 +116,7 @@ export const AccountSettings: React.FC = () => {
       setTokenSent(false);
       showSuccess('Password changed successfully!');
     } catch (err: any) {
-      showError(err?.data?.message || 'Failed to change password');
+      showError(err?.data?.message || 'Failed to change password', err?.data?.errors || err?.data?.details);
     } finally {
       setIsLoading(false);
     }
@@ -136,7 +136,7 @@ export const AccountSettings: React.FC = () => {
       setNewPublicIdentifier('');
       showSuccess('Public identifier updated successfully!');
     } catch (err: any) {
-      showError(err?.data?.message || 'Failed to update public identifier');
+      showError(err?.data?.message || 'Failed to update public identifier', err?.data?.errors || err?.data?.details);
     } finally {
       setIsLoading(false);
     }
@@ -156,7 +156,7 @@ export const AccountSettings: React.FC = () => {
       setNewDateOfBirth('');
       showSuccess('Date of birth updated successfully!');
     } catch (err: any) {
-      showError(err?.data?.message || 'Failed to update date of birth');
+      showError(err?.data?.message || 'Failed to update date of birth', err?.data?.errors || err?.data?.details);
     } finally {
       setIsLoading(false);
     }
@@ -280,7 +280,7 @@ export const AccountSettings: React.FC = () => {
                     setTokenSent(true);
                     showSuccess('Verification token sent to your email!');
                   } catch (err: any) {
-                    showError(err?.data?.message || 'Failed to send token');
+                    showError(err?.data?.message || 'Failed to send token', err?.data?.errors || err?.data?.details);
                   } finally {
                     setIsLoading(false);
                   }

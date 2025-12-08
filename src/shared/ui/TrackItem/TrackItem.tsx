@@ -28,12 +28,15 @@ export const TrackItem: React.FC<TrackItemProps> = ({
     return (
         <div className={wrapperClasses} onClick={onClick}>
             <div className={styles.content}>
-                <div
-                    className={styles.image}
-                    style={imageSrc ? { backgroundImage: `url(${imageSrc})` } : undefined}
-                    role="img"
-                    aria-label={imageAlt}
-                />
+                {imageSrc ? (
+                    <img
+                        src={imageSrc}
+                        alt={imageAlt}
+                        className={styles.image}
+                    />
+                ) : (
+                    <div className={styles.image} />
+                )}
                 <div className={styles.textContainer}>
                     <p className={styles.title}>{title}</p>
                     <p className={styles.artist}>{artist}</p>

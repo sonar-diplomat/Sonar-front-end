@@ -34,7 +34,7 @@ export const PrivacySettings: React.FC = () => {
       setHasChanges(false);
       showSuccess('Privacy settings updated successfully!');
     } catch (err: any) {
-      showError(err?.message || 'Failed to update privacy settings');
+      showError(err?.data?.message || err?.message || 'Failed to update privacy settings', err?.data?.errors || err?.data?.details);
     }
   };
   const handleWhichCanViewProfileChange = (value: string | number) => {

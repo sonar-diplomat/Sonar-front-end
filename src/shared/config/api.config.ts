@@ -1,10 +1,10 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
-//export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sonar.pp.ua/api/';
+//export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sonar-dev.pp.ua/api/';
 
 export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://localhost:7124/api/';
-//export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://sonar.pp.ua/api/';
+//export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://sonar-dev.pp.ua/api/';
 
-export const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || 'https://sonar.pp.ua';
+export const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || 'https://sonar-dev.pp.ua/';
 
 export const API_ENDPOINTS = {
     auth: {
@@ -14,7 +14,10 @@ export const API_ENDPOINTS = {
         refreshToken: 'Auth/refresh-token',
         changePassword: 'Auth/confirm-password-change',
         requestPasswordChange: 'Auth/request-password-change',
+        forgotPassword: 'Auth/forgot-password',
+        resetPassword: 'Auth/reset-password',
         confirmEmailChange: 'Auth/confirm-email-change',
+        confirmEmail: 'Auth/confirm-email',
         getMailChangeToken: 'Auth/request-email-change',
         getSessions: 'Auth/sessions',
         revokeSession: (sessionId: number) => `Auth/sessions/${sessionId}/revoke`,
@@ -23,15 +26,19 @@ export const API_ENDPOINTS = {
     user: {
         list: 'User',
         byId: (id: number) => `User/${id}`,
+        profile: (id: number) => `User/${id}/profile`,
+        profileByIdentifier: (identifier: string) => `User/profile/${identifier}`,
         update: 'User/update',
         updateAvatar: 'User/update-avatar',
         updateVisibility: (collectionId: number) => `User/${collectionId}/visibility`,
-        sendFriendRequest: (toUserId: number) => `User/friend-request/${toUserId}`,
-        getPendingFriendRequests: 'User/friend-requests/pending',
-        getSentFriendRequests: 'User/friend-requests/sent',
-        resolveFriendRequest: (requestId: number) => `User/friend-request/${requestId}/resolve`,
         removeFriend: (friendId: number) => `User/friends/${friendId}`,
         getFriends: 'User/friends',
+    },
+    userFollow: {
+        followers: (userId: number) => `UserFollow/${userId}/followers`,
+        following: (userId: number) => `UserFollow/${userId}/following`,
+        follow: (userId: number) => `UserFollow/${userId}/follow`,
+        unfollow: (userId: number) => `UserFollow/${userId}/unfollow`,
     },
     accessFeature: {
         list: 'AccessFeature',
@@ -160,6 +167,7 @@ export const API_ENDPOINTS = {
         delete: (folderId: number) => `Folder/${folderId}`,
         addCollection: (folderId: number, collectionId: number) => `Folder/${folderId}/add-collection/${collectionId}`,
         removeCollection: (folderId: number, collectionId: number) => `Folder/${folderId}/remove-collection/${collectionId}`,
+        moveCollection: (collectionId: number, targetFolderId: number) => `Folder/move-collection/${collectionId}/to-folder/${targetFolderId}`,
         move: (folderId: number, newParentFolderId: number) => `Folder/${folderId}/move/${newParentFolderId}`,
     },
     userState: {

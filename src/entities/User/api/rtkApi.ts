@@ -3,11 +3,11 @@ import { API_ENDPOINTS } from '@shared/config';
 import type {
   User,
   NonSensitiveUserDTO,
+  UserProfileDTO,
   UserUpdateDTO,
-  UserFriendRequestDTO,
-  UserReceivedFriendRequestDTO,
-  UserSentFriendRequestDTO,
   UserFriendDTO,
+  UserFollowerDTO,
+  UserFollowingDTO,
 } from '../model/types';
 
 /**
@@ -31,6 +31,24 @@ export const userApi = rtkApi.injectEndpoints({
         withAuth: false,
       }),
       providesTags: (_result, _error, userId) => [{ type: 'User', id: userId }],
+    }),
+
+    getUserProfile: builder.query<UserProfileDTO, number>({
+      query: (userId) => ({
+        url: API_ENDPOINTS.user.profile(userId),
+        method: 'GET',
+        withAuth: false,
+      }),
+      providesTags: (_result, _error, userId) => [{ type: 'User', id: `PROFILE_${userId}` }],
+    }),
+
+    getUserProfileByIdentifier: builder.query<UserProfileDTO, string>({
+      query: (identifier) => ({
+        url: API_ENDPOINTS.user.profileByIdentifier(identifier),
+        method: 'GET',
+        withAuth: false,
+      }),
+      providesTags: (_result, _error, identifier) => [{ type: 'User', id: `PROFILE_${identifier}` }],
     }),
 
     updateUser: builder.mutation<User, UserUpdateDTO>({
@@ -67,49 +85,6 @@ export const userApi = rtkApi.injectEndpoints({
       }),
     }),
 
-    // Friend Request endpoints
-    sendFriendRequest: builder.mutation<UserFriendRequestDTO, number>({
-      query: (toUserId) => ({
-        url: API_ENDPOINTS.user.sendFriendRequest(toUserId),
-        method: 'POST',
-        withAuth: true,
-      }),
-      invalidatesTags: [
-        { type: 'FriendRequest', id: 'SENT_LIST' },
-        { type: 'FriendRequest', id: 'PENDING_LIST' },
-      ],
-    }),
-
-    getPendingFriendRequests: builder.query<UserReceivedFriendRequestDTO[], void>({
-      query: () => ({
-        url: API_ENDPOINTS.user.getPendingFriendRequests,
-        method: 'GET',
-        withAuth: true,
-      }),
-      providesTags: [{ type: 'FriendRequest', id: 'PENDING_LIST' }],
-    }),
-
-    getSentFriendRequests: builder.query<UserSentFriendRequestDTO[], void>({
-      query: () => ({
-        url: API_ENDPOINTS.user.getSentFriendRequests,
-        method: 'GET',
-        withAuth: true,
-      }),
-      providesTags: [{ type: 'FriendRequest', id: 'SENT_LIST' }],
-    }),
-
-    resolveFriendRequest: builder.mutation<void, { requestId: number; accept: boolean }>({
-      query: ({ requestId, accept }) => ({
-        url: API_ENDPOINTS.user.resolveFriendRequest(requestId),
-        method: 'PUT',
-        params: { accept },
-        withAuth: true,
-      }),
-      invalidatesTags: [
-        { type: 'FriendRequest', id: 'PENDING_LIST' },
-        { type: 'Friend', id: 'LIST' },
-      ],
-    }),
 
     removeFriend: builder.mutation<void, number>({
       query: (friendId) => ({
@@ -128,6 +103,64 @@ export const userApi = rtkApi.injectEndpoints({
       }),
       providesTags: [{ type: 'Friend', id: 'LIST' }],
     }),
+
+    // Profile statistics endpoints
+    getFollowers: builder.query<{ items: UserFollowerDTO[]; count: number }, number>({
+      query: (userId) => ({
+        url: API_ENDPOINTS.userFollow.followers(userId),
+        method: 'GET',
+        withAuth: true,
+      }),
+      transformResponse: (response: UserFollowerDTO[]) => ({
+        items: response,
+        count: response.length,
+      }),
+      providesTags: (_result, _error, userId) => [{ type: 'User', id: `FOLLOWERS_${userId}` }],
+    }),
+
+    getFollowing: builder.query<{ items: UserFollowingDTO[]; count: number }, number>({
+      query: (userId) => ({
+        url: API_ENDPOINTS.userFollow.following(userId),
+        method: 'GET',
+        withAuth: true,
+      }),
+      transformResponse: (response: UserFollowingDTO[]) => ({
+        items: response,
+        count: response.length,
+      }),
+      providesTags: (_result, _error, userId) => [{ type: 'User', id: `FOLLOWING_${userId}` }],
+    }),
+
+    // Follow/Unfollow endpoints
+    followUser: builder.mutation<void, number>({
+      query: (userId) => ({
+        url: API_ENDPOINTS.userFollow.follow(userId),
+        method: 'POST',
+        withAuth: true,
+      }),
+      invalidatesTags: (_result, _error, userId) => [
+        { type: 'User', id: `FOLLOWERS_${userId}` },
+        { type: 'User', id: `FOLLOWING_${userId}` },
+        { type: 'User', id: `PROFILE_${userId}` },
+        { type: 'User', id: 'LIST' },
+        { type: 'Friend', id: 'LIST' },
+      ],
+    }),
+
+    unfollowUser: builder.mutation<void, number>({
+      query: (userId) => ({
+        url: API_ENDPOINTS.userFollow.unfollow(userId),
+        method: 'DELETE',
+        withAuth: true,
+      }),
+      invalidatesTags: (_result, _error, userId) => [
+        { type: 'User', id: `FOLLOWERS_${userId}` },
+        { type: 'User', id: `FOLLOWING_${userId}` },
+        { type: 'User', id: `PROFILE_${userId}` },
+        { type: 'User', id: 'LIST' },
+        { type: 'Friend', id: 'LIST' },
+      ],
+    }),
   }),
 });
 
@@ -135,14 +168,16 @@ export const userApi = rtkApi.injectEndpoints({
 export const {
   useGetUsersQuery,
   useGetUserByIdQuery,
+  useGetUserProfileQuery,
+  useGetUserProfileByIdentifierQuery,
   useUpdateUserMutation,
   useUpdateUserAvatarMutation,
   useUpdateUserVisibilityMutation,
-  useSendFriendRequestMutation,
-  useGetPendingFriendRequestsQuery,
-  useGetSentFriendRequestsQuery,
-  useResolveFriendRequestMutation,
   useRemoveFriendMutation,
   useGetFriendsQuery,
+  useGetFollowersQuery,
+  useGetFollowingQuery,
+  useFollowUserMutation,
+  useUnfollowUserMutation,
 } = userApi;
 

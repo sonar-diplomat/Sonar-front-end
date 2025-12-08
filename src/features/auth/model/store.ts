@@ -10,6 +10,8 @@ import {
   useConfirmEmailChangeMutation,
   useConfirmPasswordChangeMutation,
   useRequestPasswordChangeMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
   useGetSessionsQuery,
   useRevokeSessionMutation,
   useRevokeAllSessionsMutation,
@@ -19,6 +21,8 @@ import type {
     ConfirmPasswordChangeDTO,
     UserRegisterDTO,
     Verify2FaDTO,
+    ForgotPasswordDTO,
+    ResetPasswordDTO,
 } from '@features/auth'
 
 export const useRegister = () => {
@@ -222,6 +226,54 @@ export const useRequestPasswordChange = () => {
             return { success: true, data: undefined }
         } catch (error: any) {
             const errorMsg = error?.data?.message || error?.message || 'Request password change failed'
+            return {
+                success: false,
+                status: error?.status || 400,
+                message: errorMsg,
+                errors: error?.data?.errors || [errorMsg],
+                details: error?.data?.details,
+            }
+        }
+    }, [trigger])
+    return useMemo(() => ({
+        loading: result.isLoading,
+        error: result.error ? (result.error as any)?.data?.message || (result.error as any)?.message : undefined,
+        mutate,
+    }), [result.isLoading, result.error, mutate])
+}
+
+export const useForgotPassword = () => {
+    const [trigger, result] = useForgotPasswordMutation()
+    const mutate = useCallback(async (dto: ForgotPasswordDTO) => {
+        try {
+            await trigger(dto).unwrap()
+            return { success: true, data: undefined }
+        } catch (error: any) {
+            const errorMsg = error?.data?.message || error?.message || 'Forgot password request failed'
+            return {
+                success: false,
+                status: error?.status || 400,
+                message: errorMsg,
+                errors: error?.data?.errors || [errorMsg],
+                details: error?.data?.details,
+            }
+        }
+    }, [trigger])
+    return useMemo(() => ({
+        loading: result.isLoading,
+        error: result.error ? (result.error as any)?.data?.message || (result.error as any)?.message : undefined,
+        mutate,
+    }), [result.isLoading, result.error, mutate])
+}
+
+export const useResetPassword = () => {
+    const [trigger, result] = useResetPasswordMutation()
+    const mutate = useCallback(async (dto: ResetPasswordDTO) => {
+        try {
+            await trigger(dto).unwrap()
+            return { success: true, data: undefined }
+        } catch (error: any) {
+            const errorMsg = error?.data?.message || error?.message || 'Reset password failed'
             return {
                 success: false,
                 status: error?.status || 400,

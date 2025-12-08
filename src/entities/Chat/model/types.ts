@@ -8,6 +8,7 @@ export interface ChatDTO {
     coverId: number;
     creatorId: number;
     userIds: number[];
+    adminIds: number[];
 }
 
 export interface CreateChatDTO {

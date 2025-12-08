@@ -45,10 +45,15 @@ export const TrackEmbed: React.FC<TrackEmbedProps> = ({ trackId, url }) => {
 
   return (
     <div className={styles.embed} onClick={handleClick} role="button" tabIndex={0}>
-      <div
-        className={styles.cover}
-        style={{ backgroundImage: coverImageUrl ? `url(${coverImageUrl})` : 'none' }}
-      />
+      <div className={styles.cover}>
+        {coverImageUrl && (
+          <img
+            src={coverImageUrl}
+            alt={track.title}
+            className={styles.coverImage}
+          />
+        )}
+      </div>
       <div className={styles.content}>
         <div className={styles.titleRow}>
           <span className={styles.title}>{track.title}</span>

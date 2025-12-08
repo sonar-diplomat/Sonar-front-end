@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 16px;
+  background-color: #000;
+}
+
+@media (min-width: 426px) {
+  .container {
+    max-width: 425px;
+    margin: 0 auto;
+  }
+}
+

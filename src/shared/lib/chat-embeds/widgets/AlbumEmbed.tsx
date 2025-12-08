@@ -43,16 +43,24 @@ export const AlbumEmbed: React.FC<AlbumEmbedProps> = ({ albumId, url }) => {
     ? `${API_BASE_URL}${API_ENDPOINTS.blob.image(album.coverId)}`
     : undefined;
 
-  // AlbumResponseDTO имеет distributorName и authors, но AlbumDTO может иметь distributor и albumArtists
-  const authors = album.albumArtists?.map((aa) => aa.pseudonym).join(', ') || (album as any).distributorName || '';
+  // AlbumResponseDTO имеет authors с pseudonym
+  const authors = (album as any).authors?.map((a: any) => a.pseudonym).join(', ') 
+    || album.albumArtists?.map((aa) => aa.pseudonym).join(', ')
+    || (album as any).distributorName 
+    || '';
 
   return (
     <div className={styles.embed} onClick={handleClick} role="button" tabIndex={0}>
       <div className={styles.type}>Album</div>
-      <div
-        className={styles.cover}
-        style={{ backgroundImage: coverImageUrl ? `url(${coverImageUrl})` : 'none' }}
-      />
+      <div className={styles.cover}>
+        {coverImageUrl && (
+          <img
+            src={coverImageUrl}
+            alt={album.name}
+            className={styles.coverImage}
+          />
+        )}
+      </div>
       <div className={styles.content}>
         <div className={styles.titleRow}>
           <span className={styles.title}>{album.name}</span>

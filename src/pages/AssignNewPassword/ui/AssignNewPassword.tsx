@@ -4,13 +4,13 @@ import { Button, LeftArrow } from "@shared/ui";
 import { AssignNewPassword as AssignNewPasswordFeature } from "@features/password-recovery";
 import type { AssignNewPasswordFormData } from "@features/password-recovery";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useConfirmPasswordChange } from "@features/auth/model/store.ts";
+import { useResetPassword } from "@features/auth/model/store.ts";
 import { useNotifications } from "@shared/store/notificationStore";
 
 export const AssignNewPassword: React.FC = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const { loading, mutate: confirmPasswordChange } = useConfirmPasswordChange();
+    const { loading, mutate: resetPassword } = useResetPassword();
     const { showSuccess, showError } = useNotifications();
 
     const handleBack = () => {
@@ -19,18 +19,29 @@ export const AssignNewPassword: React.FC = () => {
 
     const handleAssignNewPasswordSubmit = async (data: AssignNewPasswordFormData) => {
         const token = searchParams.get('token') || '';
+        const email = searchParams.get('email') || '';
 
-        const res = await confirmPasswordChange({
+        if (!token || !email) {
+            showError('Missing required parameters', ['Token and email are required in the URL']);
+            return;
+        }
+
+        if (data.password !== data.repeatPassword) {
+            showError('Passwords do not match', ['Please make sure both passwords are the same']);
+            return;
+        }
+
+        const res = await resetPassword({
+            Email: email,
             Token: token,
             NewPassword: data.password,
-            OldPassword: '',
         });
 
         if (res.success) {
             showSuccess('Password updated successfully!');
             navigate("/login");
         } else {
-            showError(res.message || 'Failed to update password', res.status);
+            showError(res.message || 'Failed to update password', res.errors || res.details);
         }
     };
 

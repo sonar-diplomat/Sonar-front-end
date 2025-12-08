@@ -6,6 +6,7 @@
   align-items: center;
   justify-content: space-between;
   width: calc(100vw - 32px);
+  max-width: 650px;
   height: var(--navbar-height);
   gap: 8px;
   flex-shrink: 0;

@@ -11,12 +11,20 @@
 .trackPreview {
     width: calc(100% - 16px);
     height: 205px;
-    background-size: cover;
-    background-position: center;
     border-radius: 24px;
     margin: 8px 8px 0 8px;
     position: relative;
     overflow: hidden;
+}
+
+.trackImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
 }
 
 .trackOverlay {
@@ -27,6 +35,7 @@
     align-items: flex-end;
     justify-content: flex-end;
     padding: 8px;
+    z-index: 1;
 }
 
 .playButton {

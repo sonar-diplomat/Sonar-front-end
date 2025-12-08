@@ -8,3 +8,22 @@
     padding: 16px 16px 32px 16px;
     gap: 32px;
 }
+
+@media (min-width: 426px) {
+    .container {
+        max-width: 425px;
+        width: 100%;
+        margin: 0 auto;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .container > *:not(:first-child) {
+        width: 100%;
+    }
+    
+    .container > *:first-child {
+        align-self: flex-start;
+        width: auto;
+    }
+}

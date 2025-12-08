@@ -6,7 +6,7 @@ import styles from './ChipsBar.module.css';
 
 import type {ChipsBarProps, Category} from './ChipsBar.types';
 
-const defaultCategories: Category[] = ['All', 'Creators', 'Playlists', 'Radio'];
+const defaultCategories: Category[] = ['All', 'Tracks', 'Albums', 'Playlists', 'Artists', 'Users'];
 
 export const ChipsBar: React.FC<ChipsBarProps> = ({
     selectedCategory: controlledCategory,

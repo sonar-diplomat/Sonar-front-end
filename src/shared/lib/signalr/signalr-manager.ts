@@ -1,5 +1,6 @@
 import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType, LogLevel } from '@microsoft/signalr';
 import { authManager } from '../auth/auth-manager';
+import { API_BASE_URL } from '@shared/config';
 
 /**
  * SignalR Manager for managing WebSocket connection with chats
@@ -14,8 +15,9 @@ class SignalRManager {
       return '/hubs/chat';
     }
     
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
-    const baseUrl = apiBaseUrl.replace(/\/api\/?$/, '');
+    // Hub замаплен на /hubs/chat (БЕЗ /api/) на бэкенде
+    // Используем базовый URL без /api/
+    const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
     return `${baseUrl}/hubs/chat`;
   }
 

@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDebounce } from '@shared/lib/hooks/useDebounce';
 import { getImageUrlById } from '@shared/lib/image-utils';
 import { useUserState } from '@shared/store/features/userState/useUserState';
@@ -13,6 +14,7 @@ import {
   useSearchArtists,
   useSearchUsers,
 } from '@shared/store/features/search/useSearch';
+import { useInfiniteSearchTracks } from '@shared/store/features/search/useInfiniteSearchTracks';
 import { useSearchQuery } from '@shared/api';
 import type {
   TrackSearchItemDTO,
@@ -26,20 +28,32 @@ import type {
 import styles from './Search.module.css';
 
 export const Search: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const { updateListeningTarget } = useUserState();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const tracksSectionRef = useRef<HTMLDivElement>(null);
 
   // Определяем, нужно ли выполнять поиск
   const shouldSearch = debouncedSearchQuery.trim().length > 0;
 
-  // Используем новые хуки с кэшированием для всех категорий
+  // Используем хук для бесконечной прокрутки треков
+  const infiniteTracksResult = useInfiniteSearchTracks(debouncedSearchQuery);
+
+  // Используем новые хуки с кэшированием для всех категорий (для обратной совместимости)
   const tracksResult = useSearchTracks(debouncedSearchQuery, 20);
   const playlistsResult = useSearchPlaylists(debouncedSearchQuery, 20);
   const artistsResult = useSearchArtists(debouncedSearchQuery, 20);
   const usersResult = useSearchUsers(debouncedSearchQuery, 20);
   const albumsResult = useSearchAlbums(debouncedSearchQuery, 20);
+
+  // Функция для преобразования категории в формат бэкенда (lowercase)
+  const getBackendCategory = (category: Category): SearchCategory | undefined => {
+    if (category === 'All') return 'All';
+    return category as SearchCategory;
+  };
 
   // Для категории "All" используем общий поиск, но также используем кэш из отдельных хуков
   const {
@@ -49,26 +63,30 @@ export const Search: React.FC = () => {
   } = useSearchQuery(
     {
       query: debouncedSearchQuery,
-      category: 'All',
+      category: getBackendCategory(selectedCategory),
       limit: 20,
     },
     { skip: !shouldSearch || selectedCategory !== 'All' }
   );
 
   // Подготавливаем данные для категорий
-  const tracksData = selectedCategory === 'Radio' || selectedCategory === 'All' 
-    ? { items: tracksResult.tracks, total: tracksResult.tracks.length } 
+  // Для треков используем данные из бесконечной прокрутки, если они доступны
+  const tracksData = selectedCategory === 'Tracks' || selectedCategory === 'All' 
+    ? { 
+        items: infiniteTracksResult.tracks.length > 0 ? infiniteTracksResult.tracks : tracksResult.tracks, 
+        total: infiniteTracksResult.tracks.length > 0 ? infiniteTracksResult.tracks.length : tracksResult.tracks.length 
+      } 
     : null;
   const playlistsData = selectedCategory === 'Playlists' || selectedCategory === 'All'
     ? { items: playlistsResult.playlists, total: playlistsResult.playlists.length }
     : null;
-  const artistsData = selectedCategory === 'Creators' || selectedCategory === 'All'
+  const artistsData = selectedCategory === 'Artists' || selectedCategory === 'All'
     ? { items: artistsResult.artists, total: artistsResult.artists.length }
     : null;
-  const usersData = selectedCategory === 'Creators' || selectedCategory === 'All'
+  const usersData = selectedCategory === 'Users' || selectedCategory === 'All'
     ? { items: usersResult.users, total: usersResult.users.length }
     : null;
-  const albumsData = selectedCategory === 'All'
+  const albumsData = selectedCategory === 'Albums' || selectedCategory === 'All'
     ? { items: albumsResult.albums, total: albumsResult.albums.length }
     : null;
 
@@ -119,20 +137,16 @@ export const Search: React.FC = () => {
         
         return null;
       }
-      case 'Radio':
+      case 'Tracks':
         return tracksData ? { query: debouncedSearchQuery, totalResults: tracksData.total, tracks: tracksData } : null;
+      case 'Albums':
+        return albumsData ? { query: debouncedSearchQuery, totalResults: albumsData.total, albums: albumsData } : null;
       case 'Playlists':
         return playlistsData ? { query: debouncedSearchQuery, totalResults: playlistsData.total, playlists: playlistsData } : null;
-      case 'Creators':
-        const creatorsTotal = (artistsData?.total || 0) + (usersData?.total || 0);
-        return artistsData && usersData
-          ? {
-              query: debouncedSearchQuery,
-              totalResults: creatorsTotal,
-              artists: artistsData,
-              users: usersData,
-            }
-          : null;
+      case 'Artists':
+        return artistsData ? { query: debouncedSearchQuery, totalResults: artistsData.total, artists: artistsData } : null;
+      case 'Users':
+        return usersData ? { query: debouncedSearchQuery, totalResults: usersData.total, users: usersData } : null;
       default:
         return null;
     }
@@ -140,6 +154,7 @@ export const Search: React.FC = () => {
 
   const currentData = getDataForCategory();
   const isLoading = isSearchLoading || 
+    (infiniteTracksResult.isLoading && infiniteTracksResult.tracks.length === 0) ||
     tracksResult.isLoading || 
     playlistsResult.isLoading || 
     artistsResult.isLoading || 
@@ -174,9 +189,8 @@ export const Search: React.FC = () => {
   }, []);
 
   const handleUserClick = useCallback((user: UserSearchItemDTO) => {
-    console.log('Opening user:', user);
-    // TODO: Navigate to user page when routing is implemented
-  }, []);
+    navigate(`/user/${user.publicIdentifier}`);
+  }, [navigate]);
 
   // Формирование секций для отображения
   const sections = useMemo<ContentSection[]>(() => {
@@ -186,18 +200,21 @@ export const Search: React.FC = () => {
 
     const result: ContentSection[] = [];
 
-    // Секция треков (для All и Radio)
+    // Секция треков (для All и Tracks)
     if (
       (selectedCategory === 'All' && currentData.tracks) ||
-      (selectedCategory === 'Radio' && tracksData)
+      (selectedCategory === 'Tracks' && tracksData)
     ) {
-      const tracks = selectedCategory === 'All' ? currentData.tracks?.items : tracksData?.items;
+      // Используем данные из бесконечной прокрутки, если они доступны
+      const tracks = selectedCategory === 'All' 
+        ? (infiniteTracksResult.tracks.length > 0 ? infiniteTracksResult.tracks : currentData.tracks?.items)
+        : tracksData?.items;
       if (tracks && tracks.length > 0) {
         result.push({
           id: 'tracks',
           title: 'Tracks',
           countLabel: 'tracks',
-          shouldShow: selectedCategory === 'All' || selectedCategory === 'Radio',
+          shouldShow: selectedCategory === 'All' || selectedCategory === 'Tracks',
           items: tracks,
           renderItem: (track: unknown) => {
             const trackItem = track as TrackSearchItemDTO;
@@ -219,14 +236,19 @@ export const Search: React.FC = () => {
       }
     }
 
-    // Секция альбомов (только для All)
-    if (selectedCategory === 'All' && currentData?.albums && currentData.albums.items.length > 0) {
+    // Секция альбомов (для All и Albums)
+    if (
+      (selectedCategory === 'All' && currentData?.albums && currentData.albums.items.length > 0) ||
+      (selectedCategory === 'Albums' && albumsData && albumsData.items.length > 0)
+    ) {
+      const albums = selectedCategory === 'All' ? currentData.albums?.items : albumsData?.items;
+      if (albums && albums.length > 0) {
         result.push({
           id: 'albums',
           title: 'Albums',
           countLabel: 'albums',
-          shouldShow: true,
-          items: currentData.albums.items,
+          shouldShow: selectedCategory === 'All' || selectedCategory === 'Albums',
+          items: albums,
           renderItem: (album: unknown) => {
             const albumItem = album as AlbumSearchItemDTO;
             return (
@@ -245,6 +267,7 @@ export const Search: React.FC = () => {
           );
           },
         });
+      }
     }
 
     // Секция плейлистов
@@ -282,10 +305,10 @@ export const Search: React.FC = () => {
       }
     }
 
-    // Секция артистов (для All и Creators)
+    // Секция артистов (для All и Artists)
     if (
       (selectedCategory === 'All' && currentData.artists) ||
-      (selectedCategory === 'Creators' && artistsData)
+      (selectedCategory === 'Artists' && artistsData)
     ) {
       const artists =
         selectedCategory === 'All' ? currentData.artists?.items : artistsData?.items;
@@ -294,7 +317,7 @@ export const Search: React.FC = () => {
           id: 'artists',
           title: 'Artists',
           countLabel: 'artists',
-          shouldShow: selectedCategory === 'All' || selectedCategory === 'Creators',
+          shouldShow: selectedCategory === 'All' || selectedCategory === 'Artists',
           items: artists,
           renderItem: (artist: unknown) => {
             const artistItem = artist as ArtistSearchItemDTO;
@@ -315,10 +338,10 @@ export const Search: React.FC = () => {
       }
     }
 
-    // Секция пользователей (для All и Creators)
+    // Секция пользователей (для All и Users)
     if (
       (selectedCategory === 'All' && currentData.users) ||
-      (selectedCategory === 'Creators' && usersData)
+      (selectedCategory === 'Users' && usersData)
     ) {
       const users = selectedCategory === 'All' ? currentData.users?.items : usersData?.items;
       if (users && users.length > 0) {
@@ -326,7 +349,7 @@ export const Search: React.FC = () => {
           id: 'users',
           title: 'Users',
           countLabel: 'users',
-          shouldShow: selectedCategory === 'All' || selectedCategory === 'Creators',
+          shouldShow: selectedCategory === 'All' || selectedCategory === 'Users',
           items: users,
           renderItem: (user: unknown) => {
             const userItem = user as UserSearchItemDTO;
@@ -367,8 +390,61 @@ export const Search: React.FC = () => {
     setSearchQuery(value);
   }, []);
 
+  // Обработчик прокрутки для бесконечной загрузки треков
+  useEffect(() => {
+    // Ищем контейнер прокрутки - это может быть .scrollableContent из PageLayout
+    const findScrollContainer = (): HTMLElement | null => {
+      if (!scrollContainerRef.current) return null;
+      
+      // Пытаемся найти родительский контейнер с классом scrollableContent
+      let element: HTMLElement | null = scrollContainerRef.current.parentElement;
+      while (element) {
+        if (element.classList.contains('scrollableContent')) {
+          return element;
+        }
+        element = element.parentElement;
+      }
+      
+      return null;
+    };
+
+    const container = findScrollContainer();
+    if (!container) return;
+
+    const handleScroll = () => {
+      // Проверяем, нужно ли загружать больше треков
+      if (
+        (selectedCategory === 'All' || selectedCategory === 'Tracks') &&
+        infiniteTracksResult.hasMore &&
+        !infiniteTracksResult.isLoadingMore &&
+        !infiniteTracksResult.isLoading
+      ) {
+        const scrollTop = container.scrollTop;
+        const scrollHeight = container.scrollHeight;
+        const clientHeight = container.clientHeight;
+        const scrollBottom = scrollHeight - scrollTop - clientHeight;
+
+        // Загружаем следующую страницу, если пользователь прокрутил до 200px от конца
+        if (scrollBottom < 200) {
+          void infiniteTracksResult.loadMore();
+        }
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [
+    selectedCategory,
+    infiniteTracksResult.hasMore,
+    infiniteTracksResult.isLoadingMore,
+    infiniteTracksResult.isLoading,
+    infiniteTracksResult.loadMore,
+  ]);
+
   return (
-    <div className={styles.container}>
+    <div className={styles.container} ref={scrollContainerRef}>
       <SearchFilterHeader
         title="Search"
         selectedCategory={selectedCategory}
@@ -394,7 +470,14 @@ export const Search: React.FC = () => {
         <div className={styles.emptyState}>No results found</div>
       )}
       {shouldSearch && !isLoading && sections.length > 0 && (
-        <ContentSections sections={sections} />
+        <>
+          <ContentSections sections={sections} />
+          {infiniteTracksResult.isLoadingMore && (selectedCategory === 'All' || selectedCategory === 'Tracks') && (
+            <div style={{ padding: '20px', textAlign: 'center' }}>
+              <LoadingPlaceholder variant="spinner" />
+            </div>
+          )}
+        </>
       )}
     </div>
   );

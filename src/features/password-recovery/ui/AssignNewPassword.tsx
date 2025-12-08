@@ -44,6 +44,7 @@ export const AssignNewPassword: React.FC<AssignNewPasswordProps> = ({
                         onChange={(e) => updateField('password', e.target.value)}
                         icon={showPassword ? <EyeIcon/> : <EyeOffIcon/>}
                         onIconClick={() => setShowPassword(!showPassword)}
+                        iconClickable={true}
                         iconPosition={"suffix"}
                         helperText={passwordRequirementsText}
                         required={true}
@@ -55,9 +56,6 @@ export const AssignNewPassword: React.FC<AssignNewPasswordProps> = ({
                         placeholder="************"
                         value={formData.repeatPassword}
                         onChange={(e) => updateField('repeatPassword', e.target.value)}
-                        icon={showRepeatPassword ? <EyeIcon/> : <EyeOffIcon/>}
-                        onIconClick={() => setShowRepeatPassword(!showRepeatPassword)}
-                        iconPosition={"suffix"}
                         required={true}
                     />
                 </div>
