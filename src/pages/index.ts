@@ -11,6 +11,7 @@ export { UserProfile } from './UserProfile';
 export { ArtistProfile } from './ArtistProfile';
 export { Collection } from './Collection';
 export { NotFound } from './NotFound';
+export { MainPage } from './MainPage';
 
 export {
     Settings,

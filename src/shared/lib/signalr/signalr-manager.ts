@@ -2,9 +2,6 @@ import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportT
 import { authManager } from '../auth/auth-manager';
 import { API_BASE_URL } from '@shared/config';
 
-/**
- * SignalR Manager for managing WebSocket connection with chats
- */
 class SignalRManager {
   private connection: HubConnection | null = null;
   private joinedChats: Set<number> = new Set();
@@ -15,8 +12,6 @@ class SignalRManager {
       return '/hubs/chat';
     }
     
-    // Hub замаплен на /hubs/chat (БЕЗ /api/) на бэкенде
-    // Используем базовый URL без /api/
     const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
     return `${baseUrl}/hubs/chat`;
   }
