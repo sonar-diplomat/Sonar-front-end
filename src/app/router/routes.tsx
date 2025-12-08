@@ -85,10 +85,6 @@ export const router = createBrowserRouter([
                 element: <TermsOfService />,
             },
             {
-                path: '/player/:trackId?',
-                element: <MacroPlayer />,
-            },
-            {
                 element: <PageLayout />,
                 children: [
                     {

@@ -12,6 +12,16 @@
   background: #FFE5DD;
   gap: 12px;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.microPlayer:hover {
+  transform: scale(1.01);
+}
+
+.microPlayer:active {
+  transform: scale(0.99);
 }
 
 .cover {

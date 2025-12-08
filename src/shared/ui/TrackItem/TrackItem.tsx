@@ -8,16 +8,25 @@ export const TrackItem: React.FC<TrackItemProps> = ({
     artist,
     imageSrc,
     imageAlt = '',
+    onClick,
     onMenuClick,
     className = ''
 }) => {
     const wrapperClasses = [
         styles.trackItem,
+        onClick ? styles.clickable : '',
         className,
     ].filter(Boolean).join(' ');
 
+    const handleMenuClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (onMenuClick) {
+            onMenuClick(e);
+        }
+    };
+
     return (
-        <div className={wrapperClasses}>
+        <div className={wrapperClasses} onClick={onClick}>
             <div className={styles.content}>
                 {imageSrc ? (
                     <img
@@ -36,7 +45,7 @@ export const TrackItem: React.FC<TrackItemProps> = ({
             {onMenuClick && (
                 <button
                     className={styles.menuButton}
-                    onClick={onMenuClick}
+                    onClick={handleMenuClick}
                     aria-label="More options"
                 >
                     <MoreIcon className={styles.menuIcon} />

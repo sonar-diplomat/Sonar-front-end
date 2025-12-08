@@ -3,6 +3,7 @@ export interface TrackItemProps {
     artist: string;
     imageSrc?: string;
     imageAlt?: string;
-    onMenuClick?: () => void;
+    onClick?: () => void;
+    onMenuClick?: (e: React.MouseEvent) => void;
     className?: string;
 }
