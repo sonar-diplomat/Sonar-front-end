@@ -19,7 +19,7 @@ export const GetPremiumCard: React.FC<Props> = ({ onClick }) => {
                 <PremiumShapeIcon />
 
                 <div className={styles.arrow}>
-                    <RightArrow />
+                    <RightArrow color="#000000" />
                 </div>
             </div>
         </section>

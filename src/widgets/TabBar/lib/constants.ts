@@ -7,7 +7,7 @@ export const TAB_ITEMS: TabItem[] = [
     id: 'home',
     label: 'Home',
     icon: HomeIcon,
-    path: '/',
+    path: '/home',
   },
   {
     id: 'search',

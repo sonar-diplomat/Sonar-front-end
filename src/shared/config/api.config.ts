@@ -1,8 +1,8 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
 //export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sonar-dev.pp.ua/api/';
 
-export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://localhost:7124/api/';
-//export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://sonar-dev.pp.ua/api/';
+//export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://localhost:7124/api/';
+export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://sonar-dev.pp.ua/api/';
 
 export const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || 'https://sonar-dev.pp.ua/';
 

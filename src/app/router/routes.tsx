@@ -30,6 +30,7 @@ import {
     Chat,
     UserInfo,
     MacroPlayer,
+    MainPage,
 } from "@pages";
 import {Login} from "@pages/Login";
 import {TermsOfService} from "@pages/Terms/TermsOfService/TermsOfService.tsx";
@@ -90,6 +91,10 @@ export const router = createBrowserRouter([
             {
                 element: <PageLayout />,
                 children: [
+                    {
+                        path: 'home',
+                        element: <MainPage />,
+                    },
                     {
                         path: 'library',
                         children: [
@@ -154,6 +159,10 @@ export const router = createBrowserRouter([
                             { path: ':chatId', element: <Chat /> },
                             { path: ':chatId/info', element: <UserInfo /> },
                         ],
+                    },
+                    {
+                        path: 'premium',
+                        element: <NotFound />,
                     },
                 ],
             }, 
