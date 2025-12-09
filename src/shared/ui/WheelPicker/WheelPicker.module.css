@@ -58,13 +58,12 @@
 /* Highlight wrapper - the selected item background */
 .highlightWrapper {
   position: absolute;
-  left: 50%;
-  top: 47%;
-  transform: translate(-50%, -50%);
-  width: 280px;
+  left: -28px;
+  right: -28px;
+  top: 88px;
   pointer-events: none;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.20);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 16px;
   height: 44px;
 }
