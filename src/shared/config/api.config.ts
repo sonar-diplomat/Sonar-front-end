@@ -1,5 +1,5 @@
-//export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sonar-dev.pp.ua/api/';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
+//export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sonar-dev.pp.ua/api/';
 
 //export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://localhost:7124/api/';
 export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://sonar-dev.pp.ua/api/';
@@ -174,8 +174,10 @@ export const API_ENDPOINTS = {
         updateCurrentPosition: 'UserState/current-position',
         updateListeningTarget: (trackId: number, collectionId?: number) => 
             collectionId ? `UserState/listening/${trackId}/${collectionId}` : `UserState/listening/${trackId}`,
+        getQueue: 'UserState/queue',
         addToQueue: 'UserState/queue',
         deleteFromQueue: 'UserState/queue',
+        saveQueue: 'UserState/queue',
         updateStatus: (statusId: number) => `UserState/status/${statusId}`,
         updatePrimarySession: 'UserState/session',
     },

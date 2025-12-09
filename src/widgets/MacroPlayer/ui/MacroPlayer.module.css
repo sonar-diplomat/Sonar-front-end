@@ -128,7 +128,7 @@
   margin: 0;
 }
 
-.likeButton {
+.shuffleButton {
   background: rgba(255, 255, 255, 0.1);
   border: none;
   border-radius: 12px;
@@ -143,22 +143,23 @@
   transition: all 0.2s;
 }
 
-.likeButton:hover:not(:disabled) {
+.shuffleButton:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.15);
   transform: scale(1.05);
 }
 
-.likeButton:active:not(:disabled) {
+.shuffleButton:active:not(:disabled) {
   transform: scale(0.95);
 }
 
-.likeButton:disabled {
+.shuffleButton:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
 
-.likeButton.liked {
-  color: #FF3B30;
+.shuffleButton.shuffleActive {
+  background: rgba(255, 255, 255, 0.25);
+  color: #4A9EFF;
 }
 
 /* Progress Section */

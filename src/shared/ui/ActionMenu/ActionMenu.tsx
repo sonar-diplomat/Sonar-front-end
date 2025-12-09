@@ -2,12 +2,13 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './ActionMenu.module.css';
 import { Modal } from '@shared/ui';
-import { ShareIcon, WarningIcon, HeartIcon, PlusIcon, ProfileIcon, LibraryIcon } from '@shared/ui';
+import { ShareIcon, WarningIcon, HeartIcon, PlusIcon } from '@shared/ui';
 import { ShareComponent } from '@widgets/ShareComponent';
 import type { ShareEntityType } from '@widgets/ShareComponent';
 import { ReportComponent } from '@widgets/ReportComponent';
 import { useToggleCollectionFavorite } from '@entities/Collection';
 import { useNotifications } from '@shared/store/notificationStore';
+import { usePlayer } from '@shared/store/features/player';
 
 export type ActionMenuContextType = 'track' | 'album' | 'playlist' | 'artist' | 'user';
 
@@ -77,10 +78,10 @@ const contextualActions: ActionConfig[] = [
     handler: async (context, helpers) => {
       try {
         await helpers.toggleFavorite(context.type, context.entityId);
-        helpers.showSuccess('Collection added to library');
+        helpers.showSuccess('Library updated');
         helpers.closeMenu();
       } catch (error) {
-        helpers.showError('Failed to add collection to library');
+        helpers.showError('Failed to update library');
       }
     },
   },
@@ -136,6 +137,16 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
 
   const { mutate: toggleCollectionFavorite } = useToggleCollectionFavorite();
   const { showSuccess, showError } = useNotifications();
+
+  const { favoriteTrackIds } = usePlayer();
+
+  const isInLibrary = useMemo(() => {
+    // Only check for tracks - collections don't have client-side favorite state
+    if (context.type === 'track') {
+      return favoriteTrackIds.includes(context.entityId);
+    }
+    return false;
+  }, [favoriteTrackIds, context]);
 
   const handleShare = useCallback(() => {
     setShowShareModal(true);
@@ -204,13 +215,24 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
 
   const contextActions = useMemo((): ActionMenuItem[] => {
     const configs = ACTION_CONFIGS[context.type] || [];
-    return configs.map(config => ({
-      id: config.id,
-      label: config.label,
-      icon: config.icon,
-      onClick: () => config.handler(context, helpers),
-    }));
-  }, [context, helpers]);
+    return configs.map(config => {
+      if (config.id === 'add-to-library') {
+        return {
+          id: config.id,
+          label: isInLibrary ? 'Remove from Library' : 'Add to Library',
+          icon: config.icon,
+          onClick: () => config.handler(context, helpers),
+        };
+      }
+
+      return {
+        id: config.id,
+        label: config.label,
+        icon: config.icon,
+        onClick: () => config.handler(context, helpers),
+      };
+    });
+  }, [context, helpers, isInLibrary]);
 
   const commonActions = useMemo((): ActionMenuItem[] => [
     {

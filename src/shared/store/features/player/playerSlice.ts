@@ -8,6 +8,7 @@ export interface PlayerState {
     pendingTrack: TrackDTO | null; // Трек, который загружается, но еще не готов к воспроизведению
     isLoadingNextTrack: boolean; // Флаг загрузки следующего трека
     queue: QueueTrack[];
+    customQueue: QueueTrack[];
     queueIndex: number;
     queueItemIdCounter: number;
     isPlaying: boolean;
@@ -48,6 +49,7 @@ const initialState: PlayerState = {
     pendingTrack: null,
     isLoadingNextTrack: false,
     queue: [],
+    customQueue: [],
     queueIndex: -1,
     queueItemIdCounter: 0,
     isPlaying: false,
@@ -72,11 +74,13 @@ const playerSlice = createSlice({
         },
 
         setQueue: (state, action: PayloadAction<{ tracks: TrackDTO[]; startIndex?: number; collectionContext?: { type: 'playlist' | 'album' | 'blend'; id: number } }>) => {
-            state.queue = action.payload.tracks.map(track => ({
+            const collectionTracks = action.payload.tracks.map(track => ({
                 ...track,
                 _queueId: state.queueItemIdCounter++
             }));
-            state.queueIndex = action.payload.startIndex ?? 0;
+
+            state.queue = [...state.customQueue, ...collectionTracks];
+            state.queueIndex = state.customQueue.length + (action.payload.startIndex ?? 0);
             state.currentTrack = state.queue[state.queueIndex] || null;
             state.currentTime = 0;
             state.originalQueue = [...state.queue];
@@ -109,7 +113,11 @@ const playerSlice = createSlice({
                 ...action.payload,
                 _queueId: state.queueItemIdCounter++
             };
-            state.queue.push(queueTrack);
+
+            state.customQueue.push(queueTrack);
+            const insertIndex = state.queueIndex + 1;
+            state.queue.splice(insertIndex, 0, queueTrack);
+
             if (state.queue.length === 1) {
                 state.queueIndex = 0;
                 state.currentTrack = queueTrack;
@@ -122,11 +130,20 @@ const playerSlice = createSlice({
                 ...action.payload,
                 _queueId: state.queueItemIdCounter++
             };
+
+            state.customQueue.push(queueTrack);
             state.queue.splice(insertIndex, 0, queueTrack);
         },
 
         removeFromQueue: (state, action: PayloadAction<number>) => {
             const indexToRemove = action.payload;
+            const trackToRemove = state.queue[indexToRemove];
+
+            const customQueueIndex = state.customQueue.findIndex(t => t._queueId === trackToRemove?._queueId);
+            if (customQueueIndex !== -1) {
+                state.customQueue.splice(customQueueIndex, 1);
+            }
+
             if (indexToRemove === state.queueIndex) {
                 state.queue.splice(indexToRemove, 1);
                 if (state.queue.length > 0) {
@@ -146,6 +163,7 @@ const playerSlice = createSlice({
 
         clearQueue: (state) => {
             state.queue = [];
+            state.customQueue = [];
             state.queueIndex = -1;
             state.currentTrack = null;
             state.pendingTrack = null;
@@ -164,6 +182,7 @@ const playerSlice = createSlice({
             };
 
             state.queue = [queueTrack];
+            state.customQueue = [];
             state.queueIndex = 0;
             state.currentTrack = queueTrack;
             state.isPlaying = true;
@@ -361,6 +380,35 @@ const playerSlice = createSlice({
             state.favoriteTrackIds = action.payload;
             saveFavoritesToStorage(state.favoriteTrackIds);
         },
+
+        restoreQueue: (state, action: PayloadAction<{
+            queue: TrackDTO[];
+            customQueue: TrackDTO[];
+            queueIndex: number;
+            collectionContext: { type: 'playlist' | 'album' | 'blend'; id: number } | null;
+            currentTime?: number;
+        }>) => {
+            const { queue, customQueue, queueIndex, collectionContext, currentTime } = action.payload;
+
+            state.customQueue = customQueue.map(track => ({
+                ...track,
+                _queueId: state.queueItemIdCounter++
+            }));
+
+            state.queue = queue.map(track => ({
+                ...track,
+                _queueId: state.queueItemIdCounter++
+            }));
+
+            state.queueIndex = queueIndex;
+            state.currentTrack = state.queue[queueIndex] || null;
+            state.collectionContext = collectionContext;
+            state.originalQueue = [...state.queue];
+
+            if (currentTime !== undefined) {
+                state.currentTime = currentTime;
+            }
+        },
     },
 });
 
@@ -388,6 +436,7 @@ export const {
     toggleShuffle,
     toggleFavoriteTrack,
     setFavoriteTracks,
+    restoreQueue,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;

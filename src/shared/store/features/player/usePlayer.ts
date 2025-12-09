@@ -25,6 +25,7 @@ import {
     toggleShuffle,
     toggleFavoriteTrack,
     setFavoriteTracks,
+    restoreQueue,
 } from './playerSlice';
 import type { TrackDTO } from '@entities/Music';
 
@@ -166,6 +167,19 @@ export const usePlayer = () => {
         [dispatch]
     );
 
+    const handleRestoreQueue = useCallback(
+        (queueData: {
+            queue: TrackDTO[];
+            customQueue: TrackDTO[];
+            queueIndex: number;
+            collectionContext: { type: 'playlist' | 'album' | 'blend'; id: number } | null;
+            currentTime?: number;
+        }) => {
+            dispatch(restoreQueue(queueData));
+        },
+        [dispatch]
+    );
+
     return {
         ...playerState,
         setCurrentTrack: handleSetCurrentTrack,
@@ -191,5 +205,6 @@ export const usePlayer = () => {
         toggleShuffle: handleToggleShuffle,
         toggleFavoriteTrackLocal: handleToggleFavoriteTrack,
         setFavoriteTracks: handleSetFavoriteTracks,
+        restoreQueue: handleRestoreQueue,
     };
 };

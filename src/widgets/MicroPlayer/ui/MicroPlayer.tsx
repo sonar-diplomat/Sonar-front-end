@@ -7,6 +7,7 @@ import {useAudioSeek} from '@shared/lib/audio';
 import {getArtistNames} from '@widgets/MiniPlayer/lib/utils';
 import {PlayIcon, PauseIcon, NextIcon, HeartIcon} from '@shared/ui';
 import {MacroPlayer} from '@widgets/MacroPlayer';
+import {getImageUrlById} from '@shared/lib/image-utils';
 
 export const MicroPlayer = () => {
     const [isMacroPlayerOpen, setIsMacroPlayerOpen] = useState(false);
@@ -16,15 +17,18 @@ export const MicroPlayer = () => {
         isPlaying,
         currentTime,
         duration,
+        isShuffled,
         togglePlayPause,
         playNext,
         playPrevious,
         playFromQueue,
+        toggleShuffle,
         collectionContext,
         queue,
         queueIndex,
         favoriteTrackIds,
         toggleFavoriteTrackLocal,
+        removeFromQueue,
     } = usePlayer();
 
     const handleSeek = useAudioSeek();
@@ -34,10 +38,10 @@ export const MicroPlayer = () => {
 
     const [toggleFavoriteApi, {isLoading: togglingFavorite}] = useToggleTrackFavoriteMutation();
 
-    const coverUrl = useMemo(() =>
-            currentTrack ? currentTrack.cover?.url : undefined,
-        [currentTrack]
-    );
+    const coverUrl = useMemo(() => {
+        if (!currentTrack) return undefined;
+        return currentTrack.cover?.url || getImageUrlById(currentTrack.coverId);
+    }, [currentTrack]);
 
     const artistName = useMemo(() => {
         return currentTrack ? getArtistNames(currentTrack) : '';
@@ -73,10 +77,21 @@ export const MicroPlayer = () => {
         playFromQueue(queueId);
     }, [playFromQueue]);
 
-    const handleMicroPlayerClick = (e: React.MouseEvent) => {
+    const handleRemoveFromQueue = useCallback((queueId: number) => {
+        const trackIndex = queue.findIndex(t => (t as any)._queueId === queueId);
+        if (trackIndex !== -1 && trackIndex > queueIndex) {
+            removeFromQueue(trackIndex);
+        }
+    }, [queue, queueIndex, removeFromQueue]);
+
+    const handleMicroPlayerClick = (e: React.MouseEvent | React.TouchEvent) => {
         if ((e.target as HTMLElement).closest(`.${styles.controls}`)) {
             return;
         }
+
+        e.stopPropagation();
+        e.preventDefault();
+
         setIsMacroPlayerOpen(true);
     };
 
@@ -117,7 +132,7 @@ export const MicroPlayer = () => {
         const deltaY = Math.abs(touch.clientY - touchStartY);
 
         if (deltaX < 5 && deltaY < 5) {
-            handleMicroPlayerClick(e as any);
+            handleMicroPlayerClick(e);
         }
 
         delete target.dataset.touchStartX;
@@ -189,13 +204,14 @@ export const MicroPlayer = () => {
                 isPlaying={isPlaying}
                 currentTime={currentTime}
                 duration={duration}
-                isLiked={isFavorite}
+                isShuffled={isShuffled}
                 onPlayPause={togglePlayPause}
                 onNext={playNext}
                 onPrevious={playPrevious}
                 onSeek={handleSeek}
-                onLike={handleToggleFavorite}
+                onShuffle={toggleShuffle}
                 onTrackSelect={handleTrackSelect}
+                onRemoveFromQueue={handleRemoveFromQueue}
             />
         </>
     );

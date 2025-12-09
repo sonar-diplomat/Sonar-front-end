@@ -1,19 +1,21 @@
 import React, { useMemo, useEffect, useCallback, useState } from 'react';
 import styles from './MacroPlayer.module.css';
 import type { MacroPlayerProps } from '../model/types';
-import { Button, LeftArrow, MoreIcon, HeartIcon, PlayIcon, PauseIcon, NextIcon, PreviousIcon, TrackItem, ActionMenu } from '@shared/ui';
+import { Button, LeftArrow, MoreIcon, PlayIcon, PauseIcon, NextIcon, PreviousIcon, TrackItem, ActionMenu, ShuffleIcon } from '@shared/ui';
 import type { ActionMenuContext } from '@shared/ui';
 import { ProgressBar } from '@widgets/MiniPlayer/ui/ProgressBar';
 import { formatTime, getArtistNames } from '@widgets/MiniPlayer/lib/utils';
+import { getImageUrlById } from '@shared/lib/image-utils';
 
-export const MacroPlayer: React.FC<MacroPlayerProps> = ({isOpen, onClose, currentTrack, queue, isPlaying, currentTime, duration, isLiked, onPlayPause, onNext, onPrevious, onSeek, onLike, onTrackSelect}) => {
+export const MacroPlayer: React.FC<MacroPlayerProps> = ({isOpen, onClose, currentTrack, queue, isPlaying, currentTime, duration, isShuffled, onPlayPause, onNext, onPrevious, onSeek, onShuffle, onTrackSelect, onRemoveFromQueue}) => {
     const hasTrack = currentTrack !== null;
     const [actionMenuContext, setActionMenuContext] = useState<ActionMenuContext | null>(null);
+    const [isInteractionEnabled, setIsInteractionEnabled] = useState(false);
 
-    const coverUrl = useMemo(() =>
-            currentTrack ? currentTrack.cover?.url : undefined,
-        [currentTrack]
-    );
+    const coverUrl = useMemo(() => {
+        if (!currentTrack) return undefined;
+        return currentTrack.cover?.url || getImageUrlById(currentTrack.coverId);
+    }, [currentTrack]);
 
     const artistName = useMemo(() => {
         return currentTrack ? getArtistNames(currentTrack) : '';
@@ -43,10 +45,13 @@ export const MacroPlayer: React.FC<MacroPlayerProps> = ({isOpen, onClose, curren
 
     const handleOpenQueueItemMenu = useCallback((track: typeof queue[0], e: React.MouseEvent) => {
         e.stopPropagation();
+        const queueId = (track as any)._queueId;
+
         setActionMenuContext({
             type: 'track',
             entityId: track.id,
             entityName: track.title,
+            additionalData: { queueId },
         });
     }, []);
 
@@ -57,18 +62,51 @@ export const MacroPlayer: React.FC<MacroPlayerProps> = ({isOpen, onClose, curren
         }
     }, [onTrackSelect]);
 
+    const handleRemoveFromQueue = useCallback((queueId: number) => {
+        if (onRemoveFromQueue) {
+            onRemoveFromQueue(queueId);
+            handleCloseActionMenu();
+        }
+    }, [onRemoveFromQueue]);
+
+    const getCustomActionsForQueue = useCallback(() => {
+        if (!actionMenuContext?.additionalData || !('queueId' in actionMenuContext.additionalData)) {
+            return undefined;
+        }
+
+        const queueId = (actionMenuContext.additionalData as any).queueId;
+
+        return [
+            {
+                id: 'remove-from-queue',
+                label: 'Remove from Queue',
+                icon: <MoreIcon />,
+                onClick: () => handleRemoveFromQueue(queueId),
+                isDanger: true,
+            }
+        ];
+    }, [actionMenuContext, handleRemoveFromQueue]);
+
     const handleCloseActionMenu = useCallback(() => {
         setActionMenuContext(null);
     }, []);
 
     useEffect(() => {
-        if (!isOpen) return;
+        if (!isOpen) {
+            setIsInteractionEnabled(false);
+            return;
+        }
 
         const originalOverflow = document.body.style.overflow;
         document.body.style.overflow = 'hidden';
 
+        const timer = setTimeout(() => {
+            setIsInteractionEnabled(true);
+        }, 200);
+
         return () => {
             document.body.style.overflow = originalOverflow;
+            clearTimeout(timer);
         };
     }, [isOpen]);
 
@@ -136,12 +174,19 @@ export const MacroPlayer: React.FC<MacroPlayerProps> = ({isOpen, onClose, curren
                                 {currentTrack?.title || 'No track playing'}
                             </h2>
                             <button
-                                onClick={() => onLike()}
+                                onClick={(e) => {
+                                    if (!isInteractionEnabled) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        return;
+                                    }
+                                    onShuffle();
+                                }}
                                 disabled={!hasTrack}
-                                aria-label={isLiked ? 'Unlike track' : 'Like track'}
-                                className={`${styles.likeButton} ${isLiked ? styles.liked : ''}`}
+                                aria-label="Shuffle"
+                                className={`${styles.shuffleButton} ${isShuffled ? styles.shuffleActive : ''}`}
                             >
-                                <HeartIcon isFilled={isLiked} />
+                                <ShuffleIcon />
                             </button>
                         </div>
                         <p className={styles.artistName}>
@@ -163,7 +208,14 @@ export const MacroPlayer: React.FC<MacroPlayerProps> = ({isOpen, onClose, curren
 
                     <div className={styles.controls}>
                         <button
-                            onClick={onPrevious}
+                            onClick={(e) => {
+                                if (!isInteractionEnabled) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    return;
+                                }
+                                onPrevious();
+                            }}
                             disabled={!hasTrack || !canGoPrevious}
                             aria-label="Previous track"
                             className={styles.controlButton}
@@ -172,7 +224,14 @@ export const MacroPlayer: React.FC<MacroPlayerProps> = ({isOpen, onClose, curren
                         </button>
 
                         <button
-                            onClick={onPlayPause}
+                            onClick={(e) => {
+                                if (!isInteractionEnabled) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    return;
+                                }
+                                onPlayPause();
+                            }}
                             disabled={!hasTrack}
                             aria-label={isPlaying ? 'Pause' : 'Play'}
                             className={styles.playButton}
@@ -181,7 +240,14 @@ export const MacroPlayer: React.FC<MacroPlayerProps> = ({isOpen, onClose, curren
                         </button>
 
                         <button
-                            onClick={onNext}
+                            onClick={(e) => {
+                                if (!isInteractionEnabled) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    return;
+                                }
+                                onNext();
+                            }}
                             disabled={!hasTrack || !canGoNext}
                             aria-label="Next track"
                             className={styles.controlButton}
@@ -199,7 +265,7 @@ export const MacroPlayer: React.FC<MacroPlayerProps> = ({isOpen, onClose, curren
                                         key={(track as any)._queueId ?? `${track.id}-${Math.random()}`}
                                         title={track.title}
                                         artist={getArtistNames(track)}
-                                        imageSrc={track.cover?.url}
+                                        imageSrc={track.cover?.url || getImageUrlById(track.coverId)}
                                         imageAlt={track.title}
                                         onClick={() => handleQueueItemClick(track)}
                                         onMenuClick={(e) => handleOpenQueueItemMenu(track, e)}
@@ -216,6 +282,7 @@ export const MacroPlayer: React.FC<MacroPlayerProps> = ({isOpen, onClose, curren
                     isOpen={true}
                     onClose={handleCloseActionMenu}
                     context={actionMenuContext}
+                    customActions={getCustomActionsForQueue()}
                 />
             )}
         </div>
