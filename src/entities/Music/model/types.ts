@@ -15,6 +15,16 @@ export interface VisibilityStateDTO {
     // extend if needed
 }
 
+export interface GenreDTO {
+    id: number;
+    name: string;
+}
+
+export interface MoodTagDTO {
+    id: number;
+    name: string;
+}
+
 export interface TrackDTO {
     id: number;
     title: string;
@@ -38,12 +48,16 @@ export interface TrackDTO {
         };
     }>;
     isFavorite?: boolean;
+    genre: GenreDTO;
+    moodTags?: MoodTagDTO[];
 }
 
 export interface UpdateTrackDTO {
     title?: string | null;
     isExplicit?: boolean | null;
     drivingDisturbingNoises?: boolean | null;
+    genreId?: number | null;
+    moodTagIds?: number[] | null;
 }
 
 export interface UpdateTrackFileDTO {
