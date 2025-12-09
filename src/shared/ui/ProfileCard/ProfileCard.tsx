@@ -13,7 +13,9 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     stats,
     monthlyListeners,
     title,
-    bio
+    bio,
+    onFollowersClick,
+    onFollowingClick,
 }) => {
     const wrapperClasses = [
         styles.imageCard,
@@ -106,11 +108,11 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                                 <span className={styles.statValue}>{stats.publicPlaylists}</span>
                                 <span className={styles.statLabel}>Public playlists</span>
                             </button>
-                            <button type="button" className={styles.statItem}>
+                            <button type="button" className={styles.statItem} onClick={onFollowersClick}>
                                 <span className={styles.statValue}>{stats.followers}</span>
                                 <span className={styles.statLabel}>Followers</span>
                             </button>
-                            <button type="button" className={styles.statItem}>
+                            <button type="button" className={styles.statItem} onClick={onFollowingClick}>
                                 <span className={styles.statValue}>{stats.following}</span>
                                 <span className={styles.statLabel}>Following</span>
                             </button>

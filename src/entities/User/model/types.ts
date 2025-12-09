@@ -37,6 +37,13 @@ export interface NonSensitiveUserDTO {
     accessFeatures: AccessFeature[]
 }
 
+export interface UserPlaylistDTO {
+    id: number
+    name: string
+    coverId: number
+    trackCount: number
+}
+
 export interface UserProfileDTO {
     id: number
     userName: string
@@ -48,6 +55,7 @@ export interface UserProfileDTO {
     followersCount: number
     followingCount: number
     accessFeatures: AccessFeature[]
+    publicPlaylists: UserPlaylistDTO[]
 }
 
 export interface UserUpdateDTO {

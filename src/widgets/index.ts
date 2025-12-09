@@ -1,5 +1,5 @@
 // Widgets exports
-export * from './ProfileHeader';
+export { ProfileHeader } from './ProfileHeader';
 export * from './ProfileLayout';
 export * from './TabBar';
 export * from './CarouselDots';
@@ -12,7 +12,8 @@ export * from './SearchFilterHeader';
 export * from './ContentSections';
 export * from './TopSongsWidget';
 export * from './TopArtistsWidget';
-export * from './ProfileActionButtons';
+export { ProfileActionButtons } from './ProfileActionButtons';
+export type { ProfileType } from './ProfileActionButtons';
 export * from './Message';
 export * from './SendInput';
 export * from './ChatList';
@@ -22,4 +23,5 @@ export * from './ChatLayout';
 export * from './ReportComponent';
 export * from './ShareComponent';
 export * from './LibrarySkeleton';
+export * from './FollowersFollowingModal';
 
