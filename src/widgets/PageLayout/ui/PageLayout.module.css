@@ -35,6 +35,4 @@
   width: 100vw;
   display: flex;
   justify-content: center;
-  background: linear-gradient(0deg, rgba(21, 21, 21, 0.40) 0%, rgba(21, 21, 21, 0.00) 100%);
-  backdrop-filter: blur(12px);
 }
