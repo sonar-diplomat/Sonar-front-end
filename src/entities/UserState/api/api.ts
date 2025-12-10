@@ -22,14 +22,17 @@ export const Api = {
     /**
      * @deprecated Use useAddToQueueMutation from @shared/api/rtkApi instead
      */
-    addToQueue: (config?: RequestConfig) =>
-        apiClient.post<void>(API_ENDPOINTS.userState.addToQueue, undefined, config),
+    addToQueue: (trackId: number, config?: RequestConfig) =>
+        apiClient.post<void>(API_ENDPOINTS.userState.addToQueue, trackId, config),
 
     /**
      * @deprecated Use useDeleteFromQueueMutation from @shared/api/rtkApi instead
      */
-    deleteFromQueue: (config?: RequestConfig) =>
-        apiClient.delete<void>(API_ENDPOINTS.userState.deleteFromQueue, config),
+    deleteFromQueue: (trackId: number, config?: RequestConfig) =>
+        apiClient.delete<void>(API_ENDPOINTS.userState.deleteFromQueue, {
+            ...config,
+            body: JSON.stringify(trackId) as any,
+        }),
 
     /**
      * @deprecated Use useUpdateUserStatusMutation from @shared/api/rtkApi instead

@@ -93,22 +93,24 @@ export const userStateApi = rtkApi.injectEndpoints({
       },
     }),
 
-    addToQueue: builder.mutation<void, number[]>({
-      query: (trackIds) => ({
+    addToQueue: builder.mutation<void, number>({
+      query: (trackId) => ({
         url: API_ENDPOINTS.userState.addToQueue,
         method: 'POST',
-        body: trackIds,
+        body: trackId,
         withAuth: true,
       }),
+      invalidatesTags: ['Queue'],
     }),
 
-    deleteFromQueue: builder.mutation<void, number[]>({
-      query: (trackIds) => ({
+    deleteFromQueue: builder.mutation<void, number>({
+      query: (trackId) => ({
         url: API_ENDPOINTS.userState.deleteFromQueue,
         method: 'DELETE',
-        body: trackIds,
+        body: trackId,
         withAuth: true,
       }),
+      invalidatesTags: ['Queue'],
     }),
 
     saveQueue: builder.mutation<void, number[]>({

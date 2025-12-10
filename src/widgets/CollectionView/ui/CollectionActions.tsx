@@ -24,23 +24,27 @@ export const CollectionActions: React.FC<CollectionActionsProps> = ({
         <div className={wrapperClasses}>
             {onEditClick && (
                 <Button
-                    size={"small"}
-                    shape={"cr-16"}
+                    variant="filled"
+                    size="small"
+                    shape="cr-16"
                     icon={<EditIcon/>}
-                    theme={"dark"}
-                    children={"edit"}
+                    theme="dark"
                     onClick={onEditClick}
-                />
+                >
+                    edit
+                </Button>
             )}
             {onSortClick && (
                 <Button
-                    size={"small"}
-                    shape={"cr-16"}
+                    variant="filled"
+                    size="small"
+                    shape="cr-16"
                     icon={<SortIcon/>}
-                    theme={"dark"}
-                    children={getSortLabel()}
+                    theme="dark"
                     onClick={onSortClick}
-                />
+                >
+                    {getSortLabel()}
+                </Button>
             )}
         </div>
     );

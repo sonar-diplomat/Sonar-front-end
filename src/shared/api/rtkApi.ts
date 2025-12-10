@@ -36,6 +36,7 @@ export const rtkApi = createApi({
     'Session',
     'Friend',
     'ChatSticker',
+    'Queue',
   ],
   endpoints: () => ({}),
 });

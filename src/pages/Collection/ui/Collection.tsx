@@ -1,7 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './Collection.module.css';
-import { CollectionHeader, CollectionCover, CollectionView, CollectionActions } from '@widgets/CollectionView';
+import {
+    CollectionHeader,
+    CollectionCover,
+    CollectionView,
+    CollectionActions,
+    CollectionPlayPanel
+} from '@widgets/CollectionView';
 import type { Track } from '@widgets/CollectionView';
 import { useGetPlaylistQuery, useGetPlaylistTracksQuery } from '@entities/Playlist/api/rtkApi';
 import { useGetAlbumQuery, useGetAlbumTracksQuery } from '@entities/Album/api/rtkApi';
@@ -9,7 +15,7 @@ import { usePlayTracks } from '@shared/lib/audio/usePlaybackActions';
 import { getImageUrlById } from '@shared/lib/image-utils';
 import type { TrackDTO } from '@entities/Music';
 import { getArtistNames } from '@widgets/MiniPlayer/lib/utils';
-import { LoadingPlaceholder } from '@shared/ui';
+import {ActionMenu, LoadingPlaceholder} from '@shared/ui';
 import { usePlayer } from '@shared/store/features/player';
 
 export interface CollectionProps {
@@ -35,6 +41,7 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
     const collectionId = id ? Number.parseInt(id, 10) : null;
     
     const [sortBy, setSortBy] = useState<'none' | 'title' | 'artist'>('none');
+    const [actionMenuContext, setActionMenuContext] = useState<import('@shared/ui').ActionMenuContext | null>(null);
 
     const playTracks = usePlayTracks();
     const { play } = usePlayer();
@@ -113,7 +120,16 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
     };
     
     const handleMenuClick = () => {
-        console.log('Menu clicked - open collection options');
+        if (!collectionId) return;
+        setActionMenuContext({
+            type,
+            entityId: collectionId,
+            entityName: collectionData.title,
+        });
+    };
+
+    const handleCloseActionMenu = () => {
+        setActionMenuContext(null);
     };
 
     const handlePlayClick = () => {
@@ -140,7 +156,6 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
             tracksToShuffle.sort((a, b) => getArtistNames(a).localeCompare(getArtistNames(b)));
         }
 
-        // Shuffle the tracks
         for (let i = tracksToShuffle.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [tracksToShuffle[i], tracksToShuffle[j]] = [tracksToShuffle[j], tracksToShuffle[i]];
@@ -168,7 +183,14 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
     };
     
     const handleTrackMenuClick = (trackId: string) => {
-        console.log('Track menu clicked:', trackId);
+        const track = tracks.find(t => t.id === trackId);
+        if (!track) return;
+
+        setActionMenuContext({
+            type: 'track',
+            entityId: Number(trackId),
+            entityName: track.title,
+        });
     };
 
     const handleEditClick = () => {
@@ -210,6 +232,8 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
             />
             <CollectionCover
                 imageSrc={collectionData.coverImage}
+            />
+            <CollectionPlayPanel
                 onPlayClick={handlePlayClick}
                 onShuffleClick={handleShuffleClick}
             />
@@ -224,6 +248,13 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
                 onTrackClick={handleTrackClick}
                 onTrackMenuClick={handleTrackMenuClick}
             />
+            {actionMenuContext && (
+                <ActionMenu
+                    isOpen={true}
+                    onClose={handleCloseActionMenu}
+                    context={actionMenuContext}
+                />
+            )}
         </div>
     );
 };
