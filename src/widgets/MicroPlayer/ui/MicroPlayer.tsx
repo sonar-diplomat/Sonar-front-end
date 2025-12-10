@@ -34,7 +34,28 @@ export const MicroPlayer = () => {
     const handleSeek = useAudioSeek();
     const hasTrack = currentTrack !== null;
     const hasNextTrack = collectionContext !== null && queueIndex < queue.length - 1;
-    const isFavorite = currentTrack ? favoriteTrackIds.includes(currentTrack.id) : false;
+    
+    // Sync isFavorite: prefer store state (favoriteTrackIds) as source of truth
+    // but also check track.isFavorite from API to ensure consistency
+    const isFavorite = useMemo(() => {
+        if (!currentTrack) return false;
+        const trackId = currentTrack.id;
+        const isInStore = favoriteTrackIds.includes(trackId);
+        
+        // Store state is the source of truth (it's updated optimistically)
+        // But if track has isFavorite from API and it differs, we should trust the API
+        if (currentTrack.isFavorite !== undefined) {
+            const isFavoriteFromApi = currentTrack.isFavorite;
+            // If API says it's favorite but not in store, trust API
+            // If API says it's not favorite but in store, trust API
+            // Otherwise, use store state
+            if (isFavoriteFromApi !== isInStore) {
+                return isFavoriteFromApi;
+            }
+        }
+        
+        return isInStore;
+    }, [currentTrack, favoriteTrackIds]);
 
     const [toggleFavoriteApi, {isLoading: togglingFavorite}] = useToggleTrackFavoriteMutation();
 

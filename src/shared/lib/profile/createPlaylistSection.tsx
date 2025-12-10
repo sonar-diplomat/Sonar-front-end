@@ -9,7 +9,7 @@ export const createPlaylistSection = (playlists: Playlist[]): ContentSection<Pla
         title: 'Public Playlists',
         countLabel: 'Playlists',
         items: playlists,
-        shouldShow: true,
+        shouldShow: playlists.length > 0,
         renderItem: (playlist: Playlist) => (
             <ItemCard
                 key={playlist.id}

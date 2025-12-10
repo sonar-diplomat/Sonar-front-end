@@ -71,6 +71,30 @@ const playerSlice = createSlice({
         setCurrentTrack: (state, action: PayloadAction<TrackDTO | null>) => {
             state.currentTrack = action.payload;
             state.currentTime = 0;
+            
+            if (action.payload) {
+                const trackId = action.payload.id;
+                const isFavoriteFromApi = action.payload.isFavorite;
+                const isInStore = state.favoriteTrackIds.includes(trackId);
+                
+                if (isFavoriteFromApi !== undefined) {
+                    if (isFavoriteFromApi !== isInStore) {
+                        if (isFavoriteFromApi && !isInStore) {
+                            state.favoriteTrackIds.push(trackId);
+                            saveFavoritesToStorage(state.favoriteTrackIds);
+                        } else if (!isFavoriteFromApi && isInStore) {
+                            const index = state.favoriteTrackIds.indexOf(trackId);
+                            if (index > -1) {
+                                state.favoriteTrackIds.splice(index, 1);
+                                saveFavoritesToStorage(state.favoriteTrackIds);
+                            }
+                        }
+                    }
+                    action.payload.isFavorite = state.favoriteTrackIds.includes(trackId);
+                } else {
+                    action.payload.isFavorite = isInStore;
+                }
+            }
         },
 
         setQueue: (state, action: PayloadAction<{ tracks: TrackDTO[]; startIndex?: number; collectionContext?: { type: 'playlist' | 'album' | 'blend'; id: number } }>) => {
@@ -218,6 +242,34 @@ const playerSlice = createSlice({
                 state.isLoadingNextTrack = false;
                 state.isPlaying = true;
                 state.currentTime = 0;
+
+                // Sync isFavorite from track data with favoriteTrackIds
+                if (state.currentTrack) {
+                    const trackId = state.currentTrack.id;
+                    const isFavoriteFromApi = state.currentTrack.isFavorite;
+                    const isInStore = state.favoriteTrackIds.includes(trackId);
+                    
+                    // If API provides isFavorite, sync it with store
+                    if (isFavoriteFromApi !== undefined) {
+                        if (isFavoriteFromApi !== isInStore) {
+                            if (isFavoriteFromApi && !isInStore) {
+                                state.favoriteTrackIds.push(trackId);
+                                saveFavoritesToStorage(state.favoriteTrackIds);
+                            } else if (!isFavoriteFromApi && isInStore) {
+                                const index = state.favoriteTrackIds.indexOf(trackId);
+                                if (index > -1) {
+                                    state.favoriteTrackIds.splice(index, 1);
+                                    saveFavoritesToStorage(state.favoriteTrackIds);
+                                }
+                            }
+                        }
+                        // Update isFavorite in track to match store state (source of truth)
+                        state.currentTrack.isFavorite = state.favoriteTrackIds.includes(trackId);
+                    } else {
+                        // If API doesn't provide isFavorite, set it based on store
+                        state.currentTrack.isFavorite = isInStore;
+                    }
+                }
 
                 const existingIndex = state.queue.findIndex(t => t.id === state.currentTrack!.id);
                 if (existingIndex >= 0) {
@@ -368,12 +420,29 @@ const playerSlice = createSlice({
         toggleFavoriteTrack: (state, action: PayloadAction<number>) => {
             const trackId = action.payload;
             const index = state.favoriteTrackIds.indexOf(trackId);
-            if (index > -1) {
-                state.favoriteTrackIds.splice(index, 1);
-            } else {
+            const isNowFavorite = index === -1;
+            
+            if (isNowFavorite) {
                 state.favoriteTrackIds.push(trackId);
+            } else {
+                state.favoriteTrackIds.splice(index, 1);
             }
             saveFavoritesToStorage(state.favoriteTrackIds);
+            
+            if (state.currentTrack && state.currentTrack.id === trackId) {
+                state.currentTrack.isFavorite = isNowFavorite;
+            }
+            
+            state.queue.forEach(track => {
+                if (track.id === trackId) {
+                    track.isFavorite = isNowFavorite;
+                }
+            });
+            
+
+            if (state.pendingTrack && state.pendingTrack.id === trackId) {
+                state.pendingTrack.isFavorite = isNowFavorite;
+            }
         },
 
         setFavoriteTracks: (state, action: PayloadAction<number[]>) => {

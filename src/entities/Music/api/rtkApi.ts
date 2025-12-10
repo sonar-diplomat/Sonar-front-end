@@ -70,7 +70,25 @@ export const musicApi = rtkApi.injectEndpoints({
         method: 'POST',
         withAuth: true,
       }),
-      invalidatesTags: (_result, _error, trackId) => [{ type: 'Track', id: trackId }],
+      invalidatesTags: (_result, _error, trackId) => [
+        { type: 'Track', id: trackId },
+        { type: 'Track', id: 'LIST' },
+      ],
+      async onQueryStarted(trackId, { dispatch, queryFulfilled }) { 
+        const patchResult = dispatch(
+          musicApi.util.updateQueryData('getTrack', trackId, (draft) => {
+            if (draft) {
+              draft.isFavorite = !draft.isFavorite;
+            }
+          })
+        );
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
     }),
   }),
 });
