@@ -1,7 +1,6 @@
-import { useEffect, useRef, useCallback } from 'react';
-import { usePlayer } from '@shared/store/features/player';
-import { Api as MusicApi } from '@entities/Music/api/api';
-import React from "react";
+import React, {useCallback, useEffect, useRef} from 'react';
+import {usePlayer} from '@shared/store/features/player';
+import {Api as MusicApi} from '@entities/Music/api/api';
 
 export const AudioPlayerController = () => {
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -15,11 +14,18 @@ export const AudioPlayerController = () => {
         volume,
         isMuted,
         queueIndex,
+        currentTime,
         setCurrentTime,
         setDuration,
         confirmTrackSwitch,
         playNext,
     } = usePlayer();
+
+    const initialTimeRef = useRef<number>(0);
+
+    useEffect(() => {
+        initialTimeRef.current = currentTime;
+    }, [currentTrack?.id, queueIndex]);
 
     useEffect(() => {
         isPlayingRef.current = isPlaying;
@@ -105,23 +111,46 @@ export const AudioPlayerController = () => {
             return;
         }
 
+        let isCancelled = false;
+
         audio.pause();
         audio.currentTime = 0;
-        setCurrentTime(0);
+
+        if (audio.src && audio.src.startsWith('blob:')) {
+            const oldBlobUrl = audio.src;
+            audio.removeAttribute('src');
+            audio.load();
+            URL.revokeObjectURL(oldBlobUrl);
+        }
+        const seekToTime = initialTimeRef.current || 0;
+        if (seekToTime === 0) {
+            setCurrentTime(0);
+        }
 
         let blobUrl: string | null = null;
 
         const loadTrack = async () => {
             try {
-                console.log('[AudioPlayer] Streaming current track:', currentTrack.id);
+                console.log('[AudioPlayer] Streaming current track:', currentTrack.id, 'seek to:', seekToTime);
 
                 const response = await MusicApi.stream(currentTrack.id);
+
+                if (isCancelled) {
+                    console.log('[AudioPlayer] Track loading cancelled');
+                    return;
+                }
 
                 if (!response || !response.ok) {
                     throw new Error(`Stream API returned status: ${response?.status || 'unknown'}`);
                 }
 
                 const blob = await response.blob();
+
+                if (isCancelled) {
+                    console.log('[AudioPlayer] Track loading cancelled after blob');
+                    return;
+                }
+
                 blobUrl = URL.createObjectURL(blob);
 
                 console.log('[AudioPlayer] Current track stream loaded successfully');
@@ -129,21 +158,35 @@ export const AudioPlayerController = () => {
                 audio.src = blobUrl;
                 audio.load();
 
-                if (isPlayingRef.current) {
-                    const handleCanPlay = () => {
-                        audio.removeEventListener('canplay', handleCanPlay);
-                        audio.play().catch((error) => {
-                            console.error('[AudioPlayer] Error auto-playing new track:', error);
-                        });
-                    };
+                const handleLoadedMetadata = () => {
+                    audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
 
-                    if (audio.readyState >= 3) {
+                    if (isCancelled) return;
+
+                    if (seekToTime > 0) {
+                        audio.currentTime = seekToTime;
+                        console.log('[AudioPlayer] Seeked to restored position:', seekToTime);
+                    }
+
+                    if (isPlayingRef.current && !isCancelled) {
                         audio.play().catch((error) => {
                             console.error('[AudioPlayer] Error auto-playing new track:', error);
                         });
-                    } else {
-                        audio.addEventListener('canplay', handleCanPlay);
                     }
+                };
+
+                if (audio.readyState >= 1) {
+                    if (seekToTime > 0 && !isCancelled) {
+                        audio.currentTime = seekToTime;
+                    }
+
+                    if (isPlayingRef.current && !isCancelled) {
+                        audio.play().catch((error) => {
+                            console.error('[AudioPlayer] Error auto-playing new track:', error);
+                        });
+                    }
+                } else {
+                    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
                 }
             } catch (error) {
                 console.error('[AudioPlayer] Error loading current track:', error);
@@ -154,6 +197,7 @@ export const AudioPlayerController = () => {
         void loadTrack();
 
         return () => {
+            isCancelled = true;
             if (blobUrl) {
                 URL.revokeObjectURL(blobUrl);
             }
@@ -315,8 +359,7 @@ export const AudioPlayerController = () => {
 
                                             const fadeInInterval = setInterval(() => {
                                                 fadeInStep++;
-                                                const newVolume = Math.min(targetVolume, volumeStep * fadeInStep);
-                                                mainAudio.volume = newVolume;
+                                                mainAudio.volume = Math.min(targetVolume, volumeStep * fadeInStep);
 
                                                 if (fadeInStep >= steps) {
                                                     clearInterval(fadeInInterval);

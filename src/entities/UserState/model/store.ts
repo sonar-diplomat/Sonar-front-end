@@ -31,9 +31,9 @@ export const useUpdateListeningTarget = () => {
 
 export const useAddToQueue = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
-    const mutate = useCallback(async (cfg?: RequestConfig) => {
+    const mutate = useCallback(async (trackId: number, cfg?: RequestConfig) => {
         setState({ loading: true });
-        const res = await withAuth(() => Api.addToQueue(cfg));
+        const res = await withAuth(() => Api.addToQueue(trackId, cfg));
         setState({ loading: false, error: pickError(res) });
         return res;
     }, []);
@@ -42,9 +42,9 @@ export const useAddToQueue = () => {
 
 export const useDeleteFromQueue = () => {
     const [state, setState] = useState<State<void>>({ loading: false });
-    const mutate = useCallback(async (cfg?: RequestConfig) => {
+    const mutate = useCallback(async (trackId: number, cfg?: RequestConfig) => {
         setState({ loading: true });
-        const res = await withAuth(() => Api.deleteFromQueue(cfg));
+        const res = await withAuth(() => Api.deleteFromQueue(trackId, cfg));
         setState({ loading: false, error: pickError(res) });
         return res;
     }, []);

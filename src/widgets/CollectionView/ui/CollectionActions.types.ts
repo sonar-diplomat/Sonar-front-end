@@ -1,6 +1,6 @@
 export interface CollectionActionsProps {
-    onAddClick?: () => void;
     onEditClick?: () => void;
     onSortClick?: () => void;
+    sortBy?: 'none' | 'title' | 'artist';
     className?: string;
 }

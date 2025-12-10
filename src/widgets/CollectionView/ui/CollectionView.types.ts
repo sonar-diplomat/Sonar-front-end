@@ -9,6 +9,7 @@ export interface Track {
 export interface CollectionViewProps {
     title?: string;
     tracks: Track[];
+    onTrackClick?: (trackId: string) => void;
     onTrackMenuClick?: (trackId: string) => void;
     className?: string;
 }
