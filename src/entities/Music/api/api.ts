@@ -48,12 +48,9 @@ export const Api = {
         const accessToken = authManager.getAccessToken();
         const refreshToken = authManager.getRefreshToken();
 
-        // Если нет токенов вообще, пытаемся автоматически залогиниться
+        // Если нет токенов вообще, требуется логин
         if (!accessToken && !refreshToken) {
-            const loginSuccess = await authManager.autoLogin();
-            if (!loginSuccess) {
-                throw new Error('Authentication required');
-            }
+            throw new Error('Authentication required');
         }
 
         // Если есть access token, проверяем его валидность
@@ -62,12 +59,9 @@ export const Api = {
             if (shouldRefreshToken(accessToken) && refreshToken) {
                 const newToken = await authManager.refreshAccessToken();
                 
-                // Если refresh не удался, пытаемся автологин
+                // Если refresh не удался, требуется новый логин
                 if (!newToken) {
-                    const loginSuccess = await authManager.autoLogin();
-                    if (!loginSuccess) {
-                        throw new Error('Session expired. Please login again');
-                    }
+                    throw new Error('Session expired. Please login again');
                 }
             }
         } else if (refreshToken) {
@@ -75,11 +69,8 @@ export const Api = {
             const newToken = await authManager.refreshAccessToken();
             
             if (!newToken) {
-                // Если refresh не удался, пытаемся автологин
-                const loginSuccess = await authManager.autoLogin();
-                if (!loginSuccess) {
-                    throw new Error('Session expired. Please login again');
-                }
+                // Если refresh не удался, требуется новый логин
+                throw new Error('Session expired. Please login again');
             }
         }
 

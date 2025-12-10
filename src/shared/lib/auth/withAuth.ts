@@ -12,19 +12,15 @@ export async function withAuth<T>(
   const accessToken = authManager.getAccessToken();
   const refreshToken = authManager.getRefreshToken();
 
-  // Если нет токенов вообще, пытаемся автоматически залогиниться
+  // Если нет токенов вообще, требуется логин
   if (!accessToken && !refreshToken) {
-    const loginSuccess = await authManager.autoLogin();
-    
-    if (!loginSuccess) {
-      return {
-        success: false,
-        status: 401,
-        message: 'Authentication required',
-        errors: ['Please login to continue'],
-        details: undefined,
-      };
-    }
+    return {
+      success: false,
+      status: 401,
+      message: 'Authentication required',
+      errors: ['Please login to continue'],
+      details: undefined,
+    };
   }
 
   // Если есть access token, проверяем его валидность
@@ -33,30 +29,8 @@ export async function withAuth<T>(
     if (shouldRefreshToken(accessToken) && refreshToken) {
       const newToken = await authManager.refreshAccessToken();
       
-      // Если refresh не удался и нет токена, пытаемся автологин
+      // Если refresh не удался, требуется новый логин
       if (!newToken) {
-        const loginSuccess = await authManager.autoLogin();
-        
-        if (!loginSuccess) {
-          return {
-            success: false,
-            status: 401,
-            message: 'Authentication required',
-            errors: ['Session expired. Please login again'],
-            details: undefined,
-          };
-        }
-      }
-    }
-  } else if (refreshToken) {
-    // Если нет access token, но есть refresh token, пытаемся обновить
-    const newToken = await authManager.refreshAccessToken();
-    
-    if (!newToken) {
-      // Если refresh не удался, пытаемся автологин
-      const loginSuccess = await authManager.autoLogin();
-      
-      if (!loginSuccess) {
         return {
           success: false,
           status: 401,
@@ -65,6 +39,20 @@ export async function withAuth<T>(
           details: undefined,
         };
       }
+    }
+  } else if (refreshToken) {
+    // Если нет access token, но есть refresh token, пытаемся обновить
+    const newToken = await authManager.refreshAccessToken();
+    
+    if (!newToken) {
+      // Если refresh не удался, требуется новый логин
+      return {
+        success: false,
+        status: 401,
+        message: 'Authentication required',
+        errors: ['Session expired. Please login again'],
+        details: undefined,
+      };
     }
   }
 

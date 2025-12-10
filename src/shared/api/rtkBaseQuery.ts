@@ -98,19 +98,9 @@ export const rtkBaseQuery: BaseQueryFn<
       }
     } else if (!accessToken && !refreshToken) {
       if (import.meta.env.DEV) {
-        console.log('[rtkBaseQuery] No tokens available, attempting auto-login...');
+        console.warn('[rtkBaseQuery] ⚠️ Требуется новый логин - токены отсутствуют');
       }
-      const loginSuccess = await authManager.autoLogin();
-      if (loginSuccess) {
-        accessToken = authManager.getAccessToken();
-        if (import.meta.env.DEV) {
-          console.log('[rtkBaseQuery] Auto-login successful, got access token');
-        }
-      } else {
-        if (import.meta.env.DEV) {
-          console.warn('[rtkBaseQuery] ⚠️ Требуется новый логин - auto-login не удался');
-        }
-      }
+      // Редирект на страницу логина будет выполнен при получении 401
     }
 
     // Устанавливаем токен в headers
@@ -147,6 +137,10 @@ export const rtkBaseQuery: BaseQueryFn<
           // Не устанавливаем Content-Type для FormData - браузер установит автоматически с boundary
         } else if (bodyType === 'raw' && typeof body === 'string') {
           bodyToSend = body;
+          // Устанавливаем Content-Type для raw body (например, для refresh-token)
+          if (!headers['Content-Type']) {
+            headers['Content-Type'] = 'application/json';
+          }
         } else {
           bodyToSend = JSON.stringify(body);
           // Устанавливаем Content-Type только для JSON body
@@ -206,24 +200,9 @@ export const rtkBaseQuery: BaseQueryFn<
             continue; // Retry запрос
           }
         } else {
-          // Пытаемся auto-login
+          // Refresh не удался, требуется новый логин
           if (import.meta.env.DEV) {
-            console.log('[rtkBaseQuery] Token refresh failed, attempting auto-login...');
-          }
-          const loginSuccess = await authManager.autoLogin();
-          if (loginSuccess) {
-            const newToken = authManager.getAccessToken();
-            if (newToken) {
-              headers['Authorization'] = `Bearer ${newToken}`;
-              if (import.meta.env.DEV) {
-                console.log('[rtkBaseQuery] Auto-login successful, retrying request...');
-              }
-              continue; // Retry запрос
-            }
-          } else {
-            if (import.meta.env.DEV) {
-              console.error('[rtkBaseQuery] ⚠️ Требуется новый логин - не удалось обновить токен или выполнить auto-login');
-            }
+            console.warn('[rtkBaseQuery] ⚠️ Требуется новый логин - refresh token недействителен');
           }
         }
         // Если refresh не удался, продолжаем обработку ошибки ниже

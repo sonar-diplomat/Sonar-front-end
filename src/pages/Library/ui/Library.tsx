@@ -20,8 +20,9 @@ export const Library: React.FC<LibraryProps> = () => {
     const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState<Category>('All');
     const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
-    // Загрузка данных для корневой папки (когда currentFolderId === null)
+    // Загрузка данных для всей структуры библиотеки (используется для поиска)
     const { folders: foldersData, isLoading: foldersLoading, refetchFolders, isDirty } = useFolders();
 
     // Загрузка данных для конкретной папки (когда currentFolderId !== null)
@@ -39,8 +40,83 @@ export const Library: React.FC<LibraryProps> = () => {
         }
     }, [isDirty, foldersLoading, currentFolderId, refetchFolders]);
 
-    const [folders, setFolders] = useState<Folder[]>([]);
-    const [playlists, setPlaylists] = useState<Playlist[]>([]);
+    const [allFolders, setAllFolders] = useState<Folder[]>([]);
+    const [allPlaylists, setAllPlaylists] = useState<Playlist[]>([]);
+
+    // Функция для рекурсивного поиска всех папок и коллекций в структуре (для поиска)
+    const getAllItemsFromStructure = useCallback((folders: typeof foldersData): { folders: Folder[], playlists: Playlist[] } => {
+        if (!folders || !Array.isArray(folders)) {
+            return { folders: [], playlists: [] };
+        }
+
+        const allFoldersList: Folder[] = [];
+        const allPlaylistsList: Playlist[] = [];
+
+        const traverse = (folderList: typeof folders) => {
+            for (const folder of folderList) {
+                // Добавляем папку (кроме Root)
+                if (folder.parentFolderId !== null && folder.parentFolderId !== undefined) {
+                    const subFolderCount = Array.isArray(folder.subFolders) ? folder.subFolders.length : 0;
+                    const collectionCount = Array.isArray(folder.collections) ? folder.collections.length : 0;
+                    allFoldersList.push({
+                        id: String(folder.id),
+                        name: folder.name,
+                        itemCount: subFolderCount + collectionCount,
+                    });
+                }
+
+                // Добавляем коллекции
+                if (Array.isArray(folder.collections)) {
+                    folder.collections.forEach(collection => {
+                        allPlaylistsList.push({
+                            id: String(collection.id),
+                            name: collection.name,
+                            coverImage: getImageUrlById(collection.coverId),
+                            type: collection.type,
+                        });
+                    });
+                }
+
+                // Рекурсивно обходим subFolders, если они полные FolderDTO
+                if (Array.isArray(folder.subFolders) && folder.subFolders.length > 0) {
+                    const firstSubFolder = folder.subFolders[0] as any;
+                    if (firstSubFolder && (firstSubFolder.subFolders !== undefined || firstSubFolder.collections !== undefined)) {
+                        traverse(folder.subFolders as any);
+                    }
+                }
+            }
+        };
+
+        traverse(folders);
+        return { folders: allFoldersList, playlists: allPlaylistsList };
+    }, []);
+
+    // Фильтрация данных по поисковому запросу
+    // Если есть поисковый запрос, используем данные из общей структуры
+    // Иначе используем данные из текущей папки или корневой
+    const folders = useMemo(() => {
+        if (searchQuery.trim()) {
+            // Для поиска используем всю структуру
+            const { folders: searchFolders } = getAllItemsFromStructure(foldersData);
+            const query = searchQuery.toLowerCase().trim();
+            return searchFolders.filter(folder => 
+                folder.name.toLowerCase().includes(query)
+            );
+        }
+        return allFolders;
+    }, [allFolders, searchQuery, foldersData, getAllItemsFromStructure]);
+
+    const playlists = useMemo(() => {
+        if (searchQuery.trim()) {
+            // Для поиска используем всю структуру
+            const { playlists: searchPlaylists } = getAllItemsFromStructure(foldersData);
+            const query = searchQuery.toLowerCase().trim();
+            return searchPlaylists.filter(playlist => 
+                playlist.name.toLowerCase().includes(query)
+            );
+        }
+        return allPlaylists;
+    }, [allPlaylists, searchQuery, foldersData, getAllItemsFromStructure]);
 
     // Обработка данных для корневой папки
     // Root папка (parentFolderId === null) скрывается от пользователя
@@ -52,12 +128,26 @@ export const Library: React.FC<LibraryProps> = () => {
             
             if (rootFolder) {
                 // Преобразуем subFolders Root в формат Folder
-                // Используем subFolderCount и collectionCount из SubFolderDTO
-                const rootSubFolders: Folder[] = rootFolder.subFolders.map((subFolder) => ({
-                    id: String(subFolder.id),
-                    name: subFolder.name,
-                    itemCount: subFolder.collectionCount + subFolder.subFolderCount,
-                }));
+                // subFolders могут быть либо SubFolderDTO[], либо FolderDTO[] (рекурсивная структура)
+                const rootSubFolders: Folder[] = (rootFolder.subFolders || []).map((subFolder: any) => {
+                    // Если это полный FolderDTO (рекурсивная структура)
+                    if (subFolder.subFolders !== undefined || subFolder.collections !== undefined) {
+                        const subFolderCount = Array.isArray(subFolder.subFolders) ? subFolder.subFolders.length : 0;
+                        const collectionCount = Array.isArray(subFolder.collections) ? subFolder.collections.length : 0;
+                        return {
+                            id: String(subFolder.id),
+                            name: subFolder.name,
+                            itemCount: subFolderCount + collectionCount,
+                        };
+                    } else {
+                        // Это SubFolderDTO
+                        return {
+                            id: String(subFolder.id),
+                            name: subFolder.name,
+                            itemCount: (subFolder.collectionCount || 0) + (subFolder.subFolderCount || 0),
+                        };
+                    }
+                });
                 
                 // Преобразуем collections Root в формат Playlist
                 const rootCollections: Playlist[] = rootFolder.collections.map((collection) => ({
@@ -70,8 +160,8 @@ export const Library: React.FC<LibraryProps> = () => {
                 // Показываем subFolders Root как корневые папки
                 // Показываем collections Root как корневые коллекции
                 // Сама Root папка скрыта
-                setFolders(rootSubFolders);
-                setPlaylists(rootCollections);
+                setAllFolders(rootSubFolders);
+                setAllPlaylists(rootCollections);
             } else {
                 // Если Root папки нет, обрабатываем все папки как обычно
                 const allFolders: Folder[] = foldersData.map((folder) => ({
@@ -90,18 +180,18 @@ export const Library: React.FC<LibraryProps> = () => {
                     }))
                 );
                 
-                setFolders(allFolders);
-                setPlaylists(allCollections);
+                setAllFolders(allFolders);
+                setAllPlaylists(allCollections);
             }
         } else if (currentFolderId === null && foldersData && !Array.isArray(foldersData)) {
             // Если данные не являются массивом, очищаем состояние
             console.error('[Library] foldersData is not an array:', foldersData);
-            setFolders([]);
-            setPlaylists([]);
+            setAllFolders([]);
+            setAllPlaylists([]);
         } else if (currentFolderId === null && !foldersLoading && !foldersData) {
             // Если данных нет и загрузка завершена, очищаем состояние
-            setFolders([]);
-            setPlaylists([]);
+            setAllFolders([]);
+            setAllPlaylists([]);
         }
     }, [foldersData, currentFolderId, foldersLoading]);
 
@@ -109,35 +199,37 @@ export const Library: React.FC<LibraryProps> = () => {
     useEffect(() => {
         if (currentFolderId !== null) {
             // Очищаем данные сразу при переходе на другую папку
-            setFolders([]);
-            setPlaylists([]);
+            setAllFolders([]);
+            setAllPlaylists([]);
+            // Очищаем поисковый запрос при переходе в подпапку
+            setSearchQuery('');
         }
     }, [currentFolderId]);
 
-    // Обработка данных для конкретной папки
+    // Обработка данных для конкретной папки - используем запрос к API
     useEffect(() => {
         if (folderData && currentFolderId !== null) {
             // Преобразуем subFolders в формат Folder
-            const subFolders: Folder[] = folderData.subFolders.map((subFolder) => ({
+            const subFolders: Folder[] = (folderData.subFolders || []).map((subFolder) => ({
                 id: String(subFolder.id),
                 name: subFolder.name,
-                itemCount: subFolder.collectionCount + subFolder.subFolderCount,
+                itemCount: (subFolder.collectionCount || 0) + (subFolder.subFolderCount || 0),
             }));
             
             // Преобразуем collections в формат Playlist
-            const collections: Playlist[] = folderData.collections.map((collection) => ({
+            const collections: Playlist[] = (folderData.collections || []).map((collection) => ({
                 id: String(collection.id),
                 name: collection.name,
                 coverImage: getImageUrlById(collection.coverId),
                 type: collection.type,
             }));
             
-            setFolders(subFolders);
-            setPlaylists(collections);
+            setAllFolders(subFolders);
+            setAllPlaylists(collections);
         } else if (currentFolderId !== null && !folderLoading && !folderData && folderError) {
             // Если загрузка завершилась с ошибкой, оставляем данные пустыми
-            setFolders([]);
-            setPlaylists([]);
+            setAllFolders([]);
+            setAllPlaylists([]);
         }
     }, [folderData, currentFolderId, folderLoading, folderError]);
 
@@ -147,9 +239,30 @@ export const Library: React.FC<LibraryProps> = () => {
         setCurrentFolderId(Number(folder.id));
     }, []);
 
-    const handleBackToRoot = useCallback(() => {
-        setCurrentFolderId(null);
-    }, []);
+    const handleBack = useCallback(() => {
+        // Переходим к родительской папке, если она есть и не является Root, иначе в корень
+        if (folderData && folderData.parentFolderId !== null && folderData.parentFolderId !== undefined) {
+            // Проверяем, не является ли родительская папка Root (системной папкой)
+            // Root папка имеет parentFolderId === null
+            // Если родительская папка - Root, переходим в корень
+            if (foldersData && Array.isArray(foldersData)) {
+                const parentFolder = foldersData.find(f => f.id === folderData.parentFolderId);
+                // Если родительская папка - Root (parentFolderId === null), переходим в корень
+                if (parentFolder && (parentFolder.parentFolderId === null || parentFolder.parentFolderId === undefined)) {
+                    setCurrentFolderId(null);
+                } else {
+                    // Иначе переходим к родительской папке
+                    setCurrentFolderId(folderData.parentFolderId);
+                }
+            } else {
+                // Если не можем проверить, переходим к родительской папке
+                setCurrentFolderId(folderData.parentFolderId);
+            }
+        } else {
+            // Если нет родительской папки, переходим в корень
+            setCurrentFolderId(null);
+        }
+    }, [folderData, foldersData]);
 
     const handlePlaylistClick = useCallback((playlist: Playlist) => {
         console.log('Opening playlist:', playlist);
@@ -163,6 +276,10 @@ export const Library: React.FC<LibraryProps> = () => {
             state: { parentFolderId: currentFolderId } 
         });
     }, [navigate, selectedCategory, currentFolderId]);
+
+    const handleSearch = useCallback((value: string) => {
+        setSearchQuery(value);
+    }, []);
 
     // Вспомогательная функция для проверки, является ли папка дочерней (рекурсивно)
     const isChildFolder = useCallback((parentFolderId: number, childFolderId: number, allFolders: typeof foldersData): boolean => {
@@ -301,7 +418,7 @@ export const Library: React.FC<LibraryProps> = () => {
                         shape="cr-16"
                         iconOnly
                         icon={<LeftArrow/>}
-                        onClick={handleBackToRoot}
+                        onClick={handleBack}
                         className={styles.backButton}
                     />
                 )}
@@ -310,6 +427,9 @@ export const Library: React.FC<LibraryProps> = () => {
                     selectedCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
                     categories={['All', 'Albums', 'Playlists', 'Artists']}
+                    searchValue={searchQuery}
+                    onSearch={handleSearch}
+                    showSearch={currentFolderId === null}
                 />
             </div>
             <Button

@@ -85,3 +85,14 @@
   transform: scale(0.95);
 }
 
+.textContent_small {
+  width: 123px;
+}
+
+.textContent_medium {
+  width: 150px;
+}
+
+.textContent_large {
+  width: 200px;
+}
