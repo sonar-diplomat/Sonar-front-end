@@ -7,6 +7,7 @@ export interface ReportReasonTypeDTO {
     id: number;
     name: string;
     recommendedSuspensionDuration: string;
+    applicableEntityTypeIds?: number[];
 }
 
 export interface ReportDTO {
@@ -19,13 +20,13 @@ export interface ReportDTO {
     reporter?: {
         id: number;
     } | null;
-    reportReasonType?: ReportReasonTypeDTO[] | null;
+    reportReasonType?: ReportReasonTypeDTO | null;
 }
 
 export interface CreateReportDTO {
     entityIdentifier: number;
     reportableEntityTypeId: number;
-    reportReasonTypeIds: number[];
+    reportReasonTypeId: number;
 }
 
 export type ReportFilterDTO = {

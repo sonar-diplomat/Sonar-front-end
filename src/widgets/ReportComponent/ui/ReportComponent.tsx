@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import styles from './ReportComponent.module.css';
-import { Button, Checkbox, Modal } from '@shared/ui';
-import { useCreateReportMutation, useGetReportReasonTypesQuery } from '@shared/api';
+import { Button, Radio, Modal } from '@shared/ui';
+import { useCreateReportMutation, useGetReportReasonTypesByEntityTypeQuery } from '@shared/api';
 import type { CreateReportDTO } from '@entities/Report';
 import { useNotifications } from '@shared/store/notificationStore';
+import {
+  getReportDescription,
+} from '@shared/config/report.config';
 
 export interface ReportComponentProps {
   entityId: number;
@@ -20,27 +23,31 @@ export const ReportComponent: React.FC<ReportComponentProps> = ({
   isModal = false,
   onSuccess,
   onCancel,
-  description = 'Help us keep Sonar safe. Select the reason(s) why you\'re reporting this content.',
+  description,
 }) => {
   const [createReport, { isLoading: isSubmitting }] = useCreateReportMutation();
-  const { data: reasonTypes, isLoading: reasonTypesLoading } = useGetReportReasonTypesQuery();
+  const { data: reasonTypes, isLoading: reasonTypesLoading } = useGetReportReasonTypesByEntityTypeQuery(entityTypeId);
   const { showSuccess, showError } = useNotifications();
 
-  const [selectedReasons, setSelectedReasons] = useState<number[]>([]);
+  const [selectedReason, setSelectedReason] = useState<number | null>(null);
 
-  const handleReasonToggle = (reasonId: number, checked: boolean) => {
+  // Get description for the entity type
+  const defaultDescription = useMemo(() => getReportDescription(entityTypeId), [entityTypeId]);
+  const finalDescription = description || defaultDescription;
+
+  const handleReasonChange = (reasonId: number, checked: boolean) => {
     if (checked) {
-      setSelectedReasons(prev => [...prev, reasonId]);
+      setSelectedReason(reasonId);
     } else {
-      setSelectedReasons(prev => prev.filter(id => id !== reasonId));
+      setSelectedReason(null);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (selectedReasons.length === 0) {
-      showError('Please select at least one reason');
+    if (selectedReason === null) {
+      showError('Please select a reason');
       return;
     }
 
@@ -48,12 +55,12 @@ export const ReportComponent: React.FC<ReportComponentProps> = ({
       const dto: CreateReportDTO = {
         entityIdentifier: entityId,
         reportableEntityTypeId: entityTypeId,
-        reportReasonTypeIds: selectedReasons,
+        reportReasonTypeId: selectedReason,
       };
 
       await createReport(dto).unwrap();
       showSuccess('Report submitted successfully. Thank you for helping keep Sonar safe.');
-      setSelectedReasons([]);
+      setSelectedReason(null);
       onSuccess?.();
     } catch (err: any) {
       showError(err?.data?.message || 'Failed to submit report. Please try again.', err?.data?.errors || err?.data?.details);
@@ -63,20 +70,22 @@ export const ReportComponent: React.FC<ReportComponentProps> = ({
   const renderContent = () => (
     <div className={styles.container}>
       <div className={styles.header}>
-        <p className={styles.description}>{description}</p>
+        <p className={styles.description}>{finalDescription}</p>
       </div>
 
       <form onSubmit={handleSubmit} className={styles.form}>
         {reasonTypes && reasonTypes.length > 0 && (
           <div className={styles.reasonsSection}>
-            <p className={styles.reasonsHelper}>Choose all that apply</p>
+            <p className={styles.reasonsHelper}>Select a reason</p>
             <div className={styles.reasonsList}>
               {reasonTypes.map((reason) => (
                 <div key={reason.id} className={styles.reasonItem}>
-                  <Checkbox
+                  <Radio
                     label={reason.name}
-                    checked={selectedReasons.includes(reason.id)}
-                    onChange={(checked) => handleReasonToggle(reason.id, checked)}
+                    checked={selectedReason === reason.id}
+                    onChange={(checked) => handleReasonChange(reason.id, checked)}
+                    name="reportReason"
+                    value={reason.id}
                   />
                 </div>
               ))}
@@ -105,7 +114,7 @@ export const ReportComponent: React.FC<ReportComponentProps> = ({
             fullWidth
             type="submit"
             loading={isSubmitting || reasonTypesLoading}
-            disabled={!reasonTypes || selectedReasons.length === 0}
+            disabled={!reasonTypes || reasonTypes.length === 0 || selectedReason === null}
           >
             Submit Report
           </Button>

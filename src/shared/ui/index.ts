@@ -1,6 +1,7 @@
 export { Button } from './Button/Button';
 export { Input } from './Input/Input';
 export { Checkbox } from './Checkbox/Checkbox';
+export { Radio } from './Radio/Radio';
 export { Form } from './Form/Form';
 export { CodeVerification } from './CodeVerification/CodeVerification';
 export { ItemCard, ItemCardContainer } from './ItemCard';
@@ -20,6 +21,7 @@ export { SettingsSection } from './SettingsSection/SettingsSection';
 export { Notification, NotificationContainer } from './Notification';
 export type { ButtonProps, ButtonVariant, ButtonSize, ButtonShape } from './Button/Button';
 export type { CheckboxProps } from './Checkbox/Checkbox';
+export type { RadioProps } from './Radio/Radio';
 export type { FormProps } from './Form/Form';
 export type { CodeVerificationProps } from './CodeVerification/CodeVerification';
 export type { ItemCardProps, ItemCardSize, ItemCardTextContent, ItemCardContainerProps } from './ItemCard';

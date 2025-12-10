@@ -67,6 +67,7 @@ export const API_ENDPOINTS = {
         open: 'Report/open',
         reasonTypes: 'Report/reason-types',
         reasonTypeById: (id: number) => `Report/reason-types/${id}`,
+        reasonTypesByEntityType: (entityTypeId: number) => `Report/reason-types/by-entity-type/${entityTypeId}`,
         entityTypes: 'Report/entity-types',
         entityTypeById: (id: number) => `Report/entity-types/${id}`,
     },
