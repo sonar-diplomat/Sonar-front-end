@@ -2,13 +2,13 @@
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 8px;
     position: relative;
 }
 
-.tabSliderWrapper {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+.buttonsContainer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }

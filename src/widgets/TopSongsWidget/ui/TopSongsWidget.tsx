@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './TopSongsWidget.module.css';
 import type { TopSongsWidgetProps } from '../TopSongsWidget.types';
-import { SectionHeader, SongItem } from '@shared/ui';
+import { SongItem } from '@shared/ui';
 
 export const TopSongsWidget: React.FC<TopSongsWidgetProps> = ({
     songs,
@@ -16,10 +16,7 @@ export const TopSongsWidget: React.FC<TopSongsWidgetProps> = ({
 
     return (
         <div className={wrapperClasses}>
-            <SectionHeader
-                title="My top songs"
-                subtitle={dateRange}
-            />
+            <h3 className={styles.label}>My top songs</h3>
 
             <div className={styles.listContainer}>
                 {songs.map((song, index) => (

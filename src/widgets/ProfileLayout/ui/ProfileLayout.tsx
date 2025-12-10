@@ -15,7 +15,6 @@ export interface ProfileLayoutProps {
     secondaryView?: React.ReactNode;
     onTabChange?: (tab: string) => void;
     onMessageClick?: () => void;
-    onMenuClick?: () => void;
 }
 
 export const ProfileLayout: React.FC<ProfileLayoutProps> = ({
@@ -29,7 +28,6 @@ export const ProfileLayout: React.FC<ProfileLayoutProps> = ({
     secondaryView,
     onTabChange,
     onMessageClick,
-    onMenuClick
 }) => {
     const [activeView, setActiveView] = useState<'profile' | 'secondary'>('profile');
 
@@ -54,7 +52,6 @@ export const ProfileLayout: React.FC<ProfileLayoutProps> = ({
                 onTabChange={handleTabChange}
                 onBackClick={onBackClick}
                 onMessageClick={onMessageClick}
-                onMenuClick={onMenuClick}
             />
 
             {activeView === 'profile' ? (

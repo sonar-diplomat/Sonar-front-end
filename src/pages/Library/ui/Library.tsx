@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useCallback, useEffect} from 'react';
+import React, {useState, useMemo, useCallback, useEffect, useRef} from 'react';
 
 import {useNavigate} from 'react-router-dom';
 
@@ -11,7 +11,7 @@ import {LibrarySkeleton} from "@widgets/LibrarySkeleton";
 import { getImageUrlById } from '@shared/lib/image-utils';
 import { useFolders, useFolder } from '@shared/store/features/library/useLibrary';
 import { useMoveCollectionToFolderMutation, useMoveFolderMutation } from '@entities/Library/api/rtkApi';
-import type { DraggedItem } from '@shared/ui/FolderCard/FolderCard.types';
+import type { DropInfo } from '@shared/ui/FolderCard/FolderCard.types';
 import { useNotifications } from '@shared/store/notificationStore';
 
 import styles from './Library.module.css';
@@ -21,6 +21,8 @@ export const Library: React.FC<LibraryProps> = () => {
     const [selectedCategory, setSelectedCategory] = useState<Category>('All');
     const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
+    const [isDraggingOverTopZone, setIsDraggingOverTopZone] = useState(false);
+    const isDraggingRef = useRef(false);
 
     // Загрузка данных для всей структуры библиотеки (используется для поиска)
     const { folders: foldersData, isLoading: foldersLoading, refetchFolders, isDirty } = useFolders();
@@ -36,7 +38,13 @@ export const Library: React.FC<LibraryProps> = () => {
     // Автоматически обновляем данные при возврате на страницу, если библиотека помечена как "грязная"
     useEffect(() => {
         if (isDirty && !foldersLoading && currentFolderId === null) {
-            void refetchFolders();
+            const timeoutId = setTimeout(() => {
+                void refetchFolders();
+            }, 500);
+            
+            return () => {
+                clearTimeout(timeoutId);
+            };
         }
     }, [isDirty, foldersLoading, currentFolderId, refetchFolders]);
 
@@ -303,7 +311,47 @@ export const Library: React.FC<LibraryProps> = () => {
         });
     }, []);
 
-    const handleDrop = useCallback(async (draggedItem: DraggedItem, targetFolderId: number) => {
+    const handleDrop = useCallback(async (dropInfo: DropInfo) => {
+        const { draggedItem, targetFolderId, moveToParent } = dropInfo;
+        
+        // Определяем фактическую целевую папку
+        let finalTargetFolderId: number | null = targetFolderId;
+        
+        if (moveToParent) {
+            // Если перетаскивание вверх, используем родительскую папку
+            if (currentFolderId !== null && folderData) {
+                // Если мы находимся внутри папки, используем её parentFolderId
+                finalTargetFolderId = folderData.parentFolderId ?? null;
+            } else if (foldersData && Array.isArray(foldersData)) {
+                // Если мы в корне, ищем папку с targetFolderId и берём её parentFolderId
+                const targetFolder = foldersData.find(f => f.id === targetFolderId);
+                if (targetFolder) {
+                    finalTargetFolderId = targetFolder.parentFolderId ?? null;
+                } else {
+                    // Если не нашли папку в корне, ищем в рекурсивной структуре
+                    const findFolderInStructure = (folders: typeof foldersData, id: number): typeof foldersData[0] | null => {
+                        for (const folder of folders) {
+                            if (folder.id === id) return folder;
+                            if (Array.isArray(folder.subFolders) && folder.subFolders.length > 0) {
+                                const firstSubFolder = folder.subFolders[0] as any;
+                                if (firstSubFolder && (firstSubFolder.subFolders !== undefined || firstSubFolder.collections !== undefined)) {
+                                    const found = findFolderInStructure(folder.subFolders as any, id);
+                                    if (found) return found;
+                                }
+                            }
+                        }
+                        return null;
+                    };
+                    const foundFolder = findFolderInStructure(foldersData, targetFolderId);
+                    if (foundFolder) {
+                        finalTargetFolderId = foundFolder.parentFolderId ?? null;
+                    }
+                }
+            }
+        }
+        
+        // Если finalTargetFolderId === null, это означает корневую папку
+        // Для API нужно передать null или специальное значение
         // Проверяем, является ли коллекция favorites
         if (draggedItem.type === 'collection') {
             const collectionName = draggedItem.name?.toLowerCase().trim();
@@ -314,17 +362,33 @@ export const Library: React.FC<LibraryProps> = () => {
         }
 
         // Предотвращаем перетаскивание папки в саму себя
-        if (draggedItem.type === 'folder' && draggedItem.id === targetFolderId) {
+        if (draggedItem.type === 'folder' && draggedItem.id === finalTargetFolderId) {
             console.warn('Cannot move folder into itself');
             showError('Cannot move folder', ['You cannot move a folder into itself']);
             return;
         }
 
         // Предотвращаем циклические ссылки - проверяем, что целевая папка не является дочерней
-        if (draggedItem.type === 'folder' && foldersData) {
-            if (isChildFolder(draggedItem.id, targetFolderId, foldersData)) {
+        if (draggedItem.type === 'folder' && foldersData && finalTargetFolderId !== null) {
+            if (isChildFolder(draggedItem.id, finalTargetFolderId, foldersData)) {
                 console.warn('Cannot move folder into its child folder');
                 showError('Cannot move folder', ['You cannot move a folder into its child folder']);
+                return;
+            }
+        }
+
+        // Если finalTargetFolderId === null, нужно найти root folder id
+        if (finalTargetFolderId === null) {
+            if (foldersData && Array.isArray(foldersData)) {
+                const rootFolder = foldersData.find(f => f.parentFolderId === null || f.parentFolderId === undefined);
+                if (rootFolder) {
+                    finalTargetFolderId = rootFolder.id;
+                } else {
+                    showError('Cannot move to root', ['Root folder not found']);
+                    return;
+                }
+            } else {
+                showError('Cannot move to root', ['Library structure not loaded']);
                 return;
             }
         }
@@ -333,12 +397,12 @@ export const Library: React.FC<LibraryProps> = () => {
             if (draggedItem.type === 'collection') {
                 await moveCollectionToFolder({
                     collectionId: draggedItem.id,
-                    targetFolderId: targetFolderId,
+                    targetFolderId: finalTargetFolderId,
                 }).unwrap();
             } else if (draggedItem.type === 'folder') {
                 await moveFolder({
                     folderId: draggedItem.id,
-                    newParentFolderId: targetFolderId,
+                    newParentFolderId: finalTargetFolderId,
                 }).unwrap();
             }
             
@@ -350,7 +414,7 @@ export const Library: React.FC<LibraryProps> = () => {
             const errors = error?.data?.errors || [errorMessage];
             showError(errorMessage, errors);
         }
-    }, [moveCollectionToFolder, moveFolder, foldersData, isChildFolder, showError]);
+    }, [moveCollectionToFolder, moveFolder, foldersData, isChildFolder, showError, currentFolderId, folderData]);
 
     const sections = useMemo<ContentSection[]>(() => [
         {
@@ -368,7 +432,7 @@ export const Library: React.FC<LibraryProps> = () => {
                         label={folderItem.name}
                         folderId={Number(folderItem.id)}
                         onClick={() => handleFolderClick(folderItem)}
-                        onDrop={(draggedItem) => handleDrop(draggedItem, Number(folderItem.id))}
+                        onDrop={(dropInfo) => handleDrop(dropInfo)}
                     />
                 );
             }
@@ -408,8 +472,157 @@ export const Library: React.FC<LibraryProps> = () => {
     // Определяем состояние загрузки
     const isLoading = currentFolderId === null ? foldersLoading : folderLoading;
 
+    // Отслеживаем начало перетаскивания и позицию курсора глобально
+    useEffect(() => {
+        if (currentFolderId === null) return; // Зона показывается только внутри папки
+        
+        const handleDragStart = () => {
+            isDraggingRef.current = true;
+        };
+        
+        const handleDragEnd = () => {
+            isDraggingRef.current = false;
+            setIsDraggingOverTopZone(false);
+        };
+        
+        const handleDragOver = (e: DragEvent) => {
+            if (!isDraggingRef.current) return;
+            
+            // Проверяем, находится ли курсор в верхних 10% viewport
+            const viewportHeight = window.innerHeight;
+            const topZoneHeight = viewportHeight * 0.1;
+            
+            if (e.clientY < topZoneHeight) {
+                setIsDraggingOverTopZone(true);
+            } else {
+                setIsDraggingOverTopZone(false);
+            }
+        };
+        
+        document.addEventListener('dragstart', handleDragStart);
+        document.addEventListener('dragend', handleDragEnd);
+        document.addEventListener('dragover', handleDragOver);
+        
+        return () => {
+            document.removeEventListener('dragstart', handleDragStart);
+            document.removeEventListener('dragend', handleDragEnd);
+            document.removeEventListener('dragover', handleDragOver);
+        };
+    }, [currentFolderId]);
+
+    // Обработчики для зоны drop в верхней части страницы
+    const handleTopZoneDragOver = useCallback((e: React.DragEvent) => {
+        if (!isDraggingRef.current) return;
+        e.preventDefault();
+        e.stopPropagation();
+        e.dataTransfer.dropEffect = 'move';
+        setIsDraggingOverTopZone(true);
+    }, []);
+
+    const handleTopZoneDragLeave = useCallback((e: React.DragEvent) => {
+        // Проверяем, что мы действительно покинули зону
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX;
+        const y = e.clientY;
+        if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+            setIsDraggingOverTopZone(false);
+        }
+    }, []);
+
+    const handleTopZoneDrop = useCallback(async (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDraggingOverTopZone(false);
+        
+        try {
+            const data = e.dataTransfer.getData('application/json');
+            if (data) {
+                const draggedItem = JSON.parse(data);
+                
+                // Определяем родительскую папку
+                let finalTargetFolderId: number | null = null;
+                
+                if (currentFolderId !== null && folderData) {
+                    // Если мы находимся внутри папки, используем её parentFolderId
+                    finalTargetFolderId = folderData.parentFolderId ?? null;
+                } else if (foldersData && Array.isArray(foldersData)) {
+                    // Если мы в корне, то finalTargetFolderId остается null (будет использован root folder id)
+                    finalTargetFolderId = null;
+                }
+                
+                // Проверяем, является ли коллекция favorites
+                if (draggedItem.type === 'collection') {
+                    const collectionName = draggedItem.name?.toLowerCase().trim();
+                    if (collectionName === 'favorites' || collectionName === 'избранное') {
+                        showError('Cannot move favorites collection', ['The favorites collection cannot be moved to folders']);
+                        return;
+                    }
+                }
+
+                // Если finalTargetFolderId === null, нужно найти root folder id
+                if (finalTargetFolderId === null) {
+                    if (foldersData && Array.isArray(foldersData)) {
+                        const rootFolder = foldersData.find(f => f.parentFolderId === null || f.parentFolderId === undefined);
+                        if (rootFolder) {
+                            finalTargetFolderId = rootFolder.id;
+                        } else {
+                            showError('Cannot move to root', ['Root folder not found']);
+                            return;
+                        }
+                    } else {
+                        showError('Cannot move to root', ['Library structure not loaded']);
+                        return;
+                    }
+                }
+
+                // Предотвращаем перетаскивание папки в саму себя
+                if (draggedItem.type === 'folder' && draggedItem.id === finalTargetFolderId) {
+                    console.warn('Cannot move folder into itself');
+                    showError('Cannot move folder', ['You cannot move a folder into itself']);
+                    return;
+                }
+
+                // Предотвращаем циклические ссылки
+                if (draggedItem.type === 'folder' && foldersData) {
+                    if (isChildFolder(draggedItem.id, finalTargetFolderId, foldersData)) {
+                        console.warn('Cannot move folder into its child folder');
+                        showError('Cannot move folder', ['You cannot move a folder into its child folder']);
+                        return;
+                    }
+                }
+
+                // Выполняем перемещение
+                if (draggedItem.type === 'collection') {
+                    await moveCollectionToFolder({
+                        collectionId: draggedItem.id,
+                        targetFolderId: finalTargetFolderId,
+                    }).unwrap();
+                } else if (draggedItem.type === 'folder') {
+                    await moveFolder({
+                        folderId: draggedItem.id,
+                        newParentFolderId: finalTargetFolderId,
+                    }).unwrap();
+                }
+            }
+        } catch (error: any) {
+            console.error('Error during drag-and-drop in top zone:', error);
+            const errorMessage = error?.data?.message || error?.message || 'Failed to move item';
+            const errors = error?.data?.errors || [errorMessage];
+            showError(errorMessage, errors);
+        }
+    }, [currentFolderId, folderData, foldersData, moveCollectionToFolder, moveFolder, isChildFolder, showError]);
+
     return (
         <div className={styles.container}>
+            {/* Зона drop в верхней части страницы (верхние 10%) */}
+            {currentFolderId !== null && (
+                <div
+                    className={`${styles.topDropZone} ${isDraggingOverTopZone ? styles.topDropZoneActive : ''}`}
+                    onDragOver={handleTopZoneDragOver}
+                    onDragLeave={handleTopZoneDragLeave}
+                    onDrop={handleTopZoneDrop}
+                />
+            )}
             <div className={styles.headerContainer}>
     <div className={styles.headerInner}>
         {currentFolderId !== null && (

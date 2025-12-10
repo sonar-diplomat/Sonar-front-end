@@ -77,7 +77,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
     };
 
     const handleDrop = (e: React.DragEvent) => {
-        if (!onDrop) return;
+        if (!onDrop || !folderId) return;
         e.preventDefault();
         setIsDraggingOver(false);
         
@@ -85,7 +85,12 @@ export const FolderCard: React.FC<FolderCardProps> = ({
             const data = e.dataTransfer.getData('application/json');
             if (data) {
                 const draggedItem = JSON.parse(data);
-                onDrop(draggedItem);
+                
+                onDrop({
+                    draggedItem,
+                    targetFolderId: folderId,
+                    moveToParent: false,
+                });
             }
         } catch (error) {
             console.error('Error parsing drag data:', error);

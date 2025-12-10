@@ -44,11 +44,9 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({
     if (viewerType === 'owner') {
         return (
             <div className={styles.container}>
-                <Button {...FILLED_BUTTON_PROPS} theme="dark" icon={<EditProfileIcon />}>
-                    Edit profile
+                <Button {...FILLED_BUTTON_PROPS} theme="dark" icon={<EditProfileIcon />} iconOnly>
                 </Button>
-                <Button {...FILLED_BUTTON_PROPS} theme="dark" icon={<StatisticsIcon />}>
-                    Statistics
+                <Button {...FILLED_BUTTON_PROPS} theme="dark" icon={<StatisticsIcon />} iconOnly>
                 </Button>
             </div>
         );

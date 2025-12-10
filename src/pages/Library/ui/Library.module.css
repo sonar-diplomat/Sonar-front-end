@@ -4,22 +4,44 @@
     gap: 20px;
     width: 100%;
     padding: 16px;
+    position: relative;
+}
+
+.topDropZone {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 10vh;
+    z-index: 1000;
+    pointer-events: none;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.topDropZoneActive {
+    pointer-events: auto;
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
 }
 
 .headerContainer {
+    width: 100%;
+    /* Можно оставить просто блок без флекса, т.к. внутри есть headerInner */
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    justify-content: flex-start;
+}
+
+.headerInner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 12px;
     width: 100%;
 }
 
 .backButton {
     flex-shrink: 0;
-}
-
-.headerContainer > *:not(.backButton) {
-    flex-grow: 1;
 }
 
 .createBtn {
@@ -57,6 +79,11 @@
 
     .headerContainer {
         width: 100%;
+    }
+
+    .headerInner {
+        width: 100%;
+        align-items: flex-start;
     }
 
     .backButton {

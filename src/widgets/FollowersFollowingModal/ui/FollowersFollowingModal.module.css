@@ -1,8 +1,19 @@
+.modal {
+    height: auto !important;
+    max-height: 75vh !important;
+}
+
+.modal :global(.content) {
+    padding-top: 24px;
+    margin-bottom: 24px;
+}
+
 .container {
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: 16px;
+    min-height: 0;
 }
 
 .list {
