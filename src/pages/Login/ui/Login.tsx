@@ -43,7 +43,7 @@ export const Login: React.FC = () =>{
             });
 
             showSuccess('Login successful!');
-            navigate("/hello");
+            navigate("/home");
         } else {
             setUserEmail(data.emailOrLogin);
             setShowTwoFactor(true);
@@ -64,7 +64,7 @@ export const Login: React.FC = () =>{
             });
 
             showSuccess('Two-factor authentication successful!');
-            navigate("/hello");
+            navigate("/home");
         } else {
             showError(res.message || '2FA verification failed', res.errors || res.details);
         }

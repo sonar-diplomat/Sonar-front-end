@@ -6,8 +6,9 @@ import { ContentSections } from '@widgets/ContentSections';
 import { TopSongsWidget } from '@widgets/TopSongsWidget';
 import { TopArtistsWidget } from '@widgets/TopArtistsWidget';
 import { ProfileActionButtons } from '@widgets/ProfileActionButtons';
+import { FollowersFollowingModal } from '@widgets/FollowersFollowingModal';
 import { useProfileNavigation } from '@shared/hooks';
-import { getMockPlaylists, getMockTopSongs, getMockTopArtists } from '@shared/lib/mocks';
+import { getMockTopSongs, getMockTopArtists } from '@shared/lib/mocks';
 import { createPlaylistSection } from '@shared/lib/profile';
 import { getImageUrl } from '@shared/lib/image-utils';
 import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
@@ -130,7 +131,6 @@ export const UserProfile: React.FC<UserProfileProps> = ({
             return;
         }
         
-        // Create new chat
         try {
             await createChat({
                 name: profileData.userName,
@@ -158,9 +158,21 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         }
     };
 
-    const [playlists] = useState(getMockPlaylists);
     const [topSongs] = useState(getMockTopSongs);
     const [topArtists] = useState(getMockTopArtists);
+    const [modalType, setModalType] = useState<'followers' | 'following' | null>(null);
+
+    // Transform UserPlaylistDTO[] to Playlist[] format
+    const playlists = useMemo(() => {
+        if (!profileData?.publicPlaylists) return [];
+        return profileData.publicPlaylists.map(playlist => ({
+            id: playlist.id.toString(),
+            name: playlist.name,
+            coverImage: getImageUrl(playlist.coverId),
+            trackCount: playlist.trackCount,
+            type: 'Playlist' as const,
+        }));
+    }, [profileData?.publicPlaylists]);
 
     const sections = useMemo(() => [createPlaylistSection(playlists)], [playlists]);
 
@@ -177,7 +189,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
     const stats = {
         followers: profileData.followersCount,
         following: profileData.followingCount,
-        publicPlaylists: 0,
+        publicPlaylists: profileData.publicPlaylists?.length || 0,
     };
 
     const isVerified = profileData.accessFeatures?.some(
@@ -190,6 +202,22 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         }
     };
 
+    const handleFollowersClick = () => {
+        if (profileData?.id) {
+            setModalType('followers');
+        }
+    };
+
+    const handleFollowingClick = () => {
+        if (profileData?.id) {
+            setModalType('following');
+        }
+    };
+
+    const handleCloseModal = () => {
+        setModalType(null);
+    };
+
     const profileCard = (
         <ProfileCard
             isVerified={isVerified}
@@ -197,6 +225,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({
             stats={stats}
             src={avatarUrl}
             alt="profileImage"
+            onFollowersClick={handleFollowersClick}
+            onFollowingClick={handleFollowingClick}
         />
     );
 
@@ -239,7 +269,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
     );
 
     const handleMessageClick = () => {
-        console.log('Message clicked');
+        navigate('/chats');
     };
 
     const handleMenuClick = () => {
@@ -247,17 +277,27 @@ export const UserProfile: React.FC<UserProfileProps> = ({
     };
 
     return (
-        <ProfileLayout
-            viewerType={viewerType}
-            profileType="user"
-            secondaryTab="Library"
-            onBackClick={handleBackClick}
-            onTabChange={handleTabChange}
-            onMessageClick={handleMessageClick}
-            onMenuClick={handleMenuClick}
-            profileCard={profileCard}
-            actionButtons={actionButtons}
-            profileView={profileView}
-        />
+        <>
+            <ProfileLayout
+                viewerType={viewerType}
+                profileType="user"
+                secondaryTab="Library"
+                onBackClick={handleBackClick}
+                onTabChange={handleTabChange}
+                onMessageClick={handleMessageClick}
+                onMenuClick={handleMenuClick}
+                profileCard={profileCard}
+                actionButtons={actionButtons}
+                profileView={profileView}
+            />
+            {profileData?.id && modalType && (
+                <FollowersFollowingModal
+                    isOpen={modalType !== null}
+                    onClose={handleCloseModal}
+                    userId={profileData.id}
+                    type={modalType}
+                />
+            )}
+        </>
     );
 };

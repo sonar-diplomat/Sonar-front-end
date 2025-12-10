@@ -29,7 +29,6 @@ import {
     Chats,
     Chat,
     UserInfo,
-    MacroPlayer,
     MainPage,
 } from "@pages";
 import {Login} from "@pages/Login";

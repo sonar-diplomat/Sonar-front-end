@@ -19,4 +19,7 @@ export interface ProfileCardProps {
     // For 'bio' variant
     title?: string;
     bio?: string;
+    // Click handlers
+    onFollowersClick?: () => void;
+    onFollowingClick?: () => void;
 }
