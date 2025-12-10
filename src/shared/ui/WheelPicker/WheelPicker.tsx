@@ -27,8 +27,9 @@ const SCROLL_ALIGNMENT_TOLERANCE = 1;
 
 export const WheelPickerWrapper: React.FC<WheelPickerWrapperProps> = ({ children, className = "" }) => {
     return (
-        <div className={`${styles.wheelPickerWrapper} ${className}`}>
+        <div className={`${styles.wheelPickerWrapper} ${className}`} style={{ position: 'relative' }}>
             {children}
+            <div className={styles.highlightWrapper}/>
         </div>
     );
 };
@@ -217,44 +218,41 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
     }, []);
 
     return (
-        <>
-            <div className={`${styles.wheelPickerContainer} ${className}`}>
-                <div
-                    ref={containerRef}
-                    className={styles.wheelPickerScroll}
-                    onScroll={handleScroll}
-                    style={
-                        {
-                            height: `${containerHeight}px`,
-                            "--item-height": `${itemHeight}px`,
-                        } as CSSProperties
-                    }
-                >
-                    {/* Top padding - нужно чтоб выбранный элемент был по центру */}
-                    <div style={{ height: `${paddingItems * itemHeight}px` }} />
+        <div className={`${styles.wheelPickerContainer} ${className}`}>
+            <div
+                ref={containerRef}
+                className={styles.wheelPickerScroll}
+                onScroll={handleScroll}
+                style={
+                    {
+                        height: `${containerHeight}px`,
+                        "--item-height": `${itemHeight}px`,
+                    } as CSSProperties
+                }
+            >
+                {/* Top padding - нужно чтоб выбранный элемент был по центру */}
+                <div style={{ height: `${paddingItems * itemHeight}px` }} />
 
-                    {/* Items */}
-                    {displayOptions.map((option, index) => {
-                        const isSelected = isItemSelected(index);
+                {/* Items */}
+                {displayOptions.map((option, index) => {
+                    const isSelected = isItemSelected(index);
 
-                        return (
-                            <div
-                                key={`${option.value}-${index}`}
-                                className={`${styles.wheelPickerItem} ${
-                                    isSelected ? styles.selected : ""
-                                }`}
-                                style={{height: `${itemHeight}px`}}
-                                onClick={() => handleItemClick(index)}
-                            >
-                                {option.label}
-                            </div>
-                        );
-                    })}
-                    {/* Bottom padding - нужно чтоб выбранный элемент был по центру */}
-                    <div style={{ height: `${paddingItems * itemHeight}px` }} />
-                </div>
+                    return (
+                        <div
+                            key={`${option.value}-${index}`}
+                            className={`${styles.wheelPickerItem} ${
+                                isSelected ? styles.selected : ""
+                            }`}
+                            style={{height: `${itemHeight}px`}}
+                            onClick={() => handleItemClick(index)}
+                        >
+                            {option.label}
+                        </div>
+                    );
+                })}
+                {/* Bottom padding - нужно чтоб выбранный элемент был по центру */}
+                <div style={{ height: `${paddingItems * itemHeight}px` }} />
             </div>
-            <div className={styles.highlightWrapper}/>
-        </>
+        </div>
     );
 };
