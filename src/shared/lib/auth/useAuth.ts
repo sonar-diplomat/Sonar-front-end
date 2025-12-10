@@ -33,15 +33,6 @@ export const useAuth = () => {
       if (data) {
         dispatch(setCredentials(data));
         
-        // Сохраняем credentials для автоматического логина, если rememberMe = true
-        if (rememberMe) {
-          authManager.saveCredentials({
-            userIdentifier,
-            password,
-            deviceName,
-          });
-        }
-        
         // Загружаем данные пользователя после успешного логина
         try {
           // Загружаем настройки клиента
@@ -85,9 +76,6 @@ export const useAuth = () => {
   }, [loginMutation, dispatch, loadSettings, loadAllAccessFeatures, loadUserAccessFeatures]);
   
   const logout = useCallback(() => {
-    // Удаляем credentials при выходе
-    authManager.clearCredentials();
-    
     // Очищаем все слайсы
     clearSettings();
     clearAccess();
