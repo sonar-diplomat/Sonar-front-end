@@ -7,15 +7,7 @@ import { ItemCard, LoadingPlaceholder } from '@shared/ui';
 import type { Category } from '@widgets/ChipsBar';
 import { ContentSections, type ContentSection } from '@widgets/ContentSections';
 import { SearchFilterHeader } from '@widgets/SearchFilterHeader';
-import {
-  useSearchTracks,
-  useSearchAlbums,
-  useSearchPlaylists,
-  useSearchArtists,
-  useSearchUsers,
-} from '@shared/store/features/search/useSearch';
-import { useInfiniteSearchTracks } from '@shared/store/features/search/useInfiniteSearchTracks';
-import { useSearchQuery } from '@shared/api';
+import { useLazySearchQuery } from '@shared/api';
 import type {
   TrackSearchItemDTO,
   AlbumSearchItemDTO,
@@ -23,6 +15,7 @@ import type {
   ArtistSearchItemDTO,
   UserSearchItemDTO,
   SearchResultDTO,
+  SearchCategory,
 } from '@entities/Search';
 
 import styles from './Search.module.css';
@@ -33,116 +26,167 @@ export const Search: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const { updateListeningTarget } = useUserState();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const tracksSectionRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const PAGE_SIZE = 20;
+  const [fetchSearch] = useLazySearchQuery();
 
-  // Определяем, нужно ли выполнять поиск
+  const [searchData, setSearchData] = useState<SearchResultDTO | null>(null);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [offset, setOffset] = useState(0);
+
   const shouldSearch = debouncedSearchQuery.trim().length > 0;
 
-  // Используем хук для бесконечной прокрутки треков
-  const infiniteTracksResult = useInfiniteSearchTracks(debouncedSearchQuery);
+  const getBackendCategory = (category: Category): SearchCategory | undefined =>
+    category === 'All' ? undefined : (category as SearchCategory);
 
-  // Используем новые хуки с кэшированием для всех категорий (для обратной совместимости)
-  const tracksResult = useSearchTracks(debouncedSearchQuery, 20);
-  const playlistsResult = useSearchPlaylists(debouncedSearchQuery, 20);
-  const artistsResult = useSearchArtists(debouncedSearchQuery, 20);
-  const usersResult = useSearchUsers(debouncedSearchQuery, 20);
-  const albumsResult = useSearchAlbums(debouncedSearchQuery, 20);
+  // reset on new query/category
+  useEffect(() => {
+    setSearchData(null);
+    setHasMore(false);
+    setOffset(0);
+    setSearchError(null);
+  }, [debouncedSearchQuery, selectedCategory]);
 
-  // Функция для преобразования категории в формат бэкенда (lowercase)
-  const getBackendCategory = (category: Category): SearchCategory | undefined => {
-    if (category === 'All') return 'All';
-    return category as SearchCategory;
-  };
+  const loadPage = useCallback(
+    async (nextOffset: number) => {
+      if (!shouldSearch) return;
+      if (nextOffset === 0) {
+        setIsSearchLoading(true);
+        setSearchError(null);
+      } else {
+        setIsLoadingMore(true);
+      }
+      try {
+        const res = await fetchSearch({
+          query: debouncedSearchQuery,
+          category: getBackendCategory(selectedCategory),
+          limit: PAGE_SIZE,
+          offset: nextOffset,
+        }).unwrap();
 
-  // Для категории "All" используем общий поиск, но также используем кэш из отдельных хуков
-  const {
-    data: searchData,
-    isLoading: isSearchLoading,
-    error: searchError,
-  } = useSearchQuery(
-    {
-      query: debouncedSearchQuery,
-      category: getBackendCategory(selectedCategory),
-      limit: 20,
+        setSearchData((prev) => {
+          const prevTracks = prev?.tracks?.items ?? [];
+          const prevAlbums = prev?.albums?.items ?? [];
+          const prevPlaylists = prev?.playlists?.items ?? [];
+          const prevArtists = prev?.artists?.items ?? [];
+          const prevUsers = prev?.users?.items ?? [];
+
+          const mergedTracks = nextOffset === 0 ? res.tracks?.items ?? [] : [...prevTracks, ...(res.tracks?.items ?? [])];
+          const mergedAlbums = nextOffset === 0 ? res.albums?.items ?? [] : [...prevAlbums, ...(res.albums?.items ?? [])];
+          const mergedPlaylists = nextOffset === 0 ? res.playlists?.items ?? [] : [...prevPlaylists, ...(res.playlists?.items ?? [])];
+          const mergedArtists = nextOffset === 0 ? res.artists?.items ?? [] : [...prevArtists, ...(res.artists?.items ?? [])];
+          const mergedUsers = nextOffset === 0 ? res.users?.items ?? [] : [...prevUsers, ...(res.users?.items ?? [])];
+
+          const mergedCount =
+            mergedTracks.length + mergedAlbums.length + mergedPlaylists.length + mergedArtists.length + mergedUsers.length;
+          const totalResults =
+            res.totalResults ??
+            mergedTracks.length + mergedAlbums.length + mergedPlaylists.length + mergedArtists.length + mergedUsers.length;
+
+          setHasMore(mergedCount < totalResults);
+          setOffset(nextOffset + PAGE_SIZE);
+
+          return {
+            query: res.query,
+            totalResults,
+            tracks: res.tracks ? { total: res.tracks.total, items: mergedTracks } : prev?.tracks,
+            albums: res.albums ? { total: res.albums.total, items: mergedAlbums } : prev?.albums,
+            playlists: res.playlists ? { total: res.playlists.total, items: mergedPlaylists } : prev?.playlists,
+            artists: res.artists ? { total: res.artists.total, items: mergedArtists } : prev?.artists,
+            users: res.users ? { total: res.users.total, items: mergedUsers } : prev?.users,
+          };
+        });
+      } catch (e: any) {
+        setSearchError(e?.data?.message || e?.message || 'Search failed');
+        setHasMore(false);
+      } finally {
+        setIsSearchLoading(false);
+        setIsLoadingMore(false);
+      }
     },
-    { skip: !shouldSearch || selectedCategory !== 'All' }
+    [shouldSearch, fetchSearch, debouncedSearchQuery, selectedCategory, PAGE_SIZE]
   );
 
-  // Подготавливаем данные для категорий
-  // Для треков используем данные из бесконечной прокрутки, если они доступны
-  const tracksData = selectedCategory === 'Tracks' || selectedCategory === 'All' 
-    ? { 
-        items: infiniteTracksResult.tracks.length > 0 ? infiniteTracksResult.tracks : tracksResult.tracks, 
-        total: infiniteTracksResult.tracks.length > 0 ? infiniteTracksResult.tracks.length : tracksResult.tracks.length 
-      } 
-    : null;
-  const playlistsData = selectedCategory === 'Playlists' || selectedCategory === 'All'
-    ? { items: playlistsResult.playlists, total: playlistsResult.playlists.length }
-    : null;
-  const artistsData = selectedCategory === 'Artists' || selectedCategory === 'All'
-    ? { items: artistsResult.artists, total: artistsResult.artists.length }
-    : null;
-  const usersData = selectedCategory === 'Users' || selectedCategory === 'All'
-    ? { items: usersResult.users, total: usersResult.users.length }
-    : null;
-  const albumsData = selectedCategory === 'Albums' || selectedCategory === 'All'
-    ? { items: albumsResult.albums, total: albumsResult.albums.length }
-    : null;
+  // initial load
+  useEffect(() => {
+    if (!shouldSearch) return;
+    void loadPage(0);
+  }, [shouldSearch, loadPage]);
 
-  // Определяем данные в зависимости от категории
-  // Для категории "All" используем данные из общего поиска, но объединяем с кэшем
+  // infinite scroll через IntersectionObserver
+  useEffect(() => {
+    if (!hasMore || isLoadingMore || isSearchLoading) return;
+
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const root =
+      (scrollRef.current?.closest('.scrollableContent') as HTMLElement | null) ||
+      scrollRef.current ||
+      null;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry.isIntersecting) return;
+
+        if (hasMore && !isLoadingMore && !isSearchLoading) {
+          void loadPage(offset);
+        }
+      },
+      {
+        root: root ?? null,
+        rootMargin: '0px 0px 200px 0px',
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasMore, isLoadingMore, isSearchLoading, loadPage, offset]);
+
+  const tracksData =
+    (selectedCategory === 'Tracks' || selectedCategory === 'All') && searchData?.tracks
+      ? { items: searchData.tracks.items, total: searchData.tracks.total }
+      : null;
+  const playlistsData =
+    (selectedCategory === 'Playlists' || selectedCategory === 'All') && searchData?.playlists
+      ? { items: searchData.playlists.items, total: searchData.playlists.total }
+      : null;
+  const artistsData =
+    (selectedCategory === 'Artists' || selectedCategory === 'All') && searchData?.artists
+      ? { items: searchData.artists.items, total: searchData.artists.total }
+      : null;
+  const usersData =
+    (selectedCategory === 'Users' || selectedCategory === 'All') && searchData?.users
+      ? { items: searchData.users.items, total: searchData.users.total }
+      : null;
+  const albumsData =
+    (selectedCategory === 'Albums' || selectedCategory === 'All') && searchData?.albums
+      ? { items: searchData.albums.items, total: searchData.albums.total }
+      : null;
+
   const getDataForCategory = (): SearchResultDTO | null => {
     if (!shouldSearch) return null;
 
     switch (selectedCategory) {
-      case 'All': {
-        // Для "All" используем данные из общего поиска, если они есть и соответствуют текущему запросу
-        // Если данных из API еще нет, показываем кэш из отдельных хуков
-        if (searchData && searchData.query === debouncedSearchQuery) {
-          // Данные из API соответствуют текущему запросу - используем их
-          // Объединяем с кэшем из отдельных хуков для полноты
-          const hasCache = tracksData || playlistsData || artistsData || usersData || albumsData;
-          
-          if (hasCache) {
-            // Объединяем результаты из API с кэшем, приоритет у данных из API
-            return {
-              query: debouncedSearchQuery,
-              totalResults: searchData.totalResults,
-              tracks: searchData.tracks || tracksData || undefined,
-              albums: searchData.albums || albumsData || undefined,
-              playlists: searchData.playlists || playlistsData || undefined,
-              artists: searchData.artists || artistsData || undefined,
-              users: searchData.users || usersData || undefined,
-            };
-          }
-          
-          // Если кэша нет, используем только данные из API
-          return searchData;
-        }
-        
-        // Если данных из API нет или они не соответствуют текущему запросу, показываем кэш
-        const hasCache = tracksData || playlistsData || artistsData || usersData || albumsData;
-        if (hasCache) {
-          return {
-            query: debouncedSearchQuery,
-            totalResults: (tracksData?.total || 0) + (albumsData?.total || 0) + (playlistsData?.total || 0) + (artistsData?.total || 0) + (usersData?.total || 0),
-            tracks: tracksData || undefined,
-            albums: albumsData || undefined,
-            playlists: playlistsData || undefined,
-            artists: artistsData || undefined,
-            users: usersData || undefined,
-          };
-        }
-        
-        return null;
-      }
+      case 'All':
+        return searchData && searchData.query === debouncedSearchQuery ? searchData : null;
       case 'Tracks':
         return tracksData ? { query: debouncedSearchQuery, totalResults: tracksData.total, tracks: tracksData } : null;
       case 'Albums':
         return albumsData ? { query: debouncedSearchQuery, totalResults: albumsData.total, albums: albumsData } : null;
       case 'Playlists':
-        return playlistsData ? { query: debouncedSearchQuery, totalResults: playlistsData.total, playlists: playlistsData } : null;
+        return playlistsData
+          ? { query: debouncedSearchQuery, totalResults: playlistsData.total, playlists: playlistsData }
+          : null;
       case 'Artists':
         return artistsData ? { query: debouncedSearchQuery, totalResults: artistsData.total, artists: artistsData } : null;
       case 'Users':
@@ -153,46 +197,38 @@ export const Search: React.FC = () => {
   };
 
   const currentData = getDataForCategory();
-  const isLoading = isSearchLoading || 
-    (infiniteTracksResult.isLoading && infiniteTracksResult.tracks.length === 0) ||
-    tracksResult.isLoading || 
-    playlistsResult.isLoading || 
-    artistsResult.isLoading || 
-    usersResult.isLoading ||
-    albumsResult.isLoading;
+  const isLoading = isSearchLoading;
 
-  // Обработчики кликов
-  const handleTrackClick = useCallback(async (track: TrackSearchItemDTO) => {
-    try {
-      // Устанавливаем трек как текущий для воспроизведения
-      // UserStatePlayerSync автоматически загрузит трек и запустит его в плеере
-      await updateListeningTarget(track.id);
-      console.log('Listening target updated, track will start playing:', track.id);
-    } catch (error) {
-      console.error('Failed to start track:', error);
-    }
-  }, [updateListeningTarget]);
+  const handleTrackClick = useCallback(
+    async (track: TrackSearchItemDTO) => {
+      try {
+        await updateListeningTarget(track.id);
+      } catch (error) {
+        console.error('Failed to start track:', error);
+      }
+    },
+    [updateListeningTarget]
+  );
 
   const handleAlbumClick = useCallback((album: AlbumSearchItemDTO) => {
     console.log('Opening album:', album);
-    // TODO: Navigate to album page when routing is implemented
   }, []);
 
   const handlePlaylistClick = useCallback((playlist: PlaylistSearchItemDTO) => {
     console.log('Opening playlist:', playlist);
-    // TODO: Navigate to playlist page when routing is implemented
   }, []);
 
   const handleArtistClick = useCallback((artist: ArtistSearchItemDTO) => {
     console.log('Opening artist:', artist);
-    // TODO: Navigate to artist page when routing is implemented
   }, []);
 
-  const handleUserClick = useCallback((user: UserSearchItemDTO) => {
-    navigate(`/user/${user.publicIdentifier}`);
-  }, [navigate]);
+  const handleUserClick = useCallback(
+    (user: UserSearchItemDTO) => {
+      navigate(`/user/${user.publicIdentifier}`);
+    },
+    [navigate]
+  );
 
-  // Формирование секций для отображения
   const sections = useMemo<ContentSection[]>(() => {
     if (!currentData || !shouldSearch) {
       return [];
@@ -200,15 +236,8 @@ export const Search: React.FC = () => {
 
     const result: ContentSection[] = [];
 
-    // Секция треков (для All и Tracks)
-    if (
-      (selectedCategory === 'All' && currentData.tracks) ||
-      (selectedCategory === 'Tracks' && tracksData)
-    ) {
-      // Используем данные из бесконечной прокрутки, если они доступны
-      const tracks = selectedCategory === 'All' 
-        ? (infiniteTracksResult.tracks.length > 0 ? infiniteTracksResult.tracks : currentData.tracks?.items)
-        : tracksData?.items;
+    if ((selectedCategory === 'All' && currentData.tracks) || (selectedCategory === 'Tracks' && tracksData)) {
+      const tracks = selectedCategory === 'All' ? currentData.tracks?.items : tracksData?.items;
       if (tracks && tracks.length > 0) {
         result.push({
           id: 'tracks',
@@ -219,24 +248,23 @@ export const Search: React.FC = () => {
           renderItem: (track: unknown) => {
             const trackItem = track as TrackSearchItemDTO;
             return (
-            <ItemCard
-              size="large"
-              key={trackItem.id}
-              image={getImageUrlById(trackItem.coverId)}
-              textContent={{
-                title: trackItem.title,
-                subtitle1: trackItem.artists.map((a) => a.pseudonym).join(', '),
-                subtitle2: trackItem.albumName,
-              }}
-              onClick={() => handleTrackClick(trackItem)}
-            />
+              <ItemCard
+                size="large"
+                key={trackItem.id}
+                image={getImageUrlById(trackItem.coverId)}
+                textContent={{
+                  title: trackItem.title,
+                  subtitle1: trackItem.artists.map((a) => a.pseudonym).join(', '),
+                  subtitle2: trackItem.albumName,
+                }}
+                onClick={() => handleTrackClick(trackItem)}
+              />
             );
           },
         });
       }
     }
 
-    // Секция альбомов (для All и Albums)
     if (
       (selectedCategory === 'All' && currentData?.albums && currentData.albums.items.length > 0) ||
       (selectedCategory === 'Albums' && albumsData && albumsData.items.length > 0)
@@ -252,31 +280,26 @@ export const Search: React.FC = () => {
           renderItem: (album: unknown) => {
             const albumItem = album as AlbumSearchItemDTO;
             return (
-            <ItemCard
-              size="large"
-              key={albumItem.id}
-              image={getImageUrlById(albumItem.coverId)}
-              textContent={{
-                title: albumItem.name,
-                subtitle1: albumItem.authors.map((a) => a.pseudonym).join(', '),
-                subtitle2: `${albumItem.trackCount} tracks`,
-              }}
-              to={`/album/${albumItem.id}`}
-              onClick={() => handleAlbumClick(albumItem)}
-            />
-          );
+              <ItemCard
+                size="large"
+                key={albumItem.id}
+                image={getImageUrlById(albumItem.coverId)}
+                textContent={{
+                  title: albumItem.name,
+                  subtitle1: albumItem.authors.map((a) => a.pseudonym).join(', '),
+                  subtitle2: `${albumItem.trackCount} tracks`,
+                }}
+                to={`/album/${albumItem.id}`}
+                onClick={() => handleAlbumClick(albumItem)}
+              />
+            );
           },
         });
       }
     }
 
-    // Секция плейлистов
-    if (
-      (selectedCategory === 'All' && currentData.playlists) ||
-      (selectedCategory === 'Playlists' && playlistsData)
-    ) {
-      const playlists =
-        selectedCategory === 'All' ? currentData.playlists?.items : playlistsData?.items;
+    if ((selectedCategory === 'All' && currentData.playlists) || (selectedCategory === 'Playlists' && playlistsData)) {
+      const playlists = selectedCategory === 'All' ? currentData.playlists?.items : playlistsData?.items;
       if (playlists && playlists.length > 0) {
         result.push({
           id: 'playlists',
@@ -287,31 +310,26 @@ export const Search: React.FC = () => {
           renderItem: (playlist: unknown) => {
             const playlistItem = playlist as PlaylistSearchItemDTO;
             return (
-            <ItemCard
-              size="large"
-              key={playlistItem.id}
-              image={getImageUrlById(playlistItem.coverId)}
-              textContent={{
-                title: playlistItem.name,
-                subtitle1: `by ${playlistItem.creatorName}`,
-                subtitle2: `${playlistItem.trackCount} tracks`,
-              }}
-              to={`/playlist/${playlistItem.id}`}
-              onClick={() => handlePlaylistClick(playlistItem)}
-            />
+              <ItemCard
+                size="large"
+                key={playlistItem.id}
+                image={getImageUrlById(playlistItem.coverId)}
+                textContent={{
+                  title: playlistItem.name,
+                  subtitle1: `by ${playlistItem.creatorName}`,
+                  subtitle2: `${playlistItem.trackCount} tracks`,
+                }}
+                to={`/playlist/${playlistItem.id}`}
+                onClick={() => handlePlaylistClick(playlistItem)}
+              />
             );
           },
         });
       }
     }
 
-    // Секция артистов (для All и Artists)
-    if (
-      (selectedCategory === 'All' && currentData.artists) ||
-      (selectedCategory === 'Artists' && artistsData)
-    ) {
-      const artists =
-        selectedCategory === 'All' ? currentData.artists?.items : artistsData?.items;
+    if ((selectedCategory === 'All' && currentData.artists) || (selectedCategory === 'Artists' && artistsData)) {
+      const artists = selectedCategory === 'All' ? currentData.artists?.items : artistsData?.items;
       if (artists && artists.length > 0) {
         result.push({
           id: 'artists',
@@ -322,27 +340,23 @@ export const Search: React.FC = () => {
           renderItem: (artist: unknown) => {
             const artistItem = artist as ArtistSearchItemDTO;
             return (
-            <ItemCard
-              size="large"
-              key={artistItem.id}
-              image={getImageUrlById(artistItem.avatarImageId)}
-              textContent={{
-                title: artistItem.artistName,
-                subtitle1: `${artistItem.trackCount} tracks, ${artistItem.albumCount} albums`,
-              }}
-              onClick={() => handleArtistClick(artistItem)}
-            />
+              <ItemCard
+                size="large"
+                key={artistItem.id}
+                image={getImageUrlById(artistItem.avatarImageId)}
+                textContent={{
+                  title: artistItem.artistName,
+                  subtitle1: `${artistItem.trackCount} tracks, ${artistItem.albumCount} albums`,
+                }}
+                onClick={() => handleArtistClick(artistItem)}
+              />
             );
           },
         });
       }
     }
 
-    // Секция пользователей (для All и Users)
-    if (
-      (selectedCategory === 'All' && currentData.users) ||
-      (selectedCategory === 'Users' && usersData)
-    ) {
+    if ((selectedCategory === 'All' && currentData.users) || (selectedCategory === 'Users' && usersData)) {
       const users = selectedCategory === 'All' ? currentData.users?.items : usersData?.items;
       if (users && users.length > 0) {
         result.push({
@@ -354,16 +368,16 @@ export const Search: React.FC = () => {
           renderItem: (user: unknown) => {
             const userItem = user as UserSearchItemDTO;
             return (
-            <ItemCard
-              size="large"
-              key={userItem.id}
-              image={getImageUrlById(userItem.avatarImageId)}
-              textContent={{
-                title: userItem.userName,
-                subtitle1: userItem.isArtist ? `Artist: ${userItem.artistName}` : userItem.publicIdentifier,
-              }}
-              onClick={() => handleUserClick(userItem)}
-            />
+              <ItemCard
+                size="large"
+                key={userItem.id}
+                image={getImageUrlById(userItem.avatarImageId)}
+                textContent={{
+                  title: userItem.userName,
+                  subtitle1: userItem.isArtist ? `Artist: ${userItem.artistName}` : userItem.publicIdentifier,
+                }}
+                onClick={() => handleUserClick(userItem)}
+              />
             );
           },
         });
@@ -379,6 +393,7 @@ export const Search: React.FC = () => {
     playlistsData,
     artistsData,
     usersData,
+    albumsData,
     handleTrackClick,
     handleAlbumClick,
     handlePlaylistClick,
@@ -390,61 +405,8 @@ export const Search: React.FC = () => {
     setSearchQuery(value);
   }, []);
 
-  // Обработчик прокрутки для бесконечной загрузки треков
-  useEffect(() => {
-    // Ищем контейнер прокрутки - это может быть .scrollableContent из PageLayout
-    const findScrollContainer = (): HTMLElement | null => {
-      if (!scrollContainerRef.current) return null;
-      
-      // Пытаемся найти родительский контейнер с классом scrollableContent
-      let element: HTMLElement | null = scrollContainerRef.current.parentElement;
-      while (element) {
-        if (element.classList.contains('scrollableContent')) {
-          return element;
-        }
-        element = element.parentElement;
-      }
-      
-      return null;
-    };
-
-    const container = findScrollContainer();
-    if (!container) return;
-
-    const handleScroll = () => {
-      // Проверяем, нужно ли загружать больше треков
-      if (
-        (selectedCategory === 'All' || selectedCategory === 'Tracks') &&
-        infiniteTracksResult.hasMore &&
-        !infiniteTracksResult.isLoadingMore &&
-        !infiniteTracksResult.isLoading
-      ) {
-        const scrollTop = container.scrollTop;
-        const scrollHeight = container.scrollHeight;
-        const clientHeight = container.clientHeight;
-        const scrollBottom = scrollHeight - scrollTop - clientHeight;
-
-        // Загружаем следующую страницу, если пользователь прокрутил до 200px от конца
-        if (scrollBottom < 200) {
-          void infiniteTracksResult.loadMore();
-        }
-      }
-    };
-
-    container.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      container.removeEventListener('scroll', handleScroll);
-    };
-  }, [
-    selectedCategory,
-    infiniteTracksResult.hasMore,
-    infiniteTracksResult.isLoadingMore,
-    infiniteTracksResult.isLoading,
-    infiniteTracksResult.loadMore,
-  ]);
-
   return (
-    <div className={styles.container} ref={scrollContainerRef}>
+    <div className={styles.container} ref={scrollRef}>
       <SearchFilterHeader
         title="Search"
         selectedCategory={selectedCategory}
@@ -453,14 +415,8 @@ export const Search: React.FC = () => {
         onSearch={handleSearch}
         searchPlaceholder="Search for tracks, albums, playlists, artists..."
       />
-      {isLoading && shouldSearch && (
-        <LoadingPlaceholder variant="spinner" fullWidth />
-      )}
-      {(searchError || tracksResult.error || playlistsResult.error || artistsResult.error || usersResult.error) && (
-        <div className={styles.error}>
-          Error: Failed to search
-        </div>
-      )}
+      {isLoading && shouldSearch && <LoadingPlaceholder variant="spinner" fullWidth />}
+      {searchError && <div className={styles.error}>Error: Failed to search</div>}
       {!shouldSearch && (
         <div className={styles.emptyState}>
           Enter a search query to find tracks, albums, playlists, artists, and users
@@ -469,16 +425,13 @@ export const Search: React.FC = () => {
       {shouldSearch && !isLoading && sections.length === 0 && (
         <div className={styles.emptyState}>No results found</div>
       )}
-      {shouldSearch && !isLoading && sections.length > 0 && (
-        <>
-          <ContentSections sections={sections} />
-          {infiniteTracksResult.isLoadingMore && (selectedCategory === 'All' || selectedCategory === 'Tracks') && (
-            <div style={{ padding: '20px', textAlign: 'center' }}>
-              <LoadingPlaceholder variant="spinner" />
-            </div>
-          )}
-        </>
-      )}
+      {shouldSearch && !isLoading && sections.length > 0 && <ContentSections sections={sections} />}
+
+      {/* маячок для infinite scroll */}
+      <div ref={sentinelRef} />
+
+      {isLoadingMore && <LoadingPlaceholder variant="spinner" fullWidth />}
     </div>
   );
 };
+

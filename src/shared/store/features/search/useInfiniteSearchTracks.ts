@@ -10,8 +10,9 @@ const PAGE_SIZE = 20;
 export const useInfiniteSearchTracks = (query: string) => {
   const [allTracks, setAllTracks] = useState<TrackSearchItemDTO[]>([]);
   const [currentOffset, setCurrentOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [initialLoaded, setInitialLoaded] = useState(false);
   const isLoadingInitialRef = useRef(false);
   
   const [fetchTracks, { isLoading: isFetching }] = useLazySearchTracksQuery();
@@ -20,7 +21,8 @@ export const useInfiniteSearchTracks = (query: string) => {
   useEffect(() => {
     setAllTracks([]);
     setCurrentOffset(0);
-    setHasMore(true);
+    setHasMore(false);
+    setInitialLoaded(false);
     isLoadingInitialRef.current = false;
   }, [query]);
 
@@ -35,9 +37,11 @@ export const useInfiniteSearchTracks = (query: string) => {
         setAllTracks(result.items);
         setCurrentOffset(result.items.length);
         setHasMore(result.items.length === PAGE_SIZE && result.items.length < result.total);
+        setInitialLoaded(true);
       } catch (error) {
         console.error('Error loading initial tracks:', error);
         setHasMore(false);
+        setInitialLoaded(true);
       } finally {
         isLoadingInitialRef.current = false;
       }
@@ -48,7 +52,7 @@ export const useInfiniteSearchTracks = (query: string) => {
 
   // Функция для загрузки следующей страницы
   const loadMore = useCallback(async () => {
-    if (!query.trim() || isLoadingMore || !hasMore || isFetching) return;
+    if (!query.trim() || isLoadingMore || isLoadingInitialRef.current || !hasMore || isFetching) return;
 
     setIsLoadingMore(true);
     try {
@@ -87,6 +91,7 @@ export const useInfiniteSearchTracks = (query: string) => {
     hasMore,
     isLoading,
     isLoadingMore,
+    initialLoaded,
   };
 };
 

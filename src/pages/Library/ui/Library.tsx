@@ -384,6 +384,7 @@ export const Library: React.FC<LibraryProps> = () => {
                 return (
                     <ItemCard
                         key={playlistItem.id}
+                        size="small"
                         image={playlistItem.coverImage}
                         textContent={{
                             title: playlistItem.name,
@@ -410,28 +411,30 @@ export const Library: React.FC<LibraryProps> = () => {
     return (
         <div className={styles.container}>
             <div className={styles.headerContainer}>
-                {currentFolderId !== null && (
-                    <Button
-                        variant="filled"
-                        theme="dark"
-                        size="medium"
-                        shape="cr-16"
-                        iconOnly
-                        icon={<LeftArrow/>}
-                        onClick={handleBack}
-                        className={styles.backButton}
-                    />
-                )}
-                <SearchFilterHeader
-                    title={headerTitle}
-                    selectedCategory={selectedCategory}
-                    onCategoryChange={setSelectedCategory}
-                    categories={['All', 'Albums', 'Playlists', 'Artists']}
-                    searchValue={searchQuery}
-                    onSearch={handleSearch}
-                    showSearch={currentFolderId === null}
-                />
-            </div>
+    <div className={styles.headerInner}>
+        {currentFolderId !== null && (
+            <Button
+                variant="filled"
+                theme="dark"
+                size="medium"
+                shape="cr-16"
+                iconOnly
+                icon={<LeftArrow />}
+                onClick={handleBack}
+                className={styles.backButton}
+            />
+        )}
+        <SearchFilterHeader
+            title={headerTitle}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            categories={['All', 'Albums', 'Playlists', 'Artists']}
+            searchValue={searchQuery}
+            onSearch={handleSearch}
+            showSearch={currentFolderId === null}
+        />
+    </div>
+</div>
             <Button
                 className={styles.createBtn}
                 icon={<PlusIcon/>}

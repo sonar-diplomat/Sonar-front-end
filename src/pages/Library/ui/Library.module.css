@@ -1,4 +1,4 @@
-.container{
+.container {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -6,18 +6,23 @@
     padding: 16px;
 }
 
-.headerContainer{
+.headerContainer {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 12px;
+    width: 100%;
 }
 
-.backButton{
+.backButton {
     flex-shrink: 0;
 }
 
-.createBtn{
+.headerContainer > *:not(.backButton) {
+    flex-grow: 1;
+}
+
+.createBtn {
     display: flex;
     width: 100%;
     max-width: 362px;
@@ -45,15 +50,15 @@
         justify-content: flex-start;
         align-items: center;
     }
-    
+
     .container > * {
         width: 100%;
     }
-    
+
     .headerContainer {
         width: 100%;
     }
-    
+
     .backButton {
         align-self: flex-start;
         width: auto;
