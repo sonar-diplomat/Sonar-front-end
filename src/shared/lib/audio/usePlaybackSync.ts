@@ -3,7 +3,7 @@ import { usePlayer } from '@shared/store/features/player';
 import { useUpdateListeningTargetMutation, useUpdateCurrentPositionMutation } from '@entities/UserState/api/rtkApi';
 
 export const usePlaybackSync = () => {
-  const { currentTrack, collectionContext, currentTime, isPlaying } = usePlayer();
+  const { currentTrack, collectionContext, currentTime, isPlaying, isStockCollection } = usePlayer();
   const [updateListeningTarget] = useUpdateListeningTargetMutation();
   const [updatePosition] = useUpdateCurrentPositionMutation();
 
@@ -19,13 +19,13 @@ export const usePlaybackSync = () => {
     }
 
     const trackId = currentTrack.id;
-    const collectionId = collectionContext?.id || null;
+    const collectionId = (isStockCollection && collectionContext?.id) ? collectionContext.id : null;
 
     if (
       trackId !== previousTrackIdRef.current ||
       collectionId !== previousCollectionIdRef.current
     ) {
-      console.log('[usePlaybackSync] Updating listening target:', trackId, collectionId);
+      console.log('[usePlaybackSync] Updating listening target:', { trackId, collectionId, isStockCollection });
 
       updateListeningTarget({ trackId, collectionId: collectionId || undefined })
         .unwrap()
@@ -39,7 +39,7 @@ export const usePlaybackSync = () => {
       previousTrackIdRef.current = trackId;
       previousCollectionIdRef.current = collectionId;
     }
-  }, [currentTrack, collectionContext, updateListeningTarget]);
+  }, [currentTrack, collectionContext, isStockCollection, updateListeningTarget]);
 
   useEffect(() => {
     if (positionSaveIntervalRef.current) {
