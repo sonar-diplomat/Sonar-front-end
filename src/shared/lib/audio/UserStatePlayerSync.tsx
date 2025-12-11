@@ -15,9 +15,7 @@ export const UserStatePlayerSync = () => {
   useQueuePersistence();
   usePlaybackSync();
 
-  const { data: queueData, isLoading, isError, error } = useGetQueueQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
+  const { data: queueData, isLoading, isError, error } = useGetQueueQuery();
 
   useEffect(() => {
     if (hasRestoredQueue) {
