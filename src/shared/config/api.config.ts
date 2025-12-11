@@ -67,6 +67,7 @@ export const API_ENDPOINTS = {
         open: 'Report/open',
         reasonTypes: 'Report/reason-types',
         reasonTypeById: (id: number) => `Report/reason-types/${id}`,
+        reasonTypesByEntityType: (entityTypeId: number) => `Report/reason-types/by-entity-type/${entityTypeId}`,
         entityTypes: 'Report/entity-types',
         entityTypeById: (id: number) => `Report/entity-types/${id}`,
     },
@@ -231,5 +232,10 @@ export const API_ENDPOINTS = {
         users: 'Search/users',
         suggestions: 'Search/suggestions',
         popular: 'Search/popular',
+    },
+    recommendations: {
+        popularCollections: 'Recommendations/popular-collections',
+        recentCollections: 'Recommendations/recent-collections',
+        recentTracks: 'Recommendations/recent-tracks',
     },
 } as const;

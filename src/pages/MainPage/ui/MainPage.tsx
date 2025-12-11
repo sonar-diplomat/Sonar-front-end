@@ -8,10 +8,14 @@ import { useUserLibrary } from '@shared/lib/user-hooks/useUserLibrary';
 import { getImageUrlById } from '@shared/lib/image-utils';
 import { GetPremiumCard } from '@widgets/GetPremium';
 import {
-    MOCK_LISTEN_NOW_ITEMS,
-    MOCK_RECENTLY_PLAYED_TRACKS,
-    MOCK_RECENTLY_PLAYED_PLAYLISTS,
-} from './mocks';
+    useGetPopularCollectionsQuery,
+    useGetRecentCollectionsQuery,
+    useGetRecentTracksQuery,
+} from '@entities/Recommendations';
+import { useGetAlbumQuery } from '@entities/Album/api/rtkApi';
+import { useGetPlaylistQuery } from '@entities/Playlist/api/rtkApi';
+import { useGetTrackQuery } from '@entities/Music/api/rtkApi';
+import { getArtistNames } from '@widgets/MiniPlayer/lib/utils';
 import styles from './MainPage.module.css';
 
 export const MainPage: React.FC = () => {
@@ -27,6 +31,17 @@ export const MainPage: React.FC = () => {
         }
     );
     const { library } = useUserLibrary();
+
+    // Fetch recommendations
+    const { data: popularCollections } = useGetPopularCollectionsQuery({ limit: 4 });
+    const { data: recentCollections } = useGetRecentCollectionsQuery(
+        { limit: 12 },
+        { skip: !currentUserId }
+    );
+    const { data: recentTracks } = useGetRecentTracksQuery(
+        { limit: 12 },
+        { skip: !currentUserId }
+    );
 
     const userName = useMemo(() => {
         if (currentUserProfile?.userName) {
@@ -47,28 +62,23 @@ export const MainPage: React.FC = () => {
         }));
     }, [library]);
 
-    const handleListenNowClick = (item: typeof MOCK_LISTEN_NOW_ITEMS[0]) => {
-        if (item.type === 'playlist') {
-            navigate(`/playlist/${item.id}`);
-        } else {
-            navigate(`/album/${item.id}`);
+    // Collection type enum values (matching backend CollectionType)
+    const CollectionType = {
+        CollectionUnknown: 0,
+        CollectionAlbum: 1,
+        CollectionPlaylist: 2,
+    } as const;
+
+    const handleCollectionClick = (collectionId: number, collectionType: number) => {
+        if (collectionType === CollectionType.CollectionAlbum) {
+            navigate(`/album/${collectionId}`);
+        } else if (collectionType === CollectionType.CollectionPlaylist) {
+            navigate(`/playlist/${collectionId}`);
         }
     };
 
-    const recentlyPlayedTracks = useMemo(() => {
-        return MOCK_RECENTLY_PLAYED_TRACKS.slice(0, 12);
-    }, []);
-
-    const recentlyPlayedPlaylists = useMemo(() => {
-        return MOCK_RECENTLY_PLAYED_PLAYLISTS.slice(0, 12);
-    }, []);
-
-    const handleRecentlyPlayedTrackClick = (item: typeof MOCK_RECENTLY_PLAYED_TRACKS[0]) => {
-        navigate(`/player/${item.id}`);
-    };
-
-    const handleRecentlyPlayedPlaylistClick = (item: typeof MOCK_RECENTLY_PLAYED_PLAYLISTS[0]) => {
-        navigate(`/playlist/${item.id}`);
+    const handleTrackClick = (trackId: number) => {
+        navigate(`/player/${trackId}`);
     };
 
     return (
@@ -102,97 +112,155 @@ export const MainPage: React.FC = () => {
                 </div>
             )}
 
-            <div className={styles.section}>
-                <h2 className={styles.sectionTitle}>Listen now</h2>
-                <div className={styles.listenNowGrid}>
-                    {MOCK_LISTEN_NOW_ITEMS.map((item) => (
-                        <ItemCard
-                            key={item.id}
-                            size="large"
-                            image={getImageUrlById(item.coverId)}
-                            textContent={{
-                                title: item.name,
-                            }}
-                            onClick={() => handleListenNowClick(item)}
-                        />
-                    ))}
+            {popularCollections && popularCollections.length > 0 && (
+                <div className={styles.section}>
+                    <h2 className={styles.sectionTitle}>Listen now</h2>
+                    <div className={styles.listenNowGrid}>
+                        {popularCollections.map((collection) => (
+                            <CollectionCard
+                                key={`${collection.collectionType}-${collection.collectionId}`}
+                                collectionId={collection.collectionId}
+                                collectionType={collection.collectionType}
+                                size="large"
+                                onClick={() => handleCollectionClick(collection.collectionId, collection.collectionType)}
+                            />
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
 
             <div className={styles.section}>
                 <GetPremiumCard onClick={() => navigate('/premium')} />
             </div>
 
-            <div className={styles.section}>
-                <div className={styles.recentlyPlayedHeader}>
-                    <div className={styles.recentlyPlayedHeaderLeft}>
-                        <h2 className={styles.recentlyPlayedTitle}>Recently played</h2>
-                        <span className={styles.recentlyPlayedCount}>{recentlyPlayedTracks.length} Tracks</span>
+            {recentTracks && recentTracks.items.length > 0 && (
+                <div className={styles.section}>
+                    <div className={styles.recentlyPlayedHeader}>
+                        <div className={styles.recentlyPlayedHeaderLeft}>
+                            <h2 className={styles.recentlyPlayedTitle}>Recently played</h2>
+                            <span className={styles.recentlyPlayedCount}>{recentTracks.items.length} Tracks</span>
+                        </div>
+                        {recentTracks.items.length >= 12 && (
+                            <Button
+                                variant="text"
+                                theme="dark"
+                                className={styles.seeMoreButton}
+                                onClick={() => navigate('/library')}
+                            >
+                                → see all
+                            </Button>
+                        )}
                     </div>
-                    {recentlyPlayedTracks.length >= 12 && (
-                        <Button
-                            variant="text"
-                            theme="dark"
-                            className={styles.seeMoreButton}
-                            onClick={() => navigate('/library')}
-                        >
-                            → see all
-                        </Button>
-                    )}
-                </div>
-                <div className={styles.cardsScroll}>
-                    <div className={styles.cardsRow}>
-                        {recentlyPlayedTracks.map((item) => (
-                            <ItemCard
-                                key={item.id}
-                                size="medium"
-                                image={getImageUrlById(item.coverId)}
-                                textContent={{
-                                    title: item.title,
-                                    subtitle1: item.artistName,
-                                }}
-                                onClick={() => handleRecentlyPlayedTrackClick(item)}
-                            />
-                        ))}
+                    <div className={styles.cardsScroll}>
+                        <div className={styles.cardsRow}>
+                            {recentTracks.items.map((track) => (
+                                <TrackCard
+                                    key={track.trackId}
+                                    trackId={track.trackId}
+                                    onClick={() => handleTrackClick(track.trackId)}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
-            <div className={styles.section}>
-                <div className={styles.recentlyPlayedHeader}>
-                    <div className={styles.recentlyPlayedHeaderLeft}>
-                        <h2 className={styles.recentlyPlayedTitle}>Recently played</h2>
-                        <span className={styles.recentlyPlayedCount}>{recentlyPlayedPlaylists.length} Playlists</span>
+            {recentCollections && recentCollections.items.length > 0 && (
+                <div className={styles.section}>
+                    <div className={styles.recentlyPlayedHeader}>
+                        <div className={styles.recentlyPlayedHeaderLeft}>
+                            <h2 className={styles.recentlyPlayedTitle}>Recently played</h2>
+                            <span className={styles.recentlyPlayedCount}>{recentCollections.items.length} Collections</span>
+                        </div>
+                        {recentCollections.items.length >= 12 && (
+                            <Button
+                                variant="text"
+                                theme="dark"
+                                className={styles.seeMoreButton}
+                                onClick={() => navigate('/library')}
+                            >
+                                → see all
+                            </Button>
+                        )}
                     </div>
-                    {recentlyPlayedPlaylists.length >= 12 && (
-                        <Button
-                            variant="text"
-                            theme="dark"
-                            className={styles.seeMoreButton}
-                            onClick={() => navigate('/library')}
-                        >
-                            → see all
-                        </Button>
-                    )}
-                </div>
-                <div className={styles.cardsScroll}>
-                    <div className={styles.cardsRow}>
-                        {recentlyPlayedPlaylists.map((item) => (
-                            <ItemCard
-                                key={item.id}
-                                size="medium"
-                                image={getImageUrlById(item.coverId)}
-                                textContent={{
-                                    title: item.title,
-                                    subtitle1: item.artistName,
-                                }}
-                                onClick={() => handleRecentlyPlayedPlaylistClick(item)}
-                            />
-                        ))}
+                    <div className={styles.cardsScroll}>
+                        <div className={styles.cardsRow}>
+                            {recentCollections.items.map((collection) => (
+                                <CollectionCard
+                                    key={`${collection.collectionType}-${collection.collectionId}`}
+                                    collectionId={collection.collectionId}
+                                    collectionType={collection.collectionType}
+                                    onClick={() => handleCollectionClick(collection.collectionId, collection.collectionType)}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
+    );
+};
+
+// Helper component to load and display collection details
+const CollectionCard: React.FC<{
+    collectionId: number;
+    collectionType: number;
+    size?: 'small' | 'medium' | 'large';
+    onClick: () => void;
+}> = ({ collectionId, collectionType, size = 'medium', onClick }) => {
+    const CollectionType = {
+        CollectionUnknown: 0,
+        CollectionAlbum: 1,
+        CollectionPlaylist: 2,
+    } as const;
+
+    const { data: album } = useGetAlbumQuery(collectionId, {
+        skip: collectionType !== CollectionType.CollectionAlbum,
+    });
+    const { data: playlist } = useGetPlaylistQuery(collectionId, {
+        skip: collectionType !== CollectionType.CollectionPlaylist,
+    });
+
+    const collection = collectionType === CollectionType.CollectionAlbum ? album : playlist;
+    const imageUrl = collection?.coverId ? getImageUrlById(collection.coverId) : undefined;
+    const title = collection?.name || 'Unknown';
+
+    return (
+        <ItemCard
+            size={size}
+            image={imageUrl}
+            textContent={{
+                title,
+            }}
+            onClick={onClick}
+        />
+    );
+};
+
+// Helper component to load and display track details
+const TrackCard: React.FC<{
+    trackId: number;
+    onClick: () => void;
+}> = ({ trackId, onClick }) => {
+    const { data: track } = useGetTrackQuery(trackId);
+    
+    if (!track) {
+        return null;
+    }
+
+    const artistName = getArtistNames(track);
+    const imageUrl = track.coverId ? getImageUrlById(track.coverId) : undefined;
+
+    return (
+        <ItemCard
+            size="medium"
+            image={imageUrl}
+            textContent={{
+                title: track.title,
+                subtitle1: artistName,
+            }}
+            onClick={onClick}
+        />
     );
 };
 

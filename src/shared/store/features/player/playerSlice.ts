@@ -5,8 +5,8 @@ export type QueueTrack = TrackDTO & { _queueId: number };
 
 export interface PlayerState {
     currentTrack: TrackDTO | null;
-    pendingTrack: TrackDTO | null; // Трек, который загружается, но еще не готов к воспроизведению
-    isLoadingNextTrack: boolean; // Флаг загрузки следующего трека
+    pendingTrack: TrackDTO | null;
+    isLoadingNextTrack: boolean;
     queue: QueueTrack[];
     customQueue: QueueTrack[];
     queueIndex: number;
@@ -248,13 +248,11 @@ const playerSlice = createSlice({
                 }
             }
         },
-        // Устанавливает трек как pending (загружается, но UI не меняется)
         setPendingTrack: (state, action: PayloadAction<TrackDTO | null>) => {
             state.pendingTrack = action.payload;
             state.isLoadingNextTrack = action.payload !== null;
         },
 
-        // Подтверждает переключение на pending трек (когда он готов к воспроизведению)
         confirmTrackSwitch: (state) => {
             if (state.pendingTrack) {
                 state.currentTrack = state.pendingTrack;
@@ -267,7 +265,7 @@ const playerSlice = createSlice({
                     const trackId = state.currentTrack.id;
                     const isFavoriteFromApi = state.currentTrack.isFavorite;
                     const isInStore = state.favoriteTrackIds.includes(trackId);
-
+                    
                     if (isFavoriteFromApi !== undefined) {
                         if (isFavoriteFromApi !== isInStore) {
                             if (isFavoriteFromApi && !isInStore) {
@@ -319,7 +317,6 @@ const playerSlice = createSlice({
                 state.currentTime = 0;
                 state.isPlaying = true;
             } else {
-                // Если очередь пуста, очищаем текущий трек и останавливаем воспроизведение
                 state.isPlaying = false;
                 state.currentTrack = null;
                 state.currentTime = 0;
