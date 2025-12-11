@@ -24,6 +24,7 @@ export interface PlayerState {
         id: number | null;
     } | null;
     favoriteTrackIds: number[];
+    isStockCollection: boolean;
 }
 
 const loadFavoritesFromStorage = (): number[] => {
@@ -62,6 +63,7 @@ const initialState: PlayerState = {
     originalQueue: [],
     collectionContext: null,
     favoriteTrackIds: loadFavoritesFromStorage(),
+    isStockCollection: false,
 };
 
 const playerSlice = createSlice({
@@ -109,6 +111,7 @@ const playerSlice = createSlice({
             state.currentTime = 0;
             state.originalQueue = [...state.queue];
             state.collectionContext = action.payload.collectionContext ?? null;
+            state.isStockCollection = !!action.payload.collectionContext && state.customQueue.length === 0;
 
             let favoritesChanged = false;
             action.payload.tracks.forEach(track => {
@@ -139,8 +142,22 @@ const playerSlice = createSlice({
             };
 
             state.customQueue.push(queueTrack);
-            const insertIndex = state.queueIndex + 1;
+
+            let customTracksAfterCurrent = 0;
+            for (let i = state.queueIndex + 1; i < state.queue.length; i++) {
+                const track = state.queue[i];
+                if (state.customQueue.slice(0, -1).some(ct => ct._queueId === track._queueId)) {
+                    customTracksAfterCurrent++;
+                } else {
+                    break;
+                }
+            }
+
+            const insertIndex = state.queueIndex + 1 + customTracksAfterCurrent;
             state.queue.splice(insertIndex, 0, queueTrack);
+
+
+            state.isStockCollection = false;
 
             if (state.queue.length === 1) {
                 state.queueIndex = 0;
@@ -157,6 +174,7 @@ const playerSlice = createSlice({
 
             state.customQueue.push(queueTrack);
             state.queue.splice(insertIndex, 0, queueTrack);
+            state.isStockCollection = false;
         },
 
         removeFromQueue: (state, action: PayloadAction<number>) => {
@@ -196,6 +214,7 @@ const playerSlice = createSlice({
             state.currentTime = 0;
             state.originalQueue = [];
             state.collectionContext = null;
+            state.isStockCollection = false;
         },
 
 
@@ -213,6 +232,7 @@ const playerSlice = createSlice({
             state.currentTime = 0;
             state.collectionContext = null;
             state.originalQueue = [queueTrack];
+            state.isStockCollection = false;
 
             if (action.payload.isFavorite !== undefined) {
                 const trackId = action.payload.id;
@@ -449,8 +469,9 @@ const playerSlice = createSlice({
             queueIndex: number;
             collectionContext: { type: 'playlist' | 'album' | 'blend'; id: number } | null;
             currentTime?: number;
+            isStockCollection?: boolean;
         }>) => {
-            const { queue, customQueue, queueIndex, collectionContext, currentTime } = action.payload;
+            const { queue, customQueue, queueIndex, collectionContext, currentTime, isStockCollection } = action.payload;
 
             state.customQueue = customQueue.map(track => ({
                 ...track,
@@ -466,6 +487,10 @@ const playerSlice = createSlice({
             state.currentTrack = state.queue[queueIndex] || null;
             state.collectionContext = collectionContext;
             state.originalQueue = [...state.queue];
+
+            state.isStockCollection = isStockCollection !== undefined
+                ? isStockCollection
+                : (!!collectionContext && customQueue.length === 0);
 
             if (currentTime !== undefined) {
                 state.currentTime = currentTime;

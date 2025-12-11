@@ -174,6 +174,7 @@ export const usePlayer = () => {
             queueIndex: number;
             collectionContext: { type: 'playlist' | 'album' | 'blend'; id: number } | null;
             currentTime?: number;
+            isStockCollection?: boolean;
         }) => {
             dispatch(restoreQueue(queueData));
         },

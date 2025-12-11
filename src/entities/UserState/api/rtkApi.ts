@@ -2,15 +2,24 @@ import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
 import type { TrackDTO } from '@entities/Music';
 
-export interface QueueDTO {
+export interface QueueTrackDTO {
   Id: number;
-  Position: string;
-  CollectionId: number | null;
-  CurrentTrackId: number | null;
-  Tracks: TrackDTO[];
+  QueueId: number;
+  TrackId: number;
+  Order: number;
+  IsManuallyAdded: boolean;
+  Track: TrackDTO;
 }
 
-/**
+export interface QueueDTO {
+  Id: number;
+  Position: string | null;
+  CollectionId: number | null;
+  CurrentTrackId: number | null;
+  QueueTracks: QueueTrackDTO[];
+}
+
+/*
  * UserState API endpoints
  */
 export const userStateApi = rtkApi.injectEndpoints({
@@ -40,55 +49,56 @@ export const userStateApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
+      providesTags: ['Queue'],
       transformResponse: (response: any) => {
-        console.log('[getQueue] Raw response type:', typeof response);
-        console.log('[getQueue] Raw response:', response);
-
         if (!response) {
-          console.log('[getQueue] Response is null or undefined');
           return null;
         }
 
         if (typeof response === 'string') {
           try {
-            console.log('[getQueue] Response is a string, attempting to parse...');
-            const parsed = JSON.parse(response);
-            console.log('[getQueue] Parsed response:', parsed);
-
-            if (parsed && parsed.tracks && Array.isArray(parsed.tracks)) {
-              console.log('[getQueue] Parsed response has valid tracks array:', parsed.tracks.length);
-              return {
-                Id: parsed.id,
-                Position: parsed.position,
-                CollectionId: parsed.collectionId,
-                CurrentTrackId: parsed.currentTrackId,
-                Tracks: parsed.tracks,
-              } as QueueDTO;
-            }
-            return null;
+            response = JSON.parse(response);
           } catch (e) {
             console.error('[getQueue] Failed to parse string response:', e);
             return null;
           }
         }
 
-        if (response.tracks && Array.isArray(response.tracks)) {
-          console.log('[getQueue] Response has valid tracks array (camelCase):', response.tracks.length);
+        if (response.QueueTracks && Array.isArray(response.QueueTracks)) {
+          return response as QueueDTO;
+        }
+
+        if (response.queueTracks && Array.isArray(response.queueTracks)) {
           return {
-            Id: response.id,
-            Position: response.position,
-            CollectionId: response.collectionId,
-            CurrentTrackId: response.currentTrackId,
-            Tracks: response.tracks,
+            Id: response.id || response.Id,
+            Position: response.position || response.Position,
+            CollectionId: response.collectionId || response.CollectionId,
+            CurrentTrackId: response.currentTrackId || response.CurrentTrackId,
+            QueueTracks: response.queueTracks,
           } as QueueDTO;
         }
 
         if (response.Tracks && Array.isArray(response.Tracks)) {
-          console.log('[getQueue] Response has valid Tracks array (PascalCase):', response.Tracks.length);
           return response as QueueDTO;
         }
 
-        console.log('[getQueue] Invalid response structure - no valid tracks/Tracks array');
+        if (response.tracks && Array.isArray(response.tracks)) {
+          return {
+            Id: response.id || response.Id,
+            Position: response.position || response.Position,
+            CollectionId: response.collectionId || response.CollectionId,
+            CurrentTrackId: response.currentTrackId || response.CurrentTrackId,
+            QueueTracks: response.tracks.map((track: TrackDTO, index: number) => ({
+              Id: index,
+              QueueId: response.id || response.Id || 0,
+              TrackId: track.id,
+              Order: index,
+              IsManuallyAdded: false,
+              Track: track,
+            })),
+          } as QueueDTO;
+        }
+
         return null;
       },
     }),
