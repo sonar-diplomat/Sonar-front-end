@@ -27,7 +27,7 @@
     font-weight: 500;
     font-size: 20px;
     line-height: normal;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
     flex-shrink: 0;
 }
@@ -45,7 +45,7 @@
     font-weight: 400;
     font-size: 14px;
     line-height: normal;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-tertiary);
     margin: 0;
     flex-shrink: 0;
 }

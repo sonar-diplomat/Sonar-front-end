@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './AppearanceSettings.module.css';
-import { SettingsSection, Select, Button } from '@shared/ui';
-import { ProfileHeader } from '@widgets/ProfileHeader';
+import { SettingsSection, Select, Button, LeftArrow } from '@shared/ui';
 import { useClientSettings } from '@shared/store/features/clientSettings/useClientSettings';
 import { useGetLanguagesQuery, useGetThemesQuery } from '@shared/api';
 export const AppearanceSettings: React.FC = () => {
+  const navigate = useNavigate();
   const { settings, patchSettings, isLoading: isPatching } = useClientSettings();
   const { data: languages, isLoading: languagesLoading } = useGetLanguagesQuery();
   const { data: themes, isLoading: themesLoading } = useGetThemesQuery();
@@ -51,7 +52,18 @@ export const AppearanceSettings: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <ProfileHeader title="Language and Theme" showBackButton />
+      <div className={styles.header}>
+        <Button
+          icon={<LeftArrow />}
+          size="medium"
+          variant="filled"
+          theme="dark"
+          onClick={() => navigate(-1)}
+          className={styles.backButton}
+          iconOnly
+        />
+        <h2 className={styles.title}>Language and Theme</h2>
+      </div>
       <div className={styles.content}>
         <SettingsSection title="Language">
           <Select

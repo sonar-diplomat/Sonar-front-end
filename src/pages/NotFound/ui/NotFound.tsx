@@ -29,7 +29,7 @@ export const NotFound: React.FC = () => {
                 <Button
                     onClick={handleGoHome}
                     variant="filled"
-                    theme="light"
+                    theme="dark"
                     size="large"
                     shape="cr-16"
                     fullWidth
@@ -41,7 +41,7 @@ export const NotFound: React.FC = () => {
                 <Button
                     onClick={handleGoBack}
                     variant="filled"
-                    theme="light"
+                    theme="dark"
                     size="large"
                     shape="cr-16"
                     fullWidth
