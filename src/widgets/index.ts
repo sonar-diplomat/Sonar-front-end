@@ -24,4 +24,5 @@ export * from './ReportComponent';
 export * from './ShareComponent';
 export * from './LibrarySkeleton';
 export * from './FollowersFollowingModal';
+export * from './CreatePostForm';
 

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { ProfileHeader } from '@widgets/ProfileHeader';
 import type { ProfileType } from '@widgets/ProfileHeader';
 import type { ViewerType } from '@shared/types';
@@ -29,7 +30,18 @@ export const ProfileLayout: React.FC<ProfileLayoutProps> = ({
     onTabChange,
     onMessageClick,
 }) => {
+    const location = useLocation();
     const [activeView, setActiveView] = useState<'profile' | 'secondary'>('profile');
+
+    // Sync activeView with current route
+    useEffect(() => {
+        const secondaryTabValue = secondaryTab?.toLowerCase() ||
+            (profileType === 'artist' ? 'posts' : 'library');
+
+        // Check if we're on a secondary route (e.g., /artist/123/posts)
+        const isSecondaryRoute = location.pathname.includes(`/${secondaryTabValue}`);
+        setActiveView(isSecondaryRoute ? 'secondary' : 'profile');
+    }, [location.pathname, secondaryTab, profileType]);
 
     const handleTabChange = (tab: string) => {
         const secondaryTabValue = secondaryTab?.toLowerCase() ||

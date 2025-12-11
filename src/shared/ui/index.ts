@@ -83,6 +83,9 @@ export {
     NextIcon,
     PreviousIcon,
     PauseIcon,
+    CalendarIcon,
+    ImageIcon,
+    MusicNoteIcon,
 } from './icons';
 
 export { ActionMenu } from './ActionMenu';

@@ -16,6 +16,8 @@ import {
     CreateFolder,
     UserProfile,
     ArtistProfile,
+    ArtistPosts,
+    CreatePost,
     Collection,
     NotFound,
     Settings,
@@ -123,7 +125,19 @@ export const router = createBrowserRouter([
                     },
                     {
                         path: 'artist/:id',
-                        element: <ArtistProfile />,
+                        children: [
+                            {index: true, element: <ArtistProfile />},
+                            {
+                                path: 'posts',
+                                element: <ArtistPosts />,
+                                children: [
+                                    {
+                                        path: 'create',
+                                        element: <CreatePost />,
+                                    },
+                                ]
+                            },
+                        ],
                     },
                     {
                         path: 'playlist/:id',

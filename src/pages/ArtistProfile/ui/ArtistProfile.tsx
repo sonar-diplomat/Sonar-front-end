@@ -1,15 +1,13 @@
 import React, { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Outlet, useNavigate } from 'react-router-dom';
 import { ProfileCard } from '@shared/ui';
 import { ProfileLayout } from '@widgets/ProfileLayout';
 import { ContentSections } from '@widgets/ContentSections';
-import { ArtistMessageCard } from '@widgets/ArtistMessageCard';
 import { ProfileActionButtons } from '@widgets/ProfileActionButtons';
 import { useProfileNavigation } from '@shared/hooks';
-import { getMockPlaylists, getMockArtistMessages } from '@shared/lib/mocks';
+import { getMockPlaylists } from '@shared/lib/mocks';
 import { createPlaylistSection } from '@shared/lib/profile';
 import type { ViewerType } from '@shared/types';
-import styles from './ArtistProfile.module.css';
 
 interface ArtistProfileProps {
     viewerType?: ViewerType;
@@ -20,24 +18,11 @@ export const ArtistProfile: React.FC<ArtistProfileProps> = ({
 }) => {
     const { id } = useParams<{ id: string }>();
     const { handleBackClick } = useProfileNavigation();
+    const navigate = useNavigate();
 
     const [playlists] = useState(getMockPlaylists);
-    const [artistMessages] = useState(getMockArtistMessages);
 
     const sections = useMemo(() => [createPlaylistSection(playlists)], [playlists]);
-
-    const handleMessageMenuClick = (messageId: string) => {
-        console.log('Menu clicked for message:', messageId);
-    };
-
-    const handleLinkClick = (url: string) => {
-        console.log('Link clicked:', url);
-        window.open(url, '_blank');
-    };
-
-    const handleTrackPlay = (messageId: string) => {
-        console.log('Play track for message:', messageId);
-    };
 
     const profileCard = (
         <ProfileCard
@@ -67,36 +52,28 @@ export const ArtistProfile: React.FC<ArtistProfileProps> = ({
         </>
     );
 
-    const postsView = (
-        <div className={styles.messagesView}>
-            {artistMessages.map((message) => (
-                <ArtistMessageCard
-                    key={message.id}
-                    message={message}
-                    onMenuClick={handleMessageMenuClick}
-                    onLinkClick={handleLinkClick}
-                    onTrackPlay={handleTrackPlay}
-                />
-            ))}
-        </div>
-    );
+    const postsView = <Outlet />;
+
+    const handleTabChange = (tab: string) => {
+        if (tab === 'posts') {
+            navigate(`/artist/${id}/posts`);
+        } else {
+            navigate(`/artist/${id}`);
+        }
+    };
 
     const handleMessageClick = () => {
         console.log('Message clicked');
-    };
-
-    const handleMenuClick = () => {
-        console.log('Menu clicked');
     };
 
     return (
         <ProfileLayout
             viewerType={viewerType}
             profileType="artist"
-            secondaryTab="Messages"
+            secondaryTab="Posts"
             onBackClick={handleBackClick}
             onMessageClick={handleMessageClick}
-            onMenuClick={handleMenuClick}
+            onTabChange={handleTabChange}
             profileCard={profileCard}
             actionButtons={actionButtons}
             profileView={profileView}
