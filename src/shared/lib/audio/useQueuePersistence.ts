@@ -23,12 +23,9 @@ export const useQueuePersistence = () => {
 
     saveTimeoutRef.current = setTimeout(() => {
       if (queueIds.length > 0) {
-        console.log('[useQueuePersistence] Saving queue to backend:', queueIds.length, 'tracks');
         saveQueueApi(queueIds)
           .unwrap()
-          .then(() => {
-            console.log('[useQueuePersistence] Queue saved to backend successfully');
-          })
+          .then(() => {})
           .catch((error) => {
             console.error('[useQueuePersistence] Failed to save queue to backend:', error);
           });

@@ -16,8 +16,10 @@ import {
   useAddToQueueMutation,
   useDeleteFromQueueMutation
 } from '@entities/UserState/api/rtkApi';
+import { musicApi } from '@entities/Music/api/rtkApi';
 import { useNotifications } from '@shared/store/notificationStore';
 import { usePlayer } from '@shared/store/features/player';
+import { useAppDispatch } from '@shared/store/hooks';
 
 export type ActionMenuContextType = 'track' | 'album' | 'playlist' | 'artist' | 'user';
 
@@ -152,6 +154,7 @@ const ACTION_CONFIGS: Record<ActionMenuContextType, ActionConfig[]> = {
 
 export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context, customActions = [] }) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [showShareModal, setShowShareModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showFolderSelector, setShowFolderSelector] = useState(false);
@@ -164,7 +167,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
   const { data: folders } = useGetFoldersQuery();
   const { showSuccess, showError } = useNotifications();
 
-  const { favoriteTrackIds } = usePlayer();
+  const { favoriteTrackIds, queue, addToQueue: addToQueueLocal, removeFromQueue: removeFromQueueLocal } = usePlayer();
 
   const isInLibrary = useMemo(() => {
     if (context.type === 'track') {
@@ -264,50 +267,44 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
 
   const handleAddToQueue = useCallback(async (trackId: number) => {
     try {
-      await addToQueueMutation(trackId).unwrap();
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/Track/${trackId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken') || ''}`,
-        },
-      });
+      const { data: result } = await dispatch(musicApi.endpoints.getTrack.initiate(trackId, {
+        subscribe: false,
+        forceRefetch: false,
+      }));
 
-      if (response.ok) {
-        const result = await response.json();
-        const trackData = result.data;
+      if (result && result.id) {
+        addToQueueLocal(result);
+        showSuccess('Added to queue');
+        addToQueueMutation(trackId).unwrap().catch(err => {
+          console.error('Failed to sync queue with backend:', err);
+        });
 
-        if (trackData) {
-          const { store } = await import('@shared/store');
-          const { addToQueue: addToQueueAction } = await import('@shared/store/features/player');
-          store.dispatch(addToQueueAction(trackData));
-        }
+        onClose();
+      } else {
+        throw new Error('Track data not found');
       }
-      showSuccess('Added to queue');
-      onClose();
     } catch (error) {
       console.error('Failed to add to queue:', error);
       showError('Failed to add to queue');
     }
-  }, [addToQueueMutation, showSuccess, showError, onClose]);
+  }, [dispatch, addToQueueMutation, addToQueueLocal, showSuccess, showError, onClose]);
 
   const handleRemoveFromQueue = useCallback(async (trackId: number) => {
     try {
-      const { store } = await import('@shared/store');
-      const state = store.getState();
-      const queueIndex = state.player.queue.findIndex((track: any) => track.id === trackId);
+      const queueIndex = queue.findIndex((track) => track.id === trackId);
 
       if (queueIndex !== -1) {
-        const { removeFromQueue: removeFromQueueAction } = await import('@shared/store/features/player');
-        store.dispatch(removeFromQueueAction(queueIndex));
+        removeFromQueueLocal(queueIndex);
+        showSuccess('Removed from queue');
       }
 
       await deleteFromQueueMutation(trackId).unwrap();
-      showSuccess('Removed from queue');
       onClose();
     } catch (error) {
       console.error('Failed to remove from queue:', error);
       showError('Failed to remove from queue');
     }
-  }, [deleteFromQueueMutation, showSuccess, showError, onClose]);
+  }, [queue, removeFromQueueLocal, deleteFromQueueMutation, showSuccess, showError, onClose]);
 
   const toggleFavorite = useCallback(async (collectionType: string, collectionId: number) => {
     await toggleCollectionFavorite(collectionType, collectionId);
