@@ -9,8 +9,6 @@ export {
   isUserEntity,
   REPORT_DESCRIPTIONS,
   getReportDescription,
-  REASON_CATEGORY_MAP,
-  shouldShowReasonForCategory,
   type ReportEntityCategory,
 } from './report.config';
 

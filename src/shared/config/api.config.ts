@@ -233,4 +233,9 @@ export const API_ENDPOINTS = {
         suggestions: 'Search/suggestions',
         popular: 'Search/popular',
     },
+    recommendations: {
+        popularCollections: 'Recommendations/popular-collections',
+        recentCollections: 'Recommendations/recent-collections',
+        recentTracks: 'Recommendations/recent-tracks',
+    },
 } as const;

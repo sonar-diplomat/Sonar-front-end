@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styles from './Radio.module.css';
 
 export interface RadioProps {
@@ -18,14 +18,17 @@ export const Radio: React.FC<RadioProps> = ({
   name,
   disabled = false,
 }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback(() => {
     if (!disabled) {
-      onChange(e.target.checked);
+      // For radio buttons, when clicked, checked is always true
+      onChange(true);
     }
-  };
+  }, [disabled, onChange]);
 
   return (
-    <label className={`${styles.radioLabel} ${disabled ? styles.disabled : ''}`}>
+    <label 
+      className={`${styles.radioLabel} ${disabled ? styles.disabled : ''}`}
+    >
       <input
         type="radio"
         checked={checked}

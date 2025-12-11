@@ -5,8 +5,8 @@ export type QueueTrack = TrackDTO & { _queueId: number };
 
 export interface PlayerState {
     currentTrack: TrackDTO | null;
-    pendingTrack: TrackDTO | null; // Трек, который загружается, но еще не готов к воспроизведению
-    isLoadingNextTrack: boolean; // Флаг загрузки следующего трека
+    pendingTrack: TrackDTO | null;
+    isLoadingNextTrack: boolean;
     queue: QueueTrack[];
     customQueue: QueueTrack[];
     queueIndex: number;
@@ -228,13 +228,11 @@ const playerSlice = createSlice({
                 }
             }
         },
-        // Устанавливает трек как pending (загружается, но UI не меняется)
         setPendingTrack: (state, action: PayloadAction<TrackDTO | null>) => {
             state.pendingTrack = action.payload;
             state.isLoadingNextTrack = action.payload !== null;
         },
 
-        // Подтверждает переключение на pending трек (когда он готов к воспроизведению)
         confirmTrackSwitch: (state) => {
             if (state.pendingTrack) {
                 state.currentTrack = state.pendingTrack;
@@ -243,13 +241,11 @@ const playerSlice = createSlice({
                 state.isPlaying = true;
                 state.currentTime = 0;
 
-                // Sync isFavorite from track data with favoriteTrackIds
                 if (state.currentTrack) {
                     const trackId = state.currentTrack.id;
                     const isFavoriteFromApi = state.currentTrack.isFavorite;
                     const isInStore = state.favoriteTrackIds.includes(trackId);
                     
-                    // If API provides isFavorite, sync it with store
                     if (isFavoriteFromApi !== undefined) {
                         if (isFavoriteFromApi !== isInStore) {
                             if (isFavoriteFromApi && !isInStore) {
@@ -263,10 +259,8 @@ const playerSlice = createSlice({
                                 }
                             }
                         }
-                        // Update isFavorite in track to match store state (source of truth)
                         state.currentTrack.isFavorite = state.favoriteTrackIds.includes(trackId);
                     } else {
-                        // If API doesn't provide isFavorite, set it based on store
                         state.currentTrack.isFavorite = isInStore;
                     }
                 }
@@ -303,7 +297,6 @@ const playerSlice = createSlice({
                 state.currentTime = 0;
                 state.isPlaying = true;
             } else {
-                // Если очередь пуста, очищаем текущий трек и останавливаем воспроизведение
                 state.isPlaying = false;
                 state.currentTrack = null;
                 state.currentTime = 0;
