@@ -45,8 +45,11 @@ export const playlistApi = rtkApi.injectEndpoints({
           withAuth: true,
         };
       },
-      invalidatesTags: [{ type: 'Playlist', id: 'LIST' }],
-      async onQueryStarted(_arg, { dispatch }) {
+      invalidatesTags: [
+        { type: 'Playlist', id: 'LIST' },
+        { type: 'Folder', id: 'LIST' }, // Инвалидируем также список папок, так как плейлист может быть добавлен в папку
+      ],
+      async onQueryStarted(_arg) {
         store.dispatch(markDirty());
       },
     }),
@@ -61,7 +64,7 @@ export const playlistApi = rtkApi.injectEndpoints({
         { type: 'Playlist', id: playlistId },
         { type: 'Playlist', id: 'LIST' },
       ],
-      async onQueryStarted(_arg, { dispatch }) {
+      async onQueryStarted(_arg) {
         store.dispatch(markDirty());
       },
     }),

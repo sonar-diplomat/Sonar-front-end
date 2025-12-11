@@ -9,13 +9,13 @@ export interface ProfileLayoutProps {
     profileType: ProfileType;
     secondaryTab?: string;
     onBackClick?: () => void;
+    onSettingsClick?: () => void;
     profileCard: React.ReactNode;
     actionButtons: React.ReactNode;
     profileView: React.ReactNode;
     secondaryView?: React.ReactNode;
     onTabChange?: (tab: string) => void;
     onMessageClick?: () => void;
-    onMenuClick?: () => void;
 }
 
 export const ProfileLayout: React.FC<ProfileLayoutProps> = ({
@@ -23,13 +23,13 @@ export const ProfileLayout: React.FC<ProfileLayoutProps> = ({
     profileType,
     secondaryTab,
     onBackClick,
+    onSettingsClick,
     profileCard,
     actionButtons,
     profileView,
     secondaryView,
     onTabChange,
     onMessageClick,
-    onMenuClick
 }) => {
     const [activeView, setActiveView] = useState<'profile' | 'secondary'>('profile');
 
@@ -54,7 +54,7 @@ export const ProfileLayout: React.FC<ProfileLayoutProps> = ({
                 onTabChange={handleTabChange}
                 onBackClick={onBackClick}
                 onMessageClick={onMessageClick}
-                onMenuClick={onMenuClick}
+                onSettingsClick={onSettingsClick}
             />
 
             {activeView === 'profile' ? (

@@ -7,6 +7,7 @@ import { TopSongsWidget } from '@widgets/TopSongsWidget';
 import { TopArtistsWidget } from '@widgets/TopArtistsWidget';
 import { ProfileActionButtons } from '@widgets/ProfileActionButtons';
 import { FollowersFollowingModal } from '@widgets/FollowersFollowingModal';
+import { MarkdownRenderer } from '@shared/lib/markdown/MarkdownRenderer';
 import { useProfileNavigation } from '@shared/hooks';
 import { getMockTopSongs, getMockTopArtists } from '@shared/lib/mocks';
 import { createPlaylistSection } from '@shared/lib/profile';
@@ -25,6 +26,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserProfileSkeleton } from './UserProfileSkeleton';
 import { UserNotFound } from './UserNotFound';
 import type { ViewerType } from '@shared/types';
+import styles from './UserProfile.module.css';
 
 interface UserProfileProps {
     viewerType?: ViewerType;
@@ -230,7 +232,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         />
     );
 
-    const actionButtons = (
+    const actionButtons = viewerType === 'owner' ? null : (
         <ProfileActionButtons 
             viewerType={viewerType} 
             profileType="user"
@@ -243,28 +245,32 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         />
     );
 
+    const bioSection = profileData.biography ? (
+        <div className={styles.bioSection}>
+            <h3 className={styles.bioLabel}>About</h3>
+            <MarkdownRenderer content={profileData.biography} className={styles.bioText} />
+        </div>
+    ) : null;
+
     const profileView = (
         <>
             <ContentSections sections={sections} />
-            {profileData.biography && (
-                <ProfileCard
-                    variant="bio"
-                    isVerified={isVerified}
-                    title="Top 1% listener"
-                    bio={profileData.biography}
-                    src={avatarUrl}
-                    alt="profileImage"
-                />
-            )}
-            <TopSongsWidget
-                songs={topSongs}
-                dateRange="Nov 10 –16"
-                onSongMenuClick={(songId) => console.log('Menu clicked for song:', songId)}
-            />
-            <TopArtistsWidget
-                artists={topArtists}
-                dateRange="Nov 10 –16"
-            />
+            <div className={styles.widgetsContainer}>
+                <div className={styles.topRow}>
+                    {bioSection}
+                    <TopSongsWidget
+                        songs={topSongs}
+                        dateRange="Nov 10 –16"
+                        onSongMenuClick={(songId) => console.log('Menu clicked for song:', songId)}
+                    />
+                </div>
+                <div className={styles.bottomRow}>
+                    <TopArtistsWidget
+                        artists={topArtists}
+                        dateRange="Nov 10 –16"
+                    />
+                </div>
+            </div>
         </>
     );
 
@@ -272,8 +278,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         navigate('/chats');
     };
 
-    const handleMenuClick = () => {
-        console.log('Menu clicked');
+    const handleSettingsClick = () => {
+        navigate('/settings');
     };
 
     return (
@@ -285,7 +291,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
                 onBackClick={handleBackClick}
                 onTabChange={handleTabChange}
                 onMessageClick={handleMessageClick}
-                onMenuClick={handleMenuClick}
+                onSettingsClick={handleSettingsClick}
                 profileCard={profileCard}
                 actionButtons={actionButtons}
                 profileView={profileView}

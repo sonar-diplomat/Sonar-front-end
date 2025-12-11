@@ -17,7 +17,7 @@
     gap: 12px;
     width: 100%;
     padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--overlay-light);
     border: none;
     border-radius: 12px;
     color: white;
@@ -29,11 +29,11 @@
 }
 
 .actionItem:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--overlay-medium);
 }
 
 .actionItem:active {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--overlay-dark);
     transform: scale(0.98);
 }
 
@@ -43,16 +43,16 @@
 }
 
 .actionItem:disabled:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--overlay-light);
     transform: none;
 }
 
 .actionItem.danger {
-    color: #ff6b6b;
+    color: var(--delete-action);
 }
 
 .actionItem.danger:hover {
-    background: rgba(255, 107, 107, 0.1);
+    background: var(--delete-action-bg);
 }
 
 .actionIcon {
@@ -72,5 +72,97 @@
 
 .actionLabel {
     flex: 1;
+}
+
+.folderSelector {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 8px 0;
+    min-height: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.folderList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.folderItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 16px;
+    background: var(--overlay-light);
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.folderItem:hover {
+    background: var(--overlay-medium);
+    transform: translateY(-2px);
+}
+
+.folderItem:active {
+    background: var(--overlay-dark);
+    transform: scale(0.98);
+}
+
+.folderItem:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.folderItem:disabled:hover {
+    background: var(--overlay-light);
+    transform: none;
+}
+
+.folderItemIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.folderItemIcon svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.folderItemLabel {
+    flex: 1;
+    font-family: 'Sora', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: normal;
+    letter-spacing: -0.4px;
+}
+
+.emptyState {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.emptyState p {
+    color: var(--text-tertiary);
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
 }
 

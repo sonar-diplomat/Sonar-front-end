@@ -6,6 +6,7 @@ import { TrackItem } from '@shared/ui/TrackItem';
 export const CollectionView: React.FC<CollectionViewProps> = ({
     title = 'Tracks inside',
     tracks,
+    onTrackClick,
     onTrackMenuClick,
     className = ''
 }) => {
@@ -28,6 +29,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                                 artist={track.artist}
                                 imageSrc={track.imageSrc}
                                 imageAlt={track.imageAlt}
+                                onClick={onTrackClick ? () => onTrackClick(track.id) : undefined}
                                 onMenuClick={onTrackMenuClick ? () => onTrackMenuClick(track.id) : undefined}
                             />
                             {index < tracks.length - 1 && (

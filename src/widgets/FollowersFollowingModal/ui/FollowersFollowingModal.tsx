@@ -46,6 +46,7 @@ export const FollowersFollowingModal: React.FC<FollowersFollowingModalProps> = (
             isOpen={isOpen} 
             onClose={onClose}
             title={title}
+            className={styles.modal}
         >
             <div className={styles.container}>
                 {isLoading && (

@@ -8,12 +8,13 @@ export interface MacroPlayerProps {
   isPlaying: boolean;
   currentTime: number;
   duration: number;
-  isLiked: boolean;
+  isShuffled: boolean;
   onPlayPause: () => void;
   onNext: () => void;
   onPrevious: () => void;
   onSeek: (time: number) => void;
-  onLike: () => void;
+  onShuffle: () => void;
   onTrackSelect?: (queueId: number) => void;
+  onRemoveFromQueue?: (queueId: number) => void;
 }
 

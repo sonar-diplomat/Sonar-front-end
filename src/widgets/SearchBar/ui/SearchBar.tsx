@@ -1,5 +1,5 @@
-import React from 'react';
-import {Input, SearchIcon, ClearIcon} from '@shared/ui';
+import React, { useMemo } from 'react';
+import { Input, SearchIcon, ClearIcon } from '@shared/ui';
 import type { SearchBarProps } from './SearchBar.types.ts';
 import { useSearchValue } from '../hooks/useSearchValue.ts';
 
@@ -22,12 +22,15 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     });
 
     const handleClear = () => {
-        console.log("Clearing search value");
         clearValue();
         onClear?.();
     };
 
     const showClear = showClearButton && currentValue.length > 0;
+    const iconNode = useMemo(() => {
+        if (showClear) return <ClearIcon />;
+        return <SearchIcon />;
+    }, [showClear]);
 
     return (
         <Input
@@ -36,10 +39,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             placeholder={placeholder}
             value={currentValue}
             onChange={handleChange}
-            type="search"
-            icon={<SearchIcon />}
+            type="text"
+            icon={iconNode}
             iconPosition="suffix"
-            iconClickable={false}
+            iconClickable={showClear}
+            onIconClick={showClear ? handleClear : undefined}
             {...props}
         />
     );

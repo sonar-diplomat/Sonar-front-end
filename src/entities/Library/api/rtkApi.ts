@@ -24,6 +24,15 @@ export const libraryApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
+      transformResponse: (response: FolderDTO[] | any) => {
+        if (Array.isArray(response)) {
+          return response;
+        }
+        if (response && typeof response === 'object' && 'data' in response) {
+          return Array.isArray(response.data) ? response.data : [];
+        }
+        return [];
+      },
       providesTags: [{ type: 'Folder', id: 'LIST' }],
     }),
 

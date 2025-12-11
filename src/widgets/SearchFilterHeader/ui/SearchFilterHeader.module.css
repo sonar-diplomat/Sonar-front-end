@@ -4,6 +4,8 @@
     padding: 33px 16px 0;
     gap: 20px;
     width: 100%;
+    max-width: 625px;
+    margin: 0 auto;
     box-sizing: border-box;
 }
 .title{
@@ -11,7 +13,7 @@
     font-size: 36px;
     font-weight: 400;
     line-height: normal;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
     width: 100%;
 }

@@ -4,11 +4,17 @@ export interface DraggedItem {
     name: string;
 }
 
+export interface DropInfo {
+    draggedItem: DraggedItem;
+    targetFolderId: number;
+    moveToParent: boolean;
+}
+
 export interface FolderCardProps {
     className?: string;
     onClick?: () => void;
     label: string;
     size?: 'small' | 'medium';
     folderId?: number;
-    onDrop?: (draggedItem: DraggedItem) => void;
+    onDrop?: (dropInfo: DropInfo) => void;
 }

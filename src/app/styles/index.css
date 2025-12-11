@@ -6,10 +6,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: #0A0A0A;
+  background: var(--bg-body);
+  color: var(--text-primary);
   height: 100vh;
   overflow: hidden;
 }
@@ -22,7 +24,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #000;
-  color: #fff;
+  background: var(--bg-app);
+  color: var(--text-primary);
   position: relative;
 }

@@ -25,7 +25,7 @@ export const EmailConfirmation: React.FC<EmailConfirmationModalProps> = () => {
         </p>
         <Button
           variant="filled"
-          theme="light"
+          theme="dark"
           size="large"
           shape="cr-20"
           onClick={handleOk}

@@ -9,12 +9,14 @@ interface AuthState {
   isLoading: boolean;
 }
 
-// Загружаем токены из localStorage при инициализации
+// Загружаем токены из storage при инициализации
+// Access token хранится в sessionStorage (более безопасно, очищается при закрытии вкладки)
+// Refresh token хранится в localStorage (для долгосрочной сессии)
 const loadTokensFromStorage = (): Partial<AuthState> => {
   try {
-    const accessToken = localStorage.getItem('sonar_access_token');
+    const accessToken = sessionStorage.getItem('sonar_access_token');
     const refreshToken = localStorage.getItem('sonar_refresh_token');
-    const sessionIdStr = localStorage.getItem('sonar_session_id');
+    const sessionIdStr = sessionStorage.getItem('sonar_session_id') || localStorage.getItem('sonar_session_id');
     
     return {
       accessToken,
@@ -49,22 +51,23 @@ const authSlice = createSlice({
       state.sessionId = sessionId;
       state.isAuthenticated = true;
       
-      // Сохраняем в localStorage
+      // Сохраняем токены: access token в sessionStorage (более безопасно), refresh token в localStorage
       try {
-        localStorage.setItem('sonar_access_token', accessToken);
+        sessionStorage.setItem('sonar_access_token', accessToken);
         localStorage.setItem('sonar_refresh_token', refreshToken);
-        localStorage.setItem('sonar_session_id', String(sessionId));
+        sessionStorage.setItem('sonar_session_id', String(sessionId));
       } catch (error) {
-        console.error('Failed to save tokens to localStorage:', error);
+        console.error('Failed to save tokens to storage:', error);
       }
     },
     
     updateAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
       try {
-        localStorage.setItem('sonar_access_token', action.payload);
+        // Access token хранится в sessionStorage для безопасности
+        sessionStorage.setItem('sonar_access_token', action.payload);
       } catch (error) {
-        console.error('Failed to update access token in localStorage:', error);
+        console.error('Failed to update access token in sessionStorage:', error);
       }
     },
     
@@ -74,10 +77,11 @@ const authSlice = createSlice({
       state.isAuthenticated = true; // Устанавливаем isAuthenticated при обновлении токенов
       
       try {
-        localStorage.setItem('sonar_access_token', action.payload.accessToken);
+        // Access token в sessionStorage, refresh token в localStorage
+        sessionStorage.setItem('sonar_access_token', action.payload.accessToken);
         localStorage.setItem('sonar_refresh_token', action.payload.refreshToken);
       } catch (error) {
-        console.error('Failed to update tokens in localStorage:', error);
+        console.error('Failed to update tokens in storage:', error);
       }
     },
     
@@ -87,13 +91,16 @@ const authSlice = createSlice({
       state.sessionId = null;
       state.isAuthenticated = false;
       
-      // Очищаем localStorage
+      // Очищаем токены из обоих хранилищ
       try {
-        localStorage.removeItem('sonar_access_token');
+        sessionStorage.removeItem('sonar_access_token');
+        sessionStorage.removeItem('sonar_session_id');
         localStorage.removeItem('sonar_refresh_token');
+        // Также очищаем старые токены из localStorage на случай миграции
+        localStorage.removeItem('sonar_access_token');
         localStorage.removeItem('sonar_session_id');
       } catch (error) {
-        console.error('Failed to clear tokens from localStorage:', error);
+        console.error('Failed to clear tokens from storage:', error);
       }
     },
     

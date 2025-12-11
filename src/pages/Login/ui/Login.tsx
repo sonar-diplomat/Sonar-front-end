@@ -36,12 +36,6 @@ export const Login: React.FC = () =>{
         }
 
         if (res.data) {
-            authManager.saveCredentials({
-                userIdentifier: data.emailOrLogin,
-                password: data.password,
-                deviceName,
-            });
-
             showSuccess('Login successful!');
             navigate("/home");
         } else {
@@ -57,12 +51,6 @@ export const Login: React.FC = () =>{
         const res = await verify2FA({ Email: userEmail, Code: code }, deviceName);
 
         if (res.success && res.data) {
-            authManager.saveCredentials({
-                userIdentifier: userEmail,
-                password: "",
-                deviceName,
-            });
-
             showSuccess('Two-factor authentication successful!');
             navigate("/home");
         } else {

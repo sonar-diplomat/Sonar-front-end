@@ -175,8 +175,10 @@ export const API_ENDPOINTS = {
         updateCurrentPosition: 'UserState/current-position',
         updateListeningTarget: (trackId: number, collectionId?: number) => 
             collectionId ? `UserState/listening/${trackId}/${collectionId}` : `UserState/listening/${trackId}`,
+        getQueue: 'UserState/queue',
         addToQueue: 'UserState/queue',
         deleteFromQueue: 'UserState/queue',
+        saveQueue: 'UserState/queue',
         updateStatus: (statusId: number) => `UserState/status/${statusId}`,
         updatePrimarySession: 'UserState/session',
     },

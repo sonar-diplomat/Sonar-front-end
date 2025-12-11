@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './PlaybackSettings.module.css';
-import { SettingsSection, SettingsItem, Toggle, Select, Button } from '@shared/ui';
-import { ProfileHeader } from '@widgets/ProfileHeader';
+import { SettingsSection, SettingsItem, Toggle, Select, Button, LeftArrow } from '@shared/ui';
 import { useClientSettings } from '@shared/store/features/clientSettings/useClientSettings';
 import { useGetPlaybackQualitiesQuery } from '@shared/api';
 export const PlaybackSettings: React.FC = () => {
+  const navigate = useNavigate();
   const { settings, patchSettings, isLoading: isPatching } = useClientSettings();
   const { data: qualities, isLoading: qualitiesLoading } = useGetPlaybackQualitiesQuery();
   const [autoPlay, setAutoPlay] = useState<boolean | undefined>(undefined);
@@ -59,7 +60,18 @@ export const PlaybackSettings: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <ProfileHeader title="Playback" showBackButton />
+      <div className={styles.header}>
+        <Button
+          icon={<LeftArrow />}
+          size="medium"
+          variant="filled"
+          theme="dark"
+          onClick={() => navigate(-1)}
+          className={styles.backButton}
+          iconOnly
+        />
+        <h2 className={styles.title}>Playback</h2>
+      </div>
       <div className={styles.content}>
         <SettingsSection title="Audio Quality">
           <Select

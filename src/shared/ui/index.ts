@@ -79,6 +79,7 @@ export {
     SortIcon,
     VerifyIcon,
     EditProfileIcon,
+    SettingsIcon,
     LinkIcon,
     NextTrackIcon,
     HeartIcon,

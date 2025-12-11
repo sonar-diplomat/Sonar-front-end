@@ -73,9 +73,9 @@ export const useUserState = () => {
   /**
    * Добавляет трек в очередь
    */
-  const addToQueue = useCallback(async () => {
+  const addToQueue = useCallback(async (trackId: number) => {
     try {
-      await addToQueueMutation().unwrap();
+      await addToQueueMutation(trackId).unwrap();
       return true;
     } catch (err) {
       console.error('Failed to add to queue:', err);
@@ -86,9 +86,9 @@ export const useUserState = () => {
   /**
    * Удаляет трек из очереди
    */
-  const deleteFromQueue = useCallback(async () => {
+  const deleteFromQueue = useCallback(async (trackId: number) => {
     try {
-      await deleteFromQueueMutation().unwrap();
+      await deleteFromQueueMutation(trackId).unwrap();
       return true;
     } catch (err) {
       console.error('Failed to delete from queue:', err);
