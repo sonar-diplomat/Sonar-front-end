@@ -15,7 +15,7 @@
     font-weight: 600;
     font-size: 14px;
     line-height: normal;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     text-align: center;
     margin: 0;
     position: absolute;

@@ -278,6 +278,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         navigate('/chats');
     };
 
+    const handleSettingsClick = () => {
+        navigate('/settings');
+    };
+
     return (
         <>
             <ProfileLayout
@@ -287,6 +291,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
                 onBackClick={handleBackClick}
                 onTabChange={handleTabChange}
                 onMessageClick={handleMessageClick}
+                onSettingsClick={handleSettingsClick}
                 profileCard={profileCard}
                 actionButtons={actionButtons}
                 profileView={profileView}

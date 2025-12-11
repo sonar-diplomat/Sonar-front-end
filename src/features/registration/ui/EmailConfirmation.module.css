@@ -28,13 +28,13 @@
 .title {
   font-size: 24px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .description {
   font-size: 16px;
-  color: #b3b3b3;
+  color: var(--text-muted);
   margin: 0;
   line-height: 1.5;
 }

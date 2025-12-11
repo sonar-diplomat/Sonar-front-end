@@ -417,7 +417,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
                   onClick={() => handleAddToFolder(folder.id)}
                   disabled={addingToFolder}
                 >
-                  <FolderCoverIcon className={styles.folderItemIcon} />
+                  <FolderCoverIcon className={styles.folderItemIcon} color="var(--folder-icon-color)" />
                   <span className={styles.folderItemLabel}>{folder.name}</span>
                 </button>
               ))}

@@ -18,12 +18,12 @@
     font-weight: 600;
     font-size: 14px;
     line-height: normal;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
 }
 
 .container {
-    background: #1F1F1F;
+    background: var(--bg-card);
     border-radius: 32px;
     padding: 8px;
     width: 362px;
@@ -38,7 +38,7 @@
 .divider {
     height: 1px;
     width: 346px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--overlay-light);
     border-radius: 3px;
     margin: 0 auto;
 }

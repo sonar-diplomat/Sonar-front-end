@@ -21,7 +21,7 @@
 .topDropZoneActive {
     pointer-events: auto;
     opacity: 1;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--overlay-medium);
     backdrop-filter: blur(4px);
 }
 
@@ -53,8 +53,8 @@
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
-    background-color: #1F1F1F;
-    color: #EAEAEA;
+    background-color: var(--bg-card);
+    color: var(--button-text-dark);
     border: none;
     border-radius: 32px;
 
@@ -62,6 +62,10 @@
     font-weight: 400;
     cursor: pointer;
     margin: 0 auto;
+}
+
+:root[data-theme='light'] .createBtn {
+    background-color: #1F1F1F;
 }
 
 @media (min-width: 426px) {

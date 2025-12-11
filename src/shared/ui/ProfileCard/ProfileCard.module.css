@@ -14,7 +14,7 @@
     gap: 16px;
     min-height: 100%;
     width: 100%;
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--overlay-black-medium);
     border-radius: 32px;
     padding: 16px;
     box-sizing: border-box;
@@ -99,7 +99,7 @@
     font-weight: 700;
     font-size: 36px;
     line-height: normal;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
 }
 
@@ -116,7 +116,7 @@
     top: 5px;
     width: 14px;
     height: 14px;
-    color: #FFFFFF;
+    color: var(--text-primary);
 }
 
 .statsContainer {
@@ -144,13 +144,13 @@
 .statValue {
     font-family: 'Roboto', sans-serif;
     font-weight: 600;
-    color: #FFFFFF;
+    color: var(--text-primary);
 }
 
 .statLabel {
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
 }
 
 .monthlyListenersContainer {
@@ -165,7 +165,7 @@
     font-weight: 600;
     font-size: 14px;
     line-height: normal;
-    color: #FFFFFF;
+    color: var(--text-primary);
 }
 
 .monthlyListenersLabel {
@@ -173,7 +173,7 @@
     font-weight: 400;
     font-size: 14px;
     line-height: normal;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
 }
 
 .actionButtonsWrapper {
@@ -196,7 +196,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--overlay-light);
     border-radius: 25px;
     padding: 16px;
     box-sizing: border-box;
@@ -215,7 +215,7 @@
     font-weight: 600;
     font-size: 14px;
     line-height: normal;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -301,7 +301,7 @@
     font-weight: 400;
     font-size: 14px;
     line-height: normal;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
 }
 
@@ -319,7 +319,7 @@
     font-weight: 700;
     font-size: 36px;
     line-height: normal;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
     padding-bottom: 8px;
 }
@@ -329,7 +329,7 @@
     font-weight: 400;
     font-size: 14px;
     line-height: normal;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
     max-width: 300px;
     white-space: pre-wrap;

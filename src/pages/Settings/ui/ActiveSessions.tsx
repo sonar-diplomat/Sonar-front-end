@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './ActiveSessions.module.css';
-import { Button, Modal } from '@shared/ui';
-import { ProfileHeader } from '@widgets/ProfileHeader';
+import { Button, Modal, LeftArrow } from '@shared/ui';
 import { useSessions } from '@features/auth/model/store';
 import type { ActiveSessionDTO } from '@features/auth';
 
 export const ActiveSessions: React.FC = () => {
+  const navigate = useNavigate();
   const { data: sessions, loading, refetch, revoke, revokeAll } = useSessions();
   const [showRevokeModal, setShowRevokeModal] = useState(false);
   const [showRevokeAllModal, setShowRevokeAllModal] = useState(false);
@@ -45,10 +46,21 @@ export const ActiveSessions: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <ProfileHeader title="Active Sessions" showBackButton />
+      <div className={styles.header}>
+        <Button
+          icon={<LeftArrow />}
+          size="medium"
+          variant="filled"
+          theme="dark"
+          onClick={() => navigate(-1)}
+          className={styles.backButton}
+          iconOnly
+        />
+        <h2 className={styles.title}>Active Sessions</h2>
+      </div>
       
       <div className={styles.content}>
-        <div className={styles.header}>
+        <div className={styles.contentHeader}>
           <p className={styles.description}>
             Manage your active sessions across all devices
           </p>

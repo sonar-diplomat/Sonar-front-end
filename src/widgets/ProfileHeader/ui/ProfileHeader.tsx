@@ -2,7 +2,7 @@ import React from 'react';
 
 import styles from "./ProfileHeader.module.css";
 
-import { Button, LeftArrow, MessageIcon, EditProfileIcon, StatisticsIcon } from "@shared/ui";
+import { Button, LeftArrow, MessageIcon, SettingsIcon } from "@shared/ui";
 import type { ViewerType } from '@shared/types';
 
 export type ProfileType = 'user' | 'artist';
@@ -14,12 +14,14 @@ interface ProfileHeaderProps {
     onBackClick?: () => void;
     onTabChange?: (tab: string) => void;
     onMessageClick?: () => void;
+    onSettingsClick?: () => void;
 }
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     viewerType,
     onBackClick,
     onMessageClick,
+    onSettingsClick,
 }) => {
 
     return (
@@ -48,24 +50,15 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 )}
 
                 {viewerType === 'owner' && (
-                    <>
-                        <Button
-                            variant={"filled"}
-                            theme={"dark"}
-                            size={"medium"}
-                            shape={"cr-16"}
-                            icon={<EditProfileIcon />}
-                            iconOnly
-                        />
-                        <Button
-                            variant={"filled"}
-                            theme={"dark"}
-                            size={"medium"}
-                            shape={"cr-16"}
-                            icon={<StatisticsIcon />}
-                            iconOnly
-                        />
-                    </>
+                    <Button
+                        variant={"filled"}
+                        theme={"dark"}
+                        size={"medium"}
+                        shape={"cr-16"}
+                        icon={<SettingsIcon />}
+                        onClick={onSettingsClick}
+                        iconOnly
+                    />
                 )}
             </div>
         </div>

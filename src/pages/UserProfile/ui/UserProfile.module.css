@@ -39,6 +39,7 @@
     flex-direction: column;
     gap: 18px;
     width: 100%;
+    background-color: var(--bg-body);
 }
 
 .bottomRow {
@@ -69,7 +70,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--overlay-light);
     border-radius: 25px;
     padding: 16px;
     box-sizing: border-box;
@@ -80,7 +81,7 @@
     font-weight: 600;
     font-size: 14px;
     line-height: normal;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
