@@ -3,21 +3,28 @@ import {
   useGetFoldersQuery,
   useGetClientSettingsQuery,
 } from '@shared/api';
+import { useAppSelector } from '@shared/store/hooks';
 
 export const useUserLibrary = () => {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+
   const {
     data: folders,
     isLoading: foldersLoading,
     error: foldersError,
     refetch: refetchFolders,
-  } = useGetFoldersQuery();
+  } = useGetFoldersQuery(undefined, {
+    skip: !isAuthenticated,
+  });
 
   const {
     data: settings,
     isLoading: settingsLoading,
     error: settingsError,
     refetch: refetchSettings,
-  } = useGetClientSettingsQuery();
+  } = useGetClientSettingsQuery(undefined, {
+    skip: !isAuthenticated,
+  });
 
   const isLoading = foldersLoading || settingsLoading;
   const error = foldersError || settingsError;
