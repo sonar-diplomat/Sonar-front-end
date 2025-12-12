@@ -123,8 +123,10 @@
     transition: background-color 0.2s ease;
 }
 
-.fileInputButton:hover {
+@media (hover: hover) and (pointer: fine) {
+  .fileInputButton:hover {
     background-color: var(--button-bg-light-hover);
+  }
 }
 
 .fileName {
@@ -149,5 +151,84 @@
     flex-direction: column;
     gap: 0;
     margin-top: 24px;
+}
+
+.textareaContainer {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    border-radius: 16px;
+    box-sizing: border-box;
+}
+
+.textareaLabel {
+    display: flex;
+    padding: 0 8px;
+    align-items: center;
+    gap: 12px;
+    align-self: stretch;
+    color: var(--input-label-color);
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.textarea {
+    width: 100%;
+    min-height: 100px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-bg);
+    border-radius: 16px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--input-text);
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+    font-family: '', sans-serif;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.textarea::placeholder {
+    color: var(--input-placeholder);
+    font-weight: 400;
+    opacity: 1;
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: var(--input-border-focus);
+    background-color: var(--input-bg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .textarea:hover:not(:focus):not(:disabled) {
+    border-color: var(--input-border-hover);
+  }
+}
+
+.textarea:disabled {
+    background-color: var(--input-bg-disabled);
+    color: var(--input-text-disabled);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.textarea:disabled::placeholder {
+    color: var(--input-placeholder-disabled);
+}
+
+.textareaHelperText {
+    display: flex;
+    padding: 0 8px;
+    align-items: flex-start;
+    gap: 4px;
+    align-self: stretch;
+    color: var(--input-helper-text);
+    font-size: 12px;
+    font-weight: 400;
+    margin: 0;
 }
 

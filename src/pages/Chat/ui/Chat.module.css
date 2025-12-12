@@ -66,9 +66,11 @@
     transition: opacity 0.2s, transform 0.2s;
 }
 
-.scrollToBottomButton:hover {
+@media (hover: hover) and (pointer: fine) {
+  .scrollToBottomButton:hover {
     opacity: 0.9;
     transform: scale(1.05);
+  }
 }
 
 .scrollToBottomButton:active {

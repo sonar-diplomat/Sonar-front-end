@@ -6,3 +6,9 @@
     box-sizing: border-box;
     flex-wrap: wrap;
 }
+
+@media (min-width: 420px) and (max-width: 470px) {
+    .container {
+        gap: 6px;
+    }
+}

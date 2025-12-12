@@ -90,6 +90,7 @@ export const useFolder = (folderId: number | null) => {
     folder,
     isLoading: folderLoading,
     error: folderError,
+    refetch: refetchFolder,
   };
 };
 

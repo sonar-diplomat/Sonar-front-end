@@ -40,8 +40,10 @@
   transition: background-color 0.2s ease;
 }
 
-.closeButton:hover {
-  background-color: var(--input-border-hover);
+@media (hover: hover) and (pointer: fine) {
+  .closeButton:hover {
+    background-color: var(--input-border-hover);
+  }
 }
 
 .grid {
@@ -65,10 +67,12 @@
   overflow: hidden;
 }
 
-.stickerItem:hover {
-  background-color: var(--input-border-hover);
-  border-color: var(--input-label-color);
-  transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+  .stickerItem:hover {
+    background-color: var(--input-border-hover);
+    border-color: var(--input-label-color);
+    transform: scale(1.05);
+  }
 }
 
 .stickerImage {

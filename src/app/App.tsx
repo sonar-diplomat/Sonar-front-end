@@ -5,6 +5,7 @@ import { AudioPlayerController, UserStatePlayerSync } from "@shared/lib/audio";
 import { NotificationContainer } from "@shared/ui";
 import { useNotificationStore } from "@shared/store/notificationStore";
 import { useAppSelector } from "@shared/store/hooks";
+import { useFavoritesSync } from "@shared/lib/favorites/useFavoritesSync";
 
 
 
@@ -12,6 +13,9 @@ import { useAppSelector } from "@shared/store/hooks";
 export function App() {
     const { notifications, removeNotification } = useNotificationStore();
     const { settings } = useAppSelector((state) => state.clientSettings);
+    
+    // Синхронизируем избранные треки из плейлиста favorites
+    useFavoritesSync();
 
     useEffect(() => {
         const themeName = settings?.theme?.name?.toLowerCase?.();

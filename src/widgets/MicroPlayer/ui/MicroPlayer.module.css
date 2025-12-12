@@ -17,8 +17,10 @@
   transition: transform 0.2s;
 }
 
-.microPlayer:hover {
-  transform: scale(1.01);
+@media (hover: hover) and (pointer: fine) {
+  .microPlayer:hover {
+    transform: scale(1.01);
+  }
 }
 
 .microPlayer:active {
@@ -89,9 +91,14 @@
   padding: 4px 0;
 }
 
-.progressBar:hover .progressThumb,
-.progressBar:active .progressThumb {
+@media (hover: hover) and (pointer: fine) {
+  .progressBar:hover .progressThumb {
     opacity: 1;
+  }
+}
+
+.progressBar:active .progressThumb {
+  opacity: 1;
 }
 
 .progressTrack {
@@ -146,9 +153,11 @@
   color: var(--button-text-light);
 }
 
-.controlButton:hover:not(:disabled) {
+@media (hover: hover) and (pointer: fine) {
+  .controlButton:hover:not(:disabled) {
     background: var(--overlay-very-light);
     transform: scale(1.05);
+  }
 }
 
 .controlButton:active:not(:disabled) {

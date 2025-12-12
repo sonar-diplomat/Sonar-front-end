@@ -30,8 +30,10 @@
     transition: text-decoration-color 0.2s;
 }
 
-.markdown a:hover {
+@media (hover: hover) and (pointer: fine) {
+  .markdown a:hover {
     text-decoration-color: var(--text-secondary);
+  }
 }
 
 .markdown h1,

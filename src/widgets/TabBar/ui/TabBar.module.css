@@ -34,8 +34,10 @@
   overflow: hidden;
 }
 
-.tabItem:hover {
-  background-color: var(--overlay-medium);
+@media (hover: hover) and (pointer: fine) {
+  .tabItem:hover {
+    background-color: var(--overlay-medium);
+  }
 }
 
 .tabItem:focus-visible {
@@ -49,8 +51,10 @@
   padding: 12px 20px;
 }
 
-.tabItemActive:hover {
-  background-color: var(--button-bg-light-pressed);
+@media (hover: hover) and (pointer: fine) {
+  .tabItemActive:hover {
+    background-color: var(--button-bg-light-pressed);
+  }
 }
 
 .tabIcon {

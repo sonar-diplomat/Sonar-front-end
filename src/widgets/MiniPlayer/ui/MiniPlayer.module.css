@@ -93,8 +93,10 @@
     padding-bottom: 10px;
 }
 
-.actionButton:hover {
+@media (hover: hover) and (pointer: fine) {
+  .actionButton:hover {
     transform: scale(1.05);
+  }
 }
 
 .actionButton:active {
@@ -105,8 +107,10 @@
     color: var(--miniplayer-action-liked);
 }
 
-.actionButton.liked:hover {
+@media (hover: hover) and (pointer: fine) {
+  .actionButton.liked:hover {
     color: var(--miniplayer-action-liked-hover);
+  }
 }
 
 
@@ -156,9 +160,14 @@
     transition: opacity 0.2s ease;
 }
 
-.progressBar:hover .progressThumb,
-.progressBar:active .progressThumb {
+@media (hover: hover) and (pointer: fine) {
+  .progressBar:hover .progressThumb {
     opacity: 1;
+  }
+}
+
+.progressBar:active .progressThumb {
+  opacity: 1;
 }
 
 /* Time display (current + total) */
@@ -202,9 +211,11 @@
     transition: all 0.2s ease;
 }
 
-.controlButton:hover:not(:disabled) {
+@media (hover: hover) and (pointer: fine) {
+  .controlButton:hover:not(:disabled) {
     background: rgba(0, 0, 0, 0.05);
     transform: scale(1.05);
+  }
 }
 
 .controlButton:active:not(:disabled) {

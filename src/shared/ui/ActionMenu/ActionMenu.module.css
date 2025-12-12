@@ -28,8 +28,10 @@
     text-align: left;
 }
 
-.actionItem:hover {
+@media (hover: hover) and (pointer: fine) {
+  .actionItem:hover {
     background: var(--overlay-medium);
+  }
 }
 
 .actionItem:active {
@@ -42,17 +44,21 @@
     cursor: not-allowed;
 }
 
-.actionItem:disabled:hover {
+@media (hover: hover) and (pointer: fine) {
+  .actionItem:disabled:hover {
     background: var(--overlay-light);
     transform: none;
+  }
 }
 
 .actionItem.danger {
     color: var(--delete-action);
 }
 
-.actionItem.danger:hover {
+@media (hover: hover) and (pointer: fine) {
+  .actionItem.danger:hover {
     background: var(--delete-action-bg);
+  }
 }
 
 .actionIcon {
@@ -108,9 +114,11 @@
     transition: all 0.2s ease;
 }
 
-.breadcrumbItem:hover {
+@media (hover: hover) and (pointer: fine) {
+  .breadcrumbItem:hover {
     color: white;
     background: rgba(255, 255, 255, 0.1);
+  }
 }
 
 .breadcrumbItem:last-child {
@@ -142,10 +150,12 @@
     text-align: left;
 }
 
-.addHereButton:hover {
+@media (hover: hover) and (pointer: fine) {
+  .addHereButton:hover {
     background: rgba(64, 156, 255, 0.25);
     border-color: rgba(64, 156, 255, 0.5);
     transform: translateY(-2px);
+  }
 }
 
 .addHereButton:active {
@@ -158,10 +168,12 @@
     cursor: not-allowed;
 }
 
-.addHereButton:disabled:hover {
+@media (hover: hover) and (pointer: fine) {
+  .addHereButton:disabled:hover {
     background: rgba(64, 156, 255, 0.15);
     border-color: rgba(64, 156, 255, 0.3);
     transform: none;
+  }
 }
 
 .addHereIcon {
@@ -202,9 +214,11 @@
     text-align: left;
 }
 
-.folderItem:hover {
+@media (hover: hover) and (pointer: fine) {
+  .folderItem:hover {
     background: var(--overlay-medium);
     transform: translateY(-2px);
+  }
 }
 
 .folderItem:active {
@@ -217,9 +231,11 @@
     cursor: not-allowed;
 }
 
-.folderItem:disabled:hover {
+@media (hover: hover) and (pointer: fine) {
+  .folderItem:disabled:hover {
     background: var(--overlay-light);
     transform: none;
+  }
 }
 
 .folderItemIcon {

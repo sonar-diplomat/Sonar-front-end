@@ -11,8 +11,10 @@
     border-radius: 8px;
 }
 
-.userItem:hover {
+@media (hover: hover) and (pointer: fine) {
+  .userItem:hover {
     background-color: var(--overlay-light);
+  }
 }
 
 .userItem:active {

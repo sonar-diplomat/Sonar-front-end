@@ -6,6 +6,9 @@ export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://so
 
 export const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || 'https://sonar-dev.pp.ua/';
 
+// SignalR Hub URL - derived from API_BASE_URL
+export const SIGNALR_HUB_URL = API_BASE_URL.replace(/\/api\/?$/, '') + '/hubs/chat';
+
 export const API_ENDPOINTS = {
     auth: {
         register: 'Auth/register',

@@ -93,14 +93,22 @@
     width: 123px;
 }
 
-.folderWrapper:hover .layer1,
-.folderWrapper:focus-within .layer1 {
+@media (hover: hover) and (pointer: fine) {
+  .folderWrapper:hover .layer1 {
     transform: translateX(-50%) translateY(-2px);
+  }
+
+  .folderWrapper:hover .layer2 {
+    transform: translateX(-50%) translateY(-1px);
+  }
 }
 
-.folderWrapper:hover .layer2,
+.folderWrapper:focus-within .layer1 {
+  transform: translateX(-50%) translateY(-2px);
+}
+
 .folderWrapper:focus-within .layer2 {
-    transform: translateX(-50%) translateY(-1px);
+  transform: translateX(-50%) translateY(-1px);
 }
 
 .dragging {

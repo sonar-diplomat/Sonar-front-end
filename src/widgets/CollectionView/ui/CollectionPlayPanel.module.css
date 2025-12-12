@@ -12,8 +12,10 @@
     transition: all 0.2s ease;
 }
 
-.collectionPlayPanel:hover {
+@media (hover: hover) and (pointer: fine) {
+  .collectionPlayPanel:hover {
     background: var(--overlay-medium);
+  }
 }
 
 .leftControls {

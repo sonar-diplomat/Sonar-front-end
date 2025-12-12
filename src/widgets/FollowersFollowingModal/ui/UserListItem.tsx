@@ -6,13 +6,17 @@ import styles from './UserListItem.module.css';
 
 interface UserListItemProps {
     user: UserFollowerDTO | UserFollowingDTO;
+    onUserClick?: () => void;
 }
 
-export const UserListItem: React.FC<UserListItemProps> = ({ user }) => {
+export const UserListItem: React.FC<UserListItemProps> = ({ user, onUserClick }) => {
     const navigate = useNavigate();
     const avatarUrl = getImageUrl(user.avatarImageId) || 'https://placehold.co/48x48';
 
     const handleClick = () => {
+        if (onUserClick) {
+            onUserClick();
+        }
         navigate(`/user/${user.publicIdentifier}`);
     };
 

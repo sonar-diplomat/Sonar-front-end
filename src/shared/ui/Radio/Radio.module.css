@@ -51,13 +51,15 @@
   outline-offset: 2px;
 }
 
-.radioInput:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.5);
-}
+@media (hover: hover) and (pointer: fine) {
+  .radioInput:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.5);
+  }
 
-.radioInput:checked:hover:not(:disabled) {
-  border-color: var(--primary-color, #1db954);
-  opacity: 0.9;
+  .radioInput:checked:hover:not(:disabled) {
+    border-color: var(--primary-color, #1db954);
+    opacity: 0.9;
+  }
 }
 
 .radioLabel.disabled .radioInput {

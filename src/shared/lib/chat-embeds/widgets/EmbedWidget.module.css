@@ -32,8 +32,10 @@
   pointer-events: none;
 }
 
-.embed:hover {
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .embed:hover {
+    transform: translateY(-1px);
+  }
 }
 
 .embed:focus {
@@ -68,9 +70,11 @@
   object-position: center;
 }
 
-.embed:hover .cover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+@media (hover: hover) and (pointer: fine) {
+  .embed:hover .cover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  }
 }
 
 .cover::after {
@@ -158,8 +162,10 @@
   font-size: 13px;
 }
 
-.fallbackLink:hover {
-  text-decoration: underline;
+@media (hover: hover) and (pointer: fine) {
+  .fallbackLink:hover {
+    text-decoration: underline;
+  }
 }
 
 

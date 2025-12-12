@@ -25,19 +25,19 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 }) => {
 
     return (
-        <div className={styles.header}>
-            <div className={styles.buttonsContainer}>
-                {viewerType === 'guest' ? (
-                    <Button
-                        variant={"filled"}
-                        theme={"dark"}
-                        size={"medium"}
-                        shape={"cr-16"}
-                        icon={<LeftArrow/>}
-                        onClick={onBackClick}
-                        iconOnly
-                    />
-                ) : (
+        <div className={`${styles.header} ${viewerType === 'guest' ? styles.headerLeft : styles.headerRight}`}>
+            {viewerType === 'guest' ? (
+                <Button
+                    variant={"filled"}
+                    theme={"dark"}
+                    size={"medium"}
+                    shape={"cr-16"}
+                    icon={<LeftArrow/>}
+                    onClick={onBackClick}
+                    iconOnly
+                />
+            ) : (
+                <div className={styles.buttonsContainer}>
                     <Button
                         variant={"filled"}
                         theme={"dark"}
@@ -47,20 +47,20 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                         onClick={onMessageClick}
                         iconOnly
                     />
-                )}
 
-                {viewerType === 'owner' && (
-                    <Button
-                        variant={"filled"}
-                        theme={"dark"}
-                        size={"medium"}
-                        shape={"cr-16"}
-                        icon={<SettingsIcon />}
-                        onClick={onSettingsClick}
-                        iconOnly
-                    />
-                )}
-            </div>
+                    {viewerType === 'owner' && (
+                        <Button
+                            variant={"filled"}
+                            theme={"dark"}
+                            size={"medium"}
+                            shape={"cr-16"}
+                            icon={<SettingsIcon />}
+                            onClick={onSettingsClick}
+                            iconOnly
+                        />
+                    )}
+                </div>
+            )}
         </div>
     );
 };

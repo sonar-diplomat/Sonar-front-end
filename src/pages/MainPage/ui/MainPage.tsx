@@ -16,33 +16,36 @@ import { useGetAlbumQuery } from '@entities/Album/api/rtkApi';
 import { useGetPlaylistQuery } from '@entities/Playlist/api/rtkApi';
 import { useGetTrackQuery } from '@entities/Music/api/rtkApi';
 import { getArtistNames } from '@widgets/MiniPlayer/lib/utils';
+import { usePlayer } from '@shared/store/features/player';
+import { MainPageSkeleton } from './MainPageSkeleton';
 import styles from './MainPage.module.css';
 
 export const MainPage: React.FC = () => {
     const navigate = useNavigate();
     const currentUserId = useCurrentUserId();
-    const { data: currentUser } = useGetUserByIdQuery(currentUserId!, {
+    const { data: currentUser, isLoading: isLoadingUser } = useGetUserByIdQuery(currentUserId!, {
         skip: !currentUserId,
     });
-    const { data: currentUserProfile } = useGetUserProfileByIdentifierQuery(
+    const { data: currentUserProfile, isLoading: isLoadingUserProfile } = useGetUserProfileByIdentifierQuery(
         currentUser?.publicIdentifier || '',
         {
             skip: !currentUser?.publicIdentifier,
         }
     );
-    const { library } = useUserLibrary();
+    const { library, isLoading: isLoadingLibrary } = useUserLibrary();
 
     // Fetch recommendations
-    const { data: popularCollections } = useGetPopularCollectionsQuery({ limit: 4 });
-    const { data: recentCollections } = useGetRecentCollectionsQuery(
+    const { data: popularCollections, isLoading: isLoadingPopularCollections } = useGetPopularCollectionsQuery({ limit: 4 });
+    const { data: recentCollections, isLoading: isLoadingRecentCollections } = useGetRecentCollectionsQuery(
         { limit: 12 },
         { skip: !currentUserId }
     );
-    const { data: recentTracks } = useGetRecentTracksQuery(
+    const { data: recentTracks, isLoading: isLoadingRecentTracks } = useGetRecentTracksQuery(
         { limit: 12 },
         { skip: !currentUserId }
     );
 
+    // All hooks must be called before any conditional returns
     const userName = useMemo(() => {
         if (currentUserProfile?.userName) {
             return currentUserProfile.userName;
@@ -62,6 +65,16 @@ export const MainPage: React.FC = () => {
         }));
     }, [library]);
 
+    // Check if initial critical data is loading
+    // Show skeleton only when loading critical data that affects page structure
+    // Popular collections is the main content, so we wait for it
+    const isLoadingCritical = isLoadingPopularCollections;
+
+    // Show skeleton while loading initial critical data
+    if (isLoadingCritical) {
+        return <MainPageSkeleton />;
+    }
+
     // Collection type enum values (matching backend CollectionType)
     const CollectionType = {
         CollectionUnknown: 0,
@@ -77,8 +90,8 @@ export const MainPage: React.FC = () => {
         }
     };
 
-    const handleTrackClick = (trackId: number) => {
-        navigate(`/player/${trackId}`);
+    const handleTrackClick = () => {
+        // Навигация обрабатывается в TrackCard, где также запускается воспроизведение
     };
 
     return (
@@ -157,7 +170,7 @@ export const MainPage: React.FC = () => {
                                 <TrackCard
                                     key={track.trackId}
                                     trackId={track.trackId}
-                                    onClick={() => handleTrackClick(track.trackId)}
+                                    onClick={handleTrackClick}
                                 />
                             ))}
                         </div>
@@ -243,6 +256,7 @@ const TrackCard: React.FC<{
     onClick: () => void;
 }> = ({ trackId, onClick }) => {
     const { data: track } = useGetTrackQuery(trackId);
+    const { playTrack } = usePlayer();
     
     if (!track) {
         return null;
@@ -250,6 +264,11 @@ const TrackCard: React.FC<{
 
     const artistName = getArtistNames(track);
     const imageUrl = track.coverId ? getImageUrlById(track.coverId) : undefined;
+
+    const handleClick = () => {
+        playTrack(track);
+        onClick();
+    };
 
     return (
         <ItemCard
@@ -259,7 +278,7 @@ const TrackCard: React.FC<{
                 title: track.title,
                 subtitle1: artistName,
             }}
-            onClick={onClick}
+            onClick={handleClick}
         />
     );
 };

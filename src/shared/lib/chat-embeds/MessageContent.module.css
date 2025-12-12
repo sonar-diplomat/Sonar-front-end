@@ -18,8 +18,10 @@
   word-break: break-all;
 }
 
-.link:hover {
-  text-decoration: underline;
-  color: var(--input-helper-link-hover, #5bb0ff);
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    text-decoration: underline;
+    color: var(--input-helper-link-hover, #5bb0ff);
+  }
 }
 

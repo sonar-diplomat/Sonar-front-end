@@ -15,7 +15,7 @@ import {
   useAddToQueueMutation,
   useDeleteFromQueueMutation
 } from '@entities/UserState/api/rtkApi';
-import { musicApi } from '@entities/Music/api/rtkApi';
+import { musicApi, useToggleTrackFavoriteMutation } from '@entities/Music/api/rtkApi';
 import { useNotifications } from '@shared/store/notificationStore';
 import { usePlayer } from '@shared/store/features/player';
 import { useAppDispatch } from '@shared/store/hooks';
@@ -76,6 +76,7 @@ interface ActionHelpers {
   addToQueue: (trackId: number) => void;
   removeFromQueue: (trackId: number) => void;
   toggleFavorite: (collectionType: string, collectionId: number) => Promise<void>;
+  toggleFavoriteTrack: (trackId: number) => Promise<void>;
   openFolderSelector: () => void;
   addToLibrary: () => void;
   isCollectionInLibrary: () => boolean;
@@ -90,7 +91,7 @@ const contextualActions: ActionConfig[] = [
   {
     id: 'add-track-to-library',
     label: 'Add to Library',
-    icon: <HeartIcon />,
+    icon: <PlusIcon />,
     handler: async (context, helpers) => {
       try {
         await helpers.toggleFavorite(context.type, context.entityId);
@@ -123,14 +124,31 @@ const contextualActions: ActionConfig[] = [
       helpers.closeMenu();
     },
   },
+  {
+    id: 'add-track-to-favorite',
+    label: 'Add to Favorite',
+    icon: <HeartIcon />,
+    handler: async (context, helpers) => {
+      try {
+        await helpers.toggleFavoriteTrack(context.entityId);
+        helpers.showSuccess('Added to favorites');
+        helpers.closeMenu();
+      } catch (error) {
+        helpers.showError('Failed to add to favorites');
+      }
+    },
+  },
 ];
 
 // 0 - add track to library
 // 1 - add collection to library
 // 2 - add to queue
+// 3 - add track to favorite
 
 const TRACK_ACTIONS: ActionConfig[] = [
-  contextualActions[0], contextualActions[2]
+  contextualActions[3], // Add to Favorite (first)
+  contextualActions[0], // Add to Library (second)
+  contextualActions[2]  // Add to Queue (third)
 ];
 
 const COLLECTION_ACTIONS: ActionConfig[] = [
@@ -169,7 +187,8 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
   const [deleteFromQueueMutation] = useDeleteFromQueueMutation();
 
   const { showSuccess, showError } = useNotifications();
-  const { favoriteTrackIds, queue, addToQueue: addToQueueLocal, removeFromQueue: removeFromQueueLocal } = usePlayer();
+  const { favoriteTrackIds, queue, addToQueue: addToQueueLocal, removeFromQueue: removeFromQueueLocal, toggleFavoriteTrackLocal } = usePlayer();
+  const [toggleTrackFavoriteMutation] = useToggleTrackFavoriteMutation();
 
   const { folders: foldersList } = useFolders();
 
@@ -353,11 +372,26 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
     await toggleCollectionFavorite(collectionType, collectionId);
   }, [toggleCollectionFavorite]);
 
+  const handleToggleFavoriteTrack = useCallback(async (trackId: number) => {
+    try {
+      // Optimistically update local state
+      toggleFavoriteTrackLocal(trackId);
+      
+      // Sync with backend
+      await toggleTrackFavoriteMutation(trackId).unwrap();
+    } catch (error) {
+      // Revert on error
+      toggleFavoriteTrackLocal(trackId);
+      throw error;
+    }
+  }, [toggleTrackFavoriteMutation, toggleFavoriteTrackLocal]);
+
   const helpers: ActionHelpers = useMemo(() => ({
     navigate,
     addToQueue: handleAddToQueue,
     removeFromQueue: handleRemoveFromQueue,
     toggleFavorite,
+    toggleFavoriteTrack: handleToggleFavoriteTrack,
     openFolderSelector: handleOpenFolderSelector,
     addToLibrary: handleAddToLibrary,
     isCollectionInLibrary: () => collectionFolderInfo.isInLibrary,
@@ -365,7 +399,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
     showSuccess,
     showError,
     closeMenu: onClose,
-  }), [navigate, handleAddToQueue, handleRemoveFromQueue, toggleFavorite, handleOpenFolderSelector, handleAddToLibrary, collectionFolderInfo.isInLibrary, handleRemoveFromLibrary, showSuccess, showError, onClose]);
+  }), [navigate, handleAddToQueue, handleRemoveFromQueue, toggleFavorite, handleToggleFavoriteTrack, handleOpenFolderSelector, handleAddToLibrary, collectionFolderInfo.isInLibrary, handleRemoveFromLibrary, showSuccess, showError, onClose]);
 
   const contextActions = useMemo((): ActionMenuItem[] => {
     const configs = ACTION_CONFIGS[context.type] || [];
@@ -374,6 +408,15 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
         return {
           id: config.id,
           label: isInLibrary ? 'Remove from Library' : 'Add to Library',
+          icon: config.icon,
+          onClick: () => config.handler(context, helpers),
+        };
+      }
+
+      if (config.id === 'add-track-to-favorite') {
+        return {
+          id: config.id,
+          label: isInLibrary ? 'Remove from Favorite' : 'Add to Favorite',
           icon: config.icon,
           onClick: () => config.handler(context, helpers),
         };

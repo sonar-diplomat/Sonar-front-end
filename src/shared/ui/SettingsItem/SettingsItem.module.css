@@ -16,8 +16,10 @@
     cursor: pointer;
 }
 
-.item.clickable:hover {
+@media (hover: hover) and (pointer: fine) {
+  .item.clickable:hover {
     background-color: #2C2C2E;
+  }
 }
 
 .item.clickable:active {

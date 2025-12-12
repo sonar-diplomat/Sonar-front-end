@@ -112,8 +112,8 @@ export const libraryApi = rtkApi.injectEndpoints({
         method: 'PUT',
         withAuth: true,
       }),
-      invalidatesTags: (_result, _error, { targetFolderId }) => [
-        { type: 'Folder', id: targetFolderId },
+      invalidatesTags: () => [
+        { type: 'Folder' }, // Invalidate all folders to ensure root folder and target folder are updated
         { type: 'Folder', id: 'LIST' },
       ],
       async onQueryStarted(_arg, { dispatch }) {

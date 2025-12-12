@@ -35,8 +35,10 @@
     justify-content: space-between;
 }
 
-.select:hover:not(:disabled) {
+@media (hover: hover) and (pointer: fine) {
+  .select:hover:not(:disabled) {
     border-color: var(--input-border-hover);
+  }
 }
 
 .select:focus {
@@ -112,8 +114,10 @@
     transition: background-color 0.2s ease-in-out;
 }
 
-.option:hover {
+@media (hover: hover) and (pointer: fine) {
+  .option:hover {
     background-color: rgba(255, 255, 255, 0.1);
+  }
 }
 
 .option.selected {

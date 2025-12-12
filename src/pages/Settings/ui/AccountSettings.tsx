@@ -57,6 +57,7 @@ export const AccountSettings: React.FC = () => {
   const [publicIdentifier, setPublicIdentifier] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [email, setEmail] = useState('');
+  const [biography, setBiography] = useState('');
 
   // Password modal fields
   const [oldPassword, setOldPassword] = useState('');
@@ -73,6 +74,7 @@ export const AccountSettings: React.FC = () => {
       setPublicIdentifier(currentUserFullData.publicIdentifier || '');
       setDateOfBirth(currentUserFullData.dateOfBirth || '');
       setEmail(currentUserFullData.email || '');
+      setBiography(currentUserFullData.biography || '');
       if (currentUserFullData.avatarUrl) {
         setAvatarPreview(currentUserFullData.avatarUrl);
       } else if (currentUserFullData.avatarImageId) {
@@ -85,6 +87,7 @@ export const AccountSettings: React.FC = () => {
       // Fallback to profile data
       setUsername(currentUserProfile.userName || '');
       setPublicIdentifier(currentUserProfile.publicIdentifier || '');
+      setBiography(currentUserProfile.biography || '');
       if (currentUserProfile.imageUrl) {
         setAvatarPreview(currentUserProfile.imageUrl);
       } else if (currentUserProfile.avatarImageId) {
@@ -124,6 +127,10 @@ export const AccountSettings: React.FC = () => {
       if (dateOfBirth) {
         updates.DateOfBirth = dateOfBirth;
       }
+      
+      if (biography !== (currentUserFullData?.biography || currentUserProfile?.biography || '')) {
+        updates.Biography = biography.trim() || null;
+      }
 
       // Update avatar if selected
       if (selectedAvatarFile) {
@@ -134,9 +141,12 @@ export const AccountSettings: React.FC = () => {
       let updatedUserData = null;
       if (Object.keys(updates).length > 0) {
         updatedUserData = await updateUser(updates).unwrap();
-        // Update form with returned data (including dateOfBirth)
+        // Update form with returned data (including dateOfBirth and biography)
         if (updatedUserData?.dateOfBirth) {
           setDateOfBirth(updatedUserData.dateOfBirth);
+        }
+        if (updatedUserData?.biography !== undefined) {
+          setBiography(updatedUserData.biography || '');
         }
       }
 
@@ -310,6 +320,23 @@ export const AccountSettings: React.FC = () => {
               onConfirm={(date) => setDateOfBirth(date)}
               initialValue={dateOfBirth}
             />
+
+            <div className={styles.textareaContainer}>
+              <label htmlFor="biography-input" className={styles.textareaLabel}>
+                About
+              </label>
+              <textarea
+                id="biography-input"
+                className={styles.textarea}
+                value={biography}
+                onChange={(e) => setBiography(e.target.value)}
+                placeholder="Tell others about yourself"
+                rows={4}
+              />
+              <p className={styles.textareaHelperText}>
+                Tell others about yourself
+              </p>
+            </div>
 
             <div className={styles.formActions}>
               <Button variant="filled" theme="dark" type="submit" loading={isLoading} fullWidth>

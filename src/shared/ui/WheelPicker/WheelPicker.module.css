@@ -46,8 +46,10 @@
   position: relative;
 }
 
-.wheelPickerItem:hover {
-  color: var(--text-muted-lighter);
+@media (hover: hover) and (pointer: fine) {
+  .wheelPickerItem:hover {
+    color: var(--text-muted-lighter);
+  }
 }
 
 .wheelPickerItem.selected {

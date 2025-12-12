@@ -12,8 +12,10 @@
     transition: background-color 0.2s ease;
 }
 
-.clickable:hover {
+@media (hover: hover) and (pointer: fine) {
+  .clickable:hover {
     background-color: var(--overlay-light);
+  }
 }
 
 .content {
@@ -82,8 +84,10 @@
     height: 36px;
 }
 
-.menuButton:hover {
+@media (hover: hover) and (pointer: fine) {
+  .menuButton:hover {
     background: rgba(255, 255, 255, 0.05);
+  }
 }
 
 .menuButton:active {
