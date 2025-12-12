@@ -2,11 +2,13 @@ import { useEffect } from 'react';
 import { useUserLibrary } from '@shared/lib/user-hooks/useUserLibrary';
 import { useGetPlaylistTracksQuery } from '@entities/Playlist/api/rtkApi';
 import { usePlayer } from '@shared/store/features/player';
+import { useAppSelector } from '@shared/store/hooks';
 
 /**
  * Хук для синхронизации избранных треков из плейлиста favorites с store
  */
 export const useFavoritesSync = () => {
+    const { isAuthenticated } = useAppSelector((state) => state.auth);
     const { library } = useUserLibrary();
     const { setFavoriteTracks } = usePlayer();
 
@@ -18,9 +20,8 @@ export const useFavoritesSync = () => {
         }
     );
 
-    // Загружаем треки из плейлиста favorites
     const { data: favoritesTracksData } = useGetPlaylistTracksQuery(favoritesPlaylist?.id || 0, {
-        skip: !favoritesPlaylist?.id,
+        skip: !isAuthenticated || !favoritesPlaylist?.id,
     });
 
     // Синхронизируем favoriteTrackIds с треками из плейлиста favorites

@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { usePlayer } from '@shared/store/features/player';
 import { useUpdateListeningTargetMutation, useUpdateCurrentPositionMutation } from '@entities/UserState/api/rtkApi';
+import { useAppSelector } from '@shared/store/hooks';
 
 export const usePlaybackSync = () => {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { currentTrack, collectionContext, currentTime, isPlaying, isStockCollection } = usePlayer();
   const [updateListeningTarget] = useUpdateListeningTargetMutation();
   const [updatePosition] = useUpdateCurrentPositionMutation();
@@ -12,7 +14,7 @@ export const usePlaybackSync = () => {
   const positionSaveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    if (!currentTrack) {
+    if (!isAuthenticated || !currentTrack) {
       previousTrackIdRef.current = null;
       previousCollectionIdRef.current = null;
       return;
@@ -39,7 +41,7 @@ export const usePlaybackSync = () => {
       previousTrackIdRef.current = trackId;
       previousCollectionIdRef.current = collectionId;
     }
-  }, [currentTrack, collectionContext, isStockCollection, updateListeningTarget]);
+  }, [currentTrack, collectionContext, isStockCollection, updateListeningTarget, isAuthenticated]);
 
   useEffect(() => {
     if (positionSaveIntervalRef.current) {
@@ -47,7 +49,7 @@ export const usePlaybackSync = () => {
       positionSaveIntervalRef.current = null;
     }
 
-    if (!isPlaying || !currentTrack) {
+    if (!isAuthenticated || !isPlaying || !currentTrack) {
       return;
     }
 
@@ -74,25 +76,27 @@ export const usePlaybackSync = () => {
         clearInterval(positionSaveIntervalRef.current);
       }
     };
-  }, [isPlaying, currentTrack, currentTime, updatePosition]);
+  }, [isPlaying, currentTrack, currentTime, updatePosition, isAuthenticated]);
 
   useEffect(() => {
     return () => {
-      if (currentTrack && currentTime > 0) {
-        const hours = Math.floor(currentTime / 3600);
-        const minutes = Math.floor((currentTime % 3600) / 60);
-        const seconds = currentTime % 60;
-        const timeSpanString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toFixed(6).padStart(9, '0')}`;
-
-        updatePosition(timeSpanString)
-          .unwrap()
-          .then(() => {
-            console.log('[usePlaybackSync] Final position saved:', timeSpanString);
-          })
-          .catch((error) => {
-            console.error('[usePlaybackSync] Failed to save final position:', error);
-          });
+      if (!isAuthenticated || !currentTrack || currentTime <= 0) {
+        return;
       }
+
+      const hours = Math.floor(currentTime / 3600);
+      const minutes = Math.floor((currentTime % 3600) / 60);
+      const seconds = currentTime % 60;
+      const timeSpanString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toFixed(6).padStart(9, '0')}`;
+
+      updatePosition(timeSpanString)
+        .unwrap()
+        .then(() => {
+          console.log('[usePlaybackSync] Final position saved:', timeSpanString);
+        })
+        .catch((error) => {
+          console.error('[usePlaybackSync] Failed to save final position:', error);
+        });
     };
   }, []);
 };

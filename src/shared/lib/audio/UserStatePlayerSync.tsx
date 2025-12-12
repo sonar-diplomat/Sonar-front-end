@@ -3,19 +3,23 @@ import { useGetQueueQuery } from '@entities/UserState/api/rtkApi';
 import { usePlayer } from '@shared/store/features/player';
 import { useQueuePersistence } from '@shared/lib';
 import { usePlaybackSync } from '@shared/lib';
+import { useAppSelector } from '@shared/store/hooks';
 
 /**
  * Компонент для синхронизации userState.currentTrackId с player
  * Автоматически загружает и запускает трек когда изменяется currentTrackId
  */
 export const UserStatePlayerSync = () => {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { restoreQueue, pause } = usePlayer();
   const [hasRestoredQueue, setHasRestoredQueue] = useState(false);
 
   useQueuePersistence();
   usePlaybackSync();
 
-  const { data: queueData, isLoading, isError, error } = useGetQueueQuery();
+  const { data: queueData, isLoading, isError, error } = useGetQueueQuery(undefined, {
+    skip: !isAuthenticated,
+  });
 
   useEffect(() => {
     if (hasRestoredQueue) {

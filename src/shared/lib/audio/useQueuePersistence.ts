@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { usePlayer } from '@shared/store/features/player';
 import { useSaveQueueMutation } from '@entities/UserState/api/rtkApi';
+import { useAppSelector } from '@shared/store/hooks';
 
 export const useQueuePersistence = () => {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { queue } = usePlayer();
   const [saveQueueApi] = useSaveQueueMutation();
 
@@ -10,6 +12,10 @@ export const useQueuePersistence = () => {
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
     const queueIds = queue.map(t => t.id);
     const previousIds = previousQueueRef.current.map(t => t.id);
 
@@ -39,6 +45,6 @@ export const useQueuePersistence = () => {
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [queue, saveQueueApi]);
+  }, [queue, saveQueueApi, isAuthenticated]);
 };
 
