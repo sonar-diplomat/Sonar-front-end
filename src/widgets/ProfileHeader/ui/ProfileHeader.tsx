@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 
 import styles from "./ProfileHeader.module.css";
 
-import {Button, LeftArrow, MessageIcon, EditProfileIcon, StatisticsIcon, TabSlider} from "@shared/ui";
+import {Button, LeftArrow, MessageIcon, TabSlider, SettingsIcon} from "@shared/ui";
 import type { ViewerType } from '@shared/types';
 
 export type ProfileType = 'user' | 'artist';
@@ -21,6 +21,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     viewerType,
     onBackClick,
     onMessageClick,
+    onSettingsClick,
     onTabChange,
     profileType,
     secondaryTab
@@ -74,7 +75,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                         onClick={onMessageClick}
                         iconOnly
                     />
-                )}
+
                 {profileType=="artist" &&
                     (
                         <div className={styles.tabSliderWrapper}>
@@ -92,7 +93,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                             onClick={onSettingsClick}
                             iconOnly
                         />
-                    )}
+                    )
+                }
                 </div>
             )}
         </div>
