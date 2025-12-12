@@ -24,10 +24,10 @@ export const Create: React.FC<CreateProps> = ({className = ''}) => {
         });
     };
 
-    const handleCreateBlend = () => {
-        console.log('Creating blend');
-        // TODO: Navigate to blend creation
-    };
+    // const handleCreateBlend = () => {
+    //     console.log('Creating blend');
+    //     // TODO: Navigate to blend creation
+    // };
 
     const handleCreateFolder = () => {
         console.log('Creating folder');
@@ -70,22 +70,22 @@ export const Create: React.FC<CreateProps> = ({className = ''}) => {
                     </p>
                 </div>
 
-                <div className={styles.optionWrapper}>
-                    <Button
-                        variant="filled"
-                        theme="dark"
-                        size="large"
-                        shape="cr-32"
-                        icon={<PlusIcon/>}
-                        onClick={handleCreateBlend}
-                        className={styles.optionButton}
-                    >
-                        Blend
-                    </Button>
-                    <p className={styles.optionDescription}>
-                        Blend your music! This feature merges your tastes with a friend's to create a playlist for discovering new favorites.
-                    </p>
-                </div>
+                {/*<div className={styles.optionWrapper}>*/}
+                {/*    <Button*/}
+                {/*        variant="filled"*/}
+                {/*        theme="dark"*/}
+                {/*        size="large"*/}
+                {/*        shape="cr-32"*/}
+                {/*        icon={<PlusIcon/>}*/}
+                {/*        onClick={handleCreateBlend}*/}
+                {/*        className={styles.optionButton}*/}
+                {/*    >*/}
+                {/*        Blend*/}
+                {/*    </Button>*/}
+                {/*    <p className={styles.optionDescription}>*/}
+                {/*        Blend your music! This feature merges your tastes with a friend's to create a playlist for discovering new favorites.*/}
+                {/*    </p>*/}
+                {/*</div>*/}
 
                 <div className={styles.optionWrapper}>
                     <Button
