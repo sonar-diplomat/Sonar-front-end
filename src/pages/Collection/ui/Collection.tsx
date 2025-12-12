@@ -44,7 +44,13 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
     const [actionMenuContext, setActionMenuContext] = useState<import('@shared/ui').ActionMenuContext | null>(null);
 
     const playTracks = usePlayTracks();
-    const { play } = usePlayer();
+    const { play, togglePlayPause, isPlaying, collectionContext } = usePlayer();
+
+    // Check if this collection is currently being played
+    const isCurrentCollection = useMemo(() => {
+        if (!collectionId || !collectionContext) return false;
+        return collectionContext.type === type && collectionContext.id === collectionId;
+    }, [collectionId, collectionContext, type]);
 
     const { data: playlistData, isLoading: playlistLoading, error: playlistError } = useGetPlaylistQuery(
         collectionId!,
@@ -142,6 +148,11 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
     };
 
     const handlePlayClick = () => {
+        if (isCurrentCollection) {
+            togglePlayPause();
+            return;
+        }
+
         if (!collectionId || rawTracks.length === 0) return;
 
         let tracksToPlay = [...rawTracks];
@@ -245,6 +256,8 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
             <CollectionPlayPanel
                 onPlayClick={handlePlayClick}
                 onShuffleClick={handleShuffleClick}
+                isPlaying={isPlaying}
+                isCurrentCollection={isCurrentCollection}
             />
             <CollectionActions
                 onEditClick={handleEditClick}

@@ -122,6 +122,9 @@ export const playlistApi = rtkApi.injectEndpoints({
         { type: 'Playlist', id: playlistId },
         { type: 'Track', id: 'LIST' },
       ],
+      async onQueryStarted() {
+        store.dispatch(markDirty());
+      },
     }),
 
     removeTrackFromPlaylist: builder.mutation<void, { playlistId: number; trackId: number }>({
