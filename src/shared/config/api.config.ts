@@ -204,6 +204,8 @@ export const API_ENDPOINTS = {
     },
     artist: {
         register: 'Artist/register',
+        byId: (artistId: number) => `Artist/${artistId}`,
+        posts: (artistId: number) => `Artist/${artistId}/posts`,
         updateName: (artistId: number) => `Artist/${artistId}/update-name`,
         delete: 'Artist',
         createPost: 'Artist',

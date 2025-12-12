@@ -28,7 +28,7 @@ export interface ArtistMessageCardProps {
     onTrackPlay?: (messageId: string) => void;
 }
 
-export const ArtistMessageCard: React.FC<ArtistMessageCardProps> = ({
+export const ArtistPostCard: React.FC<ArtistMessageCardProps> = ({
     message,
     onMenuClick,
     onLinkClick,
