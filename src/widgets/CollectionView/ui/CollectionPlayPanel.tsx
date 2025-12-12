@@ -1,17 +1,22 @@
 import React from 'react';
 import styles from './CollectionPlayPanel.module.css';
 import type { CollectionPlayPanelProps } from './CollectionPlayPanel.types';
-import { Button, PlayIcon, ShuffleIcon } from '@shared/ui';
+import { Button, PlayIcon, PauseIcon, ShuffleIcon } from '@shared/ui';
 
 export const CollectionPlayPanel: React.FC<CollectionPlayPanelProps> = ({
     onPlayClick,
     onShuffleClick,
+    isPlaying = false,
+    isCurrentCollection = false,
     className = ''
 }) => {
     const wrapperClasses = [
         styles.collectionPlayPanel,
         className,
     ].filter(Boolean).join(' ');
+
+    const showPauseIcon = isCurrentCollection && isPlaying;
+    const playText = showPauseIcon ? 'Pause' : 'Start listening';
 
     return (
         <div className={wrapperClasses}>
@@ -22,12 +27,12 @@ export const CollectionPlayPanel: React.FC<CollectionPlayPanelProps> = ({
                         theme="light"
                         size="medium"
                         shape="cr-16"
-                        icon={<PlayIcon/>}
+                        icon={showPauseIcon ? <PauseIcon/> : <PlayIcon/>}
                         iconOnly
                         onClick={onPlayClick}
                     />
                 )}
-                <p className={styles.playText}>Start listening</p>
+                <p className={styles.playText}>{playText}</p>
             </div>
             {onShuffleClick && (
                 <Button

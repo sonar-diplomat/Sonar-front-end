@@ -16,11 +16,12 @@ import {
   useDeleteFromQueueMutation
 } from '@entities/UserState/api/rtkApi';
 import { musicApi, useToggleTrackFavoriteMutation } from '@entities/Music/api/rtkApi';
+import { useAddTrackToPlaylistMutation } from '@entities/Playlist/api/rtkApi';
 import { useNotifications } from '@shared/store/notificationStore';
 import { usePlayer } from '@shared/store/features/player';
 import { useAppDispatch } from '@shared/store/hooks';
 import { useFolders } from '@shared/store/features/library/useLibrary';
-import type { FolderDTO } from '@entities/Library/model/types';
+import type { FolderDTO, CollectionSummaryDTO } from '@entities/Library/model/types';
 
 export type ActionMenuContextType = 'track' | 'album' | 'playlist' | 'artist' | 'user';
 
@@ -78,7 +79,9 @@ interface ActionHelpers {
   toggleFavorite: (collectionType: string, collectionId: number) => Promise<void>;
   toggleFavoriteTrack: (trackId: number) => Promise<void>;
   openFolderSelector: () => void;
+  openPlaylistSelector: () => void;
   addToLibrary: () => void;
+  addToLibraryRoot: () => void;
   isCollectionInLibrary: () => boolean;
   removeFromLibrary: () => void;
   showSuccess: (message: string) => void;
@@ -86,32 +89,33 @@ interface ActionHelpers {
   closeMenu: () => void;
 }
 
-// TODO: Implement actual handlers for each action
 const contextualActions: ActionConfig[] = [
   {
-    id: 'add-track-to-library',
-    label: 'Add to Library',
+    id: 'add-track-to-playlist',
+    label: 'Add to Playlist',
     icon: <PlusIcon />,
-    handler: async (context, helpers) => {
-      try {
-        await helpers.toggleFavorite(context.type, context.entityId);
-        helpers.showSuccess('Library updated');
-        helpers.closeMenu();
-      } catch (error) {
-        helpers.showError('Failed to update library');
-      }
+    handler: (_context, helpers) => {
+      helpers.openPlaylistSelector();
     },
   },
   {
     id: 'add-collection-to-library',
     label: 'Add to Library',
     icon: <HeartIcon />,
-    handler: (_context, helpers) => {
+    handler: async (_context, helpers) => {
       if (helpers.isCollectionInLibrary()) {
         helpers.removeFromLibrary();
       } else {
-        helpers.addToLibrary();
+        helpers.addToLibraryRoot();
       }
+    },
+  },
+  {
+    id: 'add-to-folder',
+    label: 'Add to Folder',
+    icon: <FolderCoverIcon />,
+    handler: (_context, helpers) => {
+      helpers.openFolderSelector();
     },
   },
   {
@@ -140,19 +144,21 @@ const contextualActions: ActionConfig[] = [
   },
 ];
 
-// 0 - add track to library
+// 0 - add track to playlist
 // 1 - add collection to library
-// 2 - add to queue
-// 3 - add track to favorite
+// 2 - add to folder
+// 3 - add to queue
+// 4 - add track to favorite
 
 const TRACK_ACTIONS: ActionConfig[] = [
-  contextualActions[3], // Add to Favorite (first)
-  contextualActions[0], // Add to Library (second)
-  contextualActions[2]  // Add to Queue (third)
+  contextualActions[4], // Add to Favorite (first)
+  contextualActions[0], // Add to Playlist (second)
+  contextualActions[3]  // Add to Queue (third)
 ];
 
 const COLLECTION_ACTIONS: ActionConfig[] = [
-  contextualActions[1]
+  contextualActions[1], // Add to Library
+  contextualActions[2]  // Add to Folder
 ];
 
 const ARTIST_ACTIONS: ActionConfig[] = [
@@ -177,6 +183,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
   const [showShareModal, setShowShareModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showFolderSelector, setShowFolderSelector] = useState(false);
+  const [showPlaylistSelector, setShowPlaylistSelector] = useState(false);
   const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);
   const [navigationPath, setNavigationPath] = useState<Array<{ id: number; name: string }>>([]);
 
@@ -185,6 +192,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
   const [removeCollectionFromFolder] = useRemoveCollectionFromFolderMutation();
   const [addToQueueMutation] = useAddToQueueMutation();
   const [deleteFromQueueMutation] = useDeleteFromQueueMutation();
+  const [addTrackToPlaylist, { isLoading: addingToPlaylist }] = useAddTrackToPlaylistMutation();
 
   const { showSuccess, showError } = useNotifications();
   const { favoriteTrackIds, queue, addToQueue: addToQueueLocal, removeFromQueue: removeFromQueueLocal, toggleFavoriteTrackLocal } = usePlayer();
@@ -259,6 +267,16 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
     setNavigationPath([]);
   }, []);
 
+  const handleOpenPlaylistSelector = useCallback(() => {
+    setShowPlaylistSelector(true);
+  }, []);
+
+  const handleClosePlaylistSelector = useCallback(() => {
+    setShowPlaylistSelector(false);
+    setCurrentFolderId(null);
+    setNavigationPath([]);
+  }, []);
+
   const handleNavigateToFolder = useCallback((folderId: number, folderName: string) => {
     setCurrentFolderId(folderId);
     setNavigationPath(prev => [...prev, { id: folderId, name: folderName }]);
@@ -282,16 +300,39 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
     }
   }, [addCollectionToFolder, context.entityId, showSuccess, showError, onClose]);
 
-  const handleAddToLibrary = useCallback(() => {
-    const nonProtectedFolders = allFolders?.filter(f => !f.isProtected) || [];
-
-    if (nonProtectedFolders.length === 0) {
-      showError('No folders available. Create a folder first in your Library.');
-      return;
+  const handleAddTrackToPlaylist = useCallback(async (playlistId: number) => {
+    try {
+      await addTrackToPlaylist({ playlistId, trackId: context.entityId }).unwrap();
+      showSuccess('Added to playlist successfully');
+      setShowPlaylistSelector(false);
+      setCurrentFolderId(null);
+      setNavigationPath([]);
+      onClose();
+    } catch (error) {
+      showError('Failed to add to playlist');
     }
+  }, [addTrackToPlaylist, context.entityId, showSuccess, showError, onClose]);
 
+  const handleAddToLibrary = useCallback(() => {
     setShowFolderSelector(true);
-  }, [allFolders, showError]);
+  }, []);
+
+  const handleAddToLibraryRoot = useCallback(async () => {
+    try {
+      const rootFolder = allFolders?.find(f => f.parentFolderId === null);
+
+      if (!rootFolder) {
+        showError('Root folder not found');
+        return;
+      }
+
+      await addCollectionToFolder({ folderId: rootFolder.id, collectionId: context.entityId }).unwrap();
+      showSuccess('Added to library successfully');
+      onClose();
+    } catch (error) {
+      showError('Failed to add to library');
+    }
+  }, [allFolders, addCollectionToFolder, context.entityId, showSuccess, showError, onClose]);
 
   const handleRemoveFromLibrary = useCallback(async () => {
     if (!collectionFolderInfo.folderId) return;
@@ -374,13 +415,10 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
 
   const handleToggleFavoriteTrack = useCallback(async (trackId: number) => {
     try {
-      // Optimistically update local state
       toggleFavoriteTrackLocal(trackId);
-      
-      // Sync with backend
+
       await toggleTrackFavoriteMutation(trackId).unwrap();
     } catch (error) {
-      // Revert on error
       toggleFavoriteTrackLocal(trackId);
       throw error;
     }
@@ -393,25 +431,19 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
     toggleFavorite,
     toggleFavoriteTrack: handleToggleFavoriteTrack,
     openFolderSelector: handleOpenFolderSelector,
+    openPlaylistSelector: handleOpenPlaylistSelector,
     addToLibrary: handleAddToLibrary,
+    addToLibraryRoot: handleAddToLibraryRoot,
     isCollectionInLibrary: () => collectionFolderInfo.isInLibrary,
     removeFromLibrary: handleRemoveFromLibrary,
     showSuccess,
     showError,
     closeMenu: onClose,
-  }), [navigate, handleAddToQueue, handleRemoveFromQueue, toggleFavorite, handleToggleFavoriteTrack, handleOpenFolderSelector, handleAddToLibrary, collectionFolderInfo.isInLibrary, handleRemoveFromLibrary, showSuccess, showError, onClose]);
+  }), [navigate, handleAddToQueue, handleRemoveFromQueue, toggleFavorite, handleToggleFavoriteTrack, handleOpenFolderSelector, handleOpenPlaylistSelector, handleAddToLibrary, handleAddToLibraryRoot, collectionFolderInfo.isInLibrary, handleRemoveFromLibrary, showSuccess, showError, onClose]);
 
   const contextActions = useMemo((): ActionMenuItem[] => {
     const configs = ACTION_CONFIGS[context.type] || [];
     return configs.map(config => {
-      if (config.id === 'add-track-to-library') {
-        return {
-          id: config.id,
-          label: isInLibrary ? 'Remove from Library' : 'Add to Library',
-          icon: config.icon,
-          onClick: () => config.handler(context, helpers),
-        };
-      }
 
       if (config.id === 'add-track-to-favorite') {
         return {
@@ -495,7 +527,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
       if (currentFolder && currentFolder.subFolders && currentFolder.subFolders.length > 0) {
         const subfolderIds = currentFolder.subFolders.map(sf => sf.id);
         displayFolders = allFolders.filter(f =>
-          subfolderIds.includes(f.id) && !f.isProtected
+          subfolderIds.includes(f.id)
         );
       }
     } else {
@@ -503,12 +535,12 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
       if (rootFolder) {
         const firstLevelIds = rootFolder.subFolders?.map(sf => sf.id) || [];
         displayFolders = allFolders.filter(f =>
-          firstLevelIds.includes(f.id) && !f.isProtected
+          firstLevelIds.includes(f.id)
         );
       }
     }
 
-    const canAddHere = currentFolder && !currentFolder.isProtected;
+    const canAddHere = currentFolder;
 
     return (
       <Modal isOpen={true} onClose={handleCloseFolderSelector} title="Add to Folder">
@@ -580,6 +612,158 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
               <p>No folders available. Create a folder first in your Library.</p>
             </div>
           ) : null}
+        </div>
+      </Modal>
+    );
+  }
+
+  if (showPlaylistSelector) {
+    const folderHasPlaylists = (folderId: number | null): boolean => {
+      if (folderId === null) {
+        const rootFolder = allFolders.find(f => f.parentFolderId === null);
+        if (!rootFolder) return false;
+
+        if (rootFolder.collections.some(c => c.type === 'Playlist')) return true;
+
+        if (rootFolder.subFolders && rootFolder.subFolders.length > 0) {
+          return rootFolder.subFolders.some(sf => folderHasPlaylists(sf.id));
+        }
+        return false;
+      }
+
+      const folder = allFolders.find(f => f.id === folderId);
+      if (!folder) return false;
+
+      if (folder.collections.some(c => c.type === 'Playlist')) return true;
+
+      if (folder.subFolders && folder.subFolders.length > 0) {
+        return folder.subFolders.some(sf => folderHasPlaylists(sf.id));
+      }
+
+      return false;
+    };
+
+    const getPlaylistIdsInSubfolders = (folderId: number): Set<number> => {
+      const playlistIds = new Set<number>();
+      const folder = allFolders.find(f => f.id === folderId);
+
+      if (!folder || !folder.subFolders) return playlistIds;
+
+      for (const subfolder of folder.subFolders) {
+        const subfolderData = allFolders.find(f => f.id === subfolder.id);
+        if (subfolderData) {
+          subfolderData.collections
+            .filter(c => c.type === 'Playlist')
+            .forEach(p => playlistIds.add(p.id));
+
+          const nestedIds = getPlaylistIdsInSubfolders(subfolder.id);
+          nestedIds.forEach(id => playlistIds.add(id));
+        }
+      }
+
+      return playlistIds;
+    };
+
+    let displayFolders: FolderDTO[] = [];
+    let displayPlaylists: CollectionSummaryDTO[] = [];
+    let currentFolder: FolderDTO | null = null;
+
+    if (currentFolderId !== null) {
+      currentFolder = allFolders.find(f => f.id === currentFolderId) || null;
+
+      if (currentFolder) {
+        const subfolderPlaylistIds = getPlaylistIdsInSubfolders(currentFolderId);
+
+        displayPlaylists = currentFolder.collections.filter(
+          c => c.type === 'Playlist' && !subfolderPlaylistIds.has(c.id)
+        );
+
+        if (currentFolder.subFolders && currentFolder.subFolders.length > 0) {
+          const subfolderIds = currentFolder.subFolders
+            .filter(sf => folderHasPlaylists(sf.id))
+            .map(sf => sf.id);
+          displayFolders = allFolders.filter(f => subfolderIds.includes(f.id));
+        }
+      }
+    } else {
+      const rootFolder = allFolders.find(f => f.parentFolderId === null || f.parentFolderId === undefined);
+      if (rootFolder) {
+        const subfolderPlaylistIds = getPlaylistIdsInSubfolders(rootFolder.id);
+
+        displayPlaylists = rootFolder.collections.filter(
+          c => c.type === 'Playlist' && !subfolderPlaylistIds.has(c.id)
+        );
+
+        const firstLevelIds = rootFolder.subFolders
+          ?.filter(sf => folderHasPlaylists(sf.id))
+          .map(sf => sf.id) || [];
+        displayFolders = allFolders.filter(f => firstLevelIds.includes(f.id));
+      }
+    }
+
+    return (
+      <Modal isOpen={true} onClose={handleClosePlaylistSelector} title="Add to Playlist">
+        <div className={styles.folderSelector}>
+          {navigationPath.length > 0 && (
+            <div className={styles.breadcrumb}>
+              <button
+                onClick={handleNavigateToRoot}
+                className={styles.breadcrumbItem}
+              >
+                Library
+              </button>
+              {navigationPath.map((path, index) => (
+                <React.Fragment key={path.id}>
+                  <span className={styles.breadcrumbSeparator}>/</span>
+                  <button
+                    onClick={() => {
+                      const newPath = navigationPath.slice(0, index + 1);
+                      setNavigationPath(newPath);
+                      setCurrentFolderId(path.id);
+                    }}
+                    className={styles.breadcrumbItem}
+                  >
+                    {path.name}
+                  </button>
+                </React.Fragment>
+              ))}
+            </div>
+          )}
+
+          {(displayFolders.length > 0 || displayPlaylists.length > 0) ? (
+            <div className={styles.folderList}>
+              {/* Render folders first */}
+              {displayFolders.map((folder) => (
+                <button
+                  key={`folder-${folder.id}`}
+                  className={styles.folderItem}
+                  onClick={() => handleNavigateToFolder(folder.id, folder.name)}
+                  disabled={addingToPlaylist}
+                >
+                  <FolderCoverIcon className={styles.folderItemIcon} />
+                  <span className={styles.folderItemLabel}>{folder.name}</span>
+                  <span className={styles.folderItemArrow}>›</span>
+                </button>
+              ))}
+
+              {/* Render playlists below folders */}
+              {displayPlaylists.map((playlist) => (
+                <button
+                  key={`playlist-${playlist.id}`}
+                  className={styles.folderItem}
+                  onClick={() => handleAddTrackToPlaylist(playlist.id)}
+                  disabled={addingToPlaylist}
+                >
+                  <PlusIcon className={styles.folderItemIcon} />
+                  <span className={styles.folderItemLabel}>{playlist.name}</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className={styles.emptyState}>
+              <p>No playlists available. Create a playlist first in your Library.</p>
+            </div>
+          )}
         </div>
       </Modal>
     );
