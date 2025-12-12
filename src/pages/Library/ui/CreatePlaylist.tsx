@@ -76,15 +76,15 @@ export const CreatePlaylist: React.FC<CreatePlaylistProps> = ({className = ''}) 
     };
 
     // Render 9 empty content squares
-    const renderContentGrid = () => {
-        return (
-            <div className={styles.contentGrid}>
-                {[...Array(9)].map((_, index) => (
-                    <div key={index} className={styles.contentSquare} />
-                ))}
-            </div>
-        );
-    };
+    // const renderContentGrid = () => {
+    //     return (
+    //         <div className={styles.contentGrid}>
+    //             {[...Array(9)].map((_, index) => (
+    //                 <div key={index} className={styles.contentSquare} />
+    //             ))}
+    //         </div>
+    //     );
+    // };
 
     return (
         <div className={`${styles.container} ${className}`}>
@@ -155,13 +155,13 @@ export const CreatePlaylist: React.FC<CreatePlaylistProps> = ({className = ''}) 
                     {coverFile ? 'Change photo' : 'Add photo'}
                 </Button>
 
-                <div className={styles.firstContentSection}>
-                    <h3 className={styles.sectionTitle}>Add your first content</h3>
-                    <p style={{ fontSize: '14px', color: 'var(--text-color-secondary)', marginBottom: '16px' }}>
-                        You can add tracks to your playlist after creating it.
-                    </p>
-                    {renderContentGrid()}
-                </div>
+                {/*<div className={styles.firstContentSection}>*/}
+                {/*    <h3 className={styles.sectionTitle}>Add your first content</h3>*/}
+                {/*    <p style={{ fontSize: '14px', color: 'var(--text-color-secondary)', marginBottom: '16px' }}>*/}
+                {/*        You can add tracks to your playlist after creating it.*/}
+                {/*    </p>*/}
+                {/*    {renderContentGrid()}*/}
+                {/*</div>*/}
 
                 {error && (
                     <div style={{ color: 'red', marginBottom: '16px', padding: '8px' }}>
