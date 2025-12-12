@@ -1,8 +1,30 @@
 .container {
     display: flex;
     flex-direction: column;
-    background-color: #000;
+    background-color: var(--bg-page);
     padding: 16px 16px 32px 16px;
+    max-width: 625px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.backButton {
+    align-self: flex-start;
+    width: auto;
+}
+
+.title {
+    margin: 0;
+    font-family: 'Philosopher', sans-serif;
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--input-text);
 }
 
 .content {
@@ -32,7 +54,7 @@
     font-size: 15px;
     font-weight: 400;
     line-height: 22px;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     margin: 0;
 }
 
@@ -50,7 +72,163 @@
     font-size: 15px;
     font-weight: 400;
     line-height: 22px;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.avatarUploadContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.avatarPreview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--overlay-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatarPreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fileInputLabel {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.fileInput {
+    display: none;
+}
+
+.fileInputButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    background-color: var(--button-bg-light);
+    color: var(--button-text-light);
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fileInputButton:hover {
+    background-color: var(--button-bg-light-hover);
+  }
+}
+
+.fileName {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+    text-align: center;
+}
+
+.accountForm {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.formActions {
+    margin-top: 8px;
+}
+
+.separateActions {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 24px;
+}
+
+.textareaContainer {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    border-radius: 16px;
+    box-sizing: border-box;
+}
+
+.textareaLabel {
+    display: flex;
+    padding: 0 8px;
+    align-items: center;
+    gap: 12px;
+    align-self: stretch;
+    color: var(--input-label-color);
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.textarea {
+    width: 100%;
+    min-height: 100px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-bg);
+    border-radius: 16px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--input-text);
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+    font-family: '', sans-serif;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.textarea::placeholder {
+    color: var(--input-placeholder);
+    font-weight: 400;
+    opacity: 1;
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: var(--input-border-focus);
+    background-color: var(--input-bg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .textarea:hover:not(:focus):not(:disabled) {
+    border-color: var(--input-border-hover);
+  }
+}
+
+.textarea:disabled {
+    background-color: var(--input-bg-disabled);
+    color: var(--input-text-disabled);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.textarea:disabled::placeholder {
+    color: var(--input-placeholder-disabled);
+}
+
+.textareaHelperText {
+    display: flex;
+    padding: 0 8px;
+    align-items: flex-start;
+    gap: 4px;
+    align-self: stretch;
+    color: var(--input-helper-text);
+    font-size: 12px;
+    font-weight: 400;
     margin: 0;
 }
 

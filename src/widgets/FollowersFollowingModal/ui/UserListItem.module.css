@@ -11,12 +11,14 @@
     border-radius: 8px;
 }
 
-.userItem:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+@media (hover: hover) and (pointer: fine) {
+  .userItem:hover {
+    background-color: var(--overlay-light);
+  }
 }
 
 .userItem:active {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--overlay-medium);
 }
 
 .avatarContainer {
@@ -25,7 +27,7 @@
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--overlay-medium);
 }
 
 .avatar {
@@ -44,7 +46,7 @@
 }
 
 .userName {
-    color: #EAEAEA;
+    color: var(--button-text-dark);
     font-size: 16px;
     font-weight: 500;
     line-height: 1.2;
@@ -52,7 +54,7 @@
 }
 
 .userIdentifier {
-    color: #999;
+    color: var(--text-muted);
     font-size: 14px;
     line-height: 1.2;
     text-align: left;

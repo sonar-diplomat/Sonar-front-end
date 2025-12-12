@@ -42,16 +42,16 @@ export const CreateFolder: React.FC<CreateFolderProps> = ({className = ''}) => {
         }
     };
 
-    // Render 6 empty content squares (2 rows of 3)
-    const renderContentGrid = () => {
-        return (
-            <div className={styles.contentGrid}>
-                {[...Array(6)].map((_, index) => (
-                    <div key={index} className={styles.contentSquare} />
-                ))}
-            </div>
-        );
-    };
+    // // Render 6 empty content squares (2 rows of 3)
+    // const renderContentGrid = () => {
+    //     return (
+    //         <div className={styles.contentGrid}>
+    //             {[...Array(6)].map((_, index) => (
+    //                 <div key={index} className={styles.contentSquare} />
+    //             ))}
+    //         </div>
+    //     );
+    // };
 
     return (
         <div className={`${styles.container} ${className}`}>
@@ -86,10 +86,10 @@ export const CreateFolder: React.FC<CreateFolderProps> = ({className = ''}) => {
                     />
                 </div>
 
-                <div className={styles.firstContentSection}>
-                    <h3 className={styles.sectionTitle}>Add your first content</h3>
-                    {renderContentGrid()}
-                </div>
+                {/*<div className={styles.firstContentSection}>*/}
+                {/*    <h3 className={styles.sectionTitle}>Add your first content</h3>*/}
+                {/*    {renderContentGrid()}*/}
+                {/*</div>*/}
 
                 {error && (
                     <div style={{ color: 'red', marginBottom: '16px', padding: '8px' }}>

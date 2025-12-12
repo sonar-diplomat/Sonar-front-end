@@ -13,7 +13,7 @@
   padding: 8px;
   box-sizing: border-box;
   border-radius: 32px;
-  background: #1F1F1F;
+  background: var(--bg-card);
 
 }
 
@@ -25,7 +25,7 @@
   justify-content: center;
   border: none;
   background: transparent;
-  color: #ffffff;
+  color: var(--text-primary);
   cursor: pointer;
   border-radius: 24px;
   transition: all 0.3s cubic-bezier(0.3, 0.8, 0.3, 2.3);
@@ -34,23 +34,27 @@
   overflow: hidden;
 }
 
-.tabItem:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+@media (hover: hover) and (pointer: fine) {
+  .tabItem:hover {
+    background-color: var(--overlay-medium);
+  }
 }
 
 .tabItem:focus-visible {
-  outline: 2px solid #ffffff;
+  outline: 2px solid var(--text-primary);
   outline-offset: 2px;
 }
 
 .tabItemActive {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: var(--button-bg-light);
+  color: var(--button-text-light);
   padding: 12px 20px;
 }
 
-.tabItemActive:hover {
-  background-color: #e8e8e8;
+@media (hover: hover) and (pointer: fine) {
+  .tabItemActive:hover {
+    background-color: var(--button-bg-light-pressed);
+  }
 }
 
 .tabIcon {
@@ -58,12 +62,12 @@
   height: var(--icon-size);
   flex-shrink: 0;
   aspect-ratio: 1/1;
-  fill: #ffffff;
+  fill: var(--text-primary);
 }
 
 .tabItemActive .tabIcon {
   transform: scale(1.05);
-  fill: #000000;
+  fill: var(--button-text-light);
 }
 
 .tabLabel {

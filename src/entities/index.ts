@@ -10,6 +10,7 @@ export * from './Gift';
 export * from './Inventory';
 export * from './Library';
 export * from './Music';
+export * from './Recommendations';
 export * from './Report';
 export * from './Subscription';
 export * from './User';

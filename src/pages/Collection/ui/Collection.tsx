@@ -85,6 +85,15 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
         };
     }, [type, playlistData, albumData]);
 
+    // Проверяем, является ли плейлист favorites
+    const isFavoritesPlaylist = useMemo(() => {
+        if (type === 'playlist' && collectionData.title) {
+            const playlistName = collectionData.title.toLowerCase().trim();
+            return playlistName === 'favorites' || playlistName === 'избранное';
+        }
+        return false;
+    }, [type, collectionData.title]);
+
     const tracks: Track[] = useMemo(() => {
         let trackList: Track[] = [];
         if (type === 'playlist' && playlistTracksData) {
@@ -228,7 +237,7 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
             <CollectionHeader
                 title={collectionData.title}
                 onBackClick={handleBackClick}
-                onMenuClick={handleMenuClick}
+                onMenuClick={isFavoritesPlaylist ? undefined : handleMenuClick}
             />
             <CollectionCover
                 imageSrc={collectionData.coverImage}

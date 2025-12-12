@@ -90,8 +90,10 @@
   height: 20px;
 }
 
-.closeButton:hover {
-  opacity: 1;
+@media (hover: hover) and (pointer: fine) {
+  .closeButton:hover {
+    opacity: 1;
+  }
 }
 
 .closeButton:focus {

@@ -18,8 +18,10 @@
   display: block;
 }
 
-.stickerImage:hover {
-  transform: scale(1.02);
+@media (hover: hover) and (pointer: fine) {
+  .stickerImage:hover {
+    transform: scale(1.02);
+  }
 }
 
 

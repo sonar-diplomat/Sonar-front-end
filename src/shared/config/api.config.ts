@@ -6,6 +6,9 @@ export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://so
 
 export const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || 'https://sonar-dev.pp.ua/';
 
+// SignalR Hub URL - derived from API_BASE_URL
+export const SIGNALR_HUB_URL = API_BASE_URL.replace(/\/api\/?$/, '') + '/hubs/chat';
+
 export const API_ENDPOINTS = {
     auth: {
         register: 'Auth/register',
@@ -67,6 +70,7 @@ export const API_ENDPOINTS = {
         open: 'Report/open',
         reasonTypes: 'Report/reason-types',
         reasonTypeById: (id: number) => `Report/reason-types/${id}`,
+        reasonTypesByEntityType: (entityTypeId: number) => `Report/reason-types/by-entity-type/${entityTypeId}`,
         entityTypes: 'Report/entity-types',
         entityTypeById: (id: number) => `Report/entity-types/${id}`,
     },
@@ -233,5 +237,10 @@ export const API_ENDPOINTS = {
         users: 'Search/users',
         suggestions: 'Search/suggestions',
         popular: 'Search/popular',
+    },
+    recommendations: {
+        popularCollections: 'Recommendations/popular-collections',
+        recentCollections: 'Recommendations/recent-collections',
+        recentTracks: 'Recommendations/recent-tracks',
     },
 } as const;

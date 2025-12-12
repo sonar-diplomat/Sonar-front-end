@@ -1,15 +1,25 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './About.module.css';
-import { SettingsSection, SettingsItem } from '@shared/ui';
-import { ProfileHeader } from '@widgets/ProfileHeader';
+import { SettingsSection, SettingsItem, Button, LeftArrow } from '@shared/ui';
 
 export const About: React.FC = () => {
   const navigate = useNavigate();
 
   return (
     <div className={styles.container}>
-      <ProfileHeader title="About" showBackButton />
+      <div className={styles.header}>
+        <Button
+          icon={<LeftArrow />}
+          size="medium"
+          variant="filled"
+          theme="dark"
+          onClick={() => navigate(-1)}
+          className={styles.backButton}
+          iconOnly
+        />
+        <h2 className={styles.title}>About</h2>
+      </div>
       
       <div className={styles.content}>
         <SettingsSection title="Legal">

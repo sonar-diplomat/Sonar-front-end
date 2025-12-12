@@ -28,25 +28,29 @@ export const Library: React.FC<LibraryProps> = () => {
     const { folders: foldersData, isLoading: foldersLoading, refetchFolders, isDirty } = useFolders();
 
     // Загрузка данных для конкретной папки (когда currentFolderId !== null)
-    const { folder: folderData, isLoading: folderLoading, error: folderError } = useFolder(currentFolderId);
+    const { folder: folderData, isLoading: folderLoading, error: folderError, refetch: refetchFolder } = useFolder(currentFolderId);
 
     // API мутации для drag-and-drop
     const [moveCollectionToFolder] = useMoveCollectionToFolderMutation();
     const [moveFolder] = useMoveFolderMutation();
     const { showError } = useNotifications();
 
-    // Автоматически обновляем данные при возврате на страницу, если библиотека помечена как "грязная"
+    // Автоматически обновляем данные, если библиотека помечена как "грязная"
     useEffect(() => {
-        if (isDirty && !foldersLoading && currentFolderId === null) {
+        if (isDirty && !foldersLoading) {
             const timeoutId = setTimeout(() => {
                 void refetchFolders();
-            }, 500);
+                // Если открыта конкретная папка, обновляем и её данные
+                if (currentFolderId !== null) {
+                    void refetchFolder();
+                }
+            }, 100);
             
             return () => {
                 clearTimeout(timeoutId);
             };
         }
-    }, [isDirty, foldersLoading, currentFolderId, refetchFolders]);
+    }, [isDirty, foldersLoading, currentFolderId, refetchFolders, refetchFolder]);
 
     const [allFolders, setAllFolders] = useState<Folder[]>([]);
     const [allPlaylists, setAllPlaylists] = useState<Playlist[]>([]);
@@ -406,15 +410,19 @@ export const Library: React.FC<LibraryProps> = () => {
                 }).unwrap();
             }
             
-            // Данные обновляются автоматически через invalidatesTags в RTK Query
-            // и через isDirty флаг, который устанавливается в onQueryStarted
+            // Немедленно обновляем данные библиотеки
+            await refetchFolders();
+            // Если открыта конкретная папка, обновляем и её данные
+            if (currentFolderId !== null && refetchFolder) {
+                await refetchFolder();
+            }
         } catch (error: any) {
             console.error('Error during drag-and-drop:', error);
             const errorMessage = error?.data?.message || error?.message || 'Failed to move item';
             const errors = error?.data?.errors || [errorMessage];
             showError(errorMessage, errors);
         }
-    }, [moveCollectionToFolder, moveFolder, foldersData, isChildFolder, showError, currentFolderId, folderData]);
+    }, [moveCollectionToFolder, moveFolder, foldersData, isChildFolder, showError, currentFolderId, folderData, refetchFolders, refetchFolder]);
 
     const sections = useMemo<ContentSection[]>(() => [
         {
@@ -603,6 +611,13 @@ export const Library: React.FC<LibraryProps> = () => {
                         newParentFolderId: finalTargetFolderId,
                     }).unwrap();
                 }
+                
+                // Немедленно обновляем данные библиотеки
+                await refetchFolders();
+                // Обновляем данные текущей папки
+                if (currentFolderId !== null && refetchFolder) {
+                    await refetchFolder();
+                }
             }
         } catch (error: any) {
             console.error('Error during drag-and-drop in top zone:', error);
@@ -610,7 +625,7 @@ export const Library: React.FC<LibraryProps> = () => {
             const errors = error?.data?.errors || [errorMessage];
             showError(errorMessage, errors);
         }
-    }, [currentFolderId, folderData, foldersData, moveCollectionToFolder, moveFolder, isChildFolder, showError]);
+    }, [currentFolderId, folderData, foldersData, moveCollectionToFolder, moveFolder, isChildFolder, showError, refetchFolders, refetchFolder]);
 
     return (
         <div className={styles.container}>

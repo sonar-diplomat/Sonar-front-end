@@ -10,6 +10,7 @@
   display: flex;
   width: 100%;
   align-items: end;
+  justify-content: center;
   z-index: 1000;
   animation: fadeIn 0.2s ease-in-out;
 }
@@ -38,6 +39,14 @@
   animation: slideUp 0.3s ease-out;
   box-shadow: 0 1px 1px 0 rgba(255, 255, 255, 0.40) inset;
   overflow-y: auto;
+}
+
+@media (min-width: 626px) {
+  .modal {
+    max-width: 625px;
+    width: 100%;
+    border-radius: 32px;
+  }
 }
 
 @keyframes slideUp {
@@ -91,8 +100,10 @@
   z-index: 1;
 }
 
-.closeButton:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+@media (hover: hover) and (pointer: fine) {
+  .closeButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
 }
 
 .closeButton:active {
@@ -129,6 +140,8 @@
   border-radius: 4px;
 }
 
-.content::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+@media (hover: hover) and (pointer: fine) {
+  .content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
 }

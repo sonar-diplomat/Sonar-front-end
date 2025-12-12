@@ -12,8 +12,10 @@
     transition: background-color 0.2s ease;
 }
 
-.clickable:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+@media (hover: hover) and (pointer: fine) {
+  .clickable:hover {
+    background-color: var(--overlay-light);
+  }
 }
 
 .content {
@@ -28,7 +30,7 @@
     width: 44px;
     height: 44px;
     border-radius: 16px;
-    background-color: #898989;
+    background-color: var(--text-muted);
     flex-shrink: 0;
     object-fit: cover;
     object-position: center;
@@ -49,7 +51,7 @@
     font-weight: 400;
     font-size: 14px;
     line-height: normal;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -61,7 +63,7 @@
     font-weight: 400;
     font-size: 12px;
     line-height: normal;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-tertiary);
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -73,7 +75,7 @@
     align-items: center;
     justify-content: center;
     padding: 9px;
-    background: #1F1F1F;
+    background: var(--bg-card);
     border: none;
     border-radius: 16px;
     cursor: pointer;
@@ -82,16 +84,18 @@
     height: 36px;
 }
 
-.menuButton:hover {
+@media (hover: hover) and (pointer: fine) {
+  .menuButton:hover {
     background: rgba(255, 255, 255, 0.05);
+  }
 }
 
 .menuButton:active {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--overlay-medium);
 }
 
 .menuIcon {
     width: 18px;
     height: 18px;
-    color: #EAEAEA;
+    color: var(--button-text-dark);
 }

@@ -32,9 +32,11 @@
   color: var(--button-text-light);
 }
 
-.light.filled:hover:not(.disabled) {
-  background-color: var(--button-bg-light-hover);
-  color: var(--button-text-light-hover);
+@media (hover: hover) and (pointer: fine) {
+  .light.filled:hover:not(.disabled) {
+    background-color: var(--button-bg-light-hover);
+    color: var(--button-text-light-hover);
+  }
 }
 
 .light.filled:active:not(.disabled) {
@@ -46,8 +48,10 @@
   color: var(--button-text-light);
 }
 
-.light.text:hover:not(.disabled) {
-  color: var(--button-text-light-hover);
+@media (hover: hover) and (pointer: fine) {
+  .light.text:hover:not(.disabled) {
+    color: var(--button-text-light-hover);
+  }
 }
 
 .light.text:active:not(.disabled) {
@@ -59,9 +63,11 @@
   color: var(--button-text-dark);
 }
 
-.dark.filled:hover:not(.disabled) {
-  background-color: var(--button-bg-dark-hover);
-  color: var(--button-text-dark-hover);
+@media (hover: hover) and (pointer: fine) {
+  .dark.filled:hover:not(.disabled) {
+    background-color: var(--button-bg-dark-hover);
+    color: var(--button-text-dark-hover);
+  }
 }
 
 .dark.filled:active:not(.disabled) {
@@ -73,8 +79,10 @@
   color: var(--button-text-dark);
 }
 
-.dark.text:hover:not(.disabled) {
-  color: var(--button-text-dark-hover);
+@media (hover: hover) and (pointer: fine) {
+  .dark.text:hover:not(.disabled) {
+    color: var(--button-text-dark-hover);
+  }
 }
 
 .dark.text:active:not(.disabled) {
@@ -164,9 +172,11 @@
   color: var(--button-text-dark-selected);
 }
 
-.selected.dark.filled:hover:not(.disabled) {
-  background-color: var(--button-bg-dark-selected-hover);
-  color: var(--button-text-dark-selected);
+@media (hover: hover) and (pointer: fine) {
+  .selected.dark.filled:hover:not(.disabled) {
+    background-color: var(--button-bg-dark-selected-hover);
+    color: var(--button-text-dark-selected);
+  }
 }
 
 .selected.dark.filled:active:not(.disabled) {
@@ -178,9 +188,11 @@
   color: var(--button-text-light-selected);
 }
 
-.selected.light.filled:hover:not(.disabled) {
-  background-color: var(--button-bg-light-selected-hover);
-  color: var(--button-text-light-selected);
+@media (hover: hover) and (pointer: fine) {
+  .selected.light.filled:hover:not(.disabled) {
+    background-color: var(--button-bg-light-selected-hover);
+    color: var(--button-text-light-selected);
+  }
 }
 
 .selected.light.filled:active:not(.disabled) {

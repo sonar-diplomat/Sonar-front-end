@@ -4,7 +4,7 @@
   border-radius: 0.5rem;
   padding: 0.25rem;
   background: transparent;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .wheelPickerWrapper > *:first-child .highlightWrapper {
@@ -41,17 +41,19 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 400;
-  color: #a1a1aa;
+  color: var(--text-muted-light);
   transition: all 0.2s ease;
   position: relative;
 }
 
-.wheelPickerItem:hover {
-  color: #71717a;
+@media (hover: hover) and (pointer: fine) {
+  .wheelPickerItem:hover {
+    color: var(--text-muted-lighter);
+  }
 }
 
 .wheelPickerItem.selected {
-  color: #FFFFFF;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
@@ -63,7 +65,7 @@
   top: 88px;
   pointer-events: none;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--overlay-medium);
   border-radius: 16px;
   height: 44px;
 }

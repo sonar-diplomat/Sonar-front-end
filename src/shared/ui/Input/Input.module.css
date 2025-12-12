@@ -36,7 +36,7 @@
     padding: 10px 16px;
     font-size: 14px;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--input-text);
     transition: all 0.2s ease-in-out;
     box-sizing: border-box;
     font-family: '', sans-serif;
@@ -83,8 +83,10 @@
     background-color: var(--input-bg);
 }
 
-.input:hover:not(:focus):not(:disabled) {
+@media (hover: hover) and (pointer: fine) {
+  .input:hover:not(:focus):not(:disabled) {
     border-color: var(--input-border-hover);
+  }
 }
 
 
@@ -164,8 +166,10 @@
     transition: opacity 0.2s ease-in-out;
 }
 
-.icon_prefix_button:hover {
+@media (hover: hover) and (pointer: fine) {
+  .icon_prefix_button:hover {
     opacity: 0.7;
+  }
 }
 
 .icon_prefix_button svg {
@@ -212,8 +216,10 @@
     transition: opacity 0.2s ease-in-out;
 }
 
-.icon_suffix_button:hover {
+@media (hover: hover) and (pointer: fine) {
+  .icon_suffix_button:hover {
     opacity: 0.7;
+  }
 }
 
 .icon_suffix_button svg {
@@ -279,8 +285,10 @@
     transition: background-color 0.2s ease-in-out;
 }
 
-.dropdown_option:hover {
+@media (hover: hover) and (pointer: fine) {
+  .dropdown_option:hover {
     background-color: var(--input-border-hover);
+  }
 }
 
 .dropdown_option:active {
@@ -300,8 +308,10 @@
     border-radius: 3px;
 }
 
-.dropdown_menu::-webkit-scrollbar-thumb:hover {
+@media (hover: hover) and (pointer: fine) {
+  .dropdown_menu::-webkit-scrollbar-thumb:hover {
     background-color: var(--input-text);
+  }
 }
 
 .helper_text {
@@ -339,9 +349,11 @@
     transition: color 0.2s ease-in-out;
 }
 
-.helper_action:hover {
+@media (hover: hover) and (pointer: fine) {
+  .helper_action:hover {
     color: var(--input-helper-link-hover);
     text-decoration: underline;
+  }
 }
 
 .helper_action:active {

@@ -122,11 +122,11 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                 <div className={styles.mainCard}>
                     <ItemCard
                         size={size}
-                        backgroundColor="#1F1F1F"
+                        backgroundColor="var(--bg-card)"
                     />
                 </div>
                 <div className={styles.label}>{label}</div>
-                <FolderCoverIcon className={styles.folderIcon}/>
+                <FolderCoverIcon className={styles.folderIcon} color="var(--folder-icon-color)"/>
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType, LogLevel } from '@microsoft/signalr';
 import { authManager } from '../auth/auth-manager';
-import { API_BASE_URL } from '@shared/config';
+import { SIGNALR_HUB_URL } from '@shared/config';
 
 class SignalRManager {
   private connection: HubConnection | null = null;
@@ -8,12 +8,7 @@ class SignalRManager {
   private isConnecting: boolean = false;
 
   private getHubUrl(): string {
-    if (import.meta.env.DEV) {
-      return '/hubs/chat';
-    }
-    
-    const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
-    return `${baseUrl}/hubs/chat`;
+    return SIGNALR_HUB_URL;
   }
 
   private createConnection(): HubConnection {

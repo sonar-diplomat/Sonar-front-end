@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useDebounce } from '@shared/lib/hooks/useDebounce';
 import { getImageUrlById } from '@shared/lib/image-utils';
 import { useUserState } from '@shared/store/features/userState/useUserState';
+import { usePlayer } from '@shared/store/features/player';
 import { ItemCard, LoadingPlaceholder } from '@shared/ui';
 import type { Category } from '@widgets/ChipsBar';
 import { ContentSections, type ContentSection } from '@widgets/ContentSections';
 import { SearchFilterHeader } from '@widgets/SearchFilterHeader';
 import { useLazySearchQuery } from '@shared/api';
+import { useGetTrackQuery } from '@entities/Music/api/rtkApi';
 import type {
   TrackSearchItemDTO,
   AlbumSearchItemDTO,
@@ -20,12 +22,43 @@ import type {
 
 import styles from './Search.module.css';
 
+// Helper component to load and play track
+const TrackCard: React.FC<{
+  trackId: number;
+  trackItem: TrackSearchItemDTO;
+  onTrackClick: (track: TrackSearchItemDTO) => void;
+}> = ({ trackId, trackItem, onTrackClick }) => {
+  const { data: track } = useGetTrackQuery(trackId);
+  const { playTrack } = usePlayer();
+
+  const handleClick = () => {
+    if (track) {
+      playTrack(track);
+    }
+    onTrackClick(trackItem);
+  };
+
+  return (
+    <ItemCard
+      size="large"
+      image={getImageUrlById(trackItem.coverId)}
+      textContent={{
+        title: trackItem.title,
+        subtitle1: trackItem.artists.map((a) => a.pseudonym).join(', '),
+        subtitle2: trackItem.albumName,
+      }}
+      onClick={handleClick}
+    />
+  );
+};
+
 export const Search: React.FC = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const { updateListeningTarget } = useUserState();
+  const { playTrack } = usePlayer();
   const scrollRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const PAGE_SIZE = 20;
@@ -202,6 +235,9 @@ export const Search: React.FC = () => {
   const handleTrackClick = useCallback(
     async (track: TrackSearchItemDTO) => {
       try {
+        // Получаем полный трек и запускаем воспроизведение
+        // Используем useGetTrackQuery внутри компонента для получения данных
+        // Здесь просто обновляем listening target, но трек должен запуститься через playTrack
         await updateListeningTarget(track.id);
       } catch (error) {
         console.error('Failed to start track:', error);
@@ -248,16 +284,11 @@ export const Search: React.FC = () => {
           renderItem: (track: unknown) => {
             const trackItem = track as TrackSearchItemDTO;
             return (
-              <ItemCard
-                size="large"
+              <TrackCard
                 key={trackItem.id}
-                image={getImageUrlById(trackItem.coverId)}
-                textContent={{
-                  title: trackItem.title,
-                  subtitle1: trackItem.artists.map((a) => a.pseudonym).join(', '),
-                  subtitle2: trackItem.albumName,
-                }}
-                onClick={() => handleTrackClick(trackItem)}
+                trackId={trackItem.id}
+                trackItem={trackItem}
+                onTrackClick={handleTrackClick}
               />
             );
           },

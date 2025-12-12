@@ -3,7 +3,7 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 1.5;
-    color: #FFFFFF;
+    color: var(--text-primary);
     white-space: pre-wrap;
 }
 
@@ -16,7 +16,7 @@
 }
 
 .markdown code {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--overlay-medium);
     padding: 2px 6px;
     border-radius: 4px;
     font-family: 'Courier New', monospace;
@@ -24,14 +24,16 @@
 }
 
 .markdown a {
-    color: #FFFFFF;
+    color: var(--text-primary);
     text-decoration: underline;
-    text-decoration-color: rgba(255, 255, 255, 0.5);
+    text-decoration-color: var(--text-tertiary);
     transition: text-decoration-color 0.2s;
 }
 
-.markdown a:hover {
-    text-decoration-color: rgba(255, 255, 255, 0.8);
+@media (hover: hover) and (pointer: fine) {
+  .markdown a:hover {
+    text-decoration-color: var(--text-secondary);
+  }
 }
 
 .markdown h1,

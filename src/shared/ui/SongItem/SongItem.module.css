@@ -18,7 +18,7 @@
     height: 64px;
     border-radius: 16px;
     object-fit: cover;
-    background-color: #898989;
+    background-color: var(--text-muted);
     flex-shrink: 0;
 }
 
@@ -35,7 +35,7 @@
     font-weight: 500;
     font-size: 20px;
     line-height: normal;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
     flex-shrink: 0;
 }
@@ -56,7 +56,7 @@
     font-weight: 400;
     font-size: 14px;
     line-height: normal;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -69,7 +69,7 @@
     font-weight: 400;
     font-size: 14px;
     line-height: normal;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-tertiary);
     text-align: center;
     margin: 0;
     flex-shrink: 0;
@@ -89,12 +89,14 @@
     height: 44px;
 }
 
-.menuButton:hover {
-    background: rgba(255, 255, 255, 0.05);
+@media (hover: hover) and (pointer: fine) {
+  .menuButton:hover {
+    background: var(--overlay-light);
+  }
 }
 
 .menuIcon {
     width: 24px;
     height: 24px;
-    color: #EAEAEA;
+    color: var(--button-text-dark);
 }

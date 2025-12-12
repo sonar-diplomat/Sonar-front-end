@@ -38,7 +38,7 @@
   font-size: 20px;
   font-weight: 700;
   line-height: normal;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -50,7 +50,7 @@
   font-size: 12px;
   font-weight: 400;
   line-height: normal;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-tertiary);
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -62,7 +62,7 @@
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: thin;
-  scrollbar-color: #333333 transparent;
+  scrollbar-color: var(--bg-scrollbar) transparent;
 }
 
 .cardsRow {

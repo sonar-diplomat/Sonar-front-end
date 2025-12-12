@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './BlockedAccounts.module.css';
-import { Button, Modal } from '@shared/ui';
-import { ProfileHeader } from '@widgets/ProfileHeader';
+import { Button, Modal, LeftArrow } from '@shared/ui';
+
 
 interface BlockedUser {
   id: number;
@@ -11,6 +12,7 @@ interface BlockedUser {
 }
 
 export const BlockedAccounts: React.FC = () => {
+  const navigate = useNavigate();
   const [blockedUsers] = useState<BlockedUser[]>([]);
 
   const [showUnblockModal, setShowUnblockModal] = useState(false);
@@ -26,7 +28,18 @@ export const BlockedAccounts: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <ProfileHeader title="Blocked Accounts" showBackButton />
+      <div className={styles.header}>
+        <Button
+          icon={<LeftArrow />}
+          size="medium"
+          variant="filled"
+          theme="dark"
+          onClick={() => navigate(-1)}
+          className={styles.backButton}
+          iconOnly
+        />
+        <h2 className={styles.title}>Blocked Accounts</h2>
+      </div>
       
       <div className={styles.content}>
         <p className={styles.description}>

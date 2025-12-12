@@ -87,8 +87,10 @@
     transition: color 0.2s ease;
 }
 
-.resendButton:hover:not(:disabled) {
+@media (hover: hover) and (pointer: fine) {
+  .resendButton:hover:not(:disabled) {
     color: #ffffff;
+  }
 }
 
 .resendButton:disabled {

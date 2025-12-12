@@ -14,6 +14,7 @@ interface ProfileHeaderProps {
     onBackClick?: () => void;
     onTabChange?: (tab: string) => void;
     onMessageClick?: () => void;
+    onSettingsClick?: () => void;
 }
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
@@ -51,19 +52,19 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         setActiveTab(tabs[0].value);
     }, []);
     return (
-        <div className={styles.header}>
-            <div className={styles.buttonsContainer}>
-                {viewerType === 'guest' ? (
-                    <Button
-                        variant={"filled"}
-                        theme={"dark"}
-                        size={"medium"}
-                        shape={"cr-16"}
-                        icon={<LeftArrow/>}
-                        onClick={onBackClick}
-                        iconOnly
-                    />
-                ) : (
+        <div className={`${styles.header} ${viewerType === 'guest' ? styles.headerLeft : styles.headerRight}`}>
+            {viewerType === 'guest' ? (
+                <Button
+                    variant={"filled"}
+                    theme={"dark"}
+                    size={"medium"}
+                    shape={"cr-16"}
+                    icon={<LeftArrow/>}
+                    onClick={onBackClick}
+                    iconOnly
+                />
+            ) : (
+                <div className={styles.buttonsContainer}>
                     <Button
                         variant={"filled"}
                         theme={"dark"}
@@ -81,27 +82,19 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                         </div>
                     )}
 
-                {viewerType === 'owner' && (
-                    <>
+                    {viewerType === 'owner' && (
                         <Button
                             variant={"filled"}
                             theme={"dark"}
                             size={"medium"}
                             shape={"cr-16"}
-                            icon={<EditProfileIcon />}
+                            icon={<SettingsIcon />}
+                            onClick={onSettingsClick}
                             iconOnly
                         />
-                        <Button
-                            variant={"filled"}
-                            theme={"dark"}
-                            size={"medium"}
-                            shape={"cr-16"}
-                            icon={<StatisticsIcon />}
-                            iconOnly
-                        />
-                    </>
-                )}
-            </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

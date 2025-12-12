@@ -15,7 +15,7 @@
     justify-content: center;
     gap: 8px;
     padding: 6px 10px;
-    background: #1F1F1F;
+    background: var(--bg-card);
     border: none;
     border-radius: 16px;
     cursor: pointer;
@@ -23,18 +23,20 @@
     transition: background 0.2s ease;
 }
 
-.actionButton:hover {
-    background: rgba(31, 31, 31, 0.8);
+@media (hover: hover) and (pointer: fine) {
+  .actionButton:hover {
+    background: var(--overlay-black-medium);
+  }
 }
 
 .actionButton:active {
-    background: rgba(31, 31, 31, 0.6);
+    background: var(--overlay-black-light);
 }
 
 .icon {
     width: 24px;
     height: 24px;
-    color: #EAEAEA;
+    color: var(--button-text-dark);
     flex-shrink: 0;
 }
 
@@ -44,6 +46,6 @@
     font-size: 14px;
     line-height: 20px;
     letter-spacing: -0.23px;
-    color: #EAEAEA;
+    color: var(--button-text-dark);
     white-space: nowrap;
 }

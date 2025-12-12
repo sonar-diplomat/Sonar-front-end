@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './PrivacySettings.module.css';
-import { SettingsSection, Select, Button } from '@shared/ui';
-import { ProfileHeader } from '@widgets/ProfileHeader';
+import { SettingsSection, Select, Button, LeftArrow } from '@shared/ui';
 import { useClientSettings } from '@shared/store/features/clientSettings/useClientSettings';
 import { useNotifications } from '@shared/store/notificationStore';
 
@@ -12,6 +12,7 @@ const privacyOptions = [
 ];
 
 export const PrivacySettings: React.FC = () => {
+  const navigate = useNavigate();
   const { settings, patchSettings, isLoading } = useClientSettings();
   const [whichCanViewProfile, setWhichCanViewProfile] = useState<number | undefined>(undefined);
   const [whichCanMessage, setWhichCanMessage] = useState<number | undefined>(undefined);
@@ -51,7 +52,18 @@ export const PrivacySettings: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <ProfileHeader title="Privacy" showBackButton />
+      <div className={styles.header}>
+        <Button
+          icon={<LeftArrow />}
+          size="medium"
+          variant="filled"
+          theme="dark"
+          onClick={() => navigate(-1)}
+          className={styles.backButton}
+          iconOnly
+        />
+        <h2 className={styles.title}>Privacy</h2>
+      </div>
       <div className={styles.content}>
         <SettingsSection title="Profile Privacy">
           <Select

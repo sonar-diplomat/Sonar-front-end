@@ -1,9 +1,12 @@
 .container {
     display: flex;
     flex-direction: column;
-    background-color: #000;
-    padding: 16px 16px 32px 16px;
+    background-color: var(--bg-page);
+    padding: 16px 16px 64px 16px;
     gap: 32px;
+    max-width: 625px;
+    margin: 0 auto;
+    width: 100%;
 }
 
 .backButton {

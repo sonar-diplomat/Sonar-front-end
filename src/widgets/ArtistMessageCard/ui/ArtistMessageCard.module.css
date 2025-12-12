@@ -135,8 +135,10 @@
     text-align: left;
 }
 
-.seeMore:hover {
+@media (hover: hover) and (pointer: fine) {
+  .seeMore:hover {
     text-decoration: underline;
+  }
 }
 
 .divider {
@@ -163,8 +165,10 @@
     transition: background-color 0.2s;
 }
 
-.link:hover {
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
     background: rgba(255, 255, 255, 0.05);
+  }
 }
 
 .linkIcon {

@@ -70,6 +70,17 @@ export const reportApi = rtkApi.injectEndpoints({
       providesTags: [{ type: 'ReportReasonType', id: 'LIST' }],
     }),
 
+    getReportReasonTypesByEntityType: builder.query<ReportReasonTypeDTO[], number>({
+      query: (entityTypeId) => ({
+        url: API_ENDPOINTS.report.reasonTypesByEntityType(entityTypeId),
+        method: 'GET',
+        withAuth: true,
+      }),
+      providesTags: (_result, _error, entityTypeId) => [
+        { type: 'ReportReasonType', id: `entity-type-${entityTypeId}` },
+      ],
+    }),
+
     getReportReasonTypeById: builder.query<ReportReasonTypeDTO, number>({
       query: (id) => ({
         url: API_ENDPOINTS.report.reasonTypeById(id),
@@ -144,6 +155,7 @@ export const {
   useGetOpenReportsQuery,
   useGetReportReasonTypesQuery,
   useGetReportReasonTypeByIdQuery,
+  useGetReportReasonTypesByEntityTypeQuery,
   useGetReportEntityTypesQuery,
   useGetReportEntityTypeByIdQuery,
   useCreateReportMutation,

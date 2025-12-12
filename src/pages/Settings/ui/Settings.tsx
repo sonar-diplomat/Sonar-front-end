@@ -14,7 +14,7 @@ export const Settings: React.FC = () => {
         size={'medium'}
         variant="filled"
         theme="dark"
-        onClick={() => navigate('/profile')}
+        onClick={() => navigate(-1)}
         className={styles.backButton}
       />
 

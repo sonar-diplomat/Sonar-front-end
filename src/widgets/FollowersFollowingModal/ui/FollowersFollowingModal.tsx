@@ -74,7 +74,7 @@ export const FollowersFollowingModal: React.FC<FollowersFollowingModalProps> = (
                 {!isLoading && !error && items.length > 0 && (
                     <div className={styles.list}>
                         {items.map((user) => (
-                            <UserListItem key={user.id} user={user} />
+                            <UserListItem key={user.id} user={user} onUserClick={onClose} />
                         ))}
                     </div>
                 )}
