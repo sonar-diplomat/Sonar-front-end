@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import styles from "./ProfileHeader.module.css";
 
-import { Button, LeftArrow, MessageIcon, EditProfileIcon, StatisticsIcon } from "@shared/ui";
+import {Button, LeftArrow, MessageIcon, EditProfileIcon, StatisticsIcon, TabSlider} from "@shared/ui";
 import type { ViewerType } from '@shared/types';
 
 export type ProfileType = 'user' | 'artist';
@@ -20,8 +20,36 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     viewerType,
     onBackClick,
     onMessageClick,
+    onTabChange,
+    profileType,
+    secondaryTab
 }) => {
-
+    const [activeTab, setActiveTab] = useState('profile');
+    const getPrimaryTab = () => {
+        if (profileType === 'artist') {
+            return { value: 'music', label: 'Music' };
+        }
+        return { value: 'profile', label: 'Profile' };
+    };
+    const getSecondaryTab = () => {
+        if (secondaryTab) {
+            return { value: secondaryTab.toLowerCase(), label: secondaryTab };
+        }
+        if (profileType === 'artist') {
+            return { value: 'messages', label: 'Messages' };
+        }
+        return { value: 'library', label: 'Library' };
+    };
+    const tabs = [getPrimaryTab(), getSecondaryTab()];
+    const handleTabChange = (value: string) => {
+        setActiveTab(value);
+        if (onTabChange) {
+            onTabChange(value);
+        }
+    };
+    useEffect(() => {
+        setActiveTab(tabs[0].value);
+    }, []);
     return (
         <div className={styles.header}>
             <div className={styles.buttonsContainer}>
@@ -46,6 +74,12 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                         iconOnly
                     />
                 )}
+                {profileType=="artist" &&
+                    (
+                        <div className={styles.tabSliderWrapper}>
+                            <TabSlider tabs={tabs} activeTab={activeTab} onChange={handleTabChange} />
+                        </div>
+                    )}
 
                 {viewerType === 'owner' && (
                     <>

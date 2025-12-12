@@ -1,16 +1,34 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CreatePostForm, type PostFormData } from '@widgets/CreatePostForm';
+import { useCreatePostMutation, useGetArtistByIdQuery, type PostDTO } from '@entities/Artist';
 import styles from './CreatePost.module.css';
 
 export const CreatePost: React.FC = () => {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
 
-    const handleFormSubmit = (data: PostFormData) => {
-        console.log('Post submitted:', data);
-        // TODO: Implement API call to create post
-        navigate(`/artist/${id}/posts`);
+    const [createPost, { isLoading }] = useCreatePostMutation();
+
+    // Fetch artist data to get artist name
+    const { data: artistData } = useGetArtistByIdQuery(Number(id), {
+        skip: !id,
+    });
+
+    const handleFormSubmit = async (data: PostFormData) => {
+        try {
+            const postDTO: PostDTO = {
+                title: data.topic,
+                textContent: data.content,
+                setPublicOn: data.scheduledDate,
+            };
+
+            await createPost(postDTO).unwrap();
+            navigate(`/artist/${id}/posts`);
+        } catch (error) {
+            console.error('Failed to create post:', error);
+            // You could add error handling UI here
+        }
     };
 
     const handleFormCancel = () => {
@@ -20,10 +38,11 @@ export const CreatePost: React.FC = () => {
     return (
         <div className={styles.container}>
             <CreatePostForm
-                artistName="Moody"
+                artistName={artistData?.artistName || 'Artist'}
                 artistAvatar="https://placehold.co/52x52"
                 onSubmit={handleFormSubmit}
                 onCancel={handleFormCancel}
+                isSubmitting={isLoading}
             />
         </div>
     );

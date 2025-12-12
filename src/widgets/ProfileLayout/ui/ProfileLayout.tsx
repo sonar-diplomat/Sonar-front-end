@@ -33,12 +33,10 @@ export const ProfileLayout: React.FC<ProfileLayoutProps> = ({
     const location = useLocation();
     const [activeView, setActiveView] = useState<'profile' | 'secondary'>('profile');
 
-    // Sync activeView with current route
     useEffect(() => {
         const secondaryTabValue = secondaryTab?.toLowerCase() ||
             (profileType === 'artist' ? 'posts' : 'library');
 
-        // Check if we're on a secondary route (e.g., /artist/123/posts)
         const isSecondaryRoute = location.pathname.includes(`/${secondaryTabValue}`);
         setActiveView(isSecondaryRoute ? 'secondary' : 'profile');
     }, [location.pathname, secondaryTab, profileType]);

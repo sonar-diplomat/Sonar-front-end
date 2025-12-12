@@ -52,7 +52,6 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({
         );
     }
 
-    // Guest viewing artist profile - includes playback controls
     if (profileType === 'artist') {
         return (
             <div className={styles.container}>
@@ -66,7 +65,6 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({
         );
     }
 
-    // Guest viewing regular user profile
     const handleFollowClick = () => {
         if (isFollowing) {
             onUnfollow?.();

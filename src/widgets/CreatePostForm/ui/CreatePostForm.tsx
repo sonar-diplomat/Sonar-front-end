@@ -9,6 +9,7 @@ export interface CreatePostFormProps {
     artistAvatar?: string;
     onSubmit?: (data: PostFormData) => void;
     onCancel?: () => void;
+    isSubmitting?: boolean;
 }
 
 export interface PostFormData {
@@ -22,6 +23,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({
     artistAvatar = 'https://placehold.co/52x52',
     onSubmit,
     onCancel,
+    isSubmitting = false,
 }) => {
     const [topic, setTopic] = useState('');
     const [content, setContent] = useState('');
@@ -128,8 +130,9 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({
                 className={styles.submitButton}
                 onClick={handleSubmit}
                 icon={<RightArrow />}
+                disabled={isSubmitting}
             >
-                Post
+                {isSubmitting ? 'Posting...' : 'Post'}
             </Button>
         </div>
     );
