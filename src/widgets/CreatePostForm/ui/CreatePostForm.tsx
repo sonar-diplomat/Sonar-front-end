@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { Button, CalendarIcon, LinkIcon, ImageIcon, MusicNoteIcon } from '@shared/ui';
-import { RightArrow } from '@shared/ui';
+import { Button, CalendarIcon, LinkIcon, ImageIcon, MusicNoteIcon, RightArrow } from '@shared/ui';
+import { ModalDatePicker } from '@widgets/ModalDatePicker';
 import styles from './CreatePostForm.module.css';
-import {ModalDatePicker} from "@widgets/ModalDatePicker";
 
 export interface CreatePostFormProps {
     artistName?: string;
     artistAvatar?: string;
     onSubmit?: (data: PostFormData) => void;
-    onCancel?: () => void;
     isSubmitting?: boolean;
 }
 
@@ -18,11 +16,22 @@ export interface PostFormData {
     scheduledDate?: string;
 }
 
+const COMMON_BUTTON_PROPS = {
+    variant: 'filled' as const,
+    theme: 'dark' as const,
+    shape: 'cr-16' as const,
+};
+
+const ATTACHMENT_BUTTONS = [
+    { icon: LinkIcon, key: 'link' },
+    { icon: ImageIcon, key: 'image' },
+    { icon: MusicNoteIcon, key: 'music' },
+] as const;
+
 export const CreatePostForm: React.FC<CreatePostFormProps> = ({
     artistName = 'Artist',
     artistAvatar = 'https://placehold.co/52x52',
     onSubmit,
-    onCancel,
     isSubmitting = false,
 }) => {
     const [topic, setTopic] = useState('');
@@ -31,15 +40,16 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
     const handleSubmit = () => {
-        if (onSubmit) {
-            onSubmit({ topic, content, scheduledDate });
-        }
+        onSubmit?.({ topic, content, scheduledDate });
     };
 
     const handleDateConfirm = (date: string) => {
         setScheduledDate(date);
         setIsDatePickerOpen(false);
     };
+
+    const handleOpenDatePicker = () => setIsDatePickerOpen(true);
+    const handleCloseDatePicker = () => setIsDatePickerOpen(false);
 
     return (
         <div className={styles.container}>
@@ -80,46 +90,29 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({
             <div className={styles.actions}>
                 <ModalDatePicker
                     isOpen={isDatePickerOpen}
-                    onClose={() => setIsDatePickerOpen(false)}
+                    onClose={handleCloseDatePicker}
                     onConfirm={handleDateConfirm}
                     initialValue={scheduledDate}
                 />
                 <Button
-                    variant="filled"
-                    theme="dark"
-                    shape="cr-16"
+                    {...COMMON_BUTTON_PROPS}
                     className={styles.scheduleButton}
                     icon={<CalendarIcon />}
-                    onClick={()=>{setIsDatePickerOpen(true)}}
+                    onClick={handleOpenDatePicker}
                 >
-                    {scheduledDate?"Posting " + scheduledDate:"Shedule"}
+                    {scheduledDate ? `Posting at ${scheduledDate}` : 'Schedule'}
                 </Button>
 
                 <div className={styles.iconButtons}>
-                    <Button
-                        variant="filled"
-                        theme="dark"
-                        shape="cr-16"
-                        icon={<LinkIcon />}
-                        iconOnly
-                        className={styles.iconButton}
-                    />
-                    <Button
-                        variant="filled"
-                        theme="dark"
-                        shape="cr-16"
-                        icon={<ImageIcon />}
-                        iconOnly
-                        className={styles.iconButton}
-                    />
-                    <Button
-                        variant="filled"
-                        theme="dark"
-                        shape="cr-16"
-                        icon={<MusicNoteIcon />}
-                        iconOnly
-                        className={styles.iconButton}
-                    />
+                    {ATTACHMENT_BUTTONS.map(({ icon: Icon, key }) => (
+                        <Button
+                            key={key}
+                            {...COMMON_BUTTON_PROPS}
+                            icon={<Icon />}
+                            iconOnly
+                            className={styles.iconButton}
+                        />
+                    ))}
                 </div>
             </div>
 
