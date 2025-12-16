@@ -16,13 +16,13 @@
 
 .avatarWrapper {
   flex-shrink: 0;
-}
-
-.avatar {
   width: 36px;
   height: 36px;
   border-radius: 999px;
-  object-fit: cover;
+  overflow: hidden;
+}
+
+.avatar {
   display: block;
 }
 

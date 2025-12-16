@@ -42,12 +42,14 @@ export const StickerPicker: React.FC<StickerPickerProps> = ({ onSelect, onClose 
                 aria-label={sticker.name}
               >
                 {imageUrl ? (
-                  <LoadingImage
-                    src={imageUrl}
-                    alt={sticker.name}
-                    className={styles.stickerImage}
-                    loading="lazy"
-                  />
+                  <div className={styles.imageWrapper}>
+                    <LoadingImage
+                      src={imageUrl}
+                      alt={sticker.name}
+                      objectFit="contain"
+                      loading="lazy"
+                    />
+                  </div>
                 ) : (
                   <div className={styles.stickerPlaceholder}>{sticker.name}</div>
                 )}

@@ -50,11 +50,12 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({
             <div className={styles.formCard}>
                 <div className={styles.topSection}>
                     <div className={styles.artistInfo}>
-                        <LoadingImage
-                            src={artistAvatar}
-                            alt={artistName}
-                            className={styles.avatar}
-                        />
+                        <div className={styles.avatarWrapper}>
+                            <LoadingImage
+                                src={artistAvatar}
+                                alt={artistName}
+                            />
+                        </div>
                         <div className={styles.inputGroup}>
                             <input
                                 type="text"

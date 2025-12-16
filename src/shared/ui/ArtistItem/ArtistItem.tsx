@@ -18,11 +18,12 @@ export const ArtistItem: React.FC<ArtistItemProps> = ({
     return (
         <div className={wrapperClasses}>
             <div className={styles.content}>
-                <LoadingImage
-                    src={imageSrc}
-                    alt={imageAlt}
-                    className={styles.image}
-                />
+                <div className={styles.imageWrapper}>
+                    <LoadingImage
+                        src={imageSrc}
+                        alt={imageAlt}
+                    />
+                </div>
                 <div className={styles.nameContainer}>
                     <p className={styles.name}>{name}</p>
                 </div>

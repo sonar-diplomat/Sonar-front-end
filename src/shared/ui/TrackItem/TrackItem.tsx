@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './TrackItem.module.css';
-import type { TrackItemProps } from './TrackItem.types';
+import type { TrackItemProps } from '@shared/ui';
 import {LoadingImage, MoreIcon} from '@shared/ui';
 
 export const TrackItem: React.FC<TrackItemProps> = ({
@@ -29,13 +29,14 @@ export const TrackItem: React.FC<TrackItemProps> = ({
         <div className={wrapperClasses} onClick={onClick}>
             <div className={styles.content}>
                 {imageSrc ? (
-                    <LoadingImage
-                        src={imageSrc}
-                        alt={imageAlt}
-                        className={styles.image}
-                    />
+                    <div className={styles.imageWrapper}>
+                        <LoadingImage
+                            src={imageSrc}
+                            alt={imageAlt}
+                        />
+                    </div>
                 ) : (
-                    <div className={styles.image} />
+                    <div className={styles.imagePlaceholder} />
                 )}
                 <div className={styles.textContainer}>
                     <p className={styles.title}>{title}</p>

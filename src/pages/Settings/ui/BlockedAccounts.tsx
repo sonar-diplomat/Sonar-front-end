@@ -52,7 +52,9 @@ export const BlockedAccounts: React.FC = () => {
               <div key={user.id} className={styles.userCard}>
                 <div className={styles.userInfo}>
                   {user.avatarUrl ? (
-                    <LoadingImage src={user.avatarUrl} alt={user.username} className={styles.avatar} />
+                    <div className={styles.avatarWrapper}>
+                      <LoadingImage src={user.avatarUrl} alt={user.username} />
+                    </div>
                   ) : (
                     <div className={styles.avatarPlaceholder}>
                       {user.username.charAt(0).toUpperCase()}

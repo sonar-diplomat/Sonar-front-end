@@ -75,11 +75,12 @@
   }
 }
 
-.stickerImage {
-  width: calc(100% - 24px);
-  height: calc(100% - 24px);
-  object-fit: contain;
-  border-radius: 4px;
+.imageWrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .stickerPlaceholder {

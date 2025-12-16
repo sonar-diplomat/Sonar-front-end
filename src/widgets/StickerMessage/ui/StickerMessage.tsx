@@ -32,12 +32,14 @@ export const StickerMessage: React.FC<StickerMessageProps> = ({ stickerId }) => 
 
   return (
     <div className={styles.container}>
-      <LoadingImage
-        src={imageUrl}
-        alt={sticker.name}
-        className={styles.stickerImage}
-        loading="lazy"
-      />
+      <div className={styles.imageWrapper}>
+        <LoadingImage
+          src={imageUrl}
+          alt={sticker.name}
+          objectFit="contain"
+          loading="lazy"
+        />
+      </div>
     </div>
   );
 };

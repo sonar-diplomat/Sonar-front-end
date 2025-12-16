@@ -19,7 +19,6 @@ export const CollectionCover: React.FC<CollectionCoverProps> = ({
                 <LoadingImage
                     src={imageSrc}
                     alt={imageAlt}
-                    className={styles.coverImage}
                 />
             )}
         </div>

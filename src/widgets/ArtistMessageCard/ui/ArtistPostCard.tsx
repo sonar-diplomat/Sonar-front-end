@@ -67,7 +67,6 @@ export const ArtistPostCard: React.FC<ArtistMessageCardProps> = ({
                     <LoadingImage
                         src={message.track.coverImage}
                         alt={message.track.title}
-                        className={styles.trackImage}
                     />
                     <div className={styles.trackOverlay}>
                         <Button
@@ -87,11 +86,12 @@ export const ArtistPostCard: React.FC<ArtistMessageCardProps> = ({
                 {/* Message Header */}
                 <div className={styles.header}>
                     <div className={styles.authorInfo}>
-                        <LoadingImage
-                            src={message.artistImage}
-                            alt={message.artistName}
-                            className={styles.avatar}
-                        />
+                        <div className={styles.avatarWrapper}>
+                            <LoadingImage
+                                src={message.artistImage}
+                                alt={message.artistName}
+                            />
+                        </div>
                         <div className={styles.textInfo}>
                             <h3 className={styles.title}>{message.title}</h3>
                             <div className={styles.metadata}>

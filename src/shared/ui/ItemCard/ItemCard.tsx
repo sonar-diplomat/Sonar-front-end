@@ -80,7 +80,6 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                     <LoadingImage
                         src={image}
                         alt={textContent?.title || ''}
-                        className={styles.cardImage}
                     />
                 )}
             </div>

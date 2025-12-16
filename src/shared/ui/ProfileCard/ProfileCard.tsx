@@ -31,7 +31,6 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     <LoadingImage
                         src={src}
                         alt={alt}
-                        className={styles.image}
                     />
                 </div>
             </div>
@@ -46,7 +45,6 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                         <LoadingImage
                             src={src}
                             alt={alt}
-                            className={styles.image}
                         />
                         <div className={styles.gradient} />
                     </div>
@@ -85,7 +83,6 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                         <LoadingImage
                             src={src}
                             alt={alt}
-                            className={styles.image}
                         />
                     </div>
                     {(name || stats || monthlyListeners) && (

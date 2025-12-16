@@ -27,7 +27,6 @@ export const UserListItem: React.FC<UserListItemProps> = ({ user, onUserClick })
                 <LoadingImage
                     src={avatarUrl}
                     alt={user.userName}
-                    className={styles.avatar}
                 />
             </div>
             <div className={styles.userInfo}>

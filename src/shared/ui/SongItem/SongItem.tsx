@@ -20,11 +20,12 @@ export const SongItem: React.FC<SongItemProps> = ({
     return (
         <div className={wrapperClasses}>
             <div className={styles.content}>
-                <LoadingImage
-                    src={imageSrc}
-                    alt={imageAlt}
-                    className={styles.image}
-                />
+                <div className={styles.imageWrapper}>
+                    <LoadingImage
+                        src={imageSrc}
+                        alt={imageAlt}
+                    />
+                </div>
                 <div className={styles.info}>
                     <p className={styles.rank}>{rank}.</p>
                     <div className={styles.textContainer}>
