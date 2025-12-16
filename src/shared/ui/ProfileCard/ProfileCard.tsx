@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './ProfileCard.module.css';
-import {type ProfileCardProps, VerifyIcon} from '@shared/ui';
+import {type ProfileCardProps, VerifyIcon, LoadingImage} from '@shared/ui';
 import { formatNumber } from '@shared/lib';
 import { MarkdownRenderer } from '@shared/lib/markdown/MarkdownRenderer';
 
@@ -28,7 +28,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
         return (
             <div className={wrapperClasses}>
                 <div className={styles.imageContainer}>
-                    <img
+                    <LoadingImage
                         src={src}
                         alt={alt}
                         className={styles.image}
@@ -43,7 +43,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
             <div className={wrapperClasses}>
                 <div className={styles.overlay}>
                     <div className={styles.imageContainer}>
-                        <img
+                        <LoadingImage
                             src={src}
                             alt={alt}
                             className={styles.image}
@@ -82,7 +82,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
             <div className={styles.overlay}>
                 <div className={styles.topRow}>
                     <div className={styles.imageContainer}>
-                        <img
+                        <LoadingImage
                             src={src}
                             alt={alt}
                             className={styles.image}

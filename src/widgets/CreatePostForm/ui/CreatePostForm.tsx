@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, CalendarIcon, LinkIcon, ImageIcon, MusicNoteIcon } from '@shared/ui';
+import { Button, CalendarIcon, LinkIcon, ImageIcon, MusicNoteIcon, LoadingImage } from '@shared/ui';
 import { RightArrow } from '@shared/ui';
 import styles from './CreatePostForm.module.css';
 import {ModalDatePicker} from "@widgets/ModalDatePicker";
@@ -50,7 +50,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({
             <div className={styles.formCard}>
                 <div className={styles.topSection}>
                     <div className={styles.artistInfo}>
-                        <img
+                        <LoadingImage
                             src={artistAvatar}
                             alt={artistName}
                             className={styles.avatar}

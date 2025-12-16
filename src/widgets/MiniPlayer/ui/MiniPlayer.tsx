@@ -4,6 +4,7 @@ import type { MiniPlayerProps } from '@widgets/MiniPlayer';
 import { PlayerControls } from './PlayerControls';
 import { ProgressBar } from './ProgressBar';
 import {TrackInfo} from "@widgets/MiniPlayer/ui/TrackInfo.tsx";
+import { LoadingImage } from '@shared/ui';
 
 import {formatTime} from "@widgets/MiniPlayer/lib/utils.ts";
 
@@ -43,8 +44,8 @@ export const MiniPlayer = ({
     <div className={styles.player}>
       <div className={styles.header}>
         <div className={styles.albumCover}>
-          {currentTrack && (
-              <img src={coverUrl} alt={currentTrack.title || 'Album cover'}/>
+          {currentTrack && coverUrl && (
+              <LoadingImage src={coverUrl} alt={currentTrack.title || 'Album cover'}/>
           )}
         </div>
         <div className={`${styles.info} no-select`}>

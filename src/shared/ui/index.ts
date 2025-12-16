@@ -104,4 +104,6 @@ export type {
     LoadingPlaceholderVariant,
     LoadingPlaceholderSize,
 } from './LoadingPlaceholder';
+export type { LoadingImageProps } from './LoadingImage';
+export { LoadingImage } from './LoadingImage';
 

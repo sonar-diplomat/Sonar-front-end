@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './ArtistItem.module.css';
 import type { ArtistItemProps } from '@shared/ui';
+import { LoadingImage } from '@shared/ui';
 
 export const ArtistItem: React.FC<ArtistItemProps> = ({
     rank,
@@ -17,7 +18,7 @@ export const ArtistItem: React.FC<ArtistItemProps> = ({
     return (
         <div className={wrapperClasses}>
             <div className={styles.content}>
-                <img
+                <LoadingImage
                     src={imageSrc}
                     alt={imageAlt}
                     className={styles.image}

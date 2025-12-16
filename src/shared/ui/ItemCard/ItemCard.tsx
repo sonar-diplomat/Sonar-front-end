@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './ItemCard.module.css';
 import type {ItemCardProps} from '@shared/ui';
+import { LoadingImage } from '@shared/ui';
 
 export const ItemCard: React.FC<ItemCardProps> = ({
     size = 'medium', 
@@ -76,7 +77,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 onDragEnd={isDraggable ? handleDragEnd : undefined}
             >
                 {image && (
-                    <img
+                    <LoadingImage
                         src={image}
                         alt={textContent?.title || ''}
                         className={styles.cardImage}
