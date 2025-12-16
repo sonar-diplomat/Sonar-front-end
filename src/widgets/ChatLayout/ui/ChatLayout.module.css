@@ -3,6 +3,7 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
+    padding-top: var(--safe-area-inset-top);
 }
 
 .headerContainer {
