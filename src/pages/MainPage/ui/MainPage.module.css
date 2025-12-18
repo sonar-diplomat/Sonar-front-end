@@ -29,7 +29,7 @@
 .section {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
 .sectionTitle {
@@ -39,23 +39,6 @@
     margin: 0;
 }
 
-.listenNowGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    max-width: 100%;
-}
-
-.listenNowGrid :global(.cardWrapper) {
-    width: 100%;
-    max-width: 100%;
-}
-
-.listenNowGrid :global(.large) {
-    width: 100%;
-    aspect-ratio: 1;
-    max-width: 100%;
-}
 
 .recentlyPlayedHeader {
     display: flex;
@@ -100,7 +83,8 @@
 
 .cardsRow {
     display: flex;
-    gap: 4px;
+    flex-direction: row;
+    gap: 12px;
     padding: 0 16px 8px;
 }
 

@@ -35,7 +35,7 @@ export const MainPage: React.FC = () => {
     const { library, isLoading: isLoadingLibrary } = useUserLibrary();
 
     // Fetch recommendations
-    const { data: popularCollections, isLoading: isLoadingPopularCollections } = useGetPopularCollectionsQuery({ limit: 4 });
+    const { data: popularCollections, isLoading: isLoadingPopularCollections } = useGetPopularCollectionsQuery({ limit: 6 });
     const { data: recentCollections, isLoading: isLoadingRecentCollections } = useGetRecentCollectionsQuery(
         { limit: 12 },
         { skip: !currentUserId }
@@ -127,17 +127,24 @@ export const MainPage: React.FC = () => {
 
             {popularCollections && popularCollections.length > 0 && (
                 <div className={styles.section}>
-                    <h2 className={styles.sectionTitle}>Listen now</h2>
-                    <div className={styles.listenNowGrid}>
-                        {popularCollections.map((collection) => (
-                            <CollectionCard
-                                key={`${collection.collectionType}-${collection.collectionId}`}
-                                collectionId={collection.collectionId}
-                                collectionType={collection.collectionType}
-                                size="large"
-                                onClick={() => handleCollectionClick(collection.collectionId, collection.collectionType)}
-                            />
-                        ))}
+                    <div className={styles.recentlyPlayedHeader}>
+                        <div className={styles.recentlyPlayedHeaderLeft}>
+                            <h2 className={styles.recentlyPlayedTitle}>Listen now</h2>
+                            <span className={styles.recentlyPlayedCount}>{popularCollections.length} Collections</span>
+                        </div>
+                    </div>
+                    <div className={styles.cardsScroll}>
+                        <div className={styles.cardsRow}>
+                            {popularCollections.map((collection) => (
+                                <CollectionCard
+                                    key={`${collection.collectionType}-${collection.collectionId}`}
+                                    collectionId={collection.collectionId}
+                                    collectionType={collection.collectionType}
+                                    size="large"
+                                    onClick={() => handleCollectionClick(collection.collectionId, collection.collectionType)}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
             )}
