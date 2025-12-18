@@ -24,3 +24,10 @@
     color: var(--text-muted);
     font-size: 16px;
 }
+
+@media (min-width: 426px) {
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+}

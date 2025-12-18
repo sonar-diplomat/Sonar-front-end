@@ -52,3 +52,11 @@
     margin-bottom: 16px;
 }
 
+@media (min-width: 426px) {
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        justify-content: center;
+        align-items: center;
+    }
+}

@@ -4,6 +4,7 @@
   flex-direction: column;
   gap: 32px;
   height: 100%;
+  max-width: 1075px;
 }
 
 .backButton {

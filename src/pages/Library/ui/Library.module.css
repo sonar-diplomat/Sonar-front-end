@@ -70,7 +70,7 @@
 
 @media (min-width: 426px) {
     .container {
-        max-width: 425px;
+        max-width: 1200px;
         width: 100%;
         margin: 0 auto;
         justify-content: flex-start;
@@ -104,13 +104,13 @@
         right: 50%;
         margin-left: -50vw !important;
         margin-right: -50vw !important;
-        padding-left: calc(50vw - 212.5px);
-        padding-right: calc(50vw - 212.5px);
+        padding-left: calc(50vw - 600px);
+        padding-right: calc(50vw - 600px);
         box-sizing: border-box;
     }
 
     :global(.foldersSection) :global(.header) {
-        max-width: 425px;
+        max-width: 1200px;
         margin: 0 auto;
         padding-left: 0;
         padding-right: 0;
