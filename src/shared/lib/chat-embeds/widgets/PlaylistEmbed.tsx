@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetPlaylistQuery } from '@entities/Playlist/api/rtkApi';
 import { API_BASE_URL, API_ENDPOINTS } from '@shared/config';
-import { LoadingPlaceholder } from '@shared/ui';
+import { LoadingPlaceholder, LoadingImage } from '@shared/ui';
 import styles from './EmbedWidget.module.css';
 
 export interface PlaylistEmbedProps {
@@ -50,7 +50,7 @@ export const PlaylistEmbed: React.FC<PlaylistEmbedProps> = ({ playlistId, url })
       <div className={styles.type}>Playlist</div>
       <div className={styles.cover}>
         {coverImageUrl && (
-          <img
+          <LoadingImage
             src={coverImageUrl}
             alt={playlist.name}
             className={styles.coverImage}

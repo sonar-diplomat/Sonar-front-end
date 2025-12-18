@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetAlbumQuery } from '@entities/Album/api/rtkApi';
 import { API_BASE_URL, API_ENDPOINTS } from '@shared/config';
-import { LoadingPlaceholder } from '@shared/ui';
+import { LoadingPlaceholder, LoadingImage } from '@shared/ui';
 import styles from './EmbedWidget.module.css';
 
 export interface AlbumEmbedProps {
@@ -54,7 +54,7 @@ export const AlbumEmbed: React.FC<AlbumEmbedProps> = ({ albumId, url }) => {
       <div className={styles.type}>Album</div>
       <div className={styles.cover}>
         {coverImageUrl && (
-          <img
+          <LoadingImage
             src={coverImageUrl}
             alt={album.name}
             className={styles.coverImage}

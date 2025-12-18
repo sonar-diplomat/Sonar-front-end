@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './BlockedAccounts.module.css';
-import { Button, Modal, LeftArrow } from '@shared/ui';
+import { Button, Modal, LeftArrow, LoadingImage } from '@shared/ui';
 
 
 interface BlockedUser {
@@ -52,7 +52,9 @@ export const BlockedAccounts: React.FC = () => {
               <div key={user.id} className={styles.userCard}>
                 <div className={styles.userInfo}>
                   {user.avatarUrl ? (
-                    <img src={user.avatarUrl} alt={user.username} className={styles.avatar} />
+                    <div className={styles.avatarWrapper}>
+                      <LoadingImage src={user.avatarUrl} alt={user.username} />
+                    </div>
                   ) : (
                     <div className={styles.avatarPlaceholder}>
                       {user.username.charAt(0).toUpperCase()}

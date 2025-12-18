@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetTrackQuery } from '@entities/Music/api/rtkApi';
 import { API_BASE_URL, API_ENDPOINTS } from '@shared/config';
-import { LoadingPlaceholder } from '@shared/ui';
+import { LoadingPlaceholder, LoadingImage } from '@shared/ui';
 import styles from './EmbedWidget.module.css';
 
 export interface TrackEmbedProps {
@@ -47,7 +47,7 @@ export const TrackEmbed: React.FC<TrackEmbedProps> = ({ trackId, url }) => {
     <div className={styles.embed} onClick={handleClick} role="button" tabIndex={0}>
       <div className={styles.cover}>
         {coverImageUrl && (
-          <img
+          <LoadingImage
             src={coverImageUrl}
             alt={track.title}
             className={styles.coverImage}

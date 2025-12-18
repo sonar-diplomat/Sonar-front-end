@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AccountSettings.module.css';
-import { SettingsSection, SettingsItem, Input, Button, Modal, DropDown, LeftArrow, Form } from '@shared/ui';
+import { SettingsSection, SettingsItem, Input, Button, Modal, DropDown, LeftArrow, Form, LoadingImage } from '@shared/ui';
 import { useAuth } from '@shared/lib/auth/useAuth';
 import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
 import { ModalDatePicker } from '@widgets/ModalDatePicker';
@@ -269,7 +269,7 @@ export const AccountSettings: React.FC = () => {
             <div className={styles.avatarUploadContainer}>
               {avatarPreview && (
                 <div className={styles.avatarPreview}>
-                  <img src={avatarPreview} alt="Avatar preview" />
+                  <LoadingImage src={avatarPreview} alt="Avatar preview" />
                 </div>
               )}
               <label className={styles.fileInputLabel}>

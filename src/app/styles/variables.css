@@ -1,6 +1,20 @@
 :root{
     --font-family-base: 'Roboto', sans-serif;
 
+    --safe-area-inset-top: env(safe-area-inset-top);
+    --safe-area-inset-right: env(safe-area-inset-right);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom);
+    --safe-area-inset-left: env(safe-area-inset-left);
+
+    --tabbar-height: 64px;
+    --microplayer-height: 64px;
+    --bottom-bars-gap: 8px;
+    --bottom-bars-padding: 16px;
+
+    --bottom-safe-padding: calc(var(--safe-area-inset-bottom) + var(--bottom-bars-padding));
+    --content-bottom-padding: calc(var(--tabbar-height) + var(--bottom-safe-padding) + var(--bottom-bars-gap));
+    --content-bottom-padding-with-player: calc(var(--microplayer-height) + var(--tabbar-height) + var(--bottom-safe-padding) + var(--bottom-bars-gap) * 2);
+
     /* Base backgrounds / text */
     --bg-body: #0A0A0A;
     --bg-app: #000000;

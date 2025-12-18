@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './ItemCardContainer.module.css';
 import type {ItemCardContainerProps} from '@shared/ui';
+import { LoadingImage } from '@shared/ui';
 
 export const ItemCardContainer: React.FC<ItemCardContainerProps> = ({title, count, countLabel, avatar, children, className = ''}) => {
     return (
@@ -8,7 +9,7 @@ export const ItemCardContainer: React.FC<ItemCardContainerProps> = ({title, coun
             <div className={styles.header}>
                 {avatar && (
                     <div className={styles.avatarWrapper}>
-                        <img src={avatar} alt="" className={styles.avatar}/>
+                        <LoadingImage src={avatar} alt="" className={styles.avatar}/>
                     </div>
                 )}
                 <div className={styles.headerText}>

@@ -5,7 +5,7 @@ import {useToggleTrackFavoriteMutation} from '@entities/Music/api/rtkApi';
 import {usePlayer} from '@shared/store/features/player';
 import {useAudioSeek} from '@shared/lib/audio';
 import {getArtistNames} from '@widgets/MiniPlayer/lib/utils';
-import {PlayIcon, PauseIcon, NextIcon, HeartIcon} from '@shared/ui';
+import {PlayIcon, PauseIcon, NextIcon, HeartIcon, LoadingImage} from '@shared/ui';
 import {MacroPlayer} from '@widgets/MacroPlayer';
 import {getImageUrlById} from '@shared/lib/image-utils';
 
@@ -155,7 +155,7 @@ export const MicroPlayer = () => {
             >
                 <div className={styles.cover}>
                     {currentTrack && coverUrl && (
-                        <img src={coverUrl} alt={currentTrack.title || 'Album cover'}/>
+                        <LoadingImage src={coverUrl} alt={currentTrack.title || 'Album cover'}/>
                     )}
                 </div>
                 <div className={styles.trackInfo}>

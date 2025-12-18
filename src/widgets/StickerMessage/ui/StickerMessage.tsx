@@ -1,7 +1,7 @@
 import React from 'react';
 import { useGetChatStickersQuery } from '@entities/ChatSticker';
 import { getImageUrlById } from '@shared/lib/image-utils';
-import { LoadingPlaceholder } from '@shared/ui';
+import { LoadingPlaceholder, LoadingImage } from '@shared/ui';
 import styles from './StickerMessage.module.css';
 
 export interface StickerMessageProps {
@@ -32,12 +32,14 @@ export const StickerMessage: React.FC<StickerMessageProps> = ({ stickerId }) => 
 
   return (
     <div className={styles.container}>
-      <img
-        src={imageUrl}
-        alt={sticker.name}
-        className={styles.stickerImage}
-        loading="lazy"
-      />
+      <div className={styles.imageWrapper}>
+        <LoadingImage
+          src={imageUrl}
+          alt={sticker.name}
+          objectFit="contain"
+          loading="lazy"
+        />
+      </div>
     </div>
   );
 };

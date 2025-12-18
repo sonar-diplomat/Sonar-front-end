@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useCallback, useState } from 'react';
 import styles from './MacroPlayer.module.css';
 import type { MacroPlayerProps } from '../model/types';
-import { Button, LeftArrow, MoreIcon, PlayIcon, PauseIcon, NextIcon, PreviousIcon, TrackItem, ActionMenu, ShuffleIcon } from '@shared/ui';
+import { Button, LeftArrow, MoreIcon, PlayIcon, PauseIcon, NextIcon, PreviousIcon, TrackItem, ActionMenu, ShuffleIcon, LoadingImage } from '@shared/ui';
 import type { ActionMenuContext } from '@shared/ui';
 import { ProgressBar } from '@widgets/MiniPlayer/ui/ProgressBar';
 import { formatTime, getArtistNames } from '@widgets/MiniPlayer/lib/utils';
@@ -162,7 +162,7 @@ export const MacroPlayer: React.FC<MacroPlayerProps> = ({isOpen, onClose, curren
                 <div className={styles.mainContent}>
                     <div className={styles.albumCover}>
                         {coverUrl ? (
-                            <img src={coverUrl} alt={currentTrack?.title || 'Album cover'} />
+                            <LoadingImage src={coverUrl} alt={currentTrack?.title || 'Album cover'} />
                         ) : (
                             <div className={styles.placeholderCover} />
                         )}

@@ -44,11 +44,11 @@
     padding: 0 8px;
 }
 
-.avatar {
+.avatarWrapper {
     width: 52px;
     height: 52px;
     border-radius: 32px;
-    object-fit: cover;
+    overflow: hidden;
     flex-shrink: 0;
 }
 

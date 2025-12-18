@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './CollectionCover.module.css';
 import type { CollectionCoverProps } from './CollectionCover.types';
+import { LoadingImage } from '@shared/ui';
 
 export const CollectionCover: React.FC<CollectionCoverProps> = ({
     imageSrc,
@@ -15,10 +16,9 @@ export const CollectionCover: React.FC<CollectionCoverProps> = ({
     return (
         <div className={wrapperClasses}>
             {imageSrc && (
-                <img
+                <LoadingImage
                     src={imageSrc}
                     alt={imageAlt}
-                    className={styles.coverImage}
                 />
             )}
         </div>
