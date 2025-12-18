@@ -104,6 +104,18 @@ export const chatApi = rtkApi.injectEndpoints({
       ],
     }),
 
+    deleteChat: builder.mutation<void, number>({
+      query: (chatId) => ({
+        url: API_ENDPOINTS.chat.delete(chatId),
+        method: 'DELETE',
+        withAuth: true,
+      }),
+      invalidatesTags: (_result, _error, chatId) => [
+        { type: 'Chat', id: chatId },
+        { type: 'Chat', id: 'LIST' },
+      ],
+    }),
+
     leaveChat: builder.mutation<void, number>({
       query: (chatId) => ({
         url: API_ENDPOINTS.chat.leave(chatId),
@@ -183,6 +195,7 @@ export const {
   useDeleteMessageMutation,
   useEditMessageMutation,
   useAddUserToChatMutation,
+  useDeleteChatMutation,
   useLeaveChatMutation,
   useRemoveUserFromChatMutation,
   useUpdateChatCoverMutation,

@@ -1,5 +1,5 @@
-//export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sonar-dev.pp.ua/api/';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124/api/';
+//export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sonar-dev.pp.ua/api/';
 
 //export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://localhost:7124/api/';
 export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL || 'https://sonar-dev.pp.ua/api/';
@@ -148,6 +148,7 @@ export const API_ENDPOINTS = {
     chat: {
         list: 'Chat',
         create: 'Chat',
+        delete: (chatId: number) => `Chat/${chatId}`,
         sendMessage: (chatId: number) => `Chat/${chatId}/send`,
         deleteMessage: (messageId: number) => `Chat/message/${messageId}`,
         editMessage: (messageId: number) => `Chat/message/${messageId}`,

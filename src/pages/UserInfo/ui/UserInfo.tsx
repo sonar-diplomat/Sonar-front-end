@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Checkbox, ProfileIcon, Info, PlusIcon, ErrorIcon, LoadingPlaceholder, VerifyIcon, NotificationIcon, RightArrow, BlockIcon, DeleteIcon, Button } from '@shared/ui';
 import { 
     useGetChatInfoQuery,
+    useDeleteChatMutation,
     useLeaveChatMutation,
     useRemoveUserFromChatMutation,
 } from '@entities/Chat/api/rtkApi';
@@ -29,7 +30,8 @@ export const UserInfo: React.FC = () => {
         skip: !chatIdNumber,
     });
     
-    const [leaveChat, { isLoading: isLeavingChat }] = useLeaveChatMutation();
+    const [deleteChat, { isLoading: isDeletingChat }] = useDeleteChatMutation();
+    const [leaveChat] = useLeaveChatMutation();
     const [removeUserFromChat] = useRemoveUserFromChatMutation();
     const [patchSettings, { isLoading: isBlockingUser }] = usePatchClientSettingsMutation();
     const { data: currentSettings } = useGetClientSettingsQuery(undefined, {
@@ -106,7 +108,7 @@ export const UserInfo: React.FC = () => {
         if (!chatIdNumber) return;
         
         try {
-            await leaveChat(chatIdNumber).unwrap();
+            await deleteChat(chatIdNumber).unwrap();
             navigate('/chats');
         } catch (error) {
             console.error('Failed to delete chat:', error);
@@ -318,7 +320,7 @@ export const UserInfo: React.FC = () => {
                     theme="dark" 
                     className={`${styles.optionItem} ${styles.danger}`} 
                     onClick={handleDeleteChat}
-                    disabled={isLeavingChat}
+                    disabled={isDeletingChat}
                 >
                     <div className={styles.optionLeft}>
                         <DeleteIcon className={styles.optionIcon} color="#FF3B30" />

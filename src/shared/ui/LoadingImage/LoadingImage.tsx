@@ -37,6 +37,23 @@ export const LoadingImage: React.FC<LoadingImageProps> = ({
     setCurrentSrc(src);
   }, [src]);
 
+  // Проверка для Chrome: если картинка уже загружена из кеша
+  // Выполняется после обновления DOM с новым src
+  useEffect(() => {
+    const checkComplete = () => {
+      if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
+        setIsLoading(false);
+      }
+    };
+    
+    // Проверяем сразу (для случая, когда изображение уже в кеше)
+    // и с небольшой задержкой для надежности
+    checkComplete();
+    const timeoutId = setTimeout(checkComplete, 0);
+    
+    return () => clearTimeout(timeoutId);
+  }, [currentSrc]);
+
   const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     setIsLoading(false);
     setHasError(false);

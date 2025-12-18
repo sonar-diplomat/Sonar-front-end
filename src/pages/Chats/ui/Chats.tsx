@@ -1,13 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChatList } from '@widgets/ChatList';
-import { useGetChatsQuery } from '@entities/Chat/api/rtkApi';
+import { useGetChatsQuery, chatApi } from '@entities/Chat/api/rtkApi';
+import { useSignalR, type ChatDeletedEvent } from '@shared/lib/signalr';
+import { useAppDispatch } from '@shared/store/hooks';
 import type { Chat } from '@entities/Chat';
 import styles from './Chats.module.css';
 
 export const Chats: React.FC = () => {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const { data: chatsData, isLoading, error } = useGetChatsQuery();
+    const { setCallbacks } = useSignalR();
+
+    // Handle chat.deleted SignalR event
+    useEffect(() => {
+        setCallbacks({
+            onChatDeleted: (event: ChatDeletedEvent) => {
+                // Invalidate chat list to remove deleted chat
+                dispatch(
+                    chatApi.util.invalidateTags([
+                        { type: 'Chat', id: 'LIST' },
+                        { type: 'Chat', id: event.chatId },
+                    ])
+                );
+            },
+        });
+    }, [dispatch, setCallbacks]);
 
     const handleChatClick = (chatId: number) => {
         navigate(`/chats/${chatId}`);

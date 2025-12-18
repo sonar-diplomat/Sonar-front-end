@@ -14,7 +14,7 @@ import {
     useReadAllMessagesMutation,
     chatApi
 } from '@entities/Chat/api/rtkApi';
-import { useSignalR, type MessageCreatedEvent, type MessageDeletedEvent, type MessageUpdatedEvent, type MessageReadEvent, type ChatNameUpdatedEvent, type ChatCoverUpdatedEvent } from '@shared/lib/signalr';
+import { useSignalR, type MessageCreatedEvent, type MessageDeletedEvent, type MessageUpdatedEvent, type MessageReadEvent, type ChatNameUpdatedEvent, type ChatCoverUpdatedEvent, type ChatDeletedEvent } from '@shared/lib/signalr';
 import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
 import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
 import styles from './Chat.module.css';
@@ -356,8 +356,21 @@ export const Chat: React.FC = () => {
                     );
                 }
             },
+            onChatDeleted: (event: ChatDeletedEvent) => {
+                if (event.chatId === chatIdNumber) {
+                    // Navigate to chats list if current chat was deleted
+                    navigate('/chats');
+                    // Invalidate chat list and current chat
+                    dispatch(
+                        chatApi.util.invalidateTags([
+                            { type: 'Chat', id: 'LIST' },
+                            { type: 'Chat', id: event.chatId },
+                        ])
+                    );
+                }
+            },
         });
-    }, [chatIdNumber, dispatch, setCallbacks, currentUserId, getMessageStatus, editingMessage]);
+    }, [chatIdNumber, dispatch, setCallbacks, currentUserId, getMessageStatus, editingMessage, navigate]);
 
     // Determine if there are more messages to load
     const hasMoreMessages = useMemo(() => {
