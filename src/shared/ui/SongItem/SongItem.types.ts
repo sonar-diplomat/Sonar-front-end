@@ -5,5 +5,6 @@ export interface SongItemProps {
     imageSrc: string;
     imageAlt?: string;
     onMenuClick?: () => void;
+    onClick?: () => void;
     className?: string;
 }

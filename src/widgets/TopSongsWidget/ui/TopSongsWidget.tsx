@@ -1,14 +1,40 @@
 import React from 'react';
 import styles from './TopSongsWidget.module.css';
-import type { TopSongsWidgetProps } from '../TopSongsWidget.types';
+import type { TopSongsWidgetProps, Song } from '../TopSongsWidget.types';
 import { SongItem, WidgetErrorState, LoadingPlaceholder } from '@shared/ui';
+import { useGetTrackQuery } from '@entities/Music/api/rtkApi';
+import { usePlayer } from '@shared/store/features/player';
+
+// Component to handle track playback on click
+const PlayableSongItem: React.FC<{
+    song: Song;
+    rank: number;
+}> = ({ song, rank }) => {
+    const { playTrack } = usePlayer();
+    const { data: track } = useGetTrackQuery(song.trackId, { skip: false });
+
+    const handleClick = () => {
+        if (track) {
+            playTrack(track);
+        }
+    };
+
+    return (
+        <SongItem
+            rank={rank}
+            title={song.title}
+            artist={song.artist}
+            imageSrc={song.imageSrc}
+            imageAlt={song.imageAlt}
+            onClick={handleClick}
+        />
+    );
+};
 
 export const TopSongsWidget: React.FC<TopSongsWidgetProps> = ({
     songs,
-    dateRange,
     isLoading = false,
     error,
-    onSongMenuClick,
     onRetry,
     className = ''
 }) => {
@@ -67,13 +93,9 @@ export const TopSongsWidget: React.FC<TopSongsWidgetProps> = ({
             <div className={styles.listContainer}>
                 {songs.map((song, index) => (
                     <React.Fragment key={song.id}>
-                        <SongItem
+                        <PlayableSongItem
+                            song={song}
                             rank={index + 1}
-                            title={song.title}
-                            artist={song.artist}
-                            imageSrc={song.imageSrc}
-                            imageAlt={song.imageAlt}
-                            onMenuClick={onSongMenuClick ? () => onSongMenuClick(song.id) : undefined}
                         />
                         {index < songs.length - 1 && (
                             <div className={styles.divider} />

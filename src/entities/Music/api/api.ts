@@ -45,7 +45,7 @@ export const Api = {
         config?: Omit<RequestConfig, 'bodyType'>
     ) => {
         // Для download нужно проверить авторизацию вручную, так как это не NormalizedApiResponse
-        const accessToken = authManager.getAccessToken();
+        let accessToken = authManager.getAccessToken();
         const refreshToken = authManager.getRefreshToken();
 
         // Если нет токенов вообще, требуется логин
@@ -63,6 +63,8 @@ export const Api = {
                 if (!newToken) {
                     throw new Error('Session expired. Please login again');
                 }
+                // Обновляем accessToken для использования в заголовках
+                accessToken = newToken;
             }
         } else if (refreshToken) {
             // Если нет access token, но есть refresh token, пытаемся обновить
@@ -72,6 +74,12 @@ export const Api = {
                 // Если refresh не удался, требуется новый логин
                 throw new Error('Session expired. Please login again');
             }
+            accessToken = newToken;
+        }
+
+        // Убеждаемся, что токен есть перед запросом
+        if (!accessToken) {
+            throw new Error('Authentication required');
         }
 
         const queryParams: Record<string, any> = { ...(config?.params ?? {}) };
@@ -79,10 +87,15 @@ export const Api = {
         if (opts?.length) queryParams.length = opts.length;
         if (opts?.download) queryParams.download = opts.download;
 
+        // Передаем токен явно в заголовках для гарантии
         return apiClient.download(API_ENDPOINTS.track.stream(trackId), {
             ...config,
             params: queryParams,
             withAuth: config?.withAuth ?? true,
+            headers: {
+                ...config?.headers,
+                Authorization: `Bearer ${accessToken}`,
+            },
         });
     },
     /**

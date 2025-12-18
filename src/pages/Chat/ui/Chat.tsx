@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Message } from '@widgets/Message';
 import { SendInput } from '@widgets/SendInput';
 import { ErrorIcon, Modal, Button, LoadingPlaceholder } from '@shared/ui';
@@ -15,13 +15,14 @@ import {
     chatApi
 } from '@entities/Chat/api/rtkApi';
 import { useSignalR, type MessageCreatedEvent, type MessageDeletedEvent, type MessageUpdatedEvent, type MessageReadEvent, type ChatNameUpdatedEvent, type ChatCoverUpdatedEvent, type ChatDeletedEvent } from '@shared/lib/signalr';
-import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
+import { useAppDispatch } from '@shared/store/hooks';
 import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
 import styles from './Chat.module.css';
 
 export const Chat: React.FC = () => {
     const { chatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useAppDispatch();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -40,7 +41,6 @@ export const Chat: React.FC = () => {
     const isReadingMessagesRef = useRef(false); // Use ref to prevent multiple simultaneous calls
     const signalRReadAllDisabledRef = useRef(false); // Disable SignalR ReadAllMessages after first error
     
-    const accessToken = useAppSelector((state) => state.auth.accessToken);
     const currentUserId = useCurrentUserId();
 
     const chatIdNumber = chatId ? Number(chatId) : 0;
@@ -74,9 +74,13 @@ export const Chat: React.FC = () => {
         return 'read';
     }, [currentUserId]);
     
-    const { data: messagesData, isLoading: isLoadingMessages } = useGetChatMessagesQuery(
+    const { data: messagesData, isLoading: isLoadingMessages, refetch: refetchMessages } = useGetChatMessagesQuery(
         { chatId: chatIdNumber, take: 50 },
-        { skip: !chatIdNumber }
+        { 
+            skip: !chatIdNumber,
+            // Force refetch when chatId changes to avoid stale cache
+            refetchOnMountOrArgChange: true,
+        }
     );
 
     const { data: olderMessagesData, isLoading: isLoadingOlderMessages } = useGetChatMessagesQuery(
@@ -113,7 +117,52 @@ export const Chat: React.FC = () => {
 
     // Update messages when new data arrives from API
     useEffect(() => {
-        if (messagesData?.items && isInitialLoad) {
+        if (import.meta.env.DEV) {
+            console.log('[Chat] Messages data effect:', {
+                hasMessagesData: !!messagesData,
+                itemsLength: messagesData?.items?.length,
+                chatIdNumber,
+                isInitialLoad,
+                allMessagesLength: allMessages.length,
+                isLoadingMessages
+            });
+        }
+
+        // Only process messages if we have data and it's for the current chat
+        if (!messagesData || !chatIdNumber) {
+            if (import.meta.env.DEV) {
+                console.log('[Chat] Skipping - no messagesData or chatIdNumber');
+            }
+            return;
+        }
+
+        // Handle empty items array
+        if (!messagesData.items) {
+            if (import.meta.env.DEV) {
+                console.log('[Chat] messagesData.items is undefined/null');
+            }
+            return;
+        }
+
+        // Check if we already have messages for this chat
+        // If we have messages but they're for a different chat, we should still process
+        const hasMessagesForCurrentChat = allMessages.length > 0 && 
+            allMessages[0]?.chatId === chatIdNumber;
+
+        // Always process messages if:
+        // 1. It's initial load
+        // 2. We have no messages at all
+        // 3. We have messages but they're for a different chat (shouldn't happen, but safety check)
+        if (isInitialLoad || allMessages.length === 0 || !hasMessagesForCurrentChat) {
+            if (import.meta.env.DEV) {
+                console.log('[Chat] Processing messages:', {
+                    itemsCount: messagesData.items.length,
+                    isInitialLoad,
+                    allMessagesLength: allMessages.length,
+                    hasMessagesForCurrentChat
+                });
+            }
+
             const newMessages = messagesData.items.map((msg) => ({
                 ...msg,
                 id: msg.id!,
@@ -123,6 +172,10 @@ export const Chat: React.FC = () => {
 
             // First load - replace all messages
             setAllMessages(newMessages);
+            
+            if (import.meta.env.DEV) {
+                console.log('[Chat] Set messages:', newMessages.length);
+            }
             
             // Set cursor using nextCursor/next/after from API response
             // API returns nextCursor as string, convert to number for next request
@@ -152,8 +205,16 @@ export const Chat: React.FC = () => {
                     console.log('[Chat] Initial load - no more messages, cursor set to null');
                 }
             }
+
+            // Reset initial load flag after processing messages
+            if (isInitialLoad) {
+                setIsInitialLoad(false);
+                if (import.meta.env.DEV) {
+                    console.log('[Chat] Reset isInitialLoad to false after processing messages');
+                }
+            }
         }
-    }, [messagesData, chatIdNumber, isInitialLoad, currentUserId, getMessageStatus]);
+    }, [messagesData, chatIdNumber, isInitialLoad, currentUserId, getMessageStatus, allMessages.length]);
 
     // Handle loading older messages
     useEffect(() => {
@@ -569,22 +630,72 @@ export const Chat: React.FC = () => {
         }
     }, [messages, isInitialLoad, shouldAutoScroll, chatIdNumber, isChatJoined, hasReadAllMessages, isSignalRConnected, readAllMessagesViaSignalR, readAllMessagesHttp, checkIfNearBottom]);
 
+    // Track previous location pathname to detect when we return to the same chat
+    const prevPathnameRef = useRef<string>('');
+
     useEffect(() => {
-        setIsInitialLoad(true);
-        setShouldAutoScroll(true);
-        setAllMessages([]);
-        setOldestCursor(null);
-        setIsLoadingOlder(false);
-        setShowScrollToBottom(false);
-        setHasReadAllMessages(false);
-        setIsChatJoined(false);
-        isReadingMessagesRef.current = false;
-        signalRReadAllDisabledRef.current = false;
-        if (readMessagesTimeoutRef.current) {
-            clearTimeout(readMessagesTimeoutRef.current);
-            readMessagesTimeoutRef.current = null;
+        // Reset state when pathname changes (including returning to the same chat)
+        // This handles both: changing chats AND returning to the same chat after leaving
+        const pathnameChanged = prevPathnameRef.current !== location.pathname;
+        
+        if (pathnameChanged && chatIdNumber) {
+            setIsInitialLoad(true);
+            setShouldAutoScroll(true);
+            setAllMessages([]);
+            setOldestCursor(null);
+            setIsLoadingOlder(false);
+            setShowScrollToBottom(false);
+            setHasReadAllMessages(false);
+            setIsChatJoined(false);
+            isReadingMessagesRef.current = false;
+            signalRReadAllDisabledRef.current = false;
+            if (readMessagesTimeoutRef.current) {
+                clearTimeout(readMessagesTimeoutRef.current);
+                readMessagesTimeoutRef.current = null;
+            }
+            
+            if (import.meta.env.DEV) {
+                console.log('[Chat] Resetting state due to pathname change:', {
+                    chatIdNumber,
+                    prevPathname: prevPathnameRef.current,
+                    currentPathname: location.pathname
+                });
+            }
         }
-    }, [chatIdNumber]);
+        
+        prevPathnameRef.current = location.pathname;
+    }, [location.pathname, chatIdNumber]);
+
+    // Refetch messages when chatId changes to ensure fresh data
+    useEffect(() => {
+        if (chatIdNumber) {
+            // Force refetch to ensure we get fresh data for the new chat
+            // Use setTimeout to ensure state is reset before refetch
+            const timeoutId = setTimeout(() => {
+                refetchMessages();
+            }, 0);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [chatIdNumber, refetchMessages]);
+
+    // Also process messages when chatId changes, even if data is cached
+    useEffect(() => {
+        // If chatId changed but we still have old messages, clear them
+        if (chatIdNumber && allMessages.length > 0) {
+            // Check if messages belong to current chat
+            const firstMessage = allMessages[0];
+            if (firstMessage && firstMessage.chatId !== chatIdNumber) {
+                if (import.meta.env.DEV) {
+                    console.log('[Chat] Clearing messages from different chat:', {
+                        currentChatId: chatIdNumber,
+                        messageChatId: firstMessage.chatId
+                    });
+                }
+                setAllMessages([]);
+                setIsInitialLoad(true);
+            }
+        }
+    }, [chatIdNumber, allMessages]);
 
     // Periodically check if user is at bottom and mark messages as read
     // DISABLED: Causing too many requests

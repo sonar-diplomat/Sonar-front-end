@@ -22,7 +22,9 @@ class SignalRManager {
           const token = authManager.getAccessToken();
           return token || '';
         },
-      })
+        // Disable credentials to avoid CORS issues when server uses wildcard origin
+        withCredentials: false,
+      } as any)
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
           if (retryContext.previousRetryCount < 3) {
@@ -71,7 +73,11 @@ class SignalRManager {
       await this.rejoinChats();
     } catch (error) {
       this.isConnecting = false;
-      console.error('[SignalR] Connection error:', error);
+      // Only log non-CORS errors to avoid console spam
+      const errorMessage = (error as Error)?.message || String(error);
+      if (!errorMessage.includes('CORS') && !errorMessage.includes('Failed to fetch')) {
+        console.error('[SignalR] Connection error:', error);
+      }
       throw error;
     }
   }

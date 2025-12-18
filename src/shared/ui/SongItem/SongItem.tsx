@@ -10,28 +10,28 @@ export const SongItem: React.FC<SongItemProps> = ({
     imageSrc,
     imageAlt = '',
     onMenuClick,
+    onClick,
     className = ''
 }) => {
     const wrapperClasses = [
         styles.songItem,
+        onClick ? styles.clickable : '',
         className,
     ].filter(Boolean).join(' ');
 
     return (
-        <div className={wrapperClasses}>
+        <div className={wrapperClasses} onClick={onClick}>
             <div className={styles.content}>
+                <p className={styles.rank}>{rank}.</p>
                 <div className={styles.imageWrapper}>
                     <LoadingImage
                         src={imageSrc}
                         alt={imageAlt}
                     />
                 </div>
-                <div className={styles.info}>
-                    <p className={styles.rank}>{rank}.</p>
-                    <div className={styles.textContainer}>
-                        <p className={styles.title}>{title}</p>
-                        <p className={styles.artist}>{artist}</p>
-                    </div>
+                <div className={styles.textContainer}>
+                    <p className={styles.title}>{title}</p>
+                    <p className={styles.artist}>{artist}</p>
                 </div>
             </div>
             {onMenuClick && (

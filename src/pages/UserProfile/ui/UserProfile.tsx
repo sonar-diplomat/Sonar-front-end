@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useMemo, useState, useEffect } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import { ProfileCard } from '@shared/ui';
 import { ProfileLayout } from '@widgets/ProfileLayout';
 import { ContentSections } from '@widgets/ContentSections';
@@ -38,6 +38,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
 }) => {
     const { identifier } = useParams<{ identifier: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
     const { handleBackClick, handleNavigateToLibrary } = useProfileNavigation();
     const currentUserId = useCurrentUserId();
 
@@ -62,6 +63,32 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         }
         return 'guest';
     }, [initialViewerType, currentUserData, profileData]);
+
+    // Redirect to correct URL if viewing own profile with outdated identifier
+    useEffect(() => {
+        // Check sessionStorage for updated identifier (set when user updates it in settings)
+        const updatedIdentifier = sessionStorage.getItem('updatedPublicIdentifier');
+        const oldIdentifier = sessionStorage.getItem('oldPublicIdentifier');
+        
+        if (updatedIdentifier && oldIdentifier && identifier === oldIdentifier) {
+            // Clear sessionStorage and redirect to new identifier
+            sessionStorage.removeItem('updatedPublicIdentifier');
+            sessionStorage.removeItem('oldPublicIdentifier');
+            navigate(`/user/${updatedIdentifier}`, { replace: true });
+            return;
+        }
+        
+        // Fallback: check if current identifier doesn't match current user's identifier
+        if (
+            viewerType === 'owner' &&
+            currentUserData?.publicIdentifier &&
+            identifier &&
+            identifier !== currentUserData.publicIdentifier
+        ) {
+            // Redirect to correct profile URL with new identifier
+            navigate(`/user/${currentUserData.publicIdentifier}`, { replace: true });
+        }
+    }, [viewerType, currentUserData?.publicIdentifier, identifier, navigate]);
 
     // Check if current user is following the profile user (only for guest view)
     const { data: followersData, refetch: refetchFollowers } = useGetFollowersQuery(profileData?.id || 0, {
@@ -187,6 +214,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         if (!topTracksData) return [];
         return topTracksData.map(track => ({
             id: track.id.toString(),
+            trackId: track.id,
             title: track.title,
             artist: track.artists.map(a => a.pseudonym).join(', '),
             imageSrc: getImageUrl(track.coverId) || '',
@@ -305,7 +333,6 @@ export const UserProfile: React.FC<UserProfileProps> = ({
                             error={isTopTracksError}
                             onRetry={refetchTopTracks}
                             dateRange=""
-                            onSongMenuClick={(songId) => console.log('Menu clicked for song:', songId)}
                         />
                     )}
                 </div>
@@ -325,7 +352,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({
     );
 
     const handleMessageClick = () => {
-        navigate('/chats');
+        // Pass current profile path in state so we can return here from chats
+        navigate('/chats', { state: { from: location.pathname } });
     };
 
     const handleSettingsClick = () => {

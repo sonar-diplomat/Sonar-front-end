@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ChatHeader } from './ChatHeader';
 import { CreateGroupChatModal } from '@widgets/CreateGroupChatModal';
+import { MicroPlayer } from '@widgets/MicroPlayer';
 import { chatApi } from '@entities/Chat/api/rtkApi';
 import { useAppSelector } from '@shared/store/hooks';
+import { usePlayer } from '@shared/store/features/player';
 import styles from './ChatLayout.module.css';
 
 export const ChatLayout: React.FC = () => {
@@ -23,6 +25,9 @@ export const ChatLayout: React.FC = () => {
     );
     
     const chatInfo = chatsList?.find(chat => chat.id === chatIdNumber);
+    
+    const { currentTrack } = usePlayer();
+    const shouldShowMicroPlayer = isChatDetail && !isUserInfo && currentTrack !== null;
 
     const handleBack = () => {
         if (isUserInfo && params.chatId) {
@@ -30,7 +35,14 @@ export const ChatLayout: React.FC = () => {
         } else if (isChatDetail) {
             navigate('/chats');
         } else {
-            navigate(-1);
+            // For chat list, check if we came from a specific page (e.g., profile)
+            const fromPath = (location.state as { from?: string })?.from;
+            if (fromPath) {
+                navigate(fromPath);
+            } else {
+                // Fallback: try to go back in history, or navigate to profile
+                navigate(-1);
+            }
         }
     };
 
@@ -83,7 +95,12 @@ export const ChatLayout: React.FC = () => {
                         showSeparator={false}
                     />
                 </div>
-                <div className={styles.content}>
+                <div className={`${styles.content} ${shouldShowMicroPlayer ? styles.hasMicroPlayer : ''}`}>
+                    {shouldShowMicroPlayer && (
+                        <div className={styles.microPlayerContainer}>
+                            <MicroPlayer />
+                        </div>
+                    )}
                     <Outlet />
                 </div>
             </div>

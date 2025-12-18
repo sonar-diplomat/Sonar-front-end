@@ -9,6 +9,7 @@ export {
   type ChatCoverUpdatedEvent,
   type ChatUserAddedEvent,
   type ChatUserRemovedEvent,
+  type ChatDeletedEvent,
   type TypingEvent,
 } from './useSignalR';
 

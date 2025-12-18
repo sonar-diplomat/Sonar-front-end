@@ -3,7 +3,6 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { TabBar } from '@widgets/TabBar';
 import { MicroPlayer } from '@widgets/MicroPlayer';
 import { usePlayer } from '@shared/store/features/player';
-import { useAudioSeek } from '@shared/lib/audio';
 import { useCurrentUserId } from '@shared/lib/auth';
 import { useGetUserByIdQuery } from '@entities/User/api/rtkApi';
 import type { TabId } from '@widgets/TabBar/model/types';
@@ -17,15 +16,12 @@ export const PageLayout = () => {
   const { data: currentUser } = useGetUserByIdQuery(currentUserId!, {
     skip: !currentUserId,
   });
-  const {
-    currentTrack,
-    isPlaying,
-    currentTime,
-    duration,
-    togglePlayPause,
-    playNext,
-  } = usePlayer();
-  const handleSeek = useAudioSeek();
+  const { currentTrack } = usePlayer();
+
+  // Hide navbar on chat pages
+  const shouldHideNavbar = useMemo(() => {
+    return location.pathname.startsWith('/chats');
+  }, [location.pathname]);
 
   const profilePath = useMemo(() => {
     if (currentUser?.publicIdentifier) {
@@ -50,27 +46,21 @@ export const PageLayout = () => {
 
   return (
     <div className={styles.pageLayout}>
-      <div className={`${styles.scrollableContent} ${currentTrack ? styles.withPlayer : ''}`}>
+      <div className={`${styles.scrollableContent} ${currentTrack && !shouldHideNavbar ? styles.withPlayer : ''} ${shouldHideNavbar ? styles.noPadding : ''}`}>
         <Outlet />
       </div>
       <div className={styles.fixedBottomBars}>
-          {currentTrack && (
-              <MicroPlayer
-                  duration={duration}
-                  currentTime={currentTime}
-                  isPlaying={isPlaying}
-                  currentTrack={currentTrack}
-                  onPlayPause={togglePlayPause}
-                  onNext={playNext}
-                  onSeek={handleSeek}
-              />
+          {currentTrack && !shouldHideNavbar && (
+              <MicroPlayer />
           )}
-          <div className={styles.navBlurWrapper}>
-            <TabBar
-              defaultActiveTab={getActiveTab()}
-              onTabChange={handleTabChange}
-            />
-          </div>
+          {!shouldHideNavbar && (
+              <div className={styles.navBlurWrapper}>
+                <TabBar
+                  defaultActiveTab={getActiveTab()}
+                  onTabChange={handleTabChange}
+                />
+              </div>
+          )}
       </div>
     </div>
   );

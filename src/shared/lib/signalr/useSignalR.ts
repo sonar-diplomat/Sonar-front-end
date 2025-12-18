@@ -99,7 +99,11 @@ export const useSignalR = () => {
           updateConnectionState();
         })
         .catch((error) => {
-          console.error('[useSignalR] Failed to connect:', error);
+          // Only log non-CORS errors to avoid console spam
+          const errorMessage = (error as Error)?.message || String(error);
+          if (!errorMessage.includes('CORS') && !errorMessage.includes('Failed to fetch')) {
+            console.error('[useSignalR] Failed to connect:', error);
+          }
           updateConnectionState();
         });
     }

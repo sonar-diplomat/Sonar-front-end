@@ -187,6 +187,7 @@ class ApiClient {
             timeoutMs = 15000,
             bodyType = 'json',
             method = 'GET',
+            headers: customHeaders,
             ...fetchCfg
         } = cfg;
 
@@ -195,7 +196,13 @@ class ApiClient {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-        const headers = this.makeHeaders(withAuth, bodyType, fetchCfg.headers);
+        // Создаем базовые заголовки с авторизацией
+        const baseHeaders = this.makeHeaders(withAuth, bodyType);
+        // Объединяем заголовки: сначала базовые, потом кастомные (кастомные перезаписывают базовые)
+        const headers = {
+            ...baseHeaders,
+            ...customHeaders,
+        } as HeadersInit;
 
         try {
             const resp = await fetch(url, {

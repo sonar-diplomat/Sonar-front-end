@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './AccountSettings.module.css';
 import { SettingsSection, SettingsItem, Input, Button, Modal, DropDown, LeftArrow, Form, LoadingImage } from '@shared/ui';
 import { useAuth } from '@shared/lib/auth/useAuth';
@@ -13,13 +13,17 @@ import {
   useUpdateUserAvatarMutation,
   useGetUserByIdQuery,
   useGetUserProfileQuery,
-  useGetUsersQuery
+  useGetUsersQuery,
+  userApi
 } from '@shared/api';
 import { getImageUrlById } from '@shared/lib/image-utils';
 import { useNotifications } from '@shared/store/notificationStore';
+import { useAppDispatch } from '@shared/store/hooks';
 
 export const AccountSettings: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useAppDispatch();
   const { logout } = useAuth();
   const currentUserId = useCurrentUserId();
   
@@ -115,12 +119,16 @@ export const AccountSettings: React.FC = () => {
     try {
       const updates: any = {};
       
+      // Save old public identifier before update
+      const oldPublicIdentifier = currentUserProfile?.publicIdentifier || currentUserData?.publicIdentifier;
+      const publicIdentifierChanged = publicIdentifier.trim() && publicIdentifier !== oldPublicIdentifier;
+      
       if (username.trim() && username !== currentUserProfile?.userName) {
         // Note: UserName might not be updatable via this endpoint
         // Keeping it for potential future API support
       }
       
-      if (publicIdentifier.trim() && publicIdentifier !== (currentUserProfile?.publicIdentifier || currentUserData?.publicIdentifier)) {
+      if (publicIdentifierChanged) {
         updates.PublicIdentifier = publicIdentifier.trim();
       }
       
@@ -138,15 +146,66 @@ export const AccountSettings: React.FC = () => {
       }
 
       // Update user data if there are changes
-      let updatedUserData = null;
+      let updatedUserData: any = null;
+      let newPublicIdentifierFromResponse: string | null = null;
+      
       if (Object.keys(updates).length > 0) {
         updatedUserData = await updateUser(updates).unwrap();
+        
+        // Get new publicIdentifier from response if it was updated
+        if (publicIdentifierChanged && updatedUserData?.publicIdentifier) {
+          newPublicIdentifierFromResponse = updatedUserData.publicIdentifier;
+        }
+        
         // Update form with returned data (including dateOfBirth and biography)
         if (updatedUserData?.dateOfBirth) {
           setDateOfBirth(updatedUserData.dateOfBirth);
         }
         if (updatedUserData?.biography !== undefined) {
           setBiography(updatedUserData.biography || '');
+        }
+        
+        // Update RTK Query cache with new data immediately
+        if (currentUserId && updatedUserData) {
+          dispatch(
+            userApi.util.updateQueryData('getUserById', currentUserId, (draft) => {
+              Object.assign(draft, updatedUserData);
+            })
+          );
+        }
+      }
+
+      // If public identifier changed, update URL and cache
+      if (publicIdentifierChanged && oldPublicIdentifier) {
+        const newPublicIdentifier = newPublicIdentifierFromResponse || publicIdentifier.trim();
+        
+        // Invalidate cache for old and new profile identifiers and user data
+        const tagsToInvalidate: Array<{ type: 'User'; id: string | number }> = [
+          { type: 'User', id: `PROFILE_${oldPublicIdentifier}` },
+          { type: 'User', id: `PROFILE_${newPublicIdentifier}` },
+          { type: 'User', id: 'LIST' }, // Invalidate user list to refresh all user data
+        ];
+        
+        if (currentUserId) {
+          tagsToInvalidate.push(
+            { type: 'User', id: currentUserId },
+            { type: 'User', id: `PROFILE_${currentUserId}` }
+          );
+        }
+        
+        dispatch(userApi.util.invalidateTags(tagsToInvalidate));
+        
+        // Check if we're currently on the profile page with old identifier
+        const profilePathPattern = /^\/user\/([^/]+)$/;
+        const match = location.pathname.match(profilePathPattern);
+        
+        if (match && match[1] === oldPublicIdentifier) {
+          // Update URL to new identifier immediately
+          navigate(`/user/${newPublicIdentifier}`, { replace: true });
+        } else {
+          // Store new identifier in sessionStorage so we can redirect after navigate(-1)
+          sessionStorage.setItem('updatedPublicIdentifier', newPublicIdentifier);
+          sessionStorage.setItem('oldPublicIdentifier', oldPublicIdentifier);
         }
       }
 

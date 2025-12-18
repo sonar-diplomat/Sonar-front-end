@@ -18,6 +18,10 @@
   padding-bottom: var(--content-bottom-padding-with-player);
 }
 
+.scrollableContent.noPadding {
+  padding-bottom: 0;
+}
+
 .fixedBottomBars {
   position: fixed;
   bottom: 0;
