@@ -148,3 +148,27 @@ export interface User {
     tracks?: unknown[]
     settingsBlockedUsers?: unknown[]
 }
+
+export interface AuthorDTO {
+    pseudonym: string;
+    artistId: number;
+}
+
+export interface TopTrackDTO {
+    id: number;
+    title: string;
+    durationInSeconds: number;
+    coverId: number;
+    artists: AuthorDTO[];
+    albumId?: number | null;
+    albumName?: string | null;
+    playCount: number;
+}
+
+export interface TopArtistDTO {
+    id: number;
+    artistName: string;
+    userId: number;
+    avatarImageId?: number | null;
+    playCount: number;
+}

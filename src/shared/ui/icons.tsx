@@ -287,6 +287,12 @@ export const ErrorIcon: React.FC<IconProps> = ({ className }) => (
     </svg>
 )
 
+export const AlertTriangleIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none">
+        <path d="M12 9V13M12 17H12.01M10.29 2.86L1.82 18C1.64538 18.3024 1.55299 18.6453 1.552 19C1.55101 19.3547 1.64145 19.6982 1.81445 20.0018C1.98745 20.3054 2.23675 20.5581 2.53771 20.7329C2.83868 20.9077 3.18082 20.9984 3.53 21H20.47C20.8192 20.9984 21.1613 20.9077 21.4623 20.7329C21.7633 20.5581 22.0126 20.3054 22.1856 20.0018C22.3586 19.6982 22.449 19.3547 22.448 19C22.447 18.6453 22.3546 18.3024 22.18 18L13.71 2.86C13.5318 2.56631 13.2807 2.32311 12.9812 2.15447C12.6817 1.98584 12.3438 1.89725 12 1.89725C11.6562 1.89725 11.3183 1.98584 11.0188 2.15447C10.7193 2.32311 10.4682 2.56631 10.29 2.86Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+)
+
 export const ReplyIcon: React.FC<IconProps> = ({ className }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path

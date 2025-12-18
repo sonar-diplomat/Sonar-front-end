@@ -36,6 +36,8 @@ export const API_ENDPOINTS = {
         updateVisibility: (collectionId: number) => `User/${collectionId}/visibility`,
         removeFriend: (friendId: number) => `User/friends/${friendId}`,
         getFriends: 'User/friends',
+        topTracks: 'User/top-tracks',
+        topArtists: 'User/top-artists',
     },
     userFollow: {
         followers: (userId: number) => `UserFollow/${userId}/followers`,

@@ -89,6 +89,7 @@ export {
     CalendarIcon,
     ImageIcon,
     MusicNoteIcon,
+    AlertTriangleIcon,
 } from './icons';
 
 export { ActionMenu } from './ActionMenu';
@@ -106,4 +107,4 @@ export type {
 } from './LoadingPlaceholder';
 export type { LoadingImageProps } from './LoadingImage';
 export { LoadingImage } from './LoadingImage';
-
+export { WidgetErrorState } from './WidgetErrorState';

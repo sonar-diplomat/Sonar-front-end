@@ -1,40 +1,39 @@
 .topSongsWidget {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
-    background: var(--overlay-light);
-    border-radius: 25px;
-    padding: 16px;
-    box-sizing: border-box;
-    width: 100%;
+    padding: 24px;
+    background-color: var(--card-bg, rgba(255, 255, 255, 0.05));
+    border-radius: 16px;
+    height: 100%;
 }
 
 .label {
-    font-family: 'Roboto', sans-serif;
+    font-size: 18px;
     font-weight: 600;
-    font-size: 14px;
-    line-height: normal;
-    color: var(--text-secondary);
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: var(--text-primary, #ffffff);
+    margin: 0 0 20px;
 }
 
 .listContainer {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    flex-shrink: 0;
+    gap: 12px;
 }
 
 .divider {
-    background-color: rgba(255, 255, 255, 0.05);
     height: 1px;
-    border-radius: 3px;
-    width: 346px;
-    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.05);
+    margin: 4px 0;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.skeletonItem {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
 }

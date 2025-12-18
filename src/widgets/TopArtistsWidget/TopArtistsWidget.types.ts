@@ -8,5 +8,8 @@ export interface Artist {
 export interface TopArtistsWidgetProps {
     artists: Artist[];
     dateRange?: string;
+    isLoading?: boolean;
+    error?: boolean;
+    onRetry?: () => void;
     className?: string;
 }

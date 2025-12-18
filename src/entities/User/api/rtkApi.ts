@@ -8,6 +8,8 @@ import type {
   UserFriendDTO,
   UserFollowerDTO,
   UserFollowingDTO,
+  TopTrackDTO,
+  TopArtistDTO,
 } from '../model/types';
 
 /**
@@ -104,6 +106,22 @@ export const userApi = rtkApi.injectEndpoints({
       providesTags: [{ type: 'Friend', id: 'LIST' }],
     }),
 
+    getTopTracks: builder.query<TopTrackDTO[], void>({
+      query: () => ({
+        url: API_ENDPOINTS.user.topTracks,
+        method: 'GET',
+        withAuth: true,
+      }),
+    }),
+
+    getTopArtists: builder.query<TopArtistDTO[], void>({
+      query: () => ({
+        url: API_ENDPOINTS.user.topArtists,
+        method: 'GET',
+        withAuth: true,
+      }),
+    }),
+
     // Profile statistics endpoints
     getFollowers: builder.query<{ items: UserFollowerDTO[]; count: number }, number>({
       query: (userId) => ({
@@ -179,5 +197,6 @@ export const {
   useGetFollowingQuery,
   useFollowUserMutation,
   useUnfollowUserMutation,
+  useGetTopTracksQuery,
+  useGetTopArtistsQuery,
 } = userApi;
-

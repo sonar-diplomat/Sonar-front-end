@@ -9,7 +9,6 @@ import { ProfileActionButtons } from '@widgets/ProfileActionButtons';
 import { FollowersFollowingModal } from '@widgets/FollowersFollowingModal';
 import { MarkdownRenderer } from '@shared/lib/markdown/MarkdownRenderer';
 import { useProfileNavigation } from '@shared/hooks';
-import { getMockTopSongs, getMockTopArtists } from '@shared/lib/mocks';
 import { createPlaylistSection } from '@shared/lib/profile';
 import { getImageUrl } from '@shared/lib/image-utils';
 import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
@@ -20,6 +19,8 @@ import {
     useGetFriendsQuery,
     useFollowUserMutation,
     useUnfollowUserMutation,
+    useGetTopTracksQuery,
+    useGetTopArtistsQuery,
 } from '@entities/User/api/rtkApi';
 import { useCreateChatMutation, useGetChatsQuery } from '@entities/Chat/api/rtkApi';
 import { useNavigate } from 'react-router-dom';
@@ -75,6 +76,25 @@ export const UserProfile: React.FC<UserProfileProps> = ({
     // Get user's chats to check for existing personal chat
     const { data: userChats, refetch: refetchChats } = useGetChatsQuery(undefined, {
         skip: !currentUserId || viewerType === 'owner',
+    });
+
+    // Get top tracks and artists (only for owner)
+    const { 
+        data: topTracksData, 
+        isLoading: isLoadingTopTracks,
+        isError: isTopTracksError,
+        refetch: refetchTopTracks
+    } = useGetTopTracksQuery(undefined, {
+        skip: viewerType !== 'owner',
+    });
+
+    const { 
+        data: topArtistsData,
+        isLoading: isLoadingTopArtists,
+        isError: isTopArtistsError,
+        refetch: refetchTopArtists
+    } = useGetTopArtistsQuery(undefined, {
+        skip: viewerType !== 'owner',
     });
 
     // Check if current user is following the profile user
@@ -160,9 +180,29 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         }
     };
 
-    const [topSongs] = useState(getMockTopSongs);
-    const [topArtists] = useState(getMockTopArtists);
     const [modalType, setModalType] = useState<'followers' | 'following' | null>(null);
+
+    // Transform API data to widget format
+    const topSongs = useMemo(() => {
+        if (!topTracksData) return [];
+        return topTracksData.map(track => ({
+            id: track.id.toString(),
+            title: track.title,
+            artist: track.artists.map(a => a.pseudonym).join(', '),
+            imageSrc: getImageUrl(track.coverId) || '',
+            imageAlt: track.title
+        }));
+    }, [topTracksData]);
+
+    const topArtists = useMemo(() => {
+        if (!topArtistsData) return [];
+        return topArtistsData.map(artist => ({
+            id: artist.id.toString(),
+            name: artist.artistName,
+            imageSrc: getImageUrl(artist.avatarImageId || 0) || '',
+            imageAlt: artist.artistName
+        }));
+    }, [topArtistsData]);
 
     // Transform UserPlaylistDTO[] to Playlist[] format
     const playlists = useMemo(() => {
@@ -258,17 +298,27 @@ export const UserProfile: React.FC<UserProfileProps> = ({
             <div className={styles.widgetsContainer}>
                 <div className={styles.topRow}>
                     {bioSection}
-                    <TopSongsWidget
-                        songs={topSongs}
-                        dateRange="Nov 10 –16"
-                        onSongMenuClick={(songId) => console.log('Menu clicked for song:', songId)}
-                    />
+                    {(viewerType === 'owner') && (
+                        <TopSongsWidget
+                            songs={topSongs}
+                            isLoading={isLoadingTopTracks}
+                            error={isTopTracksError}
+                            onRetry={refetchTopTracks}
+                            dateRange=""
+                            onSongMenuClick={(songId) => console.log('Menu clicked for song:', songId)}
+                        />
+                    )}
                 </div>
                 <div className={styles.bottomRow}>
-                    <TopArtistsWidget
-                        artists={topArtists}
-                        dateRange="Nov 10 –16"
-                    />
+                    {(viewerType === 'owner') && (
+                        <TopArtistsWidget
+                            artists={topArtists}
+                            isLoading={isLoadingTopArtists}
+                            error={isTopArtistsError}
+                            onRetry={refetchTopArtists}
+                            dateRange=""
+                        />
+                    )}
                 </div>
             </div>
         </>

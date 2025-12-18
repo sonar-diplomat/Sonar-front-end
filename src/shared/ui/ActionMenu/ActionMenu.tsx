@@ -1,8 +1,8 @@
 import React, {useState, useMemo, useCallback} from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './ActionMenu.module.css';
-import { Modal } from '@shared/ui';
-import { ShareIcon, WarningIcon, HeartIcon, PlusIcon, FolderCoverIcon } from '@shared/ui';
+import { Modal } from '../Modal';
+import { ShareIcon, WarningIcon, HeartIcon, PlusIcon, FolderCoverIcon } from '../icons';
 import { ShareComponent } from '@widgets/ShareComponent';
 import type { ShareEntityType } from '@widgets/ShareComponent';
 import { ReportComponent } from '@widgets/ReportComponent';
