@@ -1,6 +1,6 @@
 import React, {useState, useRef} from 'react';
 import styles from './CreatePlaylist.module.css';
-import {Button, Input, PlusIcon, LeftArrow} from "@shared/ui";
+import {Button, Input, PlusIcon, LeftArrow, LoadingImage} from "@shared/ui";
 import {useNavigate, useLocation} from 'react-router-dom';
 import { useCreatePlaylistMutation, useAddCollectionToFolderMutation } from '@shared/api';
 
@@ -130,8 +130,8 @@ export const CreatePlaylist: React.FC<CreatePlaylistProps> = ({className = ''}) 
 
                 {coverPreview && (
                     <div style={{ marginBottom: '16px', textAlign: 'center' }}>
-                        <img 
-                            src={coverPreview} 
+                        <LoadingImage
+                            src={coverPreview}
                             alt="Cover preview" 
                             style={{ 
                                 maxWidth: '200px', 

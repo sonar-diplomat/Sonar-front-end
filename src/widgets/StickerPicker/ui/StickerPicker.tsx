@@ -1,7 +1,7 @@
 import React from 'react';
 import { useGetChatStickersQuery } from '@entities/ChatSticker';
 import { getImageUrlById } from '@shared/lib/image-utils';
-import { LoadingPlaceholder } from '@shared/ui';
+import { LoadingPlaceholder, LoadingImage } from '@shared/ui';
 import styles from './StickerPicker.module.css';
 
 export interface StickerPickerProps {
@@ -42,12 +42,14 @@ export const StickerPicker: React.FC<StickerPickerProps> = ({ onSelect, onClose 
                 aria-label={sticker.name}
               >
                 {imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt={sticker.name}
-                    className={styles.stickerImage}
-                    loading="lazy"
-                  />
+                  <div className={styles.imageWrapper}>
+                    <LoadingImage
+                      src={imageUrl}
+                      alt={sticker.name}
+                      objectFit="contain"
+                      loading="lazy"
+                    />
+                  </div>
                 ) : (
                   <div className={styles.stickerPlaceholder}>{sticker.name}</div>
                 )}

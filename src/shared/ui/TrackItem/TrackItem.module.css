@@ -26,14 +26,20 @@
     min-width: 0;
 }
 
-.image {
+.imageWrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.imagePlaceholder {
     width: 44px;
     height: 44px;
     border-radius: 16px;
     background-color: var(--text-muted);
     flex-shrink: 0;
-    object-fit: cover;
-    object-position: center;
 }
 
 .textContainer {

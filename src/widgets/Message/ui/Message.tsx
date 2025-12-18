@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { Message as MessageType } from '@entities/Chat';
-import { CheckMark, ClockIcon, ErrorIcon, ReplyIcon, CopyIcon, EditIcon, DeleteIcon, Info, Button } from '@shared/ui';
+import { CheckMark, ClockIcon, ErrorIcon, ReplyIcon, CopyIcon, EditIcon, DeleteIcon, Info, Button, LoadingImage } from '@shared/ui';
 import { MessageContentRenderer, shouldShowEmbed } from '@shared/lib/chat-embeds';
 import { isStickerMessage } from '@shared/lib/chat-stickers';
 import styles from './Message.module.css';
@@ -182,7 +182,7 @@ export const Message: React.FC<MessageProps> = ({
             {showAvatar && (
                 <div className={styles.avatar}>
                     {senderAvatar ? (
-                        <img src={senderAvatar} alt={senderName || 'User'} className={styles.avatarImage} />
+                        <LoadingImage src={senderAvatar} alt={senderName || 'User'} className={styles.avatarImage} />
                     ) : (
                         <div className={styles.avatarPlaceholder}>
                             {senderName ? senderName.charAt(0).toUpperCase() : 'U'}

@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './SongItem.module.css';
 import type { SongItemProps } from '@shared/ui';
-import { MoreIcon} from '@shared/ui';
+import { MoreIcon, LoadingImage } from '@shared/ui';
 
 export const SongItem: React.FC<SongItemProps> = ({
     rank,
@@ -20,11 +20,12 @@ export const SongItem: React.FC<SongItemProps> = ({
     return (
         <div className={wrapperClasses}>
             <div className={styles.content}>
-                <img
-                    src={imageSrc}
-                    alt={imageAlt}
-                    className={styles.image}
-                />
+                <div className={styles.imageWrapper}>
+                    <LoadingImage
+                        src={imageSrc}
+                        alt={imageAlt}
+                    />
+                </div>
                 <div className={styles.info}>
                     <p className={styles.rank}>{rank}.</p>
                     <div className={styles.textContainer}>

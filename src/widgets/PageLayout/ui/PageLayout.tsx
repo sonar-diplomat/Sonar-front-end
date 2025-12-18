@@ -50,7 +50,7 @@ export const PageLayout = () => {
 
   return (
     <div className={styles.pageLayout}>
-      <div className={styles.scrollableContent}>
+      <div className={`${styles.scrollableContent} ${currentTrack ? styles.withPlayer : ''}`}>
         <Outlet />
       </div>
       <div className={styles.fixedBottomBars}>

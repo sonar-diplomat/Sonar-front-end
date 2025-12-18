@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '@shared/lib/image-utils';
 import type { UserFollowerDTO, UserFollowingDTO } from '@entities/User/model/types';
+import { LoadingImage } from '@shared/ui';
 import styles from './UserListItem.module.css';
 
 interface UserListItemProps {
@@ -23,10 +24,9 @@ export const UserListItem: React.FC<UserListItemProps> = ({ user, onUserClick })
     return (
         <button className={styles.userItem} onClick={handleClick}>
             <div className={styles.avatarContainer}>
-                <img 
-                    src={avatarUrl} 
+                <LoadingImage
+                    src={avatarUrl}
                     alt={user.userName}
-                    className={styles.avatar}
                 />
             </div>
             <div className={styles.userInfo}>

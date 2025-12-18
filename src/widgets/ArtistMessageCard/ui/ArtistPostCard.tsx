@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './ArtistMessageCard.module.css';
-import {Button, PlayIcon, LinkIcon, MoreIcon} from '@shared/ui';
+import {Button, PlayIcon, LinkIcon, MoreIcon, LoadingImage} from '@shared/ui';
 
 export interface ArtistMessage {
     id: string;
@@ -64,10 +64,9 @@ export const ArtistPostCard: React.FC<ArtistMessageCardProps> = ({
             {/* Track Preview (if exists) */}
             {message.track && (
                 <div className={styles.trackPreview}>
-                    <img
+                    <LoadingImage
                         src={message.track.coverImage}
                         alt={message.track.title}
-                        className={styles.trackImage}
                     />
                     <div className={styles.trackOverlay}>
                         <Button
@@ -87,11 +86,12 @@ export const ArtistPostCard: React.FC<ArtistMessageCardProps> = ({
                 {/* Message Header */}
                 <div className={styles.header}>
                     <div className={styles.authorInfo}>
-                        <img
-                            src={message.artistImage}
-                            alt={message.artistName}
-                            className={styles.avatar}
-                        />
+                        <div className={styles.avatarWrapper}>
+                            <LoadingImage
+                                src={message.artistImage}
+                                alt={message.artistName}
+                            />
+                        </div>
                         <div className={styles.textInfo}>
                             <h3 className={styles.title}>{message.title}</h3>
                             <div className={styles.metadata}>

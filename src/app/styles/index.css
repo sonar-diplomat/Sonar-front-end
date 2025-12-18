@@ -14,6 +14,8 @@ body {
   color: var(--text-primary);
   height: 100vh;
   overflow: hidden;
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
 }
 
 #root {
