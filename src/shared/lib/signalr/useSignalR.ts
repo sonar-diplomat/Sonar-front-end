@@ -56,6 +56,11 @@ export interface ChatUserRemovedEvent {
   userId: number;
 }
 
+export interface ChatDeletedEvent {
+  chatId: number;
+  initiatorId: number;
+}
+
 export interface TypingEvent {
   chatId: number;
   userId: number;
@@ -74,6 +79,7 @@ export const useSignalR = () => {
     onChatCoverUpdated?: (event: ChatCoverUpdatedEvent) => void;
     onChatUserAdded?: (event: ChatUserAddedEvent) => void;
     onChatUserRemoved?: (event: ChatUserRemovedEvent) => void;
+    onChatDeleted?: (event: ChatDeletedEvent) => void;
     onTyping?: (event: TypingEvent) => void;
   }>({});
   const [connectionState, setConnectionState] = useState<HubConnectionState>(
@@ -144,6 +150,11 @@ export const useSignalR = () => {
         callbacksRef.current.onChatUserRemoved(event);
       }
     };
+    const chatDeletedWrapper = (event: ChatDeletedEvent) => {
+      if (callbacksRef.current.onChatDeleted) {
+        callbacksRef.current.onChatDeleted(event);
+      }
+    };
     const typingWrapper = (event: TypingEvent) => {
       if (callbacksRef.current.onTyping) {
         callbacksRef.current.onTyping(event);
@@ -159,6 +170,7 @@ export const useSignalR = () => {
     signalRManager.on<ChatCoverUpdatedEvent>('chat.cover.updated', chatCoverUpdatedWrapper);
     signalRManager.on<ChatUserAddedEvent>('chat.user.added', chatUserAddedWrapper);
     signalRManager.on<ChatUserRemovedEvent>('chat.user.removed', chatUserRemovedWrapper);
+    signalRManager.on<ChatDeletedEvent>('chat.deleted', chatDeletedWrapper);
     signalRManager.on<TypingEvent>('Typing', typingWrapper);
 
     return () => {
@@ -170,6 +182,7 @@ export const useSignalR = () => {
       signalRManager.off('chat.cover.updated', chatCoverUpdatedWrapper);
       signalRManager.off('chat.user.added', chatUserAddedWrapper);
       signalRManager.off('chat.user.removed', chatUserRemovedWrapper);
+      signalRManager.off('chat.deleted', chatDeletedWrapper);
       signalRManager.off('Typing', typingWrapper);
     };
   }, []);
