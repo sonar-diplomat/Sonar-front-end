@@ -143,6 +143,23 @@ export const AccountSettings: React.FC = () => {
       // Update avatar if selected
       if (selectedAvatarFile) {
         await updateUserAvatar(selectedAvatarFile).unwrap();
+        
+        // Invalidate user profile and user data caches after avatar update
+        if (currentUserId) {
+          const tagsToInvalidate: Array<{ type: 'User'; id: string | number }> = [
+            { type: 'User', id: currentUserId },
+            { type: 'User', id: `PROFILE_${currentUserId}` },
+            { type: 'User', id: 'LIST' },
+          ];
+          
+          // Also invalidate profile by identifier if we have it
+          const currentPublicIdentifier = currentUserProfile?.publicIdentifier || currentUserData?.publicIdentifier;
+          if (currentPublicIdentifier) {
+            tagsToInvalidate.push({ type: 'User', id: `PROFILE_${currentPublicIdentifier}` });
+          }
+          
+          dispatch(userApi.util.invalidateTags(tagsToInvalidate));
+        }
       }
 
       // Update user data if there are changes
@@ -172,6 +189,23 @@ export const AccountSettings: React.FC = () => {
               Object.assign(draft, updatedUserData);
             })
           );
+        }
+        
+        // Invalidate user profile caches after any user data update (including biography)
+        if (currentUserId) {
+          const tagsToInvalidate: Array<{ type: 'User'; id: string | number }> = [
+            { type: 'User', id: currentUserId },
+            { type: 'User', id: `PROFILE_${currentUserId}` },
+            { type: 'User', id: 'LIST' },
+          ];
+          
+          // Also invalidate profile by identifier if we have it
+          const currentPublicIdentifier = currentUserProfile?.publicIdentifier || currentUserData?.publicIdentifier;
+          if (currentPublicIdentifier) {
+            tagsToInvalidate.push({ type: 'User', id: `PROFILE_${currentPublicIdentifier}` });
+          }
+          
+          dispatch(userApi.util.invalidateTags(tagsToInvalidate));
         }
       }
 

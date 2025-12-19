@@ -47,22 +47,31 @@
 }
 
 .message.withSticker {
-    max-width: 350px !important;
+    max-width: none !important;
+    width: auto !important;
+    overflow: visible;
 }
 
 .message.withSticker .messageContent {
     padding: 0 !important;
     background-color: transparent !important;
     border-radius: 0 !important;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
 }
 
 .message.withSticker .contentWrapper {
     position: relative;
+    overflow: visible;
+    width: auto;
 }
 
 .message.withSticker .content {
     position: relative;
-    padding: 4px;
+    padding: 0;
+    overflow: visible;
+    width: auto;
 }
 
 .message.withSticker .metaRight {
