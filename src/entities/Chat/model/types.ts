@@ -29,6 +29,9 @@ export interface MessageDTO {
     id?: number;
     createdAt?: string; // ISO date string
     senderId?: number;
+    senderName?: string;
+    senderAvatarImageId?: number;
+    senderPublicIdentifier?: string;
     
     // Required fields for creation
     textContent: string;

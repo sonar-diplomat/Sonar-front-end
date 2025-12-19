@@ -8,6 +8,7 @@ import type { Message as MessageType } from '@entities/Chat/model/types/Message'
 import type { MessageDTO, MessageReadDTO } from '@entities/Chat/model/types';
 import { 
     useGetChatMessagesQuery, 
+    useGetChatInfoQuery,
     useSendMessageMutation,
     useDeleteMessageMutation,
     useEditMessageMutation,
@@ -44,6 +45,13 @@ export const Chat: React.FC = () => {
     const currentUserId = useCurrentUserId();
 
     const chatIdNumber = chatId ? Number(chatId) : 0;
+    
+    // Get chat info to determine if it's a group chat
+    const { data: chatInfo } = useGetChatInfoQuery(chatIdNumber, {
+        skip: !chatIdNumber,
+    });
+    
+    const isGroupChat = chatInfo?.isGroup ?? false;
     
     // Helper function to determine message status from ReadBy
     const getMessageStatus = useCallback((msg: MessageDTO, senderId?: number): MessageType['status'] => {
@@ -293,13 +301,16 @@ export const Chat: React.FC = () => {
         setCallbacks({
             onMessageCreated: (event: MessageCreatedEvent) => {
                 if (event.chatId === chatIdNumber) {
-                    // Add new message directly to state
+                    // Add new message directly to state with sender information
                     const newMessage: MessageType = {
                         id: event.id,
                         textContent: event.textContent,
                         replyMessageId: event.replyMessageId || undefined,
                         chatId: event.chatId,
                         senderId: event.senderId,
+                        senderName: event.senderName,
+                        senderAvatarImageId: event.senderAvatarImageId,
+                        senderPublicIdentifier: event.senderPublicIdentifier,
                         createdAt: event.createdAtUtc,
                         readBy: event.senderId === currentUserId 
                             ? [] // Empty ReadBy for own messages initially
@@ -446,7 +457,6 @@ export const Chat: React.FC = () => {
         // If we have messages and a cursor, there are likely more
         return allMessages.length > 0;
     }, [oldestCursor, messagesData?.hasMore, allMessages.length]);
-    const isGroupChat = false; // Will be determined from message context if needed
 
     // Process messages to add replyMessage objects
     const messages = React.useMemo(() => {
@@ -457,7 +467,6 @@ export const Chat: React.FC = () => {
         return allMessages.map((message) => {
             const processedMessage: MessageType = {
                 ...message,
-                senderName: undefined,
             };
             
             if (message.replyMessageId) {
@@ -901,7 +910,7 @@ export const Chat: React.FC = () => {
                         message={message}
                         isOwn={message.senderId === currentUserId}
                         currentUserId={currentUserId}
-                        senderName={message.senderId !== currentUserId && isGroupChat ? undefined : undefined}
+                        senderName={message.senderId !== currentUserId && isGroupChat ? message.senderName : undefined}
                         senderAvatar={undefined}
                         isGroupChat={isGroupChat}
                         onReply={handleReply}

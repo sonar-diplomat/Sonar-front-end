@@ -169,7 +169,7 @@ export const Message: React.FC<MessageProps> = ({
     };
 
     const showSenderName = !isOwn && isGroupChat && senderName;
-    const showAvatar = !isOwn && isGroupChat;
+    const showAvatar = false; // Avatars disabled, only show sender name
     const hasEmbed = shouldShowEmbed(message.textContent);
     const hasSticker = isStickerMessage(message.textContent);
 

@@ -11,6 +11,8 @@ export interface Message {
  chatId: number;
  senderId?: number;
  senderName?: string;
+ senderAvatarImageId?: number;
+ senderPublicIdentifier?: string;
  createdAt?: string;
  status?: MessageStatus;
  readBy?: MessageReadDTO[]; // Read status from API

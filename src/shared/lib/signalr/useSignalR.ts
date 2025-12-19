@@ -10,6 +10,9 @@ export interface MessageCreatedEvent {
   id: number;
   chatId: number;
   senderId: number;
+  senderName: string;
+  senderAvatarImageId: number;
+  senderPublicIdentifier: string;
   textContent: string;
   replyMessageId: number | null;
   createdAtUtc: string;

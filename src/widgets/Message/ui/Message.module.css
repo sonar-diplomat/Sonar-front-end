@@ -13,13 +13,13 @@
 }
 
 .message.withEmbed {
-    max-width: 95% !important;
-    width: 95% !important;
+    max-width: 600px !important;
+    width: 600px !important;
 }
 
 .message.withAvatar.withEmbed {
-    max-width: 98% !important;
-    width: 98% !important;
+    max-width: 600px !important;
+    width: 600px !important;
 }
 
 .message.withEmbed .messageContent {
@@ -30,6 +30,7 @@
 
 .message.withEmbed .contentWrapper {
     width: 100%;
+    max-width: 100%;
 }
 
 .message.withEmbed .content {
@@ -115,6 +116,11 @@
     color: var(--input-text);
     border-radius: 16px;
     padding: 8px 12px;
+}
+
+.message.withEmbed .messageContent {
+    width: 100% !important;
+    max-width: 100% !important;
 }
 
 .senderName {
@@ -278,4 +284,13 @@
     fill: currentColor;
 }
 
+@media (max-width: 480px) {
+    .message.withEmbed {
+        max-width: 400px !important;
+    }
+
+    .message.withAvatar.withEmbed {
+        max-width: 400px !important;
+    }
+}
 
