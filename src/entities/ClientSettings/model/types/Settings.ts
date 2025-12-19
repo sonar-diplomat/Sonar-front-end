@@ -1,9 +1,9 @@
-import type { PlaybackQuality } from "./PlaybackQuality";
-import type { Language } from "./Language";
-import type { Theme } from "./Theme";
-import type { NotificationType } from "./NotificationType";
-import type { User } from '@entities/User';
-import type { UserPrivacySettings } from "./UserPrivacySettings";
+import { PlaybackQuality} from "./PlaybackQuality";
+import { Language} from "./Language";
+import { Theme} from "./Theme";
+import { NotificationType} from "./NotificationType";
+import { User} from '../../../User';
+import { UserPrivacySettings} from "./UserPrivacySettings";
 
 export interface Settings {
  id: number;
