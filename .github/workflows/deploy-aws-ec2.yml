@@ -62,6 +62,6 @@ jobs:
             docker run -d --name sonar-frontend \
               --network sonar_default \
               --restart unless-stopped \
-              -p 80:80 \
+              -p 3000:80 \
               $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
             docker image prune -af --filter "until=24h" || true
