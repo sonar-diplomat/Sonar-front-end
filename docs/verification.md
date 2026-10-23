@@ -1,5 +1,25 @@
 # Verification record
 
+## Integration recheck: 2026-10-24
+
+The remaining `chore/pages-workflow-bootstrap` history was consolidated into `feat/mock-demo-github-pages`. Its temporary `pages.yml` entry point conflicts with the full demo workflow; the executable demo workflow was retained, including the published-probe gate and deployment environment. The two legacy server workflows remain manual-only with disabled deployment jobs. This integration does not register a workflow on `master` or change deployment protection rules.
+
+Repeated local checks on the integrated application:
+
+| Check | Observed result |
+| --- | --- |
+| Quality | Task/actionlint, both TypeScript projects and full ESLint pass; all 47 tests pass (37 demo/player, 4 profiles, 6 media/importer) |
+| Mandatory catalog gate | Full `task ci:check` still fails at `Missing manifest audio for seed track 2`; it has not been skipped or relaxed |
+| API build | Passes; release audit verifies 373 rendered modules and 98 output files without demo runtime or audio |
+| Demo build | Passes with explicit mock profile and lazy chunks; no chunk-size warning |
+| Docker | Actual 601-file context, no-demo/no-LFS builder, runtime inspection, Nginx configuration and HTTP 200 pass |
+| Standalone MP3 probe | Packages 6,572,309 bytes; GET/HEAD, length, MIME, SHA-256 and 206 seek checks pass |
+| Compiled browser smoke | Home and populated library render; one audio element plays track 1 with advancing time, duration 205.078639 and readyState 4; seeking to 60 seconds and navigation retain playback; hash deep-link reload restores a paused position |
+
+The browser smoke used the compiled demo with a diagnostic local media responder, not the incomplete final `.pages/` artifact. No application warnings/errors were observed during this smoke. Full twelve-track packaging, published Pages verification and physical mobile playback remain unverified. The existing one-track manifest still limits playback of the other eleven seed songs.
+
+## Earlier verification
+
 Local verification on 2026-10-23 used the frozen frontend source, Node 24.14.0 and dependencies installed with `npm ci --no-audit --no-fund`. Publication acceptance remains incomplete.
 
 | Check | Observed result |
