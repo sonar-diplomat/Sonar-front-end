@@ -1,11 +1,17 @@
 // eslint.config.ts
-import * as eslint from '@eslint/js';
-import * as importPlugin from 'eslint-plugin-import';
+import eslint from '@eslint/js';
+import importPlugin from 'eslint-plugin-import';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
+    { ignores: ['node_modules/**', 'dist/**', '.pages/**', '.pages-probe/**', 'coverage/**'] },
     eslint.configs.recommended,
     ...tseslint.configs.recommended,
+    {
+        files: ['scripts/**/*.mjs', 'tests/**/*.mjs'],
+        languageOptions: { globals: globals.node },
+    },
     {
         files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
         plugins: {
@@ -13,14 +19,16 @@ export default tseslint.config(
         },
         languageOptions: {
             parserOptions: {
-                project: './tsconfig.json',
+                project: ['./tsconfig.app.json', './tsconfig.node.json'],
+                tsconfigRootDir: import.meta.dirname,
             },
         },
         settings: {
+            'import/core-modules': ['@demo-seed', '@demo-media'],
             'import/resolver': {
                 typescript: {
                     alwaysTryTypes: true,
-                    project: './tsconfig.json',
+                    project: ['./tsconfig.app.json', './tsconfig.node.json'],
                 },
                 node: true,
             },

@@ -38,6 +38,8 @@ Storage keys use `sonar-demo:` with a versioned `{ schemaVersion, seedVersion, s
 
 Binary uploads use IndexedDB database `sonar-demo`, store `uploads`, IDs >=10000. Runtime exports `getUploadedMediaUrl(id): Promise<string | null>` plus a sync cached lookup after bootstrap. Runtime owns object URL lifetime. Do not encode uploads into localStorage.
 
+Local authentication receipts use an outbox exposed by `getDemoOutbox()`: `{ id, kind, email, token, createdAt, usedAt? }`. The one-use demonstration token is `demo-token`; receipts are visibly local confirmation/recovery links. `enterDemoSession()` handles explicit demo entry. Bootstrap enters user1 on first launch; logout persists a null session until explicit entry/login or reset. Reset restores user1. Local login/registration validate identity and password digest without server tokens.
+
 ## Local chat events
 
 Preserve typed payloads exported by `src/shared/lib/signalr/useSignalR.ts`. In mock, signalRManager/useSignalR use an in-process bus for message create/read/update/delete, chat name/cover/member/delete and typing. Mutations emit those payloads, and UI deduplicates messages by ID. No Hub object/connect/reconnect or refresh is invoked in mock. API keeps real SignalR loaded as needed.
@@ -61,4 +63,4 @@ Acceptance order: common type/lint/data/YAML/tests → demo build → selective 
 | UI/player | `src/app/**`, pages/widgets/shared UI, UI hooks, `src/features/**/ui/**`, audio library, image-utils, player slice, `entities/Music/api/api.ts`, `shared/demo/media.ts` and media types, `docs/demo-ui-audit.md`, `demo-playback.md` |
 | Media/CI | `demo/audio/**`, images/manifest/licenses/demo README, attributes/ignore/Docker/workflows, `Taskfile.yaml`, `tasks/**`, `scripts/**`, `docs/media-storage.md`, `tasks.md`, `ci-cd.md` |
 
-All paths in this table are repository-relative; abbreviated src areas are under `src/`. Another owner's files require an explicit handoff. Dependencies and global config go through the coordinator. Legacy workflows stay manual-only with deploy jobs disabled. Task YAML commands are used locally and by CI.
+All paths in this table are repository-relative; abbreviated src areas are under `src/`. The coordinator also owns `tests/build-profiles.test.mjs`. Data/API owns remaining shared stores except player/notification UI, shared types and user-library hooks. UI owns chat embeds, Markdown/profile/favorites helpers and the notification store. Another owner's files require an explicit handoff. Dependencies and global config go through the coordinator. Legacy workflows stay manual-only with deploy jobs disabled. Task YAML commands are used locally and by CI.
