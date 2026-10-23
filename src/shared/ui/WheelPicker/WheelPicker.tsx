@@ -1,4 +1,4 @@
-import React,{ useCallback,useEffect,useMemo,useRef,useState,type CSSProperties } from "react";
+import React,{ useCallback,useEffect,useId,useMemo,useRef,useState,type CSSProperties } from "react";
 
 import styles from "./WheelPicker.module.css";
 
@@ -15,6 +15,7 @@ interface WheelPickerProps {
     itemHeight?: number;
     visibleItems?: number;
     className?: string;
+    ariaLabel?: string;
 }
 
 interface WheelPickerWrapperProps {
@@ -43,13 +44,18 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
     itemHeight = 44,
     visibleItems = 5,
     className = "",
+    ariaLabel = 'Choose value',
 }) => {
+    const pickerId = useId();
     const containerRef = useRef<HTMLDivElement>(null);
     const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isScrollingRef = useRef(false);
     const isRepositioningRef = useRef(false);
     const lastScrollTopRef = useRef(0);
-    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useState(() => {
+        const index = options.findIndex(option => option.value === value);
+        return index >= 0 ? index : Math.floor(options.length / 2);
+    });
 
     const paddingItems = useMemo(
         () => Math.floor(visibleItems / 2),
@@ -83,7 +89,7 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
     }, [itemHeight]);
 
     const getActualIndex = useCallback((displayIndex: number): number => {
-        return infinite ? displayIndex % options.length : displayIndex;
+        return infinite && options.length ? displayIndex % options.length : displayIndex;
     }, [infinite, options.length]);
 
     const updateSelection = useCallback((index: number) => {
@@ -144,7 +150,7 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
     }, [infinite, itemHeight, options.length, displayOptions.length, updateSelection, scrollToIndex]);
 
     const handleScroll = useCallback(() => {
-        if (!containerRef.current || isRepositioningRef.current) return;
+        if (!containerRef.current || isRepositioningRef.current || !options.length) return;
 
         const scrollTop = containerRef.current.scrollTop;
         const scrollDelta = scrollTop - lastScrollTopRef.current;
@@ -182,9 +188,25 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
     }, [infinite, itemHeight, options.length, displayOptions.length, repositionScroll, snapToNearest]);
 
     const handleItemClick = useCallback((index: number) => {
+        containerRef.current?.focus();
         scrollToIndex(index, true);
         updateSelection(index);
     }, [scrollToIndex, updateSelection]);
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (!options.length) return;
+        const movement: Record<string, number> = { ArrowDown: 1, ArrowUp: -1, PageDown: 10, PageUp: -10 };
+        let next = selectedIndex;
+        if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = options.length - 1;
+        else if (event.key in movement) next += movement[event.key];
+        else return;
+        event.preventDefault();
+        next = infinite ? (next % options.length + options.length) % options.length : Math.max(0, Math.min(next, options.length - 1));
+        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+        updateSelection(next + initialOffset);
+        scrollToIndex(next + initialOffset, false);
+    };
 
     useEffect(() => {
         if (value !== undefined) {
@@ -224,6 +246,12 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
                 ref={containerRef}
                 className={styles.wheelPickerScroll}
                 onScroll={handleScroll}
+                onKeyDown={handleKeyDown}
+                role="listbox"
+                aria-label={ariaLabel}
+                aria-activedescendant={options.length ? `${pickerId}-${selectedIndex + initialOffset}` : undefined}
+                aria-disabled={!options.length}
+                tabIndex={options.length ? 0 : -1}
                 style={
                     {
                         height: `${containerHeight}px`,
@@ -241,6 +269,10 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
                     return (
                         <div
                             key={`${option.value}-${index}`}
+                            id={`${pickerId}-${index}`}
+                            role="option"
+                            aria-selected={isSelected}
+                            aria-hidden={infinite && (index < options.length || index >= options.length * 2) ? true : undefined}
                             className={`${styles.wheelPickerItem} ${
                                 isSelected ? styles.selected : ""
                             }`}

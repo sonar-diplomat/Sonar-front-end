@@ -1,4 +1,4 @@
-import React,{ useState } from 'react';
+import React,{ useMemo,useState } from 'react';
 
 import { Button,Modal,WheelPicker,WheelPickerWrapper } from "@shared/ui";
 import { dayOptions,monthOptions,yearOptions } from "@widgets/ModalDatePicker/model";
@@ -10,8 +10,7 @@ export interface ModalDatePickerProps {
     initialValue?: string;
 }
 
-export const ModalDatePicker: React.FC<ModalDatePickerProps> = ({isOpen, onClose, onConfirm, initialValue}) => {
-    const parseInitialDate = () => {
+const parseInitialDate = (initialValue?: string) => {
         if (!initialValue) {
             return {
                 month: "January",
@@ -30,7 +29,7 @@ export const ModalDatePicker: React.FC<ModalDatePickerProps> = ({isOpen, onClose
                 return {
                     year: parts[0],
                     month: monthNames[monthIndex] || "January",
-                    day: parts[2].padStart(2, '0')
+                    day: String(Number(parts[2]))
                 };
             }
         }
@@ -40,7 +39,7 @@ export const ModalDatePicker: React.FC<ModalDatePickerProps> = ({isOpen, onClose
         if (parts.length === 3) {
             const monthIndex = parseInt(parts[1]) - 1;
             return {
-                day: parts[0].padStart(2, '0'),
+                day: String(Number(parts[0])),
                 month: monthNames[monthIndex] || "January",
                 year: parts[2]
             };
@@ -51,32 +50,40 @@ export const ModalDatePicker: React.FC<ModalDatePickerProps> = ({isOpen, onClose
             day: "1",
             year: new Date().getFullYear().toString()
         };
-    };
+};
 
-    const initial = parseInitialDate();
+const DatePickerFields: React.FC<Omit<ModalDatePickerProps, 'isOpen'>> = ({onClose, onConfirm, initialValue}) => {
+    const initial = parseInitialDate(initialValue);
     const [month, setMonth] = useState<string>(initial.month);
     const [day, setDay] = useState<string>(initial.day);
     const [year, setYear] = useState<string>(initial.year);
+    const monthIndex = monthOptions.findIndex(option => option.value === month) + 1;
+    const daysInMonth = new Date(Number(year), monthIndex, 0).getDate();
+    const validDays = useMemo(() => dayOptions.filter(option => Number(option.value) <= daysInMonth), [daysInMonth]);
+    const selectedDay = String(Math.max(1, Math.min(Number(day) || 1, daysInMonth)));
 
     const handleConfirm = () => {
-        const monthNames = ["January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"];
-        const monthIndex = monthNames.indexOf(month) + 1;
-        const formattedDate = `${year}-${monthIndex.toString().padStart(2, '0')}-${day.padStart(2, '0')}`;
+        const formattedDate = `${year}-${monthIndex.toString().padStart(2, '0')}-${selectedDay.padStart(2, '0')}`;
         onConfirm?.(formattedDate);
         onClose();
     };
 
     return (
-        <Modal title={"Select your date of birth"} isOpen={isOpen} onClose={onClose}>
+        <>
             <WheelPickerWrapper>
-                <WheelPicker options={monthOptions} value={month} onChange={setMonth} infinite/>
-                <WheelPicker options={dayOptions} value={day} onChange={setDay} infinite/>
-                <WheelPicker options={yearOptions} value={year} onChange={setYear} infinite/>
+                <WheelPicker ariaLabel="Month" options={monthOptions} value={month} onChange={setMonth} infinite/>
+                <WheelPicker ariaLabel="Day" options={validDays} value={selectedDay} onChange={setDay} infinite/>
+                <WheelPicker ariaLabel="Year" options={yearOptions} value={year} onChange={setYear} infinite/>
             </WheelPickerWrapper>
             <Button size={"large"} shape={"cr-16"} variant={"filled"} theme={"light"} fullWidth onClick={handleConfirm}>
                 Confirm
             </Button>
-        </Modal>
+        </>
     );
 };
+
+export const ModalDatePicker: React.FC<ModalDatePickerProps> = ({isOpen, onClose, onConfirm, initialValue}) => (
+    <Modal title="Select your date of birth" isOpen={isOpen} onClose={onClose}>
+        <DatePickerFields key={initialValue ?? ''} initialValue={initialValue} onClose={onClose} onConfirm={onConfirm} />
+    </Modal>
+);

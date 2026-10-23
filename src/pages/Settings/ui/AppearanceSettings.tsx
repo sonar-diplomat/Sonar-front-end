@@ -65,6 +65,7 @@ export const AppearanceSettings: React.FC = () => {
           onClick={() => navigate(-1)}
           className={styles.backButton}
           iconOnly
+          aria-label="Back to settings"
         />
         <h2 className={styles.title}>Language and Theme</h2>
       </div>

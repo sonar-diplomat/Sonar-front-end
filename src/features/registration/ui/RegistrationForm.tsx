@@ -96,6 +96,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
         icon={<DropDown/>}
         iconPosition="prefix"
         iconClickable={true}
+        iconLabel="Choose date of birth"
         value={formData.dateOfBirth}
         required={true}
         onChange={(e) => updateField('dateOfBirth', e.target.value)}

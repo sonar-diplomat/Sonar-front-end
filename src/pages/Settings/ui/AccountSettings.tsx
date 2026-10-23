@@ -355,6 +355,7 @@ export const AccountSettings: React.FC = () => {
           onClick={() => navigate(-1)}
           className={styles.backButton}
           iconOnly
+          aria-label="Back to settings"
         />
         <h2 className={styles.title}>Account</h2>
       </div>
@@ -405,6 +406,7 @@ export const AccountSettings: React.FC = () => {
               icon={<DropDown/>}
               iconPosition="prefix"
               iconClickable={true}
+              iconLabel="Choose date of birth"
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
               onIconClick={() => setIsDatePickerOpen(true)}

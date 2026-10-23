@@ -68,6 +68,7 @@ export const PrivacySettings: React.FC = () => {
           onClick={() => navigate(-1)}
           className={styles.backButton}
           iconOnly
+          aria-label="Back to settings"
         />
         <h2 className={styles.title}>Privacy</h2>
       </div>

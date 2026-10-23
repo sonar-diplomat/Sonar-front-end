@@ -1,4 +1,4 @@
-import React,{ useEffect,useRef,useState } from 'react';
+import React,{ useEffect,useId,useRef,useState } from 'react';
 
 import { DropDown } from '../icons';
 
@@ -31,9 +31,17 @@ export const Select: React.FC<SelectProps> = ({
   className = '',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const selectId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const optionRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const selectedOption = options.find(opt => opt.value == value);
+
+  useEffect(() => {
+    if (isOpen) optionRefs.current[activeIndex]?.focus();
+  }, [isOpen, activeIndex]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -53,6 +61,7 @@ export const Select: React.FC<SelectProps> = ({
 
   const handleToggle = () => {
     if (!disabled) {
+      setActiveIndex(Math.max(0, options.findIndex(option => option.value == value)));
       setIsOpen(!isOpen);
     }
   };
@@ -60,26 +69,45 @@ export const Select: React.FC<SelectProps> = ({
   const handleSelect = (optionValue: string | number) => {
     onChange(optionValue);
     setIsOpen(false);
+    triggerRef.current?.focus();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
+    if (e.key === 'Escape' && isOpen) {
+      e.preventDefault();
+      e.stopPropagation();
       setIsOpen(false);
+      triggerRef.current?.focus();
+      return;
     }
+    if (!options.length || !['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
+    e.preventDefault();
+    let next = isOpen ? activeIndex : Math.max(0, options.findIndex(option => option.value == value));
+    if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = options.length - 1;
+    else if (isOpen) next = (next + (e.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length;
+    setActiveIndex(next);
+    setIsOpen(true);
   };
 
   return (
-    <div className={`${styles.container} ${className}`} ref={containerRef}>
-      {label && <label className={styles.label}>{label}</label>}
+    <div className={`${styles.container} ${className}`} ref={containerRef} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setIsOpen(false); }}>
+      {label && <label id={`${selectId}-label`} className={styles.label}>{label}</label>}
       <div className={styles.selectWrapper}>
         <button
           type="button"
+          ref={triggerRef}
+          aria-labelledby={label ? `${selectId}-label` : undefined}
+          aria-describedby={`${selectId}-value`}
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? `${selectId}-options` : undefined}
           className={`${styles.select} ${error ? styles.error : ''} ${disabled ? styles.disabled : ''}`}
           onClick={handleToggle}
           onKeyDown={handleKeyDown}
           disabled={disabled}
         >
-          <span className={styles.selectedValue}>
+          <span id={`${selectId}-value`} className={styles.selectedValue}>
             {selectedOption?.label || placeholder}
           </span>
           <span className={`${styles.arrow} ${isOpen ? styles.open : ''}`}>
@@ -87,11 +115,15 @@ export const Select: React.FC<SelectProps> = ({
           </span>
         </button>
         {isOpen && (
-          <div className={styles.dropdown}>
-            {options.map((option) => (
+          <div id={`${selectId}-options`} className={styles.dropdown} role="listbox" aria-label={label || 'Options'} onKeyDown={handleKeyDown}>
+            {options.map((option, index) => (
               <button
                 key={option.value}
+                ref={element => { optionRefs.current[index] = element; }}
                 type="button"
+                role="option"
+                aria-selected={option.value == value}
+                tabIndex={index === activeIndex ? 0 : -1}
                 className={`${styles.option} ${option.value == value ? styles.selected : ''}`}
                 onClick={() => handleSelect(option.value)}
               >
