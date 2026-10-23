@@ -238,3 +238,17 @@ test('cancelled binary mutation removes its new upload and allows a clean retry 
   assert.equal((await t.dispatch({ url: 'User/update-avatar', method: 'POST', body: form, signal: controller.signal })).status, 499); assert.equal(uploads.size, 0); assert.equal(t.getSnapshot().nextId, 10000);
   cancel = false; await success(t, { url: 'User/update-avatar', method: 'POST', body: form }); assert.equal(uploads.size, 1); assert.equal(t.getSnapshot().users[0].avatarImageId, 10000);
 });
+
+test('report form rejects Track plus Spam atomically and accepts an applicable reason for a registered visitor', async () => {
+  const storage = new MemoryStorage(), t = make({ storage });
+  await success(t, { url: 'Auth/register', method: 'POST', body: { Username: 'Report Visitor', Login: 'report-visitor', Email: 'report-visitor@example.test', Password: 'report-password', FirstName: 'Report', LastName: 'Visitor' } });
+  await success(t, { url: 'Auth/confirm-email', method: 'POST', params: { email: 'report-visitor@example.test', token: 'demo-token' } });
+  const login = await success<{ demoUserId: number }>(t, { url: 'Auth/login', method: 'POST', params: { userIdentifier: 'report-visitor', password: 'report-password' } });
+  const applicable = await success<{ id: number; applicableEntityTypeIds: number[] }[]>(t, { url: 'Report/reason-types/by-entity-type/1' });
+  assert(applicable.every(reason => reason.applicableEntityTypeIds.includes(1))); assert(!applicable.some(reason => reason.id === 2));
+  const before = t.getSnapshot();
+  const invalid = await t.dispatch({ url: 'Report', method: 'POST', body: { entityIdentifier: 1, reportableEntityTypeId: 1, reportReasonTypeId: 2 } });
+  assert.equal(invalid.status, 400); assert.equal(invalid.message, 'Reason does not apply to this entity'); assert.deepEqual(t.getSnapshot(), before);
+  const saved = await success<{ id: number; reporterId: number }>(t, { url: 'Report', method: 'POST', body: { entityIdentifier: 1, reportableEntityTypeId: 1, reportReasonTypeId: applicable[0].id } });
+  assert.equal(saved.reporterId, login.demoUserId); assert.deepEqual(await success(make({ storage }), { url: `Report/${saved.id}` }), saved);
+});

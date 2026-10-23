@@ -13,7 +13,7 @@
 
 Both commands first run the explicit two-project TypeScript check and produce minified production assets. `--mode demo` selects environment files while retaining production build optimization. Development flags, hostname and branch do not select data sources. These semantics follow [Vite environment documentation](https://vite.dev/guide/env-and-mode).
 
-Routes and the expanded player load lazily. SignalR loads when an API connection is constructed; the React rendering runtime is a separate shared cacheable chunk. The 2026-10-23 builds emitted a 355.54 kB API application entry and 357.25 kB demo entry, plus a 189.80 kB React chunk (minified, before gzip). Neither build changed the default size-warning threshold.
+Routes and the expanded player load lazily. SignalR loads when an API connection is constructed; the React rendering runtime is a separate shared cacheable chunk. The 2026-10-23 builds emitted approximately 356 kB API and 357 kB demo application entries, plus a 190 kB React chunk (minified, before gzip). Neither build changed the default size-warning threshold.
 
 `VITE_DATA_SOURCE` accepts exactly `api` and `mock`; unset means `api`, empty/unknown values fail. The npm demo commands explicitly set `mock` using cross-env on Windows/Linux. Direct Vite invocation follows process-environment precedence over environment files. Check CI environment variables when an unexpected profile is reported. `VITE_BASE_PATH` must be an absolute pathname with a trailing slash. It controls Vite's `BASE_URL`, all demo media URLs and the packaged preview path.
 

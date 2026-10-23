@@ -4,6 +4,8 @@ Status: UI source checkpoint frozen. A stable compiled preview was checked under
 
 The later fresh compiled regression is recorded in [verification](verification.md): Library album/filter, playlist rename/delete/reload, cross-tab preservation while playing, reset-to-home, uploaded cover reload/reset and narrow header geometry passed. Historical checkpoint results below identify the bundle they tested; final `.pages/` and published acceptance remain pending.
 
+A subsequent compiled form pass completed fictional account registration, inbox confirmation, login/session reload, recovery/password replacement and login again. Premium activation retained the displayed amount after reload. Report reasons now use the canonical per-entity query; a valid Track report saved, while unsupported Message context is explicitly unavailable. Both registration Terms links retain the project base/hash. Reset restored the original demo user afterward.
+
 ## Findings
 
 | ID | Priority | Reproduction / evidence | Change | Status |
@@ -64,10 +66,10 @@ Desktop Chrome viewport was set to 390 by 844; actual content width was 355px. N
 
 ## Outstanding acceptance
 
-1. Verify the exact Premium price and remaining form interactions in the final package. Fresh compiled Library/filter, playlist rename/delete, reset destination, named profile controls and narrow header regression passed; see the later verification record.
+1. Repeat the checked form interactions in the final package. Exact Premium price, signup/confirmation/login/recovery and a valid Track report passed in fresh compiled checks, alongside Library/filter, playlist CRUD, reset destination, named profile controls and narrow header regression.
 2. Deliver the remaining licensed MP3s after the required publication probe, then test distinct sources, fast switching, next/previous, queue completion, loading failure/retry and final credits.
 3. Run the full search → album → playback → seek → queue → favorite/playlist → reload/reset sequence against final `.pages/`, then the actual Pages URL and shared deep links.
 4. Publication requires Maintainer acceptance of the deployment environment/branch and workflow review. Dependent publication and media-delivery steps remain pending; branch protection must not be bypassed.
 5. API transport external AbortSignal forwarding is corrected. Five cancellation regressions exercise pre-abort, pending fetch, timeouts, response bodies and the real adapters without retries; actual backend streaming integration remains unverified.
 6. The cross-tab state overwrite regression passed on the fresh compiled preview while audio progress was being saved. Player position remains a separate last-writer preference, not cross-tab playback coordination.
-7. Full registration/credential/settings/report mutations and a physical mobile browser remain outside completed smoke evidence. Do not declare the complete demo accepted until these required checks and the distinct-track/published sequence are performed.
+7. Remaining account/privacy/session edge cases and a physical mobile browser remain outside completed smoke evidence. Message reporting is unavailable because the current content-type catalog has no Message entry. Do not declare the complete demo accepted until required final-package and distinct-track/published checks are performed.
