@@ -6,6 +6,8 @@ The later fresh compiled regression is recorded in [verification](verification.m
 
 A subsequent compiled form pass completed fictional account registration, inbox confirmation, login/session reload, recovery/password replacement and login again. Premium activation retained the displayed amount after reload. Report reasons now use the canonical per-entity query; a valid Track report saved, while unsupported Message context is explicitly unavailable. Both registration Terms links retain the project base/hash. Reset restored the original demo user afterward.
 
+The latest compiled account pass confirmed email change, rejected reuse of the confirmation link and rejected password change with an incorrect current password. A valid password change allowed login with the new email/password and retained the session after reload; the old password failed. Reset restored the original seed login. Date/privacy keyboard persistence and current/all-session revocation also passed. These later results supersede the corresponding historical pending checks below; final-package and deployed acceptance remain outstanding.
+
 ## Findings
 
 | ID | Priority | Reproduction / evidence | Change | Status |
@@ -75,4 +77,4 @@ Desktop Chrome viewport was set to 390 by 844; actual content width was 355px. N
 4. Publication requires Maintainer acceptance of the deployment environment/branch and workflow review. Dependent publication and media-delivery steps remain pending; branch protection must not be bypassed.
 5. API transport external AbortSignal forwarding is corrected. Five cancellation regressions exercise pre-abort, pending fetch, timeouts, response bodies and the real adapters without retries; actual backend streaming integration remains unverified.
 6. The cross-tab state overwrite regression passed on the fresh compiled preview while audio progress was being saved. Player position remains a separate last-writer preference, not cross-tab playback coordination.
-7. Email-change/password-change confirmation dialogs and a physical mobile browser remain outside completed smoke evidence. Date/privacy save/reload and current/all-session revocation are now checked. Message reporting is unavailable because the current content-type catalog has no Message entry. Do not declare the complete demo accepted until required final-package and distinct-track/published checks are performed.
+7. A physical mobile browser remains outside completed smoke evidence. Local email/password confirmation, date/privacy save/reload and current/all-session revocation are now checked. Message reporting is unavailable because the current content-type catalog has no Message entry. Do not declare the complete demo accepted until required final-package and distinct-track/published checks are performed.
