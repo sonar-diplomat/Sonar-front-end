@@ -1,10 +1,9 @@
 import { apiClient } from '@shared/api/oldBaseApi.ts';
 import { API_ENDPOINTS } from '@shared/config';
+
 import type {
-    PurchaseSubscriptionDTO,
-    SubscriptionFeatureDTO,
-    SubscriptionPackDTO,
-    SubscriptionPaymentDTO,
+PurchaseSubscriptionDTO,
+SubscriptionPaymentDTO
 } from '../model/types.ts';
 
 export const Api = {

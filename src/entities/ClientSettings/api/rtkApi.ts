@@ -1,9 +1,10 @@
+import type { PlaybackQuality } from '@entities/ClientSettings';
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
-import type { Settings } from '../model/types/Settings';
+
 import type { Language } from '../model/types/Language';
+import type { Settings } from '../model/types/Settings';
 import type { Theme } from '../model/types/Theme';
-import type { PlaybackQuality } from '@entities/ClientSettings';
 
 /**
  * ClientSettings API endpoints
@@ -16,7 +17,7 @@ export const clientSettingsApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: [{ type: 'ClientSettings', id: 'CURRENT' }],
+      providesTags: [{ type: 'ClientSettings', id: 'CURRENT' }, 'DemoState'],
     }),
 
     patchClientSettings: builder.mutation<Settings, Record<string, unknown>>({
@@ -35,7 +36,7 @@ export const clientSettingsApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: [{ type: 'Language', id: 'LIST' }],
+      providesTags: [{ type: 'Language', id: 'LIST' }, 'DemoState'],
     }),
 
     getThemes: builder.query<Theme[], void>({
@@ -44,7 +45,7 @@ export const clientSettingsApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: [{ type: 'Theme', id: 'LIST' }],
+      providesTags: [{ type: 'Theme', id: 'LIST' }, 'DemoState'],
     }),
 
     getPlaybackQualities: builder.query<PlaybackQuality[], void>({
@@ -53,7 +54,7 @@ export const clientSettingsApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: [{ type: 'PlaybackQuality', id: 'LIST' }],
+      providesTags: [{ type: 'PlaybackQuality', id: 'LIST' }, 'DemoState'],
     }),
   }),
 });

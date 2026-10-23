@@ -1,13 +1,19 @@
-import { useCallback, useMemo, useState } from 'react';
-import { Api } from '../api/api.ts';
-import type { AccessFeatureDTO } from './types';
+import { useCallback,useMemo,useState } from 'react';
+
+import { legacyQuery } from '@shared/api/legacyQuery';
+import { store } from '@shared/store';
 import type { State } from '@shared/types/store';
+
+import { Api } from '../api/api.ts';
+import { accessApi } from '../api/rtkApi';
+
+import type { AccessFeatureDTO } from './types';
 
 export const useAccessFeatures = () => {
     const [state, setState] = useState<State<AccessFeatureDTO[]>>({ loading: false });
     const refetch = useCallback(async () => {
         setState((s) => ({ ...s, loading: true }));
-        const res = await Api.list();
+        const res = await legacyQuery(() => store.dispatch(accessApi.endpoints.getAccessFeatures.initiate(undefined, {subscribe:false,forceRefetch:true})).unwrap());
         setState({
             loading: false,
             data: res.data,
@@ -22,7 +28,7 @@ export const useAccessFeatureById = () => {
     const [state, setState] = useState<State<AccessFeatureDTO>>({ loading: false });
     const refetch = useCallback(async (id: number) => {
         setState((s) => ({ ...s, loading: true }));
-        const res = await Api.byId(id);
+        const res = await legacyQuery(() => store.dispatch(accessApi.endpoints.getAccessFeatureById.initiate(id, {subscribe:false,forceRefetch:true})).unwrap());
         setState({
             loading: false,
             data: res.data,
@@ -37,7 +43,7 @@ export const useUserAccessFeatures = () => {
     const [state, setState] = useState<State<AccessFeatureDTO[]>>({ loading: false });
     const refetch = useCallback(async (userId: number) => {
         setState((s) => ({ ...s, loading: true }));
-        const res = await Api.byUserId(userId);
+        const res = await legacyQuery(() => store.dispatch(accessApi.endpoints.getUserAccessFeatures.initiate(userId, {subscribe:false,forceRefetch:true})).unwrap());
         setState({
             loading: false,
             data: res.data,

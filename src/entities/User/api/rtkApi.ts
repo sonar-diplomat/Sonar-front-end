@@ -1,15 +1,16 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
+
 import type {
-  User,
-  NonSensitiveUserDTO,
-  UserProfileDTO,
-  UserUpdateDTO,
-  UserFriendDTO,
-  UserFollowerDTO,
-  UserFollowingDTO,
-  TopTrackDTO,
-  TopArtistDTO,
+NonSensitiveUserDTO,
+TopArtistDTO,
+TopTrackDTO,
+User,
+UserFollowerDTO,
+UserFollowingDTO,
+UserFriendDTO,
+UserProfileDTO,
+UserUpdateDTO,
 } from '../model/types';
 
 /**
@@ -23,7 +24,7 @@ export const userApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: [{ type: 'User', id: 'LIST' }],
+      providesTags: [{ type: 'User', id: 'LIST' }, 'DemoState'],
     }),
 
     getUserById: builder.query<NonSensitiveUserDTO, number>({
@@ -32,7 +33,7 @@ export const userApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: (_result, _error, userId) => [{ type: 'User', id: userId }],
+      providesTags: (_result, _error, userId) => [{ type: 'User', id: userId }, 'DemoState'],
     }),
 
     getUserProfile: builder.query<UserProfileDTO, number>({
@@ -41,7 +42,7 @@ export const userApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: (_result, _error, userId) => [{ type: 'User', id: `PROFILE_${userId}` }],
+      providesTags: (_result, _error, userId) => [{ type: 'User', id: `PROFILE_${userId}` }, 'DemoState'],
     }),
 
     getUserProfileByIdentifier: builder.query<UserProfileDTO, string>({
@@ -50,7 +51,7 @@ export const userApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: (_result, _error, identifier) => [{ type: 'User', id: `PROFILE_${identifier}` }],
+      providesTags: (_result, _error, identifier) => [{ type: 'User', id: `PROFILE_${identifier}` }, 'DemoState'],
     }),
 
     updateUser: builder.mutation<User, UserUpdateDTO>({
@@ -103,10 +104,11 @@ export const userApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: [{ type: 'Friend', id: 'LIST' }],
+      providesTags: [{ type: 'Friend', id: 'LIST' }, 'DemoState'],
     }),
 
     getTopTracks: builder.query<TopTrackDTO[], void>({
+      providesTags: ['DemoState'],
       query: () => ({
         url: API_ENDPOINTS.user.topTracks,
         method: 'GET',
@@ -115,6 +117,7 @@ export const userApi = rtkApi.injectEndpoints({
     }),
 
     getTopArtists: builder.query<TopArtistDTO[], void>({
+      providesTags: ['DemoState'],
       query: () => ({
         url: API_ENDPOINTS.user.topArtists,
         method: 'GET',
@@ -133,7 +136,7 @@ export const userApi = rtkApi.injectEndpoints({
         items: response,
         count: response.length,
       }),
-      providesTags: (_result, _error, userId) => [{ type: 'User', id: `FOLLOWERS_${userId}` }],
+      providesTags: (_result, _error, userId) => [{ type: 'User', id: `FOLLOWERS_${userId}` }, 'DemoState'],
     }),
 
     getFollowing: builder.query<{ items: UserFollowingDTO[]; count: number }, number>({
@@ -146,7 +149,7 @@ export const userApi = rtkApi.injectEndpoints({
         items: response,
         count: response.length,
       }),
-      providesTags: (_result, _error, userId) => [{ type: 'User', id: `FOLLOWING_${userId}` }],
+      providesTags: (_result, _error, userId) => [{ type: 'User', id: `FOLLOWING_${userId}` }, 'DemoState'],
     }),
 
     // Follow/Unfollow endpoints

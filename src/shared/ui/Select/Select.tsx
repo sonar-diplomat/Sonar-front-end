@@ -1,6 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
-import styles from './Select.module.css';
+import React,{ useEffect,useRef,useState } from 'react';
+
 import { DropDown } from '../icons';
+
+import styles from './Select.module.css';
 
 export interface SelectOption {
   value: number;

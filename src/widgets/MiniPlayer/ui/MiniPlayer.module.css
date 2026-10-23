@@ -235,3 +235,5 @@
     cursor: pointer;
     transition: all 0.2s ease;
 }
+.seekSlider { width: 100%; height: 28px; min-width: 0; accent-color: var(--text-primary); cursor: pointer; touch-action: pan-y; }
+.seekSlider:disabled { opacity: .4; cursor: default; }

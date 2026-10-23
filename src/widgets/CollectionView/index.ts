@@ -1,10 +1,10 @@
-export { CollectionView } from './ui/CollectionView';
-export { CollectionHeader } from './ui/CollectionHeader';
-export { CollectionCover } from './ui/CollectionCover';
-export { CollectionPlayPanel } from './ui/CollectionPlayPanel';
 export { CollectionActions } from './ui/CollectionActions';
-export type { CollectionViewProps, Track } from './ui/CollectionView.types';
-export type { CollectionHeaderProps } from './ui/CollectionHeader.types';
-export type { CollectionCoverProps } from './ui/CollectionCover.types';
-export type { CollectionPlayPanelProps } from './ui/CollectionPlayPanel.types';
 export type { CollectionActionsProps } from './ui/CollectionActions.types';
+export { CollectionCover } from './ui/CollectionCover';
+export type { CollectionCoverProps } from './ui/CollectionCover.types';
+export { CollectionHeader } from './ui/CollectionHeader';
+export type { CollectionHeaderProps } from './ui/CollectionHeader.types';
+export { CollectionPlayPanel } from './ui/CollectionPlayPanel';
+export type { CollectionPlayPanelProps } from './ui/CollectionPlayPanel.types';
+export { CollectionView } from './ui/CollectionView';
+export type { CollectionViewProps,Track } from './ui/CollectionView.types';

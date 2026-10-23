@@ -1,7 +1,10 @@
+import { isDemoMode } from '@shared/config/data-source';
 import { store } from '@shared/store';
-import { updateTokens, logout } from '@shared/store/features/auth/authSlice';
-import { authApiRefreshToken } from './auth-api-utils';
+import { logout,updateTokens } from '@shared/store/features/auth/authSlice';
+
 import { signalRManager } from '../signalr/signalr-manager';
+
+import { authApiRefreshToken } from './auth-api-utils';
 
 /**
  * Централизованный менеджер авторизации
@@ -62,6 +65,7 @@ class AuthManager {
    * Предотвращает множественные одновременные refresh запросы
    */
   async refreshAccessToken(): Promise<string | null> {
+    if (isDemoMode) return null;
     // Если уже идет refresh, возвращаем существующий промис
     if (this.refreshPromise) {
       if (import.meta.env.DEV) {
@@ -133,6 +137,10 @@ class AuthManager {
    * Очищает токены и может вызвать API для ревокации сессии на сервере
    */
   async logout(): Promise<void> {
+    if (isDemoMode) {
+      const { leaveDemoSession } = await import('@demo-runtime');
+      await leaveDemoSession();
+    }
     if (import.meta.env.DEV) {
       console.log('[authManager] logout: Clearing tokens and logging out');
     }
@@ -162,6 +170,7 @@ class AuthManager {
    * Используется когда refresh token недействителен или отсутствует
    */
   private redirectToLogin(): void {
+    if (isDemoMode) return;
     // Проверяем, что мы в браузере
     if (typeof window !== 'undefined') {
       // Проверяем, что мы не уже на странице логина

@@ -1,4 +1,5 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice,type PayloadAction } from '@reduxjs/toolkit';
+
 import type { AccessFeatureDTO } from '@entities/Access';
 
 interface AccessState {

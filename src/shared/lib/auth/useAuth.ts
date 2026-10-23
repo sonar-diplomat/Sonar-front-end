@@ -1,11 +1,13 @@
 import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
-import { setCredentials, logout as logoutAction, setLoading } from '@shared/store/features/auth/authSlice';
+
 import { useLoginMutation } from '@shared/api';
 import { authManager } from '@shared/lib';
-import { useClientSettings } from '@shared/store/features/clientSettings/useClientSettings';
 import { useAccess } from '@shared/store/features/access/useAccess';
+import { logout as logoutAction,setCredentials,setLoading } from '@shared/store/features/auth/authSlice';
+import { useClientSettings } from '@shared/store/features/clientSettings/useClientSettings';
 import { useUserState } from '@shared/store/features/userState/useUserState';
+import { useAppDispatch,useAppSelector } from '@shared/store/hooks';
+
 import { decodeJWT } from './jwt-utils';
 
 /**
@@ -24,8 +26,9 @@ export const useAuth = () => {
     userIdentifier: string,
     password: string,
     deviceName: string,
-    rememberMe: boolean = false
+    _rememberMe: boolean = false
   ): Promise<boolean> => {
+    void _rememberMe;
     dispatch(setLoading(true));
     try {
       const data = await loginMutation({ userIdentifier, password, deviceName }).unwrap();
@@ -83,6 +86,7 @@ export const useAuth = () => {
     
     // Очищаем auth
     dispatch(logoutAction());
+    void authManager.logout();
   }, [dispatch, clearSettings, clearAccess, clearUserState]);
 
   const refreshToken = useCallback(async (): Promise<string | null> => {

@@ -1,4 +1,6 @@
 import { FRONTEND_BASE_URL } from '@shared/config';
+import { isDemoMode } from '@shared/config/data-source';
+
 import type { EmbedMatch, EmbedRule } from './types';
 
 /**
@@ -10,7 +12,7 @@ function normalizeDomain(url: string): string {
     return urlObj.hostname.replace(/^www\./, '').toLowerCase();
   } catch {
     // If URL parsing fails, try to extract domain manually
-    const match = url.match(/https?:\/\/(?:www\.)?([^\/]+)/i);
+    const match = url.match(/https?:\/\/(?:www\.)?([^/]+)/i);
     return match ? match[1].toLowerCase() : '';
   }
 }
@@ -20,7 +22,7 @@ function normalizeDomain(url: string): string {
  */
 function getFrontendDomain(): string {
   try {
-    return normalizeDomain(FRONTEND_BASE_URL);
+    return normalizeDomain(isDemoMode ? window.location.origin : FRONTEND_BASE_URL);
   } catch {
     return 'sonar-dev.pp.ua';
   }
@@ -83,10 +85,12 @@ export function detectEmbedsFromMessage(text: string): EmbedMatch[] {
       continue;
     }
 
+    const path = url.hash.startsWith('#/') ? url.hash.slice(1) : url.pathname.startsWith(import.meta.env.BASE_URL) ? '/' + url.pathname.slice(import.meta.env.BASE_URL.length) : url.pathname;
+    const routeUrl = new URL(path, url.origin);
     // Try each embed rule
     for (const rule of EMBED_RULES) {
-      if (rule.pattern.test(url.pathname)) {
-        const id = rule.extractId(url);
+      if (rule.pattern.test(routeUrl.pathname)) {
+        const id = rule.extractId(routeUrl);
         if (id !== null) {
           matches.push({
             type: rule.type,
@@ -167,4 +171,3 @@ export function shouldShowEmbed(text: string): boolean {
 
   return textWithoutEmbeds.length === 0;
 }
-

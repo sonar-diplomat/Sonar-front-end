@@ -1,8 +1,9 @@
-import type { PlaybackQuality } from "./PlaybackQuality";
-import type { Language } from "./Language";
-import type { Theme } from "./Theme";
-import type { NotificationType } from "./NotificationType";
 import type { User } from '@entities/User';
+
+import type { Language } from "./Language";
+import type { NotificationType } from "./NotificationType";
+import type { PlaybackQuality } from "./PlaybackQuality";
+import type { Theme } from "./Theme";
 import type { UserPrivacySettings } from "./UserPrivacySettings";
 
 export interface Settings {

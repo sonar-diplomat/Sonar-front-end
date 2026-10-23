@@ -1,7 +1,8 @@
 import React from 'react';
+
+import type { Playlist } from '@pages/Library';
 import { ItemCard } from '@shared/ui';
 import type { ContentSection } from '@widgets/ContentSections';
-import type { Playlist } from '@pages/Library';
 
 export const createPlaylistSection = (playlists: Playlist[]): ContentSection<Playlist> => {
     return {

@@ -1,1 +1,1 @@
-export { GetPremiumCard } from "./ui/GetPremiumCard.tsx"
+export { GetPremiumCard } from "./ui/GetPremiumCard.tsx";

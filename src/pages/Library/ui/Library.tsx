@@ -1,18 +1,20 @@
-import React, {useState, useMemo, useCallback, useEffect, useRef} from 'react';
+import React,{ useCallback,useEffect,useMemo,useRef,useState } from 'react';
 
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import type {Folder, Playlist, LibraryProps} from '@pages/Library';
-import {Button, FolderCard, ItemCard, PlusIcon, LeftArrow} from "@shared/ui";
-import type {Category} from "@widgets/ChipsBar";
-import {ContentSections, type ContentSection} from "@widgets/ContentSections";
-import {SearchFilterHeader} from "@widgets/SearchFilterHeader";
-import {LibrarySkeleton} from "@widgets/LibrarySkeleton";
+import { useMoveCollectionToFolderMutation,useMoveFolderMutation } from '@entities/Library/api/rtkApi';
+import type { FolderDTO } from '@entities/Library/model/types';
+import type { Folder,LibraryProps,Playlist } from '@pages/Library';
 import { getImageUrlById } from '@shared/lib/image-utils';
-import { useFolders, useFolder } from '@shared/store/features/library/useLibrary';
-import { useMoveCollectionToFolderMutation, useMoveFolderMutation } from '@entities/Library/api/rtkApi';
-import type { DropInfo } from '@shared/ui/FolderCard/FolderCard.types';
+import { useFolder,useFolders } from '@shared/store/features/library/useLibrary';
 import { useNotifications } from '@shared/store/notificationStore';
+import { Button,FolderCard,ItemCard,LeftArrow,PlusIcon } from "@shared/ui";
+import { asUiApiError } from '@shared/ui/api-error';
+import type { DropInfo } from '@shared/ui/FolderCard/FolderCard.types';
+import type { Category } from "@widgets/ChipsBar";
+import { ContentSections,type ContentSection } from "@widgets/ContentSections";
+import { LibrarySkeleton } from "@widgets/LibrarySkeleton";
+import { SearchFilterHeader } from "@widgets/SearchFilterHeader";
 
 import styles from './Library.module.css';
 
@@ -45,7 +47,7 @@ export const Library: React.FC<LibraryProps> = () => {
                     void refetchFolder();
                 }
             }, 100);
-            
+
             return () => {
                 clearTimeout(timeoutId);
             };
@@ -91,9 +93,9 @@ export const Library: React.FC<LibraryProps> = () => {
 
                 // Рекурсивно обходим subFolders, если они полные FolderDTO
                 if (Array.isArray(folder.subFolders) && folder.subFolders.length > 0) {
-                    const firstSubFolder = folder.subFolders[0] as any;
+                    const firstSubFolder = folder.subFolders[0] as unknown as FolderDTO;
                     if (firstSubFolder && (firstSubFolder.subFolders !== undefined || firstSubFolder.collections !== undefined)) {
-                        traverse(folder.subFolders as any);
+                        traverse(folder.subFolders as unknown as FolderDTO[]);
                     }
                 }
             }
@@ -111,7 +113,7 @@ export const Library: React.FC<LibraryProps> = () => {
             // Для поиска используем всю структуру
             const { folders: searchFolders } = getAllItemsFromStructure(foldersData);
             const query = searchQuery.toLowerCase().trim();
-            return searchFolders.filter(folder => 
+            return searchFolders.filter(folder =>
                 folder.name.toLowerCase().includes(query)
             );
         }
@@ -123,12 +125,12 @@ export const Library: React.FC<LibraryProps> = () => {
             // Для поиска используем всю структуру
             const { playlists: searchPlaylists } = getAllItemsFromStructure(foldersData);
             const query = searchQuery.toLowerCase().trim();
-            return searchPlaylists.filter(playlist => 
-                playlist.name.toLowerCase().includes(query)
+            return searchPlaylists.filter(playlist =>
+                (selectedCategory === 'Albums' ? playlist.type === 'Album' : selectedCategory === 'Playlists' ? playlist.type === 'Playlist' : true) && playlist.name.toLowerCase().includes(query)
             );
         }
-        return allPlaylists;
-    }, [allPlaylists, searchQuery, foldersData, getAllItemsFromStructure]);
+        return allPlaylists.filter(item => selectedCategory === 'Albums' ? item.type === 'Album' : selectedCategory === 'Playlists' ? item.type === 'Playlist' : true);
+    }, [allPlaylists, searchQuery, foldersData, getAllItemsFromStructure, selectedCategory]);
 
     // Обработка данных для корневой папки
     // Root папка (parentFolderId === null) скрывается от пользователя
@@ -137,15 +139,16 @@ export const Library: React.FC<LibraryProps> = () => {
         if (foldersData && Array.isArray(foldersData) && currentFolderId === null) {
             // Находим Root папку (где parentFolderId === null)
             const rootFolder = foldersData.find(f => f.parentFolderId === null || f.parentFolderId === undefined);
-            
+
             if (rootFolder) {
                 // Преобразуем subFolders Root в формат Folder
                 // subFolders могут быть либо SubFolderDTO[], либо FolderDTO[] (рекурсивная структура)
-                const rootSubFolders: Folder[] = (rootFolder.subFolders || []).map((subFolder: any) => {
+                const rootSubFolders: Folder[] = (rootFolder.subFolders || []).map((subFolder) => {
                     // Если это полный FolderDTO (рекурсивная структура)
-                    if (subFolder.subFolders !== undefined || subFolder.collections !== undefined) {
-                        const subFolderCount = Array.isArray(subFolder.subFolders) ? subFolder.subFolders.length : 0;
-                        const collectionCount = Array.isArray(subFolder.collections) ? subFolder.collections.length : 0;
+                    const fullFolder = foldersData.find(folder => folder.id === subFolder.id);
+                    if (fullFolder) {
+                        const subFolderCount = Array.isArray(fullFolder.subFolders) ? fullFolder.subFolders.length : 0;
+                        const collectionCount = Array.isArray(fullFolder.collections) ? fullFolder.collections.length : 0;
                         return {
                             id: String(subFolder.id),
                             name: subFolder.name,
@@ -160,7 +163,7 @@ export const Library: React.FC<LibraryProps> = () => {
                         };
                     }
                 });
-                
+
                 // Преобразуем collections Root в формат Playlist
                 const rootCollections: Playlist[] = rootFolder.collections.map((collection) => ({
                     id: String(collection.id),
@@ -168,7 +171,7 @@ export const Library: React.FC<LibraryProps> = () => {
                     coverImage: getImageUrlById(collection.coverId),
                     type: collection.type,
                 }));
-                
+
                 // Показываем subFolders Root как корневые папки
                 // Показываем collections Root как корневые коллекции
                 // Сама Root папка скрыта
@@ -181,9 +184,9 @@ export const Library: React.FC<LibraryProps> = () => {
                     name: folder.name,
                     itemCount: folder.collections.length + folder.subFolders.length,
                 }));
-                
+
                 // Собираем все коллекции из всех папок
-                const allCollections: Playlist[] = foldersData.flatMap(folder => 
+                const allCollections: Playlist[] = foldersData.flatMap(folder =>
                     folder.collections.map(collection => ({
                         id: String(collection.id),
                         name: collection.name,
@@ -191,7 +194,7 @@ export const Library: React.FC<LibraryProps> = () => {
                         type: collection.type,
                     }))
                 );
-                
+
                 setAllFolders(allFolders);
                 setAllPlaylists(allCollections);
             }
@@ -227,7 +230,7 @@ export const Library: React.FC<LibraryProps> = () => {
                 name: subFolder.name,
                 itemCount: (subFolder.collectionCount || 0) + (subFolder.subFolderCount || 0),
             }));
-            
+
             // Преобразуем collections в формат Playlist
             const collections: Playlist[] = (folderData.collections || []).map((collection) => ({
                 id: String(collection.id),
@@ -235,7 +238,7 @@ export const Library: React.FC<LibraryProps> = () => {
                 coverImage: getImageUrlById(collection.coverId),
                 type: collection.type,
             }));
-            
+
             setAllFolders(subFolders);
             setAllPlaylists(collections);
         } else if (currentFolderId !== null && !folderLoading && !folderData && folderError) {
@@ -277,15 +280,15 @@ export const Library: React.FC<LibraryProps> = () => {
     }, [folderData, foldersData]);
 
     const handlePlaylistClick = useCallback((playlist: Playlist) => {
-        console.log('Opening playlist:', playlist);
+        navigate(`/${playlist.type === 'Album' ? 'album' : 'playlist'}/${playlist.id}`);
         // TODO: Navigate to playlist page
-        // navigate(`/playlist/${playlist.id}`);
-    }, []);
+        // navigate(`/${playlist.type === 'Album' ? 'album' : 'playlist'}/${playlist.id}`);
+    }, [navigate]);
 
     const handleCreateNew = useCallback(() => {
         console.log('Create new:', selectedCategory);
-        navigate('/library/create', { 
-            state: { parentFolderId: currentFolderId } 
+        navigate('/library/create', {
+            state: { parentFolderId: currentFolderId }
         });
     }, [navigate, selectedCategory, currentFolderId]);
 
@@ -296,15 +299,15 @@ export const Library: React.FC<LibraryProps> = () => {
     // Вспомогательная функция для проверки, является ли папка дочерней (рекурсивно)
     const isChildFolder = useCallback((parentFolderId: number, childFolderId: number, allFolders: typeof foldersData): boolean => {
         if (!allFolders || !Array.isArray(allFolders)) return false;
-        
+
         const parentFolder = allFolders.find(f => f.id === parentFolderId);
         if (!parentFolder) return false;
-        
+
         // Проверяем прямых потомков
         if (parentFolder.subFolders.some(sf => sf.id === childFolderId)) {
             return true;
         }
-        
+
         // Рекурсивно проверяем всех потомков
         return parentFolder.subFolders.some(subFolder => {
             const fullSubFolder = allFolders.find(f => f.id === subFolder.id);
@@ -317,10 +320,10 @@ export const Library: React.FC<LibraryProps> = () => {
 
     const handleDrop = useCallback(async (dropInfo: DropInfo) => {
         const { draggedItem, targetFolderId, moveToParent } = dropInfo;
-        
+
         // Определяем фактическую целевую папку
         let finalTargetFolderId: number | null = targetFolderId;
-        
+
         if (moveToParent) {
             // Если перетаскивание вверх, используем родительскую папку
             if (currentFolderId !== null && folderData) {
@@ -337,9 +340,9 @@ export const Library: React.FC<LibraryProps> = () => {
                         for (const folder of folders) {
                             if (folder.id === id) return folder;
                             if (Array.isArray(folder.subFolders) && folder.subFolders.length > 0) {
-                                const firstSubFolder = folder.subFolders[0] as any;
+                                const firstSubFolder = folder.subFolders[0] as unknown as FolderDTO;
                                 if (firstSubFolder && (firstSubFolder.subFolders !== undefined || firstSubFolder.collections !== undefined)) {
-                                    const found = findFolderInStructure(folder.subFolders as any, id);
+                                    const found = findFolderInStructure(folder.subFolders as unknown as FolderDTO[], id);
                                     if (found) return found;
                                 }
                             }
@@ -353,7 +356,7 @@ export const Library: React.FC<LibraryProps> = () => {
                 }
             }
         }
-        
+
         // Если finalTargetFolderId === null, это означает корневую папку
         // Для API нужно передать null или специальное значение
         // Проверяем, является ли коллекция favorites
@@ -409,14 +412,14 @@ export const Library: React.FC<LibraryProps> = () => {
                     newParentFolderId: finalTargetFolderId,
                 }).unwrap();
             }
-            
+
             // Немедленно обновляем данные библиотеки
             await refetchFolders();
             // Если открыта конкретная папка, обновляем и её данные
             if (currentFolderId !== null && refetchFolder) {
                 await refetchFolder();
             }
-        } catch (error: any) {
+        } catch (caught: unknown) { const error = asUiApiError(caught);
             console.error('Error during drag-and-drop:', error);
             const errorMessage = error?.data?.message || error?.message || 'Failed to move item';
             const errors = error?.data?.errors || [errorMessage];
@@ -447,9 +450,9 @@ export const Library: React.FC<LibraryProps> = () => {
         },
         {
             id: 'playlists',
-            title: 'Playlists',
-            countLabel: 'playlists',
-            shouldShow: selectedCategory === 'All' || selectedCategory === 'Playlists',
+            title: selectedCategory === 'All' ? 'Collections' : selectedCategory,
+            countLabel: selectedCategory === 'All' ? 'collections' : selectedCategory.toLowerCase(),
+            shouldShow: selectedCategory === 'All' || selectedCategory === 'Playlists' || selectedCategory === 'Albums',
             items: playlists,
             renderItem: (playlist: unknown) => {
                 const playlistItem = playlist as Playlist;
@@ -462,7 +465,7 @@ export const Library: React.FC<LibraryProps> = () => {
                             title: playlistItem.name,
                             subtitle1: playlistItem.description
                         }}
-                        to={`/playlist/${playlistItem.id}`}
+                        to={`/${playlistItem.type === 'Album' ? 'album' : 'playlist'}/${playlistItem.id}`}
                         onClick={() => handlePlaylistClick(playlistItem)}
                         collectionId={Number(playlistItem.id)}
                         collectionName={playlistItem.name}
@@ -473,8 +476,8 @@ export const Library: React.FC<LibraryProps> = () => {
     ], [selectedCategory, folders, playlists, handleFolderClick, handlePlaylistClick, handleDrop]);
 
     // Определяем заголовок: название текущей папки или "Library"
-    const headerTitle = currentFolderId !== null && folderData 
-        ? folderData.name 
+    const headerTitle = currentFolderId !== null && folderData
+        ? folderData.name
         : 'Library';
 
     // Определяем состояние загрузки
@@ -483,34 +486,34 @@ export const Library: React.FC<LibraryProps> = () => {
     // Отслеживаем начало перетаскивания и позицию курсора глобально
     useEffect(() => {
         if (currentFolderId === null) return; // Зона показывается только внутри папки
-        
+
         const handleDragStart = () => {
             isDraggingRef.current = true;
         };
-        
+
         const handleDragEnd = () => {
             isDraggingRef.current = false;
             setIsDraggingOverTopZone(false);
         };
-        
+
         const handleDragOver = (e: DragEvent) => {
             if (!isDraggingRef.current) return;
-            
+
             // Проверяем, находится ли курсор в верхних 10% viewport
             const viewportHeight = window.innerHeight;
             const topZoneHeight = viewportHeight * 0.1;
-            
+
             if (e.clientY < topZoneHeight) {
                 setIsDraggingOverTopZone(true);
             } else {
                 setIsDraggingOverTopZone(false);
             }
         };
-        
+
         document.addEventListener('dragstart', handleDragStart);
         document.addEventListener('dragend', handleDragEnd);
         document.addEventListener('dragover', handleDragOver);
-        
+
         return () => {
             document.removeEventListener('dragstart', handleDragStart);
             document.removeEventListener('dragend', handleDragEnd);
@@ -541,15 +544,15 @@ export const Library: React.FC<LibraryProps> = () => {
         e.preventDefault();
         e.stopPropagation();
         setIsDraggingOverTopZone(false);
-        
+
         try {
             const data = e.dataTransfer.getData('application/json');
             if (data) {
                 const draggedItem = JSON.parse(data);
-                
+
                 // Определяем родительскую папку
                 let finalTargetFolderId: number | null = null;
-                
+
                 if (currentFolderId !== null && folderData) {
                     // Если мы находимся внутри папки, используем её parentFolderId
                     finalTargetFolderId = folderData.parentFolderId ?? null;
@@ -557,7 +560,7 @@ export const Library: React.FC<LibraryProps> = () => {
                     // Если мы в корне, то finalTargetFolderId остается null (будет использован root folder id)
                     finalTargetFolderId = null;
                 }
-                
+
                 // Проверяем, является ли коллекция favorites
                 if (draggedItem.type === 'collection') {
                     const collectionName = draggedItem.name?.toLowerCase().trim();
@@ -611,7 +614,7 @@ export const Library: React.FC<LibraryProps> = () => {
                         newParentFolderId: finalTargetFolderId,
                     }).unwrap();
                 }
-                
+
                 // Немедленно обновляем данные библиотеки
                 await refetchFolders();
                 // Обновляем данные текущей папки
@@ -619,7 +622,7 @@ export const Library: React.FC<LibraryProps> = () => {
                     await refetchFolder();
                 }
             }
-        } catch (error: any) {
+        } catch (caught: unknown) { const error = asUiApiError(caught);
             console.error('Error during drag-and-drop in top zone:', error);
             const errorMessage = error?.data?.message || error?.message || 'Failed to move item';
             const errors = error?.data?.errors || [errorMessage];
@@ -653,10 +656,8 @@ export const Library: React.FC<LibraryProps> = () => {
             />
         )}
         <SearchFilterHeader
-            title={headerTitle}
-            selectedCategory={selectedCategory}
+            title={headerTitle} categories={['All', 'Albums', 'Playlists']} selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
-            categories={['All', 'Albums', 'Playlists', 'Artists']}
             searchValue={searchQuery}
             onSearch={handleSearch}
             showSearch={currentFolderId === null}

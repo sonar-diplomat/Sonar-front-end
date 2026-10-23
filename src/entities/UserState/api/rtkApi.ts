@@ -1,23 +1,9 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
-import type { TrackDTO } from '@entities/Music';
 
-export interface QueueTrackDTO {
-  Id: number;
-  QueueId: number;
-  TrackId: number;
-  Order: number;
-  IsManuallyAdded: boolean;
-  Track: TrackDTO;
-}
-
-export interface QueueDTO {
-  Id: number;
-  Position: string | null;
-  CollectionId: number | null;
-  CurrentTrackId: number | null;
-  QueueTracks: QueueTrackDTO[];
-}
+export type { QueueDTO, QueueTrackDTO } from './normalizeQueue';
+import {normalizeQueue} from './normalizeQueue';
+import type {QueueDTO} from './normalizeQueue';
 
 /*
  * UserState API endpoints
@@ -49,58 +35,8 @@ export const userStateApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: ['Queue'],
-      transformResponse: (response: any) => {
-        if (!response) {
-          return null;
-        }
-
-        if (typeof response === 'string') {
-          try {
-            response = JSON.parse(response);
-          } catch (e) {
-            console.error('[getQueue] Failed to parse string response:', e);
-            return null;
-          }
-        }
-
-        if (response.QueueTracks && Array.isArray(response.QueueTracks)) {
-          return response as QueueDTO;
-        }
-
-        if (response.queueTracks && Array.isArray(response.queueTracks)) {
-          return {
-            Id: response.id || response.Id,
-            Position: response.position || response.Position,
-            CollectionId: response.collectionId || response.CollectionId,
-            CurrentTrackId: response.currentTrackId || response.CurrentTrackId,
-            QueueTracks: response.queueTracks,
-          } as QueueDTO;
-        }
-
-        if (response.Tracks && Array.isArray(response.Tracks)) {
-          return response as QueueDTO;
-        }
-
-        if (response.tracks && Array.isArray(response.tracks)) {
-          return {
-            Id: response.id || response.Id,
-            Position: response.position || response.Position,
-            CollectionId: response.collectionId || response.CollectionId,
-            CurrentTrackId: response.currentTrackId || response.CurrentTrackId,
-            QueueTracks: response.tracks.map((track: TrackDTO, index: number) => ({
-              Id: index,
-              QueueId: response.id || response.Id || 0,
-              TrackId: track.id,
-              Order: index,
-              IsManuallyAdded: false,
-              Track: track,
-            })),
-          } as QueueDTO;
-        }
-
-        return null;
-      },
+      providesTags: ['Queue', 'DemoState'],
+      transformResponse: normalizeQueue,
     }),
 
     addToQueue: builder.mutation<void, number>({

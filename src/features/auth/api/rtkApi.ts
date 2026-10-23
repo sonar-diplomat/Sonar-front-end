@@ -1,16 +1,17 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
+
 import type {
-  ActiveSessionDTO,
-  UserRegisterDTO,
-  LoginResponseDTO,
-  Verify2FaDTO,
-  Verify2FaResponseDTO,
-  RefreshTokenResponse,
-  ConfirmEmailChangeDTO,
-  ConfirmPasswordChangeDTO,
-  ForgotPasswordDTO,
-  ResetPasswordDTO,
+ActiveSessionDTO,
+ConfirmEmailChangeDTO,
+ConfirmPasswordChangeDTO,
+ForgotPasswordDTO,
+LoginResponseDTO,
+RefreshTokenResponse,
+ResetPasswordDTO,
+UserRegisterDTO,
+Verify2FaDTO,
+Verify2FaResponseDTO,
 } from '../model/types';
 
 /**
@@ -24,7 +25,7 @@ export const authApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: [{ type: 'Session', id: 'LIST' }],
+      providesTags: [{ type: 'Session', id: 'LIST' }, 'DemoState'],
     }),
 
     register: builder.mutation<void, UserRegisterDTO>({

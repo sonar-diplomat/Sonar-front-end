@@ -1,7 +1,10 @@
-import { useEffect, useRef, useCallback, useState } from 'react';
-import { signalRManager } from './signalr-manager';
+import { useCallback,useEffect,useRef,useState } from 'react';
+
+import type { HubConnectionState } from '@microsoft/signalr';
+
 import { authManager } from '../auth/auth-manager';
-import { HubConnectionState } from '@microsoft/signalr';
+
+import { signalRManager,connectionStates } from './signalr-manager';
 
 /**
  * SignalR event interfaces
@@ -247,7 +250,7 @@ export const useSignalR = () => {
     readMessages,
     readAllMessages,
     setCallbacks,
-    isConnected: connectionState === HubConnectionState.Connected,
+    isConnected: connectionState === connectionStates.Connected,
     connectionState,
   };
 };

@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React,{ useEffect,useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import styles from './ActiveSessions.module.css';
-import { Button, Modal, LeftArrow } from '@shared/ui';
-import { useSessions } from '@features/auth/model/store';
+
 import type { ActiveSessionDTO } from '@features/auth';
+import { useSessions } from '@features/auth/model/store';
+import { Button,LeftArrow,Modal } from '@shared/ui';
+
+import styles from './ActiveSessions.module.css';
 
 export const ActiveSessions: React.FC = () => {
   const navigate = useNavigate();

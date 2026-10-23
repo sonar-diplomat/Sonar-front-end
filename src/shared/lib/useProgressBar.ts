@@ -1,4 +1,6 @@
-import React, { useState, useRef, useCallback } from 'react';
+import type React from 'react';
+import { useState, useRef, useCallback } from 'react';
+
 import { flushSync } from 'react-dom';
 
 export interface UseProgressBarProps {

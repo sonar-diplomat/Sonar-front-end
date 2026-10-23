@@ -1,460 +1,166 @@
-import React, {useCallback, useEffect, useRef} from 'react';
-import {usePlayer} from '@shared/store/features/player';
-import {Api as MusicApi} from '@entities/Music/api/api';
+import React,{ useCallback,useEffect,useRef } from 'react';
 
+import { Api as MusicApi } from '@entities/Music/api/api';
+import { isDemoMode } from '@shared/config/data-source';
+import { resolveDemoAudioUrl } from '@shared/demo/media';
+import { store } from '@shared/store';
+import { playNext,seekTo,setCurrentTime,setDuration,setPlaybackError,setPlaybackStatus } from '@shared/store/features/player/playerSlice';
+import { useAppDispatch } from '@shared/store/hooks';
+
+/** A single element survives route changes. Synchronous subscription keeps play() inside the visitor gesture. */
 export const AudioPlayerController = () => {
-    const audioRef = useRef<HTMLAudioElement | null>(null);
-    const pendingAudioRef = useRef<HTMLAudioElement | null>(null);
-    const isPlayingRef = useRef<boolean>(false);
-    const {
-        currentTrack,
-        pendingTrack,
-        isLoadingNextTrack,
-        isPlaying,
-        volume,
-        isMuted,
-        queueIndex,
-        currentTime,
-        setCurrentTime,
-        setDuration,
-        confirmTrackSwitch,
-        playNext,
-    } = usePlayer();
-
-    const initialTimeRef = useRef<number>(0);
-
-    useEffect(() => {
-        initialTimeRef.current = currentTime;
-    }, [currentTrack?.id, queueIndex]);
-
-    useEffect(() => {
-        isPlayingRef.current = isPlaying;
-    }, [isPlaying]);
-
+    const audioRef = useRef<HTMLAudioElement>(null);
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
-
-        const handleTimeUpdate = () => {
-            setCurrentTime(audio.currentTime);
+        let generation = 0;
+        let sourceKey = '';
+        let seekRevision = -1;
+        let blobUrl: string | undefined;
+        let request: AbortController | undefined;
+        let playPending = false;
+        let wasPlaying = false;
+        let disposed = false;
+        let metadataLoaded = false;
+        let initialPosition = 0;
+        const state = () => store.getState().player;
+        const status = (value: ReturnType<typeof state>['playbackStatus']) => {
+            if (!disposed && state().playbackStatus !== value) store.dispatch(setPlaybackStatus(value));
         };
-
-        const handleDurationChange = () => {
-            setDuration(audio.duration);
+        const fail = (message: string) => {
+            if (disposed) return;
+            audio.pause();
+            store.dispatch(setPlaybackError(message));
         };
-
-        const handleEnded = () => {
-            playNext();
+        const tryPlay = () => {
+            if (disposed || !state().isPlaying || !audio.getAttribute('src') || playPending) return;
+            const attempt = generation;
+            playPending = true;
+            audio.play().then(() => {
+                if (!disposed && attempt === generation && state().isPlaying) status('playing');
+            }).catch((error: unknown) => {
+                if (disposed || attempt !== generation || !state().isPlaying) return;
+                if (error instanceof DOMException && error.name === 'AbortError') return;
+                fail(error instanceof DOMException && error.name === 'NotAllowedError'
+                    ? 'Playback needs your permission. Press Play to try again.'
+                    : 'Unable to play this song. Try Play again or choose another track.');
+            }).finally(() => { if (attempt === generation) playPending = false; });
         };
-
-        const handleError = (e: Event) => {
-            const audioElement = e.target as HTMLAudioElement;
-            const error = audioElement.error;
-
-            if (error) {
-                console.error('[AudioPlayer] Playback error:', {
-                    code: error.code,
-                    message: error.message,
-                    src: audioElement.src,
-                    networkState: audioElement.networkState,
-                    readyState: audioElement.readyState,
-                });
-
-                switch (error.code) {
-                    case 1:
-                        console.warn('[AudioPlayer] Media loading was aborted');
-                        break;
-                    case 2:
-                        console.error('[AudioPlayer] Network error while loading media');
-                        break;
-                    case 3:
-                        console.error('[AudioPlayer] Media decoding failed');
-                        break;
-                    case 4:
-                        console.error('[AudioPlayer] Media format not supported or source not found');
-                        break;
-                    default:
-                        console.error('[AudioPlayer] Unknown media error');
-                }
-            } else {
-                console.error('[AudioPlayer] Audio error event without error object:', e);
-            }
+        const onMetadata = () => {
+            const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+            metadataLoaded = true;
+            const restoredTime = initialPosition;
+            store.dispatch(setDuration(duration));
+            if (duration > 0 && restoredTime > 0) audio.currentTime = Math.min(restoredTime, duration);
+            if (state().isPlaying) tryPlay();
+            else status('paused');
         };
-
-        audio.addEventListener('timeupdate', handleTimeUpdate);
-        audio.addEventListener('durationchange', handleDurationChange);
-        audio.addEventListener('ended', handleEnded);
-        audio.addEventListener('error', handleError as any);
-
-        return () => {
-            audio.removeEventListener('timeupdate', handleTimeUpdate);
-            audio.removeEventListener('durationchange', handleDurationChange);
-            audio.removeEventListener('ended', handleEnded);
-            audio.removeEventListener('error', handleError as any);
+        const onTime = () => { if (metadataLoaded && Number.isFinite(audio.currentTime)) store.dispatch(setCurrentTime(audio.currentTime)); };
+        const onDuration = () => store.dispatch(setDuration(Number.isFinite(audio.duration) ? audio.duration : 0));
+        const onEnded = () => {
+            if (state().repeatMode === 'one') {
+                audio.currentTime = 0;
+                store.dispatch(setCurrentTime(0));
+                tryPlay();
+            } else store.dispatch(playNext());
         };
-    }, [setCurrentTime, setDuration, playNext]);
+        const onError = () => {
+            if (audio.error?.code === 1 || !audio.getAttribute('src')) return;
+            fail('This audio could not be loaded. Check the connection or choose another song.');
+        };
+        const onPlaying = () => status('playing');
+        const onWaiting = () => { if (state().isPlaying) status('loading'); };
+        const onPause = () => { if (!state().isPlaying) status('paused'); };
+        audio.addEventListener('loadedmetadata', onMetadata);
+        audio.addEventListener('durationchange', onDuration);
+        audio.addEventListener('timeupdate', onTime);
+        audio.addEventListener('ended', onEnded);
+        audio.addEventListener('error', onError);
+        audio.addEventListener('playing', onPlaying);
+        audio.addEventListener('waiting', onWaiting);
+        audio.addEventListener('pause', onPause);
 
-    // Загрузка текущего трека (если нет pendingTrack)
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (!audio || !currentTrack || pendingTrack) {
-            // Если есть pendingTrack, не загружаем currentTrack заново
-            if (audio && audio.src && !pendingTrack) {
-                // Продолжаем воспроизведение текущего трека
-                return;
-            }
-            if (audio && audio.src && !currentTrack) {
+        const sync = () => {
+            const player = state();
+            const becomingPlaying = player.isPlaying && !wasPlaying;
+            wasPlaying = player.isPlaying;
+            audio.volume = player.volume;
+            audio.setAttribute('data-volume', String(audio.volume));
+            audio.muted = player.isMuted;
+            const key = player.currentTrack ? `${player.currentTrack.id}:${player.playbackRevision}` : 'empty';
+            if (key !== sourceKey) {
+                sourceKey = key;
+                initialPosition = player.currentTime;
+                metadataLoaded = false;
+                generation++;
+                playPending = false;
+                request?.abort();
                 audio.pause();
                 audio.removeAttribute('src');
-                audio.load();
+                if (blobUrl) { URL.revokeObjectURL(blobUrl); blobUrl = undefined; }
+                if (!player.currentTrack) { audio.load(); return; }
+                const track = player.currentTrack;
+                if (isDemoMode) {
+                    const url = resolveDemoAudioUrl(track.id, track.lowQualityAudioFileId);
+                    if (!url) { fail('No demo audio is available for this track.'); return; }
+                    audio.src = url;
+                    audio.load();
+                } else {
+                    request = new AbortController();
+                    const expected = generation;
+                    void MusicApi.stream(track.id, undefined, { signal: request.signal }).then(async response => {
+                        if (!response.ok) throw new Error(`Audio request failed (${response.status})`);
+                        const blob = await response.blob();
+                        if (disposed || expected !== generation) return;
+                        blobUrl = URL.createObjectURL(blob);
+                        audio.src = blobUrl;
+                        audio.load();
+                        tryPlay();
+                    }).catch(() => {
+                        if (!disposed && expected === generation) fail('The audio stream is unavailable. Try another song.');
+                    });
+                }
             }
-            return;
-        }
-
-        let isCancelled = false;
-
-        audio.pause();
-        audio.currentTime = 0;
-
-        if (audio.src && audio.src.startsWith('blob:')) {
-            const oldBlobUrl = audio.src;
+            if (seekRevision !== player.seekRevision) {
+                seekRevision = player.seekRevision;
+                if (audio.readyState >= 1 && Number.isFinite(audio.duration)) {
+                    audio.currentTime = Math.min(audio.duration, Math.max(0, player.currentTime));
+                }
+            }
+            if (player.isPlaying) {
+                if (audio.error) audio.load();
+                if (audio.ended && becomingPlaying) audio.currentTime = 0;
+                if (audio.paused && !audio.ended) tryPlay();
+            } else { audio.pause(); }
+        };
+        const unsubscribe = store.subscribe(sync);
+        sync();
+        const onVisibility = () => { if (document.visibilityState === 'hidden') onTime(); };
+        document.addEventListener('visibilitychange', onVisibility);
+        return () => {
+            disposed = true;
+            generation++;
+            unsubscribe();
+            request?.abort();
+            document.removeEventListener('visibilitychange', onVisibility);
+            audio.removeEventListener('loadedmetadata', onMetadata);
+            audio.removeEventListener('durationchange', onDuration);
+            audio.removeEventListener('timeupdate', onTime);
+            audio.removeEventListener('ended', onEnded);
+            audio.removeEventListener('error', onError);
+            audio.removeEventListener('playing', onPlaying);
+            audio.removeEventListener('waiting', onWaiting);
+            audio.removeEventListener('pause', onPause);
+            audio.pause();
             audio.removeAttribute('src');
             audio.load();
-            URL.revokeObjectURL(oldBlobUrl);
-        }
-        const seekToTime = initialTimeRef.current || 0;
-        if (seekToTime === 0) {
-            setCurrentTime(0);
-        }
-
-        let blobUrl: string | null = null;
-
-        const loadTrack = async () => {
-            try {
-                console.log('[AudioPlayer] Streaming current track:', currentTrack.id, 'seek to:', seekToTime);
-
-                const response = await MusicApi.stream(currentTrack.id);
-
-                if (isCancelled) {
-                    console.log('[AudioPlayer] Track loading cancelled');
-                    return;
-                }
-
-                if (!response || !response.ok) {
-                    throw new Error(`Stream API returned status: ${response?.status || 'unknown'}`);
-                }
-
-                const blob = await response.blob();
-
-                if (isCancelled) {
-                    console.log('[AudioPlayer] Track loading cancelled after blob');
-                    return;
-                }
-
-                blobUrl = URL.createObjectURL(blob);
-
-                console.log('[AudioPlayer] Current track stream loaded successfully');
-
-                audio.src = blobUrl;
-                audio.load();
-
-                const handleLoadedMetadata = () => {
-                    audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-
-                    if (isCancelled) return;
-
-                    if (seekToTime > 0) {
-                        audio.currentTime = seekToTime;
-                        console.log('[AudioPlayer] Seeked to restored position:', seekToTime);
-                    }
-
-                    if (isPlayingRef.current && !isCancelled) {
-                        audio.play().catch((error) => {
-                            console.error('[AudioPlayer] Error auto-playing new track:', error);
-                        });
-                    }
-                };
-
-                if (audio.readyState >= 1) {
-                    if (seekToTime > 0 && !isCancelled) {
-                        audio.currentTime = seekToTime;
-                    }
-
-                    if (isPlayingRef.current && !isCancelled) {
-                        audio.play().catch((error) => {
-                            console.error('[AudioPlayer] Error auto-playing new track:', error);
-                        });
-                    }
-                } else {
-                    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-                }
-            } catch (error) {
-                console.error('[AudioPlayer] Error loading current track:', error);
-                console.error('[AudioPlayer] Track data:', currentTrack);
-            }
+            if (blobUrl) URL.revokeObjectURL(blobUrl);
         };
-
-        void loadTrack();
-
-        return () => {
-            isCancelled = true;
-            if (blobUrl) {
-                URL.revokeObjectURL(blobUrl);
-            }
-        };
-    }, [queueIndex, currentTrack?.id, pendingTrack, setCurrentTime]);
-
-    // Предзагрузка pendingTrack в фоне
-    useEffect(() => {
-        if (!pendingTrack || !isLoadingNextTrack) {
-            return;
-        }
-
-        // Создаем отдельный audio элемент для предзагрузки
-        if (!pendingAudioRef.current) {
-            pendingAudioRef.current = new Audio();
-        }
-
-        const pendingAudio = pendingAudioRef.current;
-        let blobUrl: string | null = null;
-        let isCancelled = false;
-
-        const preloadTrack = async () => {
-            try {
-                console.log('[AudioPlayer] Preloading pending track:', pendingTrack.id);
-
-                const response = await MusicApi.stream(pendingTrack.id);
-
-                if (!response || !response.ok) {
-                    throw new Error(`Stream API returned status: ${response?.status || 'unknown'}`);
-                }
-
-                const blob = await response.blob();
-                blobUrl = URL.createObjectURL(blob);
-
-                if (isCancelled) {
-                    URL.revokeObjectURL(blobUrl);
-                    return;
-                }
-
-                console.log('[AudioPlayer] Pending track preloaded successfully');
-
-                // Предзагружаем трек (без воспроизведения)
-                pendingAudio.src = blobUrl;
-                pendingAudio.volume = 0; // Убеждаемся, что pendingAudio не слышен
-                pendingAudio.load();
-
-                // Убеждаемся, что pendingAudio не воспроизводится
-                if (!pendingAudio.paused) {
-                    pendingAudio.pause();
-                }
-
-                // Ждем пока трек будет готов к воспроизведению
-                await new Promise<void>((resolve, reject) => {
-                    if (isCancelled) {
-                        reject(new Error('Preload cancelled'));
-                        return;
-                    }
-
-                    const handleCanPlay = () => {
-                        pendingAudio.removeEventListener('canplay', handleCanPlay);
-                        pendingAudio.removeEventListener('error', handleError);
-                        if (!isCancelled) {
-                            resolve();
-                        }
-                    };
-
-                    const handleError = () => {
-                        pendingAudio.removeEventListener('canplay', handleCanPlay);
-                        pendingAudio.removeEventListener('error', handleError);
-                        if (!isCancelled) {
-                            reject(new Error('Failed to preload pending track'));
-                        }
-                    };
-
-                    if (pendingAudio.readyState >= 3) {
-                        // HAVE_FUTURE_DATA или выше - трек готов
-                        resolve();
-                    } else {
-                        pendingAudio.addEventListener('canplay', handleCanPlay);
-                        pendingAudio.addEventListener('error', handleError);
-                    }
-                });
-
-                if (isCancelled) {
-                    if (blobUrl) {
-                        URL.revokeObjectURL(blobUrl);
-                    }
-                    return;
-                }
-
-                console.log('[AudioPlayer] Pending track is ready, switching...');
-
-                // Переключаемся на предзагруженный трек с плавным переходом
-                const mainAudio = audioRef.current;
-                if (mainAudio && !isCancelled) {
-                    // Сохраняем blobUrl для использования в mainAudio
-                    const trackBlobUrl = blobUrl;
-                    blobUrl = null; // Не освобождаем в cleanup, так как используется в mainAudio
-
-                    // Плавное переключение с fade out/in
-                    const fadeDuration = 300; // Длительность fade в миллисекундах (увеличено для более плавного перехода)
-                    const steps = 30; // Количество шагов для плавности
-                    const stepDuration = fadeDuration / steps;
-                    const targetVolume = isMuted ? 0 : volume;
-                    const volumeStep = targetVolume / steps;
-
-                    // Fade out текущего трека
-                    const currentVolume = mainAudio.volume;
-                    let currentStep = 0;
-                    let fadeOutInterval: NodeJS.Timeout | null = null;
-
-                    const cleanupFade = () => {
-                        if (fadeOutInterval) {
-                            clearInterval(fadeOutInterval);
-                            fadeOutInterval = null;
-                        }
-                    };
-
-                    fadeOutInterval = setInterval(() => {
-                        if (isCancelled) {
-                            cleanupFade();
-                            return;
-                        }
-
-                        currentStep++;
-                        const newVolume = Math.max(0, currentVolume - (volumeStep * currentStep));
-                        mainAudio.volume = newVolume;
-
-                        if (currentStep >= steps) {
-                            cleanupFade();
-
-                            if (!isCancelled) {
-                                // Полностью останавливаем старый трек перед переключением
-                                mainAudio.pause();
-                                mainAudio.currentTime = 0;
-
-                                // Убеждаемся, что pendingAudio не воспроизводится
-                                if (pendingAudio && !pendingAudio.paused) {
-                                    pendingAudio.pause();
-                                }
-
-                                // Небольшая задержка для полной остановки старого трека
-                                setTimeout(() => {
-                                    if (isCancelled) return;
-
-                                    // Переключаем src на предзагруженный трек
-                                    mainAudio.src = trackBlobUrl;
-                                    mainAudio.load();
-
-                                    // Начинаем с начала нового трека
-                                    mainAudio.currentTime = 0;
-
-                                    // Запускаем воспроизведение если было включено
-                                    if (isPlaying) {
-                                        mainAudio.play().then(() => {
-                                            // Fade in нового трека
-                                            mainAudio.volume = 0;
-                                            let fadeInStep = 0;
-
-                                            const fadeInInterval = setInterval(() => {
-                                                fadeInStep++;
-                                                mainAudio.volume = Math.min(targetVolume, volumeStep * fadeInStep);
-
-                                                if (fadeInStep >= steps) {
-                                                    clearInterval(fadeInInterval);
-                                                    mainAudio.volume = targetVolume;
-                                                }
-                                            }, stepDuration);
-                                        }).catch((error) => {
-                                            console.error('[AudioPlayer] Error playing new track:', error);
-                                            mainAudio.volume = targetVolume;
-                                        });
-                                    } else {
-                                        // Если не играет, просто устанавливаем громкость
-                                        mainAudio.volume = targetVolume;
-                                    }
-
-                                    // Подтверждаем переключение в Redux
-                                    confirmTrackSwitch();
-
-                                    console.log('[AudioPlayer] Track switched successfully');
-                                }, 50); // Небольшая задержка для полной остановки
-                            }
-
-                            // Освобождаем blobUrl после небольшой задержки
-                            setTimeout(() => {
-                                URL.revokeObjectURL(trackBlobUrl);
-                            }, 1000);
-                        }
-                    }, stepDuration);
-                }
-
-                // Очищаем pending audio
-                pendingAudio.removeAttribute('src');
-                pendingAudio.load();
-            } catch (error) {
-                if (!isCancelled) {
-                    console.error('[AudioPlayer] Error preloading pending track:', error);
-                    console.error('[AudioPlayer] Pending track data:', pendingTrack);
-                }
-                if (blobUrl) {
-                    URL.revokeObjectURL(blobUrl);
-                }
-            }
-        };
-
-        void preloadTrack();
-
-        return () => {
-            isCancelled = true;
-            if (blobUrl) {
-                URL.revokeObjectURL(blobUrl);
-            }
-            // Очищаем pending audio при отмене
-            if (pendingAudio.src) {
-                pendingAudio.removeAttribute('src');
-                pendingAudio.load();
-            }
-        };
-    }, [pendingTrack, isLoadingNextTrack, isPlaying, confirmTrackSwitch]);
-
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (!audio || !audio.src || audio.src === '' || audio.src === window.location.href) {
-            return;
-        }
-
-        if (isPlaying) {
-            audio.play().catch((error) => {
-                console.error('[AudioPlayer] Error playing audio:', error);
-            });
-        } else {
-            audio.pause();
-        }
-    }, [isPlaying]);
-
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (!audio) return;
-
-        audio.volume = isMuted ? 0 : volume;
-    }, [volume, isMuted]);
-
-    return <audio ref={audioRef} preload="auto" style={{ display: 'none' }} />;
+    }, []);
+    return <audio ref={audioRef} data-sonar-audio preload="auto" style={{ display: 'none' }} />;
 };
 
 export const useAudioSeek = () => {
-    const { setCurrentTime } = usePlayer();
-
-    return useCallback(
-        (time: number) => {
-            const audio = document.querySelector('audio');
-            if (audio) {
-                audio.currentTime = time;
-                setCurrentTime(time);
-            }
-        },
-        [setCurrentTime]
-    );
+    const dispatch = useAppDispatch();
+    return useCallback((time: number) => { dispatch(seekTo(time)); }, [dispatch]);
 };

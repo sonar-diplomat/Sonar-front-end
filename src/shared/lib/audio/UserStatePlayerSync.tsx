@@ -1,27 +1,32 @@
-import { useEffect, useState } from 'react';
+import React,{ lazy, Suspense, useEffect,useState } from 'react';
+
 import { useGetQueueQuery } from '@entities/UserState/api/rtkApi';
+import { isDemoMode } from '@shared/config/data-source';
+import { usePlaybackSync,useQueuePersistence } from '@shared/lib';
 import { usePlayer } from '@shared/store/features/player';
-import { useQueuePersistence } from '@shared/lib';
-import { usePlaybackSync } from '@shared/lib';
 import { useAppSelector } from '@shared/store/hooks';
+
 
 /**
  * Компонент для синхронизации userState.currentTrackId с player
  * Автоматически загружает и запускает трек когда изменяется currentTrackId
  */
-export const UserStatePlayerSync = () => {
+const DemoSync = isDemoMode ? lazy(() => import('@shared/lib/audio/DemoPlayerSync').then(module => ({ default: module.DemoPlayerSync }))) : null;
+export const UserStatePlayerSync = () => { usePlaybackSync(); return DemoSync ? <Suspense fallback={null}><DemoSync /></Suspense> : <ApiPlayerSync />; };
+const ApiPlayerSync = () => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { restoreQueue, pause } = usePlayer();
   const [hasRestoredQueue, setHasRestoredQueue] = useState(false);
 
   useQueuePersistence();
-  usePlaybackSync();
+
 
   const { data: queueData, isLoading, isError, error } = useGetQueueQuery(undefined, {
     skip: !isAuthenticated,
   });
 
   useEffect(() => {
+    if (!isAuthenticated || (!queueData && !isError)) return;
     if (hasRestoredQueue) {
       return;
     }
@@ -55,7 +60,7 @@ export const UserStatePlayerSync = () => {
               const seconds = parseFloat(parts[2]) || 0;
               currentTime = hours * 3600 + minutes * 60 + seconds;
             }
-          } catch (e) {
+          } catch {
             console.warn('[UserStatePlayerSync] Failed to parse Position:', queueData.Position);
           }
         }
@@ -117,5 +122,3 @@ export const UserStatePlayerSync = () => {
 
   return null;
 };
-
-

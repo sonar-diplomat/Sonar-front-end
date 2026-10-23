@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React,{ useEffect,useRef } from 'react';
+
+import { Button } from "@shared/ui";
+
+import { ClearIcon } from '../icons';
 
 import styles from './Modal.module.css';
-import {ClearIcon} from '../icons';
-import {Button} from "@shared/ui";
 
 export interface ModalProps {
   isOpen: boolean;

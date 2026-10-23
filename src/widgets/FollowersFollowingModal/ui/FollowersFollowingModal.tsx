@@ -1,8 +1,10 @@
 import React from 'react';
-import { Modal, LoadingPlaceholder } from '@shared/ui';
-import { useGetFollowersQuery, useGetFollowingQuery } from '@entities/User/api/rtkApi';
-import { UserListItem } from './UserListItem';
+
+import { useGetFollowersQuery,useGetFollowingQuery } from '@entities/User/api/rtkApi';
+import { LoadingPlaceholder,Modal } from '@shared/ui';
+
 import styles from './FollowersFollowingModal.module.css';
+import { UserListItem } from './UserListItem';
 
 interface FollowersFollowingModalProps {
     isOpen: boolean;

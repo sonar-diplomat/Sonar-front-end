@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import styles from './ShareComponent.module.css';
-import { Button, Modal, CopyIcon } from '@shared/ui';
-import { useGetShareLinkQuery, useGetShareQrQuery } from '@shared/api';
+import React,{ useState } from 'react';
+
+import { useGetShareLinkQuery,useGetShareQrQuery } from '@shared/api';
 import { useNotifications } from '@shared/store/notificationStore';
+import { Button,CopyIcon,Modal } from '@shared/ui';
+
+import styles from './ShareComponent.module.css';
 
 export type ShareEntityType = 'Artist' | 'Track' | 'User' | 'Playlist' | 'Album' | 'Blend';
 
@@ -46,7 +48,7 @@ export const ShareComponent: React.FC<ShareComponentProps> = ({
       setCopiedLink(true);
       showSuccess('Link copied to clipboard');
       setTimeout(() => setCopiedLink(false), 2000);
-    } catch (err) {
+    } catch {
       showError('Failed to copy link');
     }
   };

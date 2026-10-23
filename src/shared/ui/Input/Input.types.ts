@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 export interface DropdownOption {
     value: string;
@@ -12,6 +12,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
     iconPosition?: 'prefix' | 'suffix';
     icon?: React.ReactNode;
     iconClickable?: boolean;
+    iconLabel?: string;
     onIconClick?: () => void;
     helperIcon?: React.ReactNode;
     helperTextAction?: {

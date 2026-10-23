@@ -1,7 +1,10 @@
 import React from 'react';
-import { CodeVerification, RightArrow } from '@shared/ui';
-import styles from './TwoFactorVerification.module.css';
+
+import { CodeVerification,RightArrow } from '@shared/ui';
+
 import type { TwoFactorVerificationProps } from '../model/types';
+
+import styles from './TwoFactorVerification.module.css';
 
 export const TwoFactorVerification: React.FC<TwoFactorVerificationProps> = ({
   email,

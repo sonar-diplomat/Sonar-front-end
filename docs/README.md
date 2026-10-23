@@ -14,5 +14,6 @@ Start with [development](development.md) for installation and local execution, t
 | [Task commands](tasks.md) | Task YAML and reusable local/CI operations |
 | [CI and Pages](ci-cd.md) | Workflow triggers, publication, Maintainer setup and rollback |
 | [Troubleshooting](troubleshooting.md) | Build, transport, media, Docker and publication diagnosis |
+| [Verification record](verification.md) | Measured local results and remaining publication gates |
 
 Demo changes are local to one browser. They are not synchronized between visitors. Mail, payment and backend realtime operations use explicit local demo scenarios.

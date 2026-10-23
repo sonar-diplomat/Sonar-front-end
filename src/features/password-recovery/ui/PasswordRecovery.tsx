@@ -1,7 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React,{ useCallback,useState } from 'react';
+
+import { Button,Form,Input,RightArrow } from '@shared/ui';
+
+import type { PasswordRecoveryFormData,PasswordRecoveryProps } from '../model/types';
+
 import styles from './PasswordRecovery.module.css';
-import { Button, Input, RightArrow, Form } from '@shared/ui';
-import type { PasswordRecoveryFormData, PasswordRecoveryProps } from '../model/types';
 
 export const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({
     onSubmit,
@@ -31,7 +34,7 @@ export const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({
                 <div className={styles.inputContainer}>
                     <Input
                         label="Email"
-                        placeholder="vanessa_sonar@gmail.com"
+                        placeholder="demo@example.test"
                         value={formData.email}
                         onChange={(e) => updateField('email', e.target.value)}
                         helperText="Enter the email to the account you linked."

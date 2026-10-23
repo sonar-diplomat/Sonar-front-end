@@ -1,7 +1,9 @@
 import React from "react";
+
 import { creatorPopupsTexts } from "../model/texts";
-import styles from "./CreatorPopup.module.css";
+
 import { CreatorBasePopup } from "./CreatorBasePopup";
+import styles from "./CreatorPopup.module.css";
 
 type Props = {
     onClose?: () => void;

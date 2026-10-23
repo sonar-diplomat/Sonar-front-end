@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React,{ useEffect,useRef,useState } from 'react';
+
 import styles from './TabSlider.module.css';
 
 export interface TabOption {
@@ -47,7 +48,7 @@ export const TabSlider: React.FC<TabSliderProps> = ({
         {tabs.map((tab, index) => (
           <button
             key={tab.value}
-            ref={(el) => (tabRefs.current[index] = el)}
+            ref={(el) => { tabRefs.current[index] = el; }}
             className={`${styles.tab} ${activeTab === tab.value ? styles.active : ''}`}
             onClick={() => handleTabClick(tab.value)}
             type="button"

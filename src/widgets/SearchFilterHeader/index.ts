@@ -1,1 +1,1 @@
-export {SearchFilterHeader} from './ui';
+export { SearchFilterHeader } from './ui';

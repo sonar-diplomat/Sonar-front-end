@@ -1,17 +1,23 @@
-import { useCallback, useMemo, useState } from 'react';
-import { AlbumApi } from '../api/api.ts';
-import type { AlbumDTO } from './types';
+import { useCallback,useMemo,useState } from 'react';
+
 import type { ShareLinkDTO } from '@entities/Collection';
-import type { State } from '@shared/types/store';
+import { legacyQuery } from '@shared/api/legacyQuery';
+import { store } from '@shared/store';
 import type { RequestConfig } from "@shared/types";
+import type { State } from '@shared/types/store';
+
+import { AlbumApi } from '../api/api.ts';
+import { albumApi } from '../api/rtkApi';
+
+import type { AlbumDTO, UploadAlbumDTO } from './types';
 
 
-const pickError = (res: any) =>
+const pickError = (res: { success: boolean; errors?: string[]; details?: string[]; message?: string }) =>
     res?.success ? undefined : res?.errors?.[0] || res?.details?.[0] || res?.message;
 
 export const useUploadAlbum = () => {
     const [state, setState] = useState<State<AlbumDTO>>({ loading: false });
-    const mutate = useCallback(async (body: any, RequestConfig?: RequestConfig) => {
+    const mutate = useCallback(async (body: UploadAlbumDTO, RequestConfig?: RequestConfig) => {
         setState({ loading: true });
         const res = await AlbumApi.upload(body, RequestConfig);
         setState({ loading: false, data: res.data, error: pickError(res) });
@@ -43,11 +49,11 @@ export const useUpdateAlbumName = () => {
 };
 
 export const useAlbumAddTrack = () => {
-    const [state, setState] = useState<State<any>>({ loading: false });
-    const mutate = useCallback(async (albumId: number, body: any, RequestConfig?: RequestConfig) => {
+    const [state, setState] = useState<State<unknown>>({ loading: false });
+    const mutate = useCallback(async (albumId: number, body: unknown, RequestConfig?: RequestConfig) => {
         setState({ loading: true });
         const res = await AlbumApi.addTrack(albumId, body, RequestConfig);
-        setState({ loading: false, data: res.data as any, error: pickError(res) });
+        setState({ loading: false, data: res.data, error: pickError(res) });
         return res;
     }, []);
     return useMemo(() => ({ ...state, mutate }), [state, mutate]);
@@ -68,7 +74,7 @@ export const useAlbumShareLink = () => {
     const [state, setState] = useState<State<ShareLinkDTO>>({ loading: false });
     const refetch = useCallback(async (albumId: number, RequestConfig?: RequestConfig) => {
         setState({ loading: true });
-        const res = await AlbumApi.shareLink(albumId, RequestConfig);
+        const res = await legacyQuery(async () => ({url: await store.dispatch(albumApi.endpoints.getAlbumShareLink.initiate(albumId, {subscribe:false,forceRefetch:true})).unwrap()}), RequestConfig);
         setState({ loading: false, data: res.data, error: pickError(res) });
         return res;
     }, []);
@@ -80,7 +86,7 @@ export const useAlbumShareQr = () => {
     const refetch = useCallback(async (albumId: number, RequestConfig?: RequestConfig) => {
         setState({ loading: true });
         const res = await AlbumApi.shareQr(albumId, RequestConfig);
-        setState({ loading: false, data: (res as any).data as Blob, error: pickError(res) });
+        setState({ loading: false, data: res.ok ? await res.blob() : undefined, error: res.ok ? undefined : res.statusText });
         return res;
     }, []);
     return useMemo(() => ({ ...state, refetch }), [state, refetch]);

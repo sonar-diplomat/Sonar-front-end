@@ -1,8 +1,11 @@
 import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
+
 import { useGetTrackQuery } from '@entities/Music/api/rtkApi';
-import { API_BASE_URL, API_ENDPOINTS } from '@shared/config';
+import { getImageUrlById } from '@shared/lib/image-utils';
 import { LoadingPlaceholder, LoadingImage } from '@shared/ui';
+
 import styles from './EmbedWidget.module.css';
 
 export interface TrackEmbedProps {
@@ -15,8 +18,7 @@ export const TrackEmbed: React.FC<TrackEmbedProps> = ({ trackId, url }) => {
   const { data: track, isLoading, isError } = useGetTrackQuery(trackId, { skip: !trackId });
 
   const handleClick = () => {
-    const path = new URL(url).pathname;
-    navigate(path);
+    navigate(`/track/${trackId}`);
   };
 
   if (isLoading) {
@@ -39,12 +41,10 @@ export const TrackEmbed: React.FC<TrackEmbedProps> = ({ trackId, url }) => {
     );
   }
 
-  const coverImageUrl = track.coverId
-    ? `${API_BASE_URL}${API_ENDPOINTS.blob.image(track.coverId)}`
-    : undefined;
+  const coverImageUrl = getImageUrlById(track.coverId);
 
   return (
-    <div className={styles.embed} onClick={handleClick} role="button" tabIndex={0}>
+    <div className={styles.embed} onClick={handleClick} role="button" tabIndex={0} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); handleClick(); } }}>
       <div className={styles.cover}>
         {coverImageUrl && (
           <LoadingImage
@@ -64,4 +64,3 @@ export const TrackEmbed: React.FC<TrackEmbedProps> = ({ trackId, url }) => {
     </div>
   );
 };
-

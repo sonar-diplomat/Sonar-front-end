@@ -1,7 +1,10 @@
-import React, { useMemo } from 'react';
-import { Input, SearchIcon, ClearIcon } from '@shared/ui';
-import type { SearchBarProps } from './SearchBar.types.ts';
+import React,{ useMemo } from 'react';
+
+import { ClearIcon,Input,SearchIcon } from '@shared/ui';
+
 import { useSearchValue } from '../hooks/useSearchValue.ts';
+
+import type { SearchBarProps } from './SearchBar.types.ts';
 
 export type { SearchBarProps };
 
@@ -42,7 +45,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             type="text"
             icon={iconNode}
             iconPosition="suffix"
-            iconClickable={showClear}
+            iconLabel="Clear search" iconClickable={showClear}
             onIconClick={showClear ? handleClear : undefined}
             {...props}
         />

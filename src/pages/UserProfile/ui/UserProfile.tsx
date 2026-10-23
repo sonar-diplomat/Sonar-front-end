@@ -1,33 +1,36 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-import { ProfileCard } from '@shared/ui';
-import { ProfileLayout } from '@widgets/ProfileLayout';
-import { ContentSections } from '@widgets/ContentSections';
-import { TopSongsWidget } from '@widgets/TopSongsWidget';
-import { TopArtistsWidget } from '@widgets/TopArtistsWidget';
-import { ProfileActionButtons } from '@widgets/ProfileActionButtons';
-import { FollowersFollowingModal } from '@widgets/FollowersFollowingModal';
-import { MarkdownRenderer } from '@shared/lib/markdown/MarkdownRenderer';
-import { useProfileNavigation } from '@shared/hooks';
-import { createPlaylistSection } from '@shared/lib/profile';
-import { getImageUrl } from '@shared/lib/image-utils';
-import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
-import { 
-    useGetUserProfileByIdentifierQuery,
-    useGetUserByIdQuery,
-    useGetFollowersQuery,
-    useGetFriendsQuery,
-    useFollowUserMutation,
-    useUnfollowUserMutation,
-    useGetTopTracksQuery,
-    useGetTopArtistsQuery,
+import React,{ useEffect,useMemo,useState } from 'react';
+
+import { useLocation,useNavigate,useParams } from 'react-router-dom';
+
+import { useCreateChatMutation,useGetChatsQuery } from '@entities/Chat/api/rtkApi';
+import {
+useFollowUserMutation,
+useGetFollowersQuery,
+useGetFriendsQuery,
+useGetTopArtistsQuery,
+useGetTopTracksQuery,
+useGetUserByIdQuery,
+useGetUserProfileByIdentifierQuery,
+useUnfollowUserMutation,
 } from '@entities/User/api/rtkApi';
-import { useCreateChatMutation, useGetChatsQuery } from '@entities/Chat/api/rtkApi';
-import { useNavigate } from 'react-router-dom';
-import { UserProfileSkeleton } from './UserProfileSkeleton';
-import { UserNotFound } from './UserNotFound';
+import { useProfileNavigation } from '@shared/hooks';
+import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
+import { getImageUrl } from '@shared/lib/image-utils';
+import { MarkdownRenderer } from '@shared/lib/markdown/MarkdownRenderer';
+import { createPlaylistSection } from '@shared/lib/profile';
 import type { ViewerType } from '@shared/types';
+import { ProfileCard } from '@shared/ui';
+import { asUiApiError } from '@shared/ui/api-error';
+import { ContentSections } from '@widgets/ContentSections';
+import { FollowersFollowingModal } from '@widgets/FollowersFollowingModal';
+import { ProfileActionButtons } from '@widgets/ProfileActionButtons';
+import { ProfileLayout } from '@widgets/ProfileLayout';
+import { TopArtistsWidget } from '@widgets/TopArtistsWidget';
+import { TopSongsWidget } from '@widgets/TopSongsWidget';
+
+import { UserNotFound } from './UserNotFound';
 import styles from './UserProfile.module.css';
+import { UserProfileSkeleton } from './UserProfileSkeleton';
 
 interface UserProfileProps {
     viewerType?: ViewerType;
@@ -44,10 +47,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({
 
     const isIdentifierValid = identifier !== null && identifier !== undefined && identifier.length > 0;
 
-    const { 
-        data: profileData, 
-        isLoading: isLoadingProfile, 
-        error: profileError 
+    const {
+        data: profileData,
+        isLoading: isLoadingProfile,
+        error: profileError
     } = useGetUserProfileByIdentifierQuery(identifier!, {
         skip: !isIdentifierValid,
     });
@@ -69,7 +72,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         // Check sessionStorage for updated identifier (set when user updates it in settings)
         const updatedIdentifier = sessionStorage.getItem('updatedPublicIdentifier');
         const oldIdentifier = sessionStorage.getItem('oldPublicIdentifier');
-        
+
         if (updatedIdentifier && oldIdentifier && identifier === oldIdentifier) {
             // Clear sessionStorage and redirect to new identifier
             sessionStorage.removeItem('updatedPublicIdentifier');
@@ -77,7 +80,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
             navigate(`/user/${updatedIdentifier}`, { replace: true });
             return;
         }
-        
+
         // Fallback: check if current identifier doesn't match current user's identifier
         if (
             viewerType === 'owner' &&
@@ -106,8 +109,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({
     });
 
     // Get top tracks and artists (only for owner)
-    const { 
-        data: topTracksData, 
+    const {
+        data: topTracksData,
         isLoading: isLoadingTopTracks,
         isError: isTopTracksError,
         refetch: refetchTopTracks
@@ -115,7 +118,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         skip: viewerType !== 'owner',
     });
 
-    const { 
+    const {
         data: topArtistsData,
         isLoading: isLoadingTopArtists,
         isError: isTopArtistsError,
@@ -166,29 +169,29 @@ export const UserProfile: React.FC<UserProfileProps> = ({
 
     const handleCreateChat = async () => {
         if (!profileData?.id || !currentUserId) return;
-        
+
         // Check if personal chat already exists between current user and profile user
         const existingChat = userChats?.find(chat => {
             if (chat.isGroup) return false;
             if (chat.userIds.length !== 2) return false;
             return chat.userIds.includes(currentUserId) && chat.userIds.includes(profileData.id);
         });
-        
+
         if (existingChat) {
             // Navigate to existing chat
             navigate(`/chats/${existingChat.id}`);
             return;
         }
-        
+
         try {
             await createChat({
                 name: profileData.userName,
                 isGroup: false,
                 coverId: 1,
                 userId: profileData.id,
-            }).unwrap();    
+            }).unwrap();
             navigate('/chats');
-        } catch (error: any) {
+        } catch (caught: unknown) { const error = asUiApiError(caught);
             if (error?.data?.message?.includes('already exists') || error?.status === 400) {
                 const updatedChats = await refetchChats();
                 const foundChat = updatedChats.data?.find(chat => {
@@ -301,8 +304,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({
     );
 
     const actionButtons = viewerType === 'owner' ? null : (
-        <ProfileActionButtons 
-            viewerType={viewerType} 
+        <ProfileActionButtons
+            viewerType={viewerType}
             profileType="user"
             isFollowing={isFollowing}
             isFriend={isFriend}

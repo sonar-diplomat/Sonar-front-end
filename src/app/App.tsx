@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
-import {Outlet} from "react-router-dom";
+import React,{ useEffect } from "react";
 
-import { AudioPlayerController, UserStatePlayerSync } from "@shared/lib/audio";
-import { NotificationContainer } from "@shared/ui";
-import { useNotificationStore } from "@shared/store/notificationStore";
-import { useAppSelector } from "@shared/store/hooks";
+import { Outlet } from "react-router-dom";
+
+import { AudioPlayerController,UserStatePlayerSync } from "@shared/lib/audio";
 import { useFavoritesSync } from "@shared/lib/favorites/useFavoritesSync";
+import { useAppSelector } from "@shared/store/hooks";
+import { useNotificationStore } from "@shared/store/notificationStore";
+import { NotificationContainer } from "@shared/ui";
 
 
 

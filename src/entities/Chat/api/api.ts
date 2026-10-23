@@ -1,7 +1,8 @@
 import { apiClient } from '@shared/api/oldBaseApi.ts';
 import { API_ENDPOINTS } from '@shared/config';
-import type { CreateChatDTO, MessageDTO } from '../model/types';
 import type { RequestConfig } from '@shared/types';
+
+import type { CreateChatDTO,MessageDTO } from '../model/types';
 
 export const Api = {
     /**

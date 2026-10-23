@@ -1,8 +1,11 @@
-import React, {useState, useRef} from 'react';
+import React,{ useRef,useState } from 'react';
+
+import { useLocation,useNavigate } from 'react-router-dom';
+
+import { useAddCollectionToFolderMutation,useCreatePlaylistMutation } from '@shared/api';
+import { Button,Input,LeftArrow,LoadingImage,PlusIcon } from "@shared/ui";
+
 import styles from './CreatePlaylist.module.css';
-import {Button, Input, PlusIcon, LeftArrow, LoadingImage} from "@shared/ui";
-import {useNavigate, useLocation} from 'react-router-dom';
-import { useCreatePlaylistMutation, useAddCollectionToFolderMutation } from '@shared/api';
 
 export interface CreatePlaylistProps {
     className?: string;
@@ -96,7 +99,7 @@ export const CreatePlaylist: React.FC<CreatePlaylistProps> = ({className = ''}) 
                     shape="cr-16"
                     iconOnly
                     icon={<LeftArrow/>}
-                    onClick={handleBack}
+                    aria-label="Back to library" onClick={handleBack}
                     className={styles.backButton}
                 />
                 <h1 className={styles.title}>Create new playlist</h1>

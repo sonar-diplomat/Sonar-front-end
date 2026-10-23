@@ -1,133 +1,40 @@
-import React, {useMemo} from 'react';
-import {useNavigate, useParams, Outlet, useLocation} from 'react-router-dom';
-import {Button, PlusIcon} from '@shared/ui';
-import {ArtistPostCard} from '@widgets/ArtistMessageCard';
-import {useGetArtistPostsQuery, useGetArtistByIdQuery} from '@entities/Artist';
-import {useCurrentUserId} from '@shared/lib/auth';
-import type {ArtistMessage} from '@widgets/ArtistMessageCard';
+import React,{ useState } from 'react';
+
+import { Outlet,useLocation,useNavigate,useParams } from 'react-router-dom';
+
+import { useDeletePostMutation,useGetArtistByIdQuery,useGetArtistPostsQuery } from '@entities/Artist';
+import { useCurrentUserId } from '@shared/lib/auth';
+import { getImageUrlById } from '@shared/lib/image-utils';
+import { useNotifications } from '@shared/store/notificationStore';
+import { Button,Modal } from '@shared/ui';
+import { ArtistPostCard } from '@widgets/ArtistMessageCard';
+import { ProfileHeader } from '@widgets/ProfileHeader';
+
 import styles from './ArtistProfile.module.css';
-import {ProfileHeader, type ProfileType} from "@widgets/ProfileHeader";
-import type {ViewerType} from "@shared/types";
-
-interface ArtistPostsProps {
-    viewerType?: ViewerType,
-    profileType?: ProfileType,
-    secondaryTab?: string,
-    handleTabChange?: (tab: string) => void,
-    onBackClick?: () => void,
-    onMessageClick?: () => void
-}
-
-export const ArtistPosts: React.FC = ({
-                                          viewerType,
-                                          profileType,
-                                          secondaryTab,
-                                          handleTabChange,
-                                          onBackClick,
-                                          onMessageClick
-                                      }: ArtistPostsProps
-) => {
+export const ArtistPosts: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const {id} = useParams<{ id: string }>();
+    const { id } = useParams();
     const currentUserId = useCurrentUserId();
-
-    const isCreateRoute = location.pathname.includes('/create');
-
-    const { data: artistData } = useGetArtistByIdQuery(Number(id), {
-        skip: !id,
-    });
-
-    const isOwner = currentUserId && artistData && currentUserId === artistData.userId;
-
-    const {
-        data: posts,
-        isLoading,
-        error
-    } = useGetArtistPostsQuery(Number(id), {
-        skip: !id || isCreateRoute,
-    });
-
-    const artistMessages: ArtistMessage[] = useMemo(() => {
-        if (!posts) return [];
-
-        return posts.map((post) => ({
-            id: post.id.toString(),
-            artistName: 'Artist',
-            artistImage: 'https://placehold.co/52x52',
-            title: post.title,
-            timestamp: new Date(post.createdAt).toLocaleDateString(),
-            content: post.textContent,
-            hasExpandableText: post.textContent.length > 200,
-        }));
-    }, [posts]);
-
-    const handleCreateNew = () => {
-        navigate(`/artist/${id}/posts/create`);
-    };
-
-    const handleMessageMenuClick = (messageId: string) => {
-        console.log('Menu clicked for message:', messageId);
-    };
-
-    const handleLinkClick = (url: string) => {
-        console.log('Link clicked:', url);
-        window.open(url, '_blank');
-    };
-
-    const handleTrackPlay = (messageId: string) => {
-        console.log('Play track for message:', messageId);
-    };
-
-    if (isCreateRoute) {
-        return <Outlet/>;
-    }
-
-    if (isLoading) {
-        return <div className={styles.messagesView}>Loading posts...</div>;
-    }
-
-    if (error) {
-        return <div className={styles.messagesView}>Error loading posts</div>;
-    }
-
-    return (
-        <>
-            <ProfileHeader
-                viewerType={viewerType}
-                profileType={profileType}
-                secondaryTab={secondaryTab}
-                onTabChange={handleTabChange}
-                onBackClick={onBackClick}
-                onMessageClick={onMessageClick}
-            />
-            <div className={styles.messagesView}>
-                {isOwner && (
-                    <Button
-                        className={styles.createBtn}
-                        icon={<PlusIcon/>}
-                        variant="filled"
-                        theme="dark"
-                        onClick={handleCreateNew}
-                    >
-                        Create New
-                    </Button>
-                )}
-                {artistMessages.length === 0 ? (
-                    <div>No posts yet.{isOwner && ' Create your first post!'}</div>
-                ) : (
-                    artistMessages.map((message) => (
-                        <ArtistPostCard
-                            key={message.id}
-                            message={message}
-                            onMenuClick={handleMessageMenuClick}
-                            onLinkClick={handleLinkClick}
-                            onTrackPlay={handleTrackPlay}
-                        />
-                    ))
-                )}
-            </div>
-        </>
-
-    );
+    const creating = location.pathname.endsWith('/create');
+    const { data: artist } = useGetArtistByIdQuery(Number(id), { skip: !id });
+    const { data: posts, isLoading, error, refetch } = useGetArtistPostsQuery(Number(id), { skip: !id || creating });
+    const [deletePost, { isLoading: deleting }] = useDeletePostMutation();
+    const [selected, setSelected] = useState<number | null>(null);
+    const { showError } = useNotifications();
+    const owner = currentUserId === artist?.userId;
+    if (creating) return <Outlet />;
+    return <>
+        <ProfileHeader viewerType={owner ? 'owner' : 'guest'} profileType="artist" secondaryTab="Posts" onTabChange={tab => navigate(tab.toLowerCase() === 'posts' ? `/artist/${id}/posts` : `/artist/${id}`)} onBackClick={() => navigate(`/artist/${id}`)} />
+        <main className={styles.messagesView}>
+            {owner && <Button theme="dark" onClick={() => navigate(`/artist/${id}/posts/create`)}>Create new post</Button>}
+            {isLoading && <p role="status">Loading posts…</p>}
+            {error && <><p role="alert">Unable to load posts.</p><Button onClick={() => void refetch()}>Retry</Button></>}
+            {posts?.length === 0 && <p>No posts yet.</p>}
+            {posts?.map(post => <ArtistPostCard key={post.id} message={{ id: String(post.id), artistName: artist?.artistName || 'Artist', artistImage: getImageUrlById(artist?.user?.avatarImageId || 0) || '', title: post.title, timestamp: new Date(post.createdAt).toLocaleDateString(), content: post.textContent }} onMenuClick={owner ? value => setSelected(Number(value)) : undefined} />)}
+        </main>
+        <Modal isOpen={selected !== null} onClose={() => setSelected(null)} title="Delete post?">
+            <p>This removes the selected post.</p><Button theme="dark" disabled={deleting} onClick={() => { if (selected) void deletePost(selected).unwrap().then(() => { setSelected(null); void refetch(); }).catch(() => showError('Unable to delete post')); }}>Delete post</Button><Button onClick={() => setSelected(null)}>Cancel</Button>
+        </Modal>
+    </>;
 };

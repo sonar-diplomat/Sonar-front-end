@@ -1,6 +1,7 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
-import type { GiftResponseDTO, GiftStyleDTO, SendGiftDTO } from '../model/types';
+
+import type { GiftResponseDTO,GiftStyleDTO,SendGiftDTO } from '../model/types';
 
 /**
  * Gift API endpoints
@@ -13,7 +14,7 @@ export const giftApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: [{ type: 'Gift', id: 'RECEIVED' }],
+      providesTags: [{ type: 'Gift', id: 'RECEIVED' }, 'DemoState'],
     }),
 
     getSentGifts: builder.query<GiftResponseDTO[], { senderId?: number }>({
@@ -23,7 +24,7 @@ export const giftApi = rtkApi.injectEndpoints({
         withAuth: true,
         params: senderId ? { senderId } : undefined,
       }),
-      providesTags: [{ type: 'Gift', id: 'SENT' }],
+      providesTags: [{ type: 'Gift', id: 'SENT' }, 'DemoState'],
     }),
 
     getGift: builder.query<GiftResponseDTO, number>({
@@ -32,7 +33,7 @@ export const giftApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, id) => [{ type: 'Gift', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Gift', id }, 'DemoState'],
     }),
 
     getGiftStyles: builder.query<GiftStyleDTO[], void>({
@@ -41,7 +42,7 @@ export const giftApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: [{ type: 'GiftStyle', id: 'LIST' }],
+      providesTags: [{ type: 'GiftStyle', id: 'LIST' }, 'DemoState'],
     }),
 
     getGiftStyleById: builder.query<GiftStyleDTO, number>({
@@ -50,7 +51,7 @@ export const giftApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: (_result, _error, id) => [{ type: 'GiftStyle', id }],
+      providesTags: (_result, _error, id) => [{ type: 'GiftStyle', id }, 'DemoState'],
     }),
 
     sendGift: builder.mutation<void, SendGiftDTO>({

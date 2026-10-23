@@ -1,8 +1,8 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
-import type { FolderDTO, CreateFolderDTO } from '../model/types';
-import { store } from '@shared/store';
 import { markDirty } from '@shared/store/features/library/librarySlice';
+
+import type { CreateFolderDTO,FolderDTO } from '../model/types';
 
 /**
  * Library (Folder) API endpoints
@@ -15,7 +15,7 @@ export const libraryApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, folderId) => [{ type: 'Folder', id: folderId }],
+      providesTags: (_result, _error, folderId) => [{ type: 'Folder', id: folderId }, 'DemoState'],
     }),
 
     getFolders: builder.query<FolderDTO[], void>({
@@ -24,7 +24,7 @@ export const libraryApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      transformResponse: (response: FolderDTO[] | any) => {
+      transformResponse: (response: unknown) => {
         if (Array.isArray(response)) {
           return response;
         }
@@ -33,7 +33,7 @@ export const libraryApi = rtkApi.injectEndpoints({
         }
         return [];
       },
-      providesTags: [{ type: 'Folder', id: 'LIST' }],
+      providesTags: [{ type: 'Folder', id: 'LIST' }, 'DemoState'],
     }),
 
     createFolder: builder.mutation<FolderDTO, CreateFolderDTO>({
@@ -45,7 +45,7 @@ export const libraryApi = rtkApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'Folder', id: 'LIST' }],
       async onQueryStarted(_arg, { dispatch }) {
-        store.dispatch(markDirty());
+        dispatch(markDirty());
       },
     }),
 
@@ -63,7 +63,7 @@ export const libraryApi = rtkApi.injectEndpoints({
         { type: 'Folder', id: 'LIST' },
       ],
       async onQueryStarted(_arg, { dispatch }) {
-        store.dispatch(markDirty());
+        dispatch(markDirty());
       },
     }),
 
@@ -78,7 +78,7 @@ export const libraryApi = rtkApi.injectEndpoints({
         { type: 'Folder', id: 'LIST' },
       ],
       async onQueryStarted(_arg, { dispatch }) {
-        store.dispatch(markDirty());
+        dispatch(markDirty());
       },
     }),
 
@@ -90,7 +90,7 @@ export const libraryApi = rtkApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { folderId }) => [{ type: 'Folder', id: folderId }],
       async onQueryStarted(_arg, { dispatch }) {
-        store.dispatch(markDirty());
+        dispatch(markDirty());
       },
     }),
 
@@ -102,7 +102,7 @@ export const libraryApi = rtkApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { folderId }) => [{ type: 'Folder', id: folderId }],
       async onQueryStarted(_arg, { dispatch }) {
-        store.dispatch(markDirty());
+        dispatch(markDirty());
       },
     }),
 
@@ -117,7 +117,7 @@ export const libraryApi = rtkApi.injectEndpoints({
         { type: 'Folder', id: 'LIST' },
       ],
       async onQueryStarted(_arg, { dispatch }) {
-        store.dispatch(markDirty());
+        dispatch(markDirty());
       },
     }),
 
@@ -133,7 +133,7 @@ export const libraryApi = rtkApi.injectEndpoints({
         { type: 'Folder', id: 'LIST' },
       ],
       async onQueryStarted(_arg, { dispatch }) {
-        store.dispatch(markDirty());
+        dispatch(markDirty());
       },
     }),
   }),

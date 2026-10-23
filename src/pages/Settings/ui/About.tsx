@@ -1,7 +1,10 @@
 import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
+
+import { Button,LeftArrow,SettingsItem,SettingsSection } from '@shared/ui';
+
 import styles from './About.module.css';
-import { SettingsSection, SettingsItem, Button, LeftArrow } from '@shared/ui';
 
 export const About: React.FC = () => {
   const navigate = useNavigate();

@@ -1,7 +1,9 @@
 import React from 'react';
+
+import { Button,EditIcon,SortIcon } from '@shared/ui';
+import type { CollectionActionsProps } from '@widgets/CollectionView';
+
 import styles from './CollectionActions.module.css';
-import type {CollectionActionsProps} from '@widgets/CollectionView';
-import { Button, EditIcon, SortIcon } from '@shared/ui';
 
 export const CollectionActions: React.FC<CollectionActionsProps> = ({
     onEditClick,

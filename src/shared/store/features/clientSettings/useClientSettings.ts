@@ -1,7 +1,9 @@
-import { useCallback, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
-import { setSettings, clearSettings } from './clientSettingsSlice';
-import { useGetClientSettingsQuery, usePatchClientSettingsMutation } from '@shared/api';
+import { useCallback,useEffect } from 'react';
+
+import { useGetClientSettingsQuery,usePatchClientSettingsMutation } from '@shared/api';
+import { useAppDispatch,useAppSelector } from '@shared/store/hooks';
+
+import { clearSettings,setSettings } from './clientSettingsSlice';
 
 /**
  * Хук для работы с настройками клиента
@@ -47,7 +49,7 @@ export const useClientSettings = () => {
       return null;
     } catch (err) {
       console.error('Failed to update settings:', err);
-      return null;
+      throw err;
     }
   }, [patchMutation, dispatch]);
 

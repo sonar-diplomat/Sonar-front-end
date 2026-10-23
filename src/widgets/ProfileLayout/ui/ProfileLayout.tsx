@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React,{ useEffect,useState } from 'react';
+
 import { useLocation } from 'react-router-dom';
-import { ProfileHeader } from '@widgets/ProfileHeader';
-import type { ProfileType } from '@widgets/ProfileHeader';
+
 import type { ViewerType } from '@shared/types';
+import type { ProfileType } from '@widgets/ProfileHeader';
+import { ProfileHeader } from '@widgets/ProfileHeader';
+
 import styles from './ProfileLayout.module.css';
 
 export interface ProfileLayoutProps {

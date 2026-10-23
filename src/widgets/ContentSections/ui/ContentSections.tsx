@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {ItemCardContainer} from "@shared/ui";
+import { ItemCardContainer } from "@shared/ui";
 
 import styles from './ContentSections.module.css';
 
@@ -10,12 +10,12 @@ export interface ContentSection<T = unknown> {
     countLabel: string;
     shouldShow: boolean;
     items: T[];
-    renderItem: (item: T) => React.ReactNode;
+    renderItem(item: T): React.ReactNode;
     className?: string;
 }
 
 interface ContentSectionsProps {
-    sections: ContentSection<any>[];
+    sections: ContentSection<unknown>[];
 }
 
 export const ContentSections: React.FC<ContentSectionsProps> = ({sections}) => {

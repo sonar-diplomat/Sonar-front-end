@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { LoadingPlaceholder } from '@shared/ui';
+
 import styles from './UserProfileSkeleton.module.css';
 
 export const UserProfileSkeleton: React.FC = () => {

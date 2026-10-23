@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+
 import {
   useGetFoldersQuery,
   useGetClientSettingsQuery,
@@ -43,7 +44,7 @@ export const useUserLibrary = () => {
     // Собираем коллекции из Root папки (если есть) и остальных папок
     const rootCollections = rootFolder ? rootFolder.collections : [];
     const otherCollections = foldersToProcess.flatMap(f => f.collections);
-    const allCollections = [...rootCollections, ...otherCollections];
+    const allCollections = [...new Map([...rootCollections, ...otherCollections].map(c => [c.id, c])).values()];
 
     const allPlaylists = allCollections.filter(c => c.type === 'Playlist');
     const allAlbums = allCollections.filter(c => c.type === 'Album');
@@ -70,7 +71,7 @@ export const useUserLibrary = () => {
       : folders;
 
     return {
-      folders: processedFolders,
+      folders: [...new Map(processedFolders.map(f => [f.id, f])).values()],
       playlists: allPlaylists,
       albums: allAlbums,
       blends: allBlends,

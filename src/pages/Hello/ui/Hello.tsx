@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React,{ useState } from "react";
+
 import { useNavigate } from "react-router-dom";
-import {Button, RightArrow} from "@shared/ui";
-import { CarouselDots } from "@widgets/CarouselDots";
+
 import { markFirstVisitComplete } from "@app/router/FirstVisitGuard";
+import { Button,RightArrow } from "@shared/ui";
+import { CarouselDots } from "@widgets/CarouselDots";
+
 import styles from "./Hello.module.css";
 
 export const Hello: React.FC = () => {

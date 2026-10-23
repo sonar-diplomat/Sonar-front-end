@@ -1,7 +1,9 @@
 import React from 'react';
-import styles from './ArtistItem.module.css';
+
 import type { ArtistItemProps } from '@shared/ui';
 import { LoadingImage } from '@shared/ui';
+
+import styles from './ArtistItem.module.css';
 
 export const ArtistItem: React.FC<ArtistItemProps> = ({
     rank,

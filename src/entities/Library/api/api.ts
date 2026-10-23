@@ -1,7 +1,8 @@
 import { apiClient } from '@shared/api/oldBaseApi.ts';
 import { API_ENDPOINTS } from '@shared/config';
-import type { FolderDTO, CreateFolderDTO } from '../model/types';
 import type { RequestConfig } from '@shared/types';
+
+import type { CreateFolderDTO,FolderDTO } from '../model/types';
 
 export const Api = {
     // Закомментировано: используйте useGetFolderQuery из @shared/api/rtkApi

@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
+
+import { rtkApi } from '@shared/api/rtkApi';
+
+import accessReducer from './features/access/accessSlice';
 import authReducer from './features/auth/authSlice';
 import clientSettingsReducer from './features/clientSettings/clientSettingsSlice';
-import userStateReducer from './features/userState/userStateSlice';
-import accessReducer from './features/access/accessSlice';
-import playerReducer from './features/player/playerSlice';
 import libraryReducer from './features/library/librarySlice';
+import playerReducer from './features/player/playerSlice';
 import searchReducer from './features/search/searchSlice';
-import { rtkApi } from '@shared/api/rtkApi';
+import userStateReducer from './features/userState/userStateSlice';
 
 // Импортируем все API модули для инжекции endpoints после инициализации rtkApi
 import '@shared/api/rtkApiEndpoints';

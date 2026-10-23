@@ -1,7 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React,{ useCallback,useState } from 'react';
+
+import { Button,EyeIcon,EyeOffIcon,Form,Input,RightArrow } from '@shared/ui';
+
+import type { AssignNewPasswordFormData,AssignNewPasswordProps } from '../model/types';
+
 import styles from './AssignNewPassword.module.css';
-import { Button, Input, RightArrow, Form, EyeIcon, EyeOffIcon } from '@shared/ui';
-import type { AssignNewPasswordFormData, AssignNewPasswordProps } from '../model/types';
 
 type FormField = keyof AssignNewPasswordFormData;
 
@@ -10,7 +13,7 @@ export const AssignNewPassword: React.FC<AssignNewPasswordProps> = ({
     isSubmitting,
 }) => {
     const [showPassword, setShowPassword] = useState(false);
-    const [showRepeatPassword, setShowRepeatPassword] = useState(false);
+    const [showRepeatPassword] = useState(false);
     const [formData, setFormData] = useState<AssignNewPasswordFormData>({
         password: '',
         repeatPassword: ''

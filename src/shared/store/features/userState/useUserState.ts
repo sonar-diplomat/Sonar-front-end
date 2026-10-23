@@ -1,14 +1,16 @@
 import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
-import { setCurrentPosition, setListeningTarget, setStatus, clearUserState } from './userStateSlice';
+
 import {
-  useUpdateCurrentPositionMutation,
-  useUpdateListeningTargetMutation,
-  useUpdateUserStatusMutation,
-  useAddToQueueMutation,
-  useDeleteFromQueueMutation,
-  useUpdatePrimarySessionMutation,
+useAddToQueueMutation,
+useDeleteFromQueueMutation,
+useUpdateCurrentPositionMutation,
+useUpdateListeningTargetMutation,
+useUpdatePrimarySessionMutation,
+useUpdateUserStatusMutation,
 } from '@shared/api';
+import { useAppDispatch,useAppSelector } from '@shared/store/hooks';
+
+import { clearUserState,setCurrentPosition,setListeningTarget,setStatus } from './userStateSlice';
 
 /**
  * Хук для работы с состоянием пользователя

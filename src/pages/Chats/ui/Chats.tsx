@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react';
+import React,{ useEffect } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import { ChatList } from '@widgets/ChatList';
-import { useGetChatsQuery, chatApi } from '@entities/Chat/api/rtkApi';
-import { useSignalR, type ChatDeletedEvent } from '@shared/lib/signalr';
-import { useAppDispatch } from '@shared/store/hooks';
+
 import type { Chat } from '@entities/Chat';
+import { chatApi,useGetChatsQuery } from '@entities/Chat/api/rtkApi';
+import { useSignalR,type ChatDeletedEvent } from '@shared/lib/signalr';
+import { useAppDispatch } from '@shared/store/hooks';
+import { ChatList } from '@widgets/ChatList';
+
 import styles from './Chats.module.css';
 
 export const Chats: React.FC = () => {

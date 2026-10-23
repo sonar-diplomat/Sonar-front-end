@@ -1,7 +1,9 @@
 import React from 'react';
+
 import type { Chat } from '@entities/Chat';
-import { ChatListItem } from './ChatListItem';
+
 import styles from './ChatList.module.css';
+import { ChatListItem } from './ChatListItem';
 
 export interface ChatListProps {
     chats: (Chat & { lastMessage?: { textContent: string; createdAt?: string } })[];

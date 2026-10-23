@@ -1,6 +1,8 @@
 import React from 'react';
-import styles from './WidgetErrorState.module.css';
+
 import { AlertTriangleIcon } from '../icons';
+
+import styles from './WidgetErrorState.module.css';
 
 interface WidgetErrorStateProps {
     title: string;

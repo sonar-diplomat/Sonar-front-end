@@ -1,5 +1,7 @@
 import React from 'react';
+
 import type { TabItem as TabItemType } from '../model/types';
+
 import styles from './TabBar.module.css';
 
 interface TabItemProps {

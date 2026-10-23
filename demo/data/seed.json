@@ -1,0 +1,1400 @@
+{
+  "schemaVersion": 1,
+  "currentUserId": 1,
+  "state": {
+    "revision": 0,
+    "nextId": 10000,
+    "session": {
+      "userId": 1,
+      "sessionId": 1
+    },
+    "users": [
+      {
+        "id": 1,
+        "userName": "Aurora Field",
+        "firstName": "Aurora",
+        "lastName": "Field",
+        "login": "demo",
+        "email": "demo@example.test",
+        "publicIdentifier": "demo",
+        "registrationDate": "2026-01-15T12:00:00.000Z",
+        "emailConfirmed": true,
+        "enabled2FA": false,
+        "availableCurrency": 100,
+        "avatarImageId": 301,
+        "visibilityStateId": 1,
+        "userStateId": 1,
+        "settingsId": 1,
+        "inventoryId": 1,
+        "libraryId": 1,
+        "dateOfBirth": "2000-01-01",
+        "biography": "Fictional profile in the local Sonar demonstration.",
+        "accessFeatures": [
+          {
+            "id": 1,
+            "name": "SendMessage"
+          },
+          {
+            "id": 2,
+            "name": "ReportContent"
+          },
+          {
+            "id": 3,
+            "name": "ListenContent"
+          },
+          {
+            "id": 4,
+            "name": "UserLogin"
+          },
+          {
+            "id": 5,
+            "name": "CreatePost"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "userName": "Glass Harbor",
+        "firstName": "Glass",
+        "lastName": "Harbor",
+        "login": "listener2",
+        "email": "listener2@example.test",
+        "publicIdentifier": "glass-harbor",
+        "registrationDate": "2026-01-15T12:00:00.000Z",
+        "emailConfirmed": true,
+        "enabled2FA": false,
+        "availableCurrency": 100,
+        "avatarImageId": 302,
+        "visibilityStateId": 1,
+        "userStateId": 2,
+        "settingsId": 2,
+        "inventoryId": 2,
+        "libraryId": 2,
+        "dateOfBirth": "2000-01-01",
+        "biography": "Fictional profile in the local Sonar demonstration.",
+        "accessFeatures": [
+          {
+            "id": 1,
+            "name": "SendMessage"
+          },
+          {
+            "id": 2,
+            "name": "ReportContent"
+          },
+          {
+            "id": 3,
+            "name": "ListenContent"
+          },
+          {
+            "id": 4,
+            "name": "UserLogin"
+          },
+          {
+            "id": 5,
+            "name": "CreatePost"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "userName": "Night Signal",
+        "firstName": "Night",
+        "lastName": "Signal",
+        "login": "listener3",
+        "email": "listener3@example.test",
+        "publicIdentifier": "night-signal",
+        "registrationDate": "2026-01-15T12:00:00.000Z",
+        "emailConfirmed": true,
+        "enabled2FA": false,
+        "availableCurrency": 100,
+        "avatarImageId": 303,
+        "visibilityStateId": 1,
+        "userStateId": 3,
+        "settingsId": 3,
+        "inventoryId": 3,
+        "libraryId": 3,
+        "dateOfBirth": "2000-01-01",
+        "biography": "Fictional profile in the local Sonar demonstration.",
+        "accessFeatures": [
+          {
+            "id": 1,
+            "name": "SendMessage"
+          },
+          {
+            "id": 2,
+            "name": "ReportContent"
+          },
+          {
+            "id": 3,
+            "name": "ListenContent"
+          },
+          {
+            "id": 4,
+            "name": "UserLogin"
+          },
+          {
+            "id": 5,
+            "name": "CreatePost"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "userName": "Paper Skyline",
+        "firstName": "Paper",
+        "lastName": "Skyline",
+        "login": "listener4",
+        "email": "listener4@example.test",
+        "publicIdentifier": "paper-skyline",
+        "registrationDate": "2026-01-15T12:00:00.000Z",
+        "emailConfirmed": true,
+        "enabled2FA": false,
+        "availableCurrency": 100,
+        "avatarImageId": 304,
+        "visibilityStateId": 1,
+        "userStateId": 4,
+        "settingsId": 4,
+        "inventoryId": 4,
+        "libraryId": 4,
+        "dateOfBirth": "2000-01-01",
+        "biography": "Fictional profile in the local Sonar demonstration.",
+        "accessFeatures": [
+          {
+            "id": 1,
+            "name": "SendMessage"
+          },
+          {
+            "id": 2,
+            "name": "ReportContent"
+          },
+          {
+            "id": 3,
+            "name": "ListenContent"
+          },
+          {
+            "id": 4,
+            "name": "UserLogin"
+          },
+          {
+            "id": 5,
+            "name": "CreatePost"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "userName": "River Listener",
+        "firstName": "River",
+        "lastName": "Listener",
+        "login": "listener5",
+        "email": "listener5@example.test",
+        "publicIdentifier": "river-listener",
+        "registrationDate": "2026-01-15T12:00:00.000Z",
+        "emailConfirmed": true,
+        "enabled2FA": false,
+        "availableCurrency": 100,
+        "avatarImageId": 305,
+        "visibilityStateId": 1,
+        "userStateId": 5,
+        "settingsId": 5,
+        "inventoryId": 5,
+        "libraryId": 5,
+        "dateOfBirth": "2000-01-01",
+        "biography": "Fictional profile in the local Sonar demonstration.",
+        "accessFeatures": [
+          {
+            "id": 1,
+            "name": "SendMessage"
+          },
+          {
+            "id": 2,
+            "name": "ReportContent"
+          },
+          {
+            "id": 3,
+            "name": "ListenContent"
+          },
+          {
+            "id": 4,
+            "name": "UserLogin"
+          },
+          {
+            "id": 5,
+            "name": "CreatePost"
+          }
+        ]
+      }
+    ],
+    "artists": [
+      {
+        "id": 1,
+        "userId": 1,
+        "artistName": "Aurora Field"
+      },
+      {
+        "id": 2,
+        "userId": 2,
+        "artistName": "Glass Harbor"
+      },
+      {
+        "id": 3,
+        "userId": 3,
+        "artistName": "Night Signal"
+      },
+      {
+        "id": 4,
+        "userId": 4,
+        "artistName": "Paper Skyline"
+      }
+    ],
+    "tracks": [
+      {
+        "id": 1,
+        "title": "Carefree",
+        "duration": "00:03:25.113469",
+        "isExplicit": false,
+        "drivingDisturbingNoises": false,
+        "visibilityStateId": 1,
+        "coverId": 101,
+        "lowQualityAudioFileId": 1,
+        "mediumQualityAudioFileId": 1,
+        "highQualityAudioFileId": 1,
+        "genre": {
+          "id": 1,
+          "name": "Acoustic"
+        },
+        "moodTags": [
+          {
+            "id": 1,
+            "name": "Bright"
+          }
+        ],
+        "artistIds": [
+          1
+        ],
+        "albumId": 101,
+        "playCount": 1200,
+        "demoCredits": {
+          "title": "Carefree",
+          "artist": "Kevin MacLeod",
+          "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      },
+      {
+        "id": 2,
+        "title": "Sneaky Snitch",
+        "duration": "00:02:17",
+        "isExplicit": false,
+        "drivingDisturbingNoises": false,
+        "visibilityStateId": 1,
+        "coverId": 101,
+        "lowQualityAudioFileId": 2,
+        "mediumQualityAudioFileId": 2,
+        "highQualityAudioFileId": 2,
+        "genre": {
+          "id": 1,
+          "name": "Acoustic"
+        },
+        "moodTags": [
+          {
+            "id": 2,
+            "name": "Focus"
+          }
+        ],
+        "artistIds": [
+          1
+        ],
+        "albumId": 101,
+        "playCount": 1139,
+        "demoCredits": {
+          "title": "Sneaky Snitch",
+          "artist": "Kevin MacLeod",
+          "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100772",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      },
+      {
+        "id": 3,
+        "title": "Cipher",
+        "duration": "00:03:51",
+        "isExplicit": false,
+        "drivingDisturbingNoises": false,
+        "visibilityStateId": 1,
+        "coverId": 101,
+        "lowQualityAudioFileId": 3,
+        "mediumQualityAudioFileId": 3,
+        "highQualityAudioFileId": 3,
+        "genre": {
+          "id": 1,
+          "name": "Acoustic"
+        },
+        "moodTags": [
+          {
+            "id": 1,
+            "name": "Bright"
+          }
+        ],
+        "artistIds": [
+          1
+        ],
+        "albumId": 101,
+        "playCount": 1078,
+        "demoCredits": {
+          "title": "Cipher",
+          "artist": "Kevin MacLeod",
+          "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100844",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Chill Wave",
+        "duration": "00:04:00",
+        "isExplicit": false,
+        "drivingDisturbingNoises": false,
+        "visibilityStateId": 1,
+        "coverId": 101,
+        "lowQualityAudioFileId": 4,
+        "mediumQualityAudioFileId": 4,
+        "highQualityAudioFileId": 4,
+        "genre": {
+          "id": 1,
+          "name": "Acoustic"
+        },
+        "moodTags": [
+          {
+            "id": 2,
+            "name": "Focus"
+          }
+        ],
+        "artistIds": [
+          1,
+          4
+        ],
+        "albumId": 101,
+        "playCount": 1017,
+        "demoCredits": {
+          "title": "Chill Wave",
+          "artist": "Kevin MacLeod",
+          "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1600048",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      },
+      {
+        "id": 5,
+        "title": "Easy Lemon",
+        "duration": "00:02:06",
+        "isExplicit": false,
+        "drivingDisturbingNoises": false,
+        "visibilityStateId": 1,
+        "coverId": 102,
+        "lowQualityAudioFileId": 5,
+        "mediumQualityAudioFileId": 5,
+        "highQualityAudioFileId": 5,
+        "genre": {
+          "id": 2,
+          "name": "Electronic"
+        },
+        "moodTags": [
+          {
+            "id": 1,
+            "name": "Bright"
+          }
+        ],
+        "artistIds": [
+          2
+        ],
+        "albumId": 102,
+        "playCount": 956,
+        "demoCredits": {
+          "title": "Easy Lemon",
+          "artist": "Kevin MacLeod",
+          "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200076",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      },
+      {
+        "id": 6,
+        "title": "Americana",
+        "duration": "00:03:22",
+        "isExplicit": false,
+        "drivingDisturbingNoises": false,
+        "visibilityStateId": 1,
+        "coverId": 102,
+        "lowQualityAudioFileId": 6,
+        "mediumQualityAudioFileId": 6,
+        "highQualityAudioFileId": 6,
+        "genre": {
+          "id": 2,
+          "name": "Electronic"
+        },
+        "moodTags": [
+          {
+            "id": 2,
+            "name": "Focus"
+          }
+        ],
+        "artistIds": [
+          2
+        ],
+        "albumId": 102,
+        "playCount": 895,
+        "demoCredits": {
+          "title": "Americana",
+          "artist": "Kevin MacLeod",
+          "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200092",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      },
+      {
+        "id": 7,
+        "title": "Dream Culture",
+        "duration": "00:03:34",
+        "isExplicit": false,
+        "drivingDisturbingNoises": false,
+        "visibilityStateId": 1,
+        "coverId": 102,
+        "lowQualityAudioFileId": 7,
+        "mediumQualityAudioFileId": 7,
+        "highQualityAudioFileId": 7,
+        "genre": {
+          "id": 2,
+          "name": "Electronic"
+        },
+        "moodTags": [
+          {
+            "id": 1,
+            "name": "Bright"
+          }
+        ],
+        "artistIds": [
+          2
+        ],
+        "albumId": 102,
+        "playCount": 834,
+        "demoCredits": {
+          "title": "Dream Culture",
+          "artist": "Kevin MacLeod",
+          "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1300046",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      },
+      {
+        "id": 8,
+        "title": "Funkorama",
+        "duration": "00:03:21",
+        "isExplicit": false,
+        "drivingDisturbingNoises": false,
+        "visibilityStateId": 1,
+        "coverId": 102,
+        "lowQualityAudioFileId": 8,
+        "mediumQualityAudioFileId": 8,
+        "highQualityAudioFileId": 8,
+        "genre": {
+          "id": 2,
+          "name": "Electronic"
+        },
+        "moodTags": [
+          {
+            "id": 2,
+            "name": "Focus"
+          }
+        ],
+        "artistIds": [
+          2,
+          4
+        ],
+        "albumId": 102,
+        "playCount": 773,
+        "demoCredits": {
+          "title": "Funkorama",
+          "artist": "Kevin MacLeod",
+          "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100474",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      },
+      {
+        "id": 9,
+        "title": "Digital Lemonade",
+        "duration": "00:03:00",
+        "isExplicit": false,
+        "drivingDisturbingNoises": false,
+        "visibilityStateId": 1,
+        "coverId": 103,
+        "lowQualityAudioFileId": 9,
+        "mediumQualityAudioFileId": 9,
+        "highQualityAudioFileId": 9,
+        "genre": {
+          "id": 3,
+          "name": "Instrumental"
+        },
+        "moodTags": [
+          {
+            "id": 1,
+            "name": "Bright"
+          }
+        ],
+        "artistIds": [
+          3
+        ],
+        "albumId": 103,
+        "playCount": 712,
+        "demoCredits": {
+          "title": "Digital Lemonade",
+          "artist": "Kevin MacLeod",
+          "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700010",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      },
+      {
+        "id": 10,
+        "title": "Local Forecast",
+        "duration": "00:02:45",
+        "isExplicit": false,
+        "drivingDisturbingNoises": false,
+        "visibilityStateId": 1,
+        "coverId": 103,
+        "lowQualityAudioFileId": 10,
+        "mediumQualityAudioFileId": 10,
+        "highQualityAudioFileId": 10,
+        "genre": {
+          "id": 3,
+          "name": "Instrumental"
+        },
+        "moodTags": [
+          {
+            "id": 2,
+            "name": "Focus"
+          }
+        ],
+        "artistIds": [
+          3
+        ],
+        "albumId": 103,
+        "playCount": 651,
+        "demoCredits": {
+          "title": "Local Forecast",
+          "artist": "Kevin MacLeod",
+          "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1300010",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      },
+      {
+        "id": 11,
+        "title": "Wallpaper",
+        "duration": "00:03:40",
+        "isExplicit": false,
+        "drivingDisturbingNoises": false,
+        "visibilityStateId": 1,
+        "coverId": 103,
+        "lowQualityAudioFileId": 11,
+        "mediumQualityAudioFileId": 11,
+        "highQualityAudioFileId": 11,
+        "genre": {
+          "id": 3,
+          "name": "Instrumental"
+        },
+        "moodTags": [
+          {
+            "id": 1,
+            "name": "Bright"
+          }
+        ],
+        "artistIds": [
+          3
+        ],
+        "albumId": 103,
+        "playCount": 590,
+        "demoCredits": {
+          "title": "Wallpaper",
+          "artist": "Kevin MacLeod",
+          "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100843",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      },
+      {
+        "id": 12,
+        "title": "Monkeys Spinning Monkeys",
+        "duration": "00:02:05",
+        "isExplicit": false,
+        "drivingDisturbingNoises": false,
+        "visibilityStateId": 1,
+        "coverId": 103,
+        "lowQualityAudioFileId": 12,
+        "mediumQualityAudioFileId": 12,
+        "highQualityAudioFileId": 12,
+        "genre": {
+          "id": 3,
+          "name": "Instrumental"
+        },
+        "moodTags": [
+          {
+            "id": 2,
+            "name": "Focus"
+          }
+        ],
+        "artistIds": [
+          3,
+          4
+        ],
+        "albumId": 103,
+        "playCount": 529,
+        "demoCredits": {
+          "title": "Monkeys Spinning Monkeys",
+          "artist": "Kevin MacLeod",
+          "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400011",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      }
+    ],
+    "albums": [
+      {
+        "id": 101,
+        "name": "First Light",
+        "visibilityStateId": 1,
+        "coverId": 101,
+        "distributorId": 1,
+        "artistIds": [
+          1
+        ],
+        "trackIds": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "albumArtists": [
+          {
+            "id": 1,
+            "pseudonym": "Aurora Field",
+            "artistId": 1,
+            "albumId": 101
+          }
+        ],
+        "genre": {
+          "id": 1,
+          "name": "Acoustic"
+        }
+      },
+      {
+        "id": 102,
+        "name": "Blue Hour",
+        "visibilityStateId": 1,
+        "coverId": 102,
+        "distributorId": 1,
+        "artistIds": [
+          2
+        ],
+        "trackIds": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "albumArtists": [
+          {
+            "id": 2,
+            "pseudonym": "Glass Harbor",
+            "artistId": 2,
+            "albumId": 102
+          }
+        ],
+        "genre": {
+          "id": 2,
+          "name": "Electronic"
+        }
+      },
+      {
+        "id": 103,
+        "name": "Open Roads",
+        "visibilityStateId": 1,
+        "coverId": 103,
+        "distributorId": 1,
+        "artistIds": [
+          3
+        ],
+        "trackIds": [
+          9,
+          10,
+          11,
+          12
+        ],
+        "albumArtists": [
+          {
+            "id": 3,
+            "pseudonym": "Night Signal",
+            "artistId": 3,
+            "albumId": 103
+          }
+        ],
+        "genre": {
+          "id": 3,
+          "name": "Instrumental"
+        }
+      }
+    ],
+    "playlists": [
+      {
+        "id": 201,
+        "name": "Favorites",
+        "visibilityStateId": 1,
+        "coverId": 201,
+        "creatorId": 1,
+        "contributors": [],
+        "trackIds": [
+          1,
+          5,
+          9
+        ],
+        "isProtected": true
+      },
+      {
+        "id": 202,
+        "name": "Evening Drive",
+        "visibilityStateId": 1,
+        "coverId": 202,
+        "creatorId": 1,
+        "contributors": [],
+        "trackIds": [
+          2,
+          4,
+          7,
+          10
+        ],
+        "isProtected": false
+      },
+      {
+        "id": 203,
+        "name": "Quiet Focus",
+        "visibilityStateId": 1,
+        "coverId": 203,
+        "creatorId": 1,
+        "contributors": [],
+        "trackIds": [
+          3,
+          6,
+          8,
+          11
+        ],
+        "isProtected": false
+      },
+      {
+        "id": 204,
+        "name": "Weekend Friends",
+        "visibilityStateId": 1,
+        "coverId": 204,
+        "creatorId": 5,
+        "contributors": [
+          {
+            "id": 1
+          }
+        ],
+        "trackIds": [
+          1,
+          4,
+          9,
+          12
+        ],
+        "isProtected": false
+      }
+    ],
+    "folders": [
+      {
+        "id": 1,
+        "name": "Root",
+        "isProtected": true,
+        "ownerId": 1,
+        "collectionIds": [
+          201,
+          202,
+          101,
+          102
+        ]
+      },
+      {
+        "id": 2,
+        "name": "For later",
+        "isProtected": false,
+        "parentFolderId": 1,
+        "ownerId": 1,
+        "collectionIds": [
+          203,
+          204,
+          103
+        ]
+      }
+    ],
+    "follows": [
+      {
+        "followerId": 1,
+        "followingId": 2,
+        "followedAt": "2026-01-15T12:00:00.000Z"
+      },
+      {
+        "followerId": 5,
+        "followingId": 1,
+        "followedAt": "2026-01-15T12:00:00.000Z"
+      },
+      {
+        "followerId": 2,
+        "followingId": 1,
+        "followedAt": "2026-01-15T12:00:00.000Z"
+      }
+    ],
+    "settings": {
+      "1": {
+        "id": 1,
+        "userId": 1,
+        "autoPlay": false,
+        "crossfade": false,
+        "explicitContent": true,
+        "preferredPlaybackQualityId": 2,
+        "languageId": 1,
+        "themeId": 1,
+        "notificationTypeId": 1,
+        "userPrivacySettingsId": 1,
+        "blockedUserIds": [],
+        "preferredPlaybackQuality": {
+          "id": 2,
+          "name": "Standard",
+          "bitRate": 128,
+          "description": "Standard quality"
+        },
+        "language": {
+          "id": 1,
+          "locale": "en",
+          "name": "English",
+          "nativeName": "English"
+        },
+        "theme": {
+          "id": 1,
+          "name": "Dark"
+        },
+        "notificationTypes": [
+          {
+            "id": 1,
+            "name": "All",
+            "description": "All notifications"
+          }
+        ],
+        "userPrivacy": {
+          "id": 1,
+          "settingsId": 1,
+          "whichCanViewProfileId": 1,
+          "whichCanMessageId": 1,
+          "whichCanViewProfile": {
+            "id": 1,
+            "name": "Everyone"
+          },
+          "whichCanMessage": {
+            "id": 1,
+            "name": "Everyone"
+          }
+        }
+      },
+      "2": {
+        "id": 2,
+        "userId": 2,
+        "autoPlay": false,
+        "crossfade": false,
+        "explicitContent": true,
+        "preferredPlaybackQualityId": 2,
+        "languageId": 1,
+        "themeId": 1,
+        "notificationTypeId": 1,
+        "userPrivacySettingsId": 2,
+        "blockedUserIds": [],
+        "preferredPlaybackQuality": {
+          "id": 2,
+          "name": "Standard",
+          "bitRate": 128,
+          "description": "Standard quality"
+        },
+        "language": {
+          "id": 1,
+          "locale": "en",
+          "name": "English",
+          "nativeName": "English"
+        },
+        "theme": {
+          "id": 1,
+          "name": "Dark"
+        },
+        "notificationTypes": [
+          {
+            "id": 1,
+            "name": "All",
+            "description": "All notifications"
+          }
+        ],
+        "userPrivacy": {
+          "id": 2,
+          "settingsId": 2,
+          "whichCanViewProfileId": 1,
+          "whichCanMessageId": 1,
+          "whichCanViewProfile": {
+            "id": 1,
+            "name": "Everyone"
+          },
+          "whichCanMessage": {
+            "id": 1,
+            "name": "Everyone"
+          }
+        }
+      },
+      "3": {
+        "id": 3,
+        "userId": 3,
+        "autoPlay": false,
+        "crossfade": false,
+        "explicitContent": true,
+        "preferredPlaybackQualityId": 2,
+        "languageId": 1,
+        "themeId": 1,
+        "notificationTypeId": 1,
+        "userPrivacySettingsId": 3,
+        "blockedUserIds": [],
+        "preferredPlaybackQuality": {
+          "id": 2,
+          "name": "Standard",
+          "bitRate": 128,
+          "description": "Standard quality"
+        },
+        "language": {
+          "id": 1,
+          "locale": "en",
+          "name": "English",
+          "nativeName": "English"
+        },
+        "theme": {
+          "id": 1,
+          "name": "Dark"
+        },
+        "notificationTypes": [
+          {
+            "id": 1,
+            "name": "All",
+            "description": "All notifications"
+          }
+        ],
+        "userPrivacy": {
+          "id": 3,
+          "settingsId": 3,
+          "whichCanViewProfileId": 1,
+          "whichCanMessageId": 1,
+          "whichCanViewProfile": {
+            "id": 1,
+            "name": "Everyone"
+          },
+          "whichCanMessage": {
+            "id": 1,
+            "name": "Everyone"
+          }
+        }
+      },
+      "4": {
+        "id": 4,
+        "userId": 4,
+        "autoPlay": false,
+        "crossfade": false,
+        "explicitContent": true,
+        "preferredPlaybackQualityId": 2,
+        "languageId": 1,
+        "themeId": 1,
+        "notificationTypeId": 1,
+        "userPrivacySettingsId": 4,
+        "blockedUserIds": [],
+        "preferredPlaybackQuality": {
+          "id": 2,
+          "name": "Standard",
+          "bitRate": 128,
+          "description": "Standard quality"
+        },
+        "language": {
+          "id": 1,
+          "locale": "en",
+          "name": "English",
+          "nativeName": "English"
+        },
+        "theme": {
+          "id": 1,
+          "name": "Dark"
+        },
+        "notificationTypes": [
+          {
+            "id": 1,
+            "name": "All",
+            "description": "All notifications"
+          }
+        ],
+        "userPrivacy": {
+          "id": 4,
+          "settingsId": 4,
+          "whichCanViewProfileId": 1,
+          "whichCanMessageId": 1,
+          "whichCanViewProfile": {
+            "id": 1,
+            "name": "Everyone"
+          },
+          "whichCanMessage": {
+            "id": 1,
+            "name": "Everyone"
+          }
+        }
+      },
+      "5": {
+        "id": 5,
+        "userId": 5,
+        "autoPlay": false,
+        "crossfade": false,
+        "explicitContent": true,
+        "preferredPlaybackQualityId": 2,
+        "languageId": 1,
+        "themeId": 1,
+        "notificationTypeId": 1,
+        "userPrivacySettingsId": 5,
+        "blockedUserIds": [],
+        "preferredPlaybackQuality": {
+          "id": 2,
+          "name": "Standard",
+          "bitRate": 128,
+          "description": "Standard quality"
+        },
+        "language": {
+          "id": 1,
+          "locale": "en",
+          "name": "English",
+          "nativeName": "English"
+        },
+        "theme": {
+          "id": 1,
+          "name": "Dark"
+        },
+        "notificationTypes": [
+          {
+            "id": 1,
+            "name": "All",
+            "description": "All notifications"
+          }
+        ],
+        "userPrivacy": {
+          "id": 5,
+          "settingsId": 5,
+          "whichCanViewProfileId": 1,
+          "whichCanMessageId": 1,
+          "whichCanViewProfile": {
+            "id": 1,
+            "name": "Everyone"
+          },
+          "whichCanMessage": {
+            "id": 1,
+            "name": "Everyone"
+          }
+        }
+      }
+    },
+    "queues": {
+      "1": {
+        "trackIds": [],
+        "currentTrackId": null,
+        "collectionId": null,
+        "position": "00:00:00",
+        "statusId": 1
+      },
+      "2": {
+        "trackIds": [],
+        "currentTrackId": null,
+        "collectionId": null,
+        "position": "00:00:00",
+        "statusId": 1
+      },
+      "3": {
+        "trackIds": [],
+        "currentTrackId": null,
+        "collectionId": null,
+        "position": "00:00:00",
+        "statusId": 1
+      },
+      "4": {
+        "trackIds": [],
+        "currentTrackId": null,
+        "collectionId": null,
+        "position": "00:00:00",
+        "statusId": 1
+      },
+      "5": {
+        "trackIds": [],
+        "currentTrackId": null,
+        "collectionId": null,
+        "position": "00:00:00",
+        "statusId": 1
+      }
+    },
+    "posts": [
+      {
+        "id": 1,
+        "title": "Welcome to the listening room",
+        "textContent": "Fictional Sonar demo profile. Featured music is by Kevin MacLeod (CC BY 4.0); see track credits.",
+        "createdAt": "2026-01-15T12:00:00.000Z",
+        "artistId": 1,
+        "visibilityStateId": 1,
+        "files": []
+      },
+      {
+        "id": 2,
+        "title": "Behind the blue hour",
+        "textContent": "Fictional Sonar demo profile. Featured music is by Kevin MacLeod (CC BY 4.0); see track credits.",
+        "createdAt": "2026-01-15T12:00:00.000Z",
+        "artistId": 2,
+        "visibilityStateId": 1,
+        "files": []
+      },
+      {
+        "id": 3,
+        "title": "An open road mix",
+        "textContent": "Fictional Sonar demo profile. Featured music is by Kevin MacLeod (CC BY 4.0); see track credits.",
+        "createdAt": "2026-01-15T12:00:00.000Z",
+        "artistId": 3,
+        "visibilityStateId": 1,
+        "files": []
+      },
+      {
+        "id": 4,
+        "title": "New sketches",
+        "textContent": "Fictional Sonar demo profile. Featured music is by Kevin MacLeod (CC BY 4.0); see track credits.",
+        "createdAt": "2026-01-15T12:00:00.000Z",
+        "artistId": 4,
+        "visibilityStateId": 1,
+        "files": []
+      }
+    ],
+    "chats": [
+      {
+        "id": 1,
+        "name": "River Listener",
+        "isGroup": false,
+        "coverId": 401,
+        "creatorId": 1,
+        "userIds": [
+          1,
+          5
+        ],
+        "adminIds": [
+          1
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Weekend listening",
+        "isGroup": true,
+        "coverId": 402,
+        "creatorId": 1,
+        "userIds": [
+          1,
+          2,
+          5
+        ],
+        "adminIds": [
+          1
+        ]
+      }
+    ],
+    "messages": [
+      {
+        "id": 1,
+        "chatId": 1,
+        "senderId": 5,
+        "textContent": "Welcome! Pick a track and try building your own playlist.",
+        "createdAt": "2026-01-15T12:00:00.000Z",
+        "readBy": []
+      },
+      {
+        "id": 2,
+        "chatId": 1,
+        "senderId": 1,
+        "textContent": "I will start with Carefree. All changes stay in this browser.",
+        "createdAt": "2026-01-15T12:01:00.000Z",
+        "readBy": [
+          {
+            "messageId": 2,
+            "userId": 5,
+            "readAt": "2026-01-15T12:01:05.000Z"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "chatId": 2,
+        "senderId": 2,
+        "textContent": "Share your weekend discoveries here.",
+        "createdAt": "2026-01-15T13:00:00.000Z",
+        "readBy": []
+      }
+    ],
+    "sessions": [
+      {
+        "id": 1,
+        "userId": 1,
+        "deviceName": "This demo browser",
+        "userAgent": "Local demo",
+        "ipAddress": "local",
+        "createdAt": "2026-01-15T12:00:00.000Z",
+        "lastActive": "2026-01-15T12:00:00.000Z"
+      },
+      {
+        "id": 2,
+        "userId": 1,
+        "deviceName": "Sample local session",
+        "userAgent": "Local demo",
+        "ipAddress": "local",
+        "createdAt": "2026-01-15T12:00:00.000Z",
+        "lastActive": "2026-01-15T12:00:00.000Z"
+      }
+    ],
+    "outbox": [],
+    "passwordDigests": {
+      "1": "41bd876b085d6031cb0e04de35b88d77f83a4ba39f879fee40805ac19e356023",
+      "2": "41bd876b085d6031cb0e04de35b88d77f83a4ba39f879fee40805ac19e356023",
+      "3": "41bd876b085d6031cb0e04de35b88d77f83a4ba39f879fee40805ac19e356023",
+      "4": "41bd876b085d6031cb0e04de35b88d77f83a4ba39f879fee40805ac19e356023",
+      "5": "41bd876b085d6031cb0e04de35b88d77f83a4ba39f879fee40805ac19e356023"
+    },
+    "packs": [
+      {
+        "id": 1,
+        "name": "Sonar Plus Demo",
+        "discountMultiplier": 1,
+        "description": "Local subscription. No payment is collected.",
+        "price": 5,
+        "subscriptionFeatures": [
+          {
+            "id": 1,
+            "name": "Premium listening",
+            "description": "Demonstration feature",
+            "price": 5
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Sonar Family Demo",
+        "discountMultiplier": 0.8,
+        "description": "Local family plan demonstration.",
+        "price": 9,
+        "subscriptionFeatures": [
+          {
+            "id": 1,
+            "name": "Premium listening",
+            "description": "Demonstration feature",
+            "price": 5
+          },
+          {
+            "id": 2,
+            "name": "Family",
+            "description": "Demonstration family feature",
+            "price": 4
+          }
+        ]
+      }
+    ],
+    "payments": [],
+    "gifts": [],
+    "reports": [],
+    "distributors": [
+      {
+        "id": 1,
+        "name": "Demo Records",
+        "createdAt": "2026-01-15T12:00:00.000Z",
+        "description": "Fictional catalog organisation.",
+        "contactEmail": "catalog@example.test",
+        "coverId": 101,
+        "albumCount": 3,
+        "license": {
+          "id": 1,
+          "issuingDate": "2026-01-15T12:00:00.000Z",
+          "lastUpdatedDate": "2026-01-15T12:00:00.000Z",
+          "expirationDate": "2099-01-01",
+          "issuerId": 1
+        }
+      }
+    ],
+    "distributorAccounts": [
+      {
+        "id": 1,
+        "userName": "Demo distributor",
+        "email": "distributor@example.test",
+        "isMaster": true,
+        "distributorId": 1
+      }
+    ],
+    "artistRequests": [
+      {
+        "id": 1,
+        "userId": 5,
+        "artistName": "River Listener",
+        "distributorId": 1,
+        "requestedAt": "2026-01-15T12:00:00.000Z",
+        "isResolved": false
+      }
+    ],
+    "recentTracks": [
+      {
+        "trackId": 1,
+        "lastPlayedAtUtc": "2026-01-15T12:00:00.000Z",
+        "contextId": 101,
+        "contextType": 1,
+        "userId": 1
+      },
+      {
+        "trackId": 5,
+        "lastPlayedAtUtc": "2026-01-15T12:00:00.000Z",
+        "contextId": 102,
+        "contextType": 1,
+        "userId": 1
+      },
+      {
+        "trackId": 9,
+        "lastPlayedAtUtc": "2026-01-15T12:00:00.000Z",
+        "contextId": 103,
+        "contextType": 1,
+        "userId": 1
+      }
+    ],
+    "recentCollections": [
+      {
+        "collectionId": 101,
+        "collectionType": 1,
+        "lastPlayedAtUtc": "2026-01-15T12:00:00.000Z",
+        "userId": 1
+      },
+      {
+        "collectionId": 202,
+        "collectionType": 2,
+        "lastPlayedAtUtc": "2026-01-15T12:00:00.000Z",
+        "userId": 1
+      },
+      {
+        "collectionId": 103,
+        "collectionType": 1,
+        "lastPlayedAtUtc": "2026-01-15T12:00:00.000Z",
+        "userId": 1
+      }
+    ],
+    "distributorPasswordDigests": {
+      "1": "41bd876b085d6031cb0e04de35b88d77f83a4ba39f879fee40805ac19e356023"
+    }
+  }
+}

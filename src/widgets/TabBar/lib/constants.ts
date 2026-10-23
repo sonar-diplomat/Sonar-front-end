@@ -1,4 +1,4 @@
-import { HomeIcon, SearchIcon, LibraryIcon, ProfileIcon } from '@shared/ui';
+import { HomeIcon,LibraryIcon,ProfileIcon,SearchIcon } from '@shared/ui';
 
 import type { TabItem } from '../model/types';
 

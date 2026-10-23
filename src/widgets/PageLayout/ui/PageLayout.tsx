@@ -1,12 +1,17 @@
-import React, { useCallback, useMemo } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { TabBar } from '@widgets/TabBar';
-import { MicroPlayer } from '@widgets/MicroPlayer';
-import { usePlayer } from '@shared/store/features/player';
-import { useCurrentUserId } from '@shared/lib/auth';
+import React,{ useCallback,useMemo } from 'react';
+
+import { Link,Outlet,useLocation,useNavigate } from 'react-router-dom';
+
 import { useGetUserByIdQuery } from '@entities/User/api/rtkApi';
-import type { TabId } from '@widgets/TabBar/model/types';
+import { isDemoMode } from '@shared/config/data-source';
+import { useCurrentUserId } from '@shared/lib/auth';
+import { usePlayer } from '@shared/store/features/player';
+import { DemoStatus } from '@shared/ui/DemoStatus';
+import { MicroPlayer } from '@widgets/MicroPlayer';
+import { TabBar } from '@widgets/TabBar';
 import { TAB_ITEMS } from '@widgets/TabBar/lib/constants';
+import type { TabId } from '@widgets/TabBar/model/types';
+
 import styles from './PageLayout.module.css';
 
 export const PageLayout = () => {
@@ -47,6 +52,7 @@ export const PageLayout = () => {
   return (
     <div className={styles.pageLayout}>
       <div className={`${styles.scrollableContent} ${currentTrack && !shouldHideNavbar ? styles.withPlayer : ''} ${shouldHideNavbar ? styles.noPadding : ''}`}>
+        {isDemoMode && <aside className={styles.demoBanner}><DemoStatus />Demo · changes stay in this browser. <Link to="/settings">Reset / settings</Link> · <a href={`${import.meta.env.BASE_URL}media-credits.html`} target="_blank" rel="noreferrer">Music credits</a></aside>}
         <Outlet />
       </div>
       <div className={styles.fixedBottomBars}>

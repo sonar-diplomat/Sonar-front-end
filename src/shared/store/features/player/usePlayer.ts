@@ -1,33 +1,37 @@
 import { useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import type { RootState } from '../../index';
-import {
-    setCurrentTrack,
-    setQueue,
-    addToQueue,
-    addToQueueNext,
-    removeFromQueue,
-    clearQueue,
-    setPendingTrack,
-    confirmTrackSwitch,
-    playTrack,
-    playNext,
-    playPrevious,
-    playFromQueue,
-    togglePlayPause,
-    play,
-    pause,
-    setCurrentTime,
-    setDuration,
-    setVolume,
-    toggleMute,
-    setRepeatMode,
-    toggleShuffle,
-    toggleFavoriteTrack,
-    setFavoriteTracks,
-    restoreQueue,
-} from './playerSlice';
+
+import { useDispatch,useSelector } from 'react-redux';
+
 import type { TrackDTO } from '@entities/Music';
+
+import type { RootState } from '../../index';
+
+import {
+addToQueue,
+addToQueueNext,
+clearQueue,
+confirmTrackSwitch,
+pause,
+play,
+playFromQueue,
+playNext,
+playPrevious,
+playTrack,
+removeFromQueue,
+restoreQueue,
+setCurrentTime,
+setCurrentTrack,
+setDuration,
+setFavoriteTracks,
+setPendingTrack,
+setQueue,
+setRepeatMode,
+setVolume,
+toggleFavoriteTrack,
+toggleMute,
+togglePlayPause,
+toggleShuffle,
+} from './playerSlice';
 
 export const usePlayer = () => {
     const dispatch = useDispatch();

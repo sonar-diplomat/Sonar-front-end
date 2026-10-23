@@ -1,4 +1,5 @@
-import React, {useEffect, useRef, useState, useMemo, useCallback, type CSSProperties} from "react";
+import React,{ useCallback,useEffect,useMemo,useRef,useState,type CSSProperties } from "react";
+
 import styles from "./WheelPicker.module.css";
 
 export interface WheelPickerOption {
@@ -44,7 +45,7 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
     className = "",
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const scrollTimeoutRef = useRef<number | null>(null);
+    const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isScrollingRef = useRef(false);
     const isRepositioningRef = useRef(false);
     const lastScrollTopRef = useRef(0);

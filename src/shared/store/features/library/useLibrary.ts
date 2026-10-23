@@ -1,7 +1,7 @@
-import { useMemo, useEffect } from 'react';
+import { useEffect,useMemo } from 'react';
+
+import { useGetFolderQuery,useGetFoldersQuery } from '@entities/Library/api/rtkApi';
 import { useAppSelector } from '@shared/store/hooks';
-import { useGetFoldersQuery, useGetFolderQuery } from '@entities/Library/api/rtkApi';
-import type { FolderDTO } from '@entities/Library';
 
 /**
  * Хук для получения списка всех папок

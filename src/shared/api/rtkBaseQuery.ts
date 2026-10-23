@@ -1,8 +1,11 @@
-import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import { API_BASE_URL } from '@shared/config';
+
+import type { BaseQueryFn,FetchArgs,FetchBaseQueryError } from '@reduxjs/toolkit/query';
+
+import { API_BASE_URL , MEDIA_BASE_URL } from '@shared/config';
+import { isDemoMode } from '@shared/config/data-source';
 import { authManager } from '@shared/lib/auth/auth-manager';
 import { shouldRefreshToken } from '@shared/lib/auth/jwt-utils';
-import { normalizeResponse, type ApiResponse } from '@shared/types/api';
+import { normalizeResponse,type ApiResponse } from '@shared/types/api';
 
 // Расширяем FetchArgs для поддержки наших опций
 interface CustomFetchArgs extends FetchArgs {
@@ -24,7 +27,7 @@ type CustomFetchBaseQueryError = FetchBaseQueryError & {
 };
 
 import { toSearchParams } from './params-utils';
-import { MEDIA_BASE_URL } from '@shared/config';
+import { requestFetch } from './requestFetch';
 
 /**
  * Проверяет, является ли endpoint медиа-контентом (blob или stream)
@@ -40,7 +43,14 @@ export const rtkBaseQuery: BaseQueryFn<
   CustomFetchArgs,
   unknown,
   CustomFetchBaseQueryError
-> = async (args) => {
+> = async (args, api) => {
+  if (isDemoMode) {
+    const { dispatchMock } = await import('@demo-dispatcher');
+    const result = await dispatchMock({ url: args.url, method: args.method, params: args.params, body: args.body, signal: args.signal ? AbortSignal.any([args.signal, api.signal]) : api.signal });
+    return result.success
+      ? { data: result.data ?? null, meta: result }
+      : { error: { status: result.status, data: result } as CustomFetchBaseQueryError };
+  }
   const {
     url,
     method = 'GET',
@@ -51,6 +61,7 @@ export const rtkBaseQuery: BaseQueryFn<
     body,
     bodyType = 'json',
     headers: restHeaders,
+    signal: requestSignal,
     ...rest
   } = args as CustomFetchArgs;
 
@@ -156,8 +167,7 @@ export const rtkBaseQuery: BaseQueryFn<
         ...(restHeaders as Record<string, string>),
       };
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
 
       // Логирование для отладки (можно удалить позже)
       if (withAuth && import.meta.env.DEV) {
@@ -169,15 +179,13 @@ export const rtkBaseQuery: BaseQueryFn<
         });
       }
 
-      const response = await fetch(fullUrl, {
+      const response = await requestFetch(fullUrl, {
         method,
         headers: finalHeaders,
         body: bodyToSend,
-        signal: controller.signal,
+        signal: requestSignal ? AbortSignal.any([requestSignal, api.signal]) : api.signal,
         ...rest,
-      });
-
-      clearTimeout(timeoutId);
+      }, timeoutMs);
 
       const status = response.status;
       const contentType = response.headers.get('content-type') || '';
@@ -210,7 +218,7 @@ export const rtkBaseQuery: BaseQueryFn<
 
       // Обработка не-JSON ответов (204, файлы и т.д.)
       if (status === 204 || !contentType.includes('application/json')) {
-        const text = await response.text().catch(() => '');
+        const text = await response.text().catch(error => { if(requestSignal?.aborted || api.signal.aborted) throw error; return ''; });
 
         if (!response.ok) {
           return {
@@ -233,7 +241,8 @@ export const rtkBaseQuery: BaseQueryFn<
       let raw: ApiResponse<unknown>;
       try {
         raw = await response.json();
-      } catch {
+      } catch (error) {
+        if(requestSignal?.aborted || api.signal.aborted) throw error;
         return {
           error: {
             status: status,
@@ -285,6 +294,7 @@ export const rtkBaseQuery: BaseQueryFn<
         },
       };
     } catch (error) {
+      if (requestSignal?.aborted || api.signal.aborted) return {error:{status:499,data:{success:false,status:499,message:'Request aborted',errors:['Request aborted']}} as CustomFetchBaseQueryError};
       lastError = error instanceof Error ? error : new Error('Network error');
 
       // Если это последняя попытка, возвращаем ошибку

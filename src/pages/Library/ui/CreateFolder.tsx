@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
+import React,{ useState } from 'react';
 
-import {useNavigate, useLocation} from 'react-router-dom';
+import { useLocation,useNavigate } from 'react-router-dom';
 
-import {Button, Input, LeftArrow} from "@shared/ui";
 import { useCreateFolderMutation } from '@shared/api';
+import { Button,Input,LeftArrow } from "@shared/ui";
 
 import styles from './CreateFolder.module.css';
 
@@ -33,7 +33,7 @@ export const CreateFolder: React.FC<CreateFolderProps> = ({className = ''}) => {
                 name: folderName.trim(),
                 parentFolderId: parentFolderId || undefined,
             }).unwrap();
-            
+
             console.log('Folder created successfully:', result);
             // Переходим обратно в библиотеку после успешного создания
             navigate('/library');
@@ -63,7 +63,7 @@ export const CreateFolder: React.FC<CreateFolderProps> = ({className = ''}) => {
                     shape="cr-16"
                     iconOnly
                     icon={<LeftArrow/>}
-                    onClick={handleBack}
+                    aria-label="Back to library" onClick={handleBack}
                     className={styles.backButton}
                 />
                 <h1 className={styles.title}>Create new folder</h1>
@@ -93,8 +93,8 @@ export const CreateFolder: React.FC<CreateFolderProps> = ({className = ''}) => {
 
                 {error && (
                     <div style={{ color: 'red', marginBottom: '16px', padding: '8px' }}>
-                        Error: {error && 'data' in error && error.data && 'message' in error.data 
-                            ? String(error.data.message) 
+                        Error: {error && 'data' in error && error.data && 'message' in error.data
+                            ? String(error.data.message)
                             : 'Failed to create folder'}
                     </div>
                 )}

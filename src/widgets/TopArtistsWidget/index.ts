@@ -1,2 +1,2 @@
+export type { Artist,TopArtistsWidgetProps } from './TopArtistsWidget.types';
 export { TopArtistsWidget } from './ui/TopArtistsWidget';
-export type { TopArtistsWidgetProps, Artist } from './TopArtistsWidget.types';

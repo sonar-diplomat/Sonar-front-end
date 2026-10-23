@@ -1,2 +1,2 @@
-export {ContentSections} from './ContentSections';
-export type {ContentSection} from './ContentSections';
+export { ContentSections } from './ContentSections';
+export type { ContentSection } from './ContentSections';

@@ -1,7 +1,11 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React,{ useCallback,useMemo,useState } from 'react';
+
+import { Link } from 'react-router-dom';
+
+import type { FormErrors,PasswordFormData } from "@features/registration/model/types.ts";
+import { Button,Checkbox,Form,Info,Input,RightArrow } from '@shared/ui';
+
 import styles from './PasswordForm.module.css';
-import { Button, Input, RightArrow, Info, Checkbox, Form } from '@shared/ui';
-import type {FormErrors, PasswordFormData} from "@features/registration/model/types.ts";
 
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_VALIDATION_RULES = {
@@ -95,7 +99,7 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ onSubmit }) => {
     const termsLabel = useMemo(() => (
         <>
             By continuing, you agree to the{' '}
-            <a href="/terms" className={styles.link}>Terms of Service</a>
+            <Link to="/terms" className={styles.link}>Terms of Service</Link>
         </>
     ), []);
 

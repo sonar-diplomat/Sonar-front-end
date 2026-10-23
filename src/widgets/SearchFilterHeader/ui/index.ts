@@ -1,1 +1,1 @@
-export {SearchFilterHeader} from './SearchFilterHeader';
+export { SearchFilterHeader } from './SearchFilterHeader';

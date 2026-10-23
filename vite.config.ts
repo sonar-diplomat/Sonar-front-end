@@ -53,6 +53,10 @@ export default defineConfig(async ({ mode }) => {
         '@widgets': resolve('src/widgets'),
         '@features': resolve('src/features'),
         '@entities': resolve('src/entities'),
+        '@shared/ui/DemoOutboxNotice': resolve(mock ? 'src/shared/ui/DemoOutboxNotice.tsx' : 'src/shared/config/empty-demo-ui.ts'),
+        '@shared/ui/DemoStatus': resolve(mock ? 'src/shared/ui/DemoStatus.tsx' : 'src/shared/config/empty-demo-ui.ts'),
+        '@shared/lib/audio/DemoPlayerSync': resolve(mock ? 'src/shared/lib/audio/DemoPlayerSync.tsx' : 'src/shared/config/empty-demo-player.ts'),
+        '@shared/demo/media': resolve(mock ? 'src/shared/demo/media.ts' : 'src/shared/config/empty-demo-media.ts'),
         '@shared': resolve('src/shared'),
         '@demo-runtime': resolve(mock ? 'src/shared/demo/runtime.ts' : 'src/shared/config/no-demo.ts'),
         '@demo-dispatcher': resolve(mock ? 'src/shared/demo/handlers.ts' : 'src/shared/config/no-demo.ts'),
@@ -60,7 +64,20 @@ export default defineConfig(async ({ mode }) => {
         '@demo-media': resolve(mock ? 'demo/media-manifest.json' : 'src/shared/config/empty-media.ts'),
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          // Keep the shared rendering runtime cacheable across lazy application routes.
+          advancedChunks: {
+            groups: [{ name: 'react-vendor', test: /[\\/]node_modules[\\/](?:react|react-dom|scheduler)[\\/]/ }],
+          },
+        },
+      },
+    },
     server: {
+      watch: {
+        ignored: ['**/.cache/**', '**/.pages/**', '**/.pages-probe/**', '**/dist/**', '**/test-results/**', '**/.tools/**'],
+      },
       proxy: mock ? undefined : {
         '/api': { target: env.VITE_PROXY_TARGET || 'http://localhost:5205', changeOrigin: true, secure: false },
         '/hubs': { target: env.VITE_PROXY_TARGET || 'https://localhost:7124', changeOrigin: true, secure: false, ws: true },

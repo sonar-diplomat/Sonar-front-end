@@ -1,18 +1,23 @@
-import { useCallback, useMemo, useState } from 'react'
-import { Api } from '../api/api.ts'
-import type { NonSensitiveUserDTO, User, UserUpdateDTO } from '@entities/User'
-import type { State } from '@shared/types/store'
-import type { RequestConfig } from '@shared/types'
-import { withAuth } from '@shared/lib/auth/withAuth'
+import { useCallback,useMemo,useState } from 'react';
 
-const pickError = (res: any) =>
+import type { NonSensitiveUserDTO,User,UserUpdateDTO } from '@entities/User';
+import { legacyQuery } from '@shared/api/legacyQuery';
+import { withAuth } from '@shared/lib/auth/withAuth';
+import { store } from '@shared/store';
+import type { RequestConfig } from '@shared/types';
+import type { State } from '@shared/types/store';
+
+import { Api } from '../api/api.ts';
+import { userApi } from '../api/rtkApi';
+
+const pickError = (res: { success: boolean; errors?: string[]; details?: string[]; message?: string }) =>
     res?.success ? undefined : res?.errors?.[0] || res?.details?.[0] || res?.message
 
 export const useGetUsers = () => {
     const [state, setState] = useState<State<User[]>>({ loading: false })
     const refetch = useCallback(async (cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }))
-        const res = await Api.list(cfg)
+        const res = await legacyQuery(() => store.dispatch(userApi.endpoints.getUsers.initiate(undefined, {subscribe:false,forceRefetch:true})).unwrap(), cfg)
         setState({
             loading: false,
             data: res.data,
@@ -27,7 +32,7 @@ export const useGetUserById = () => {
     const [state, setState] = useState<State<NonSensitiveUserDTO>>({ loading: false })
     const refetch = useCallback(async (id: number, cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }))
-        const res = await Api.byId(id, cfg)
+        const res = await legacyQuery(() => store.dispatch(userApi.endpoints.getUserById.initiate(id, {subscribe:false,forceRefetch:true})).unwrap(), cfg)
         setState({
             loading: false,
             data: res.data,

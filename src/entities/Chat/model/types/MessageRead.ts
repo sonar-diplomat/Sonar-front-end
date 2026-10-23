@@ -1,5 +1,6 @@
-import type { Message } from "./Message";
 import type { User } from '@entities/User';
+
+import type { Message } from "./Message";
 
 export interface MessageRead {
  id: number;

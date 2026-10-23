@@ -1,6 +1,7 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
-import type { TrackDTO, UpdateTrackDTO, UpdateTrackFileDTO } from '../model/types';
+
+import type { TrackDTO,UpdateTrackDTO,UpdateTrackFileDTO } from '../model/types';
 
 /**
  * Music (Track) API endpoints
@@ -13,7 +14,7 @@ export const musicApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, trackId) => [{ type: 'Track', id: trackId }],
+      providesTags: (_result, _error, trackId) => [{ type: 'Track', id: trackId }, 'DemoState'],
     }),
 
     updateTrack: builder.mutation<TrackDTO, { trackId: number; body: UpdateTrackDTO }>({

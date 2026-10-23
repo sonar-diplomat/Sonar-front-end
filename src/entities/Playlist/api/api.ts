@@ -1,15 +1,15 @@
+import type { TrackDTO } from '@entities/Music';
+import type { CreatePlaylistDTO,CursorPageDTO,PlaylistDTO } from "@entities/Playlist";
 import { apiClient } from '@shared/api/oldBaseApi.ts';
 import { API_ENDPOINTS } from '@shared/config';
-import type { TrackDTO } from '@entities/Music';
-import type {RequestConfig} from "@shared/types";
-import type {CreatePlaylistDTO, CursorPageDTO, PlaylistDTO} from "@entities/Playlist";
+import type { RequestConfig } from "@shared/types";
 
 export const Api = {
     /**
      * @deprecated Use useCreatePlaylistMutation from @shared/api/rtkApi instead
      */
     create: (body: CreatePlaylistDTO, config?: RequestConfig) =>
-        apiClient.post<PlaylistDTO>(API_ENDPOINTS.playlist.create, body, { ...config, bodyType: 'json' }),
+        (() => { const form = new FormData(); form.set('Name', body.name); if(body.cover) form.set('Cover', body.cover); return apiClient.post<PlaylistDTO>(API_ENDPOINTS.playlist.create, form, {...config,bodyType:'form'}); })(),
     /**
      * @deprecated Use useDeletePlaylistMutation from @shared/api/rtkApi instead
      */

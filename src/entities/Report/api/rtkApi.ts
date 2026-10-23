@@ -1,11 +1,12 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
+
 import type {
-  ReportDTO,
-  ReportFilterDTO,
-  ReportReasonTypeDTO,
-  ReportableEntityTypeDTO,
-  CreateReportDTO,
+CreateReportDTO,
+ReportDTO,
+ReportFilterDTO,
+ReportReasonTypeDTO,
+ReportableEntityTypeDTO,
 } from '../model/types';
 
 /**
@@ -19,7 +20,7 @@ export const reportApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: [{ type: 'Report', id: 'LIST' }],
+      providesTags: [{ type: 'Report', id: 'LIST' }, 'DemoState'],
     }),
 
     getReport: builder.query<ReportDTO, number>({
@@ -28,7 +29,7 @@ export const reportApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, id) => [{ type: 'Report', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Report', id }, 'DemoState'],
     }),
 
     getReportsFilter: builder.query<ReportDTO[], { filter: ReportFilterDTO }>({
@@ -40,7 +41,7 @@ export const reportApi = rtkApi.injectEndpoints({
           filter: JSON.stringify(filter),
         },
       }),
-      providesTags: [{ type: 'Report', id: 'FILTERED' }],
+      providesTags: [{ type: 'Report', id: 'FILTERED' }, 'DemoState'],
     }),
 
     getReportsByReporter: builder.query<ReportDTO[], number>({
@@ -49,7 +50,7 @@ export const reportApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, reporterId) => [{ type: 'Report', id: `reporter-${reporterId}` }],
+      providesTags: (_result, _error, reporterId) => [{ type: 'Report', id: `reporter-${reporterId}` }, 'DemoState'],
     }),
 
     getOpenReports: builder.query<ReportDTO[], void>({
@@ -58,7 +59,7 @@ export const reportApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: [{ type: 'Report', id: 'OPEN' }],
+      providesTags: [{ type: 'Report', id: 'OPEN' }, 'DemoState'],
     }),
 
     getReportReasonTypes: builder.query<ReportReasonTypeDTO[], void>({
@@ -67,7 +68,7 @@ export const reportApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: [{ type: 'ReportReasonType', id: 'LIST' }],
+      providesTags: [{ type: 'ReportReasonType', id: 'LIST' }, 'DemoState'],
     }),
 
     getReportReasonTypesByEntityType: builder.query<ReportReasonTypeDTO[], number>({
@@ -77,8 +78,7 @@ export const reportApi = rtkApi.injectEndpoints({
         withAuth: true,
       }),
       providesTags: (_result, _error, entityTypeId) => [
-        { type: 'ReportReasonType', id: `entity-type-${entityTypeId}` },
-      ],
+        { type: 'ReportReasonType', id: `entity-type-${entityTypeId}` }, 'DemoState'],
     }),
 
     getReportReasonTypeById: builder.query<ReportReasonTypeDTO, number>({
@@ -87,7 +87,7 @@ export const reportApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, id) => [{ type: 'ReportReasonType', id }],
+      providesTags: (_result, _error, id) => [{ type: 'ReportReasonType', id }, 'DemoState'],
     }),
 
     getReportEntityTypes: builder.query<ReportableEntityTypeDTO[], void>({
@@ -96,7 +96,7 @@ export const reportApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: [{ type: 'ReportableEntityType', id: 'LIST' }],
+      providesTags: [{ type: 'ReportableEntityType', id: 'LIST' }, 'DemoState'],
     }),
 
     getReportEntityTypeById: builder.query<ReportableEntityTypeDTO, number>({
@@ -105,7 +105,7 @@ export const reportApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, id) => [{ type: 'ReportableEntityType', id }],
+      providesTags: (_result, _error, id) => [{ type: 'ReportableEntityType', id }, 'DemoState'],
     }),
 
     createReport: builder.mutation<ReportDTO, CreateReportDTO>({

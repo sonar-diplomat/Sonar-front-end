@@ -1,11 +1,14 @@
 import React from 'react';
-import styles from './TopArtistsWidget.module.css';
+
+import { ArtistItem,LoadingPlaceholder,WidgetErrorState } from '@shared/ui';
+
 import type { TopArtistsWidgetProps } from '../TopArtistsWidget.types';
-import { ArtistItem, WidgetErrorState, LoadingPlaceholder } from '@shared/ui';
+
+import styles from './TopArtistsWidget.module.css';
 
 export const TopArtistsWidget: React.FC<TopArtistsWidgetProps> = ({
     artists,
-    dateRange,
+
     isLoading = false,
     error,
     onRetry,
@@ -22,14 +25,14 @@ export const TopArtistsWidget: React.FC<TopArtistsWidgetProps> = ({
                 <div className={styles.loadingContainer}>
                     {[1, 2, 3, 4, 5].map((i) => (
                         <div key={i} className={styles.skeletonItem}>
-                            <LoadingPlaceholder 
-                                variant="skeleton" 
-                                style={{ width: '40px', height: '40px', borderRadius: '50%' }} 
+                            <LoadingPlaceholder
+                                variant="skeleton"
+                                style={{ width: '40px', height: '40px', borderRadius: '50%' }}
                             />
                             <div style={{ flex: 1, marginLeft: '12px' }}>
-                                <LoadingPlaceholder 
-                                    variant="skeleton" 
-                                    style={{ width: '50%', height: '14px', borderRadius: '4px' }} 
+                                <LoadingPlaceholder
+                                    variant="skeleton"
+                                    style={{ width: '50%', height: '14px', borderRadius: '4px' }}
                                 />
                             </div>
                         </div>
@@ -40,7 +43,7 @@ export const TopArtistsWidget: React.FC<TopArtistsWidgetProps> = ({
 
         if (error) {
             return (
-                <WidgetErrorState 
+                <WidgetErrorState
                     title="Could not load top artists"
                     message="Please try again later"
                     onRetry={onRetry}
@@ -50,7 +53,7 @@ export const TopArtistsWidget: React.FC<TopArtistsWidgetProps> = ({
 
         if (!artists || artists.length === 0) {
             return (
-                <WidgetErrorState 
+                <WidgetErrorState
                     title="No top artists yet"
                     message="Listen to more artists to see your top artists!"
                     icon={<span style={{ fontSize: '32px' }}>🎤</span>}

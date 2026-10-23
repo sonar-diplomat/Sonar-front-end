@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { useGetChatStickersQuery } from '@entities/ChatSticker';
 import { getImageUrlById } from '@shared/lib/image-utils';
-import { LoadingPlaceholder, LoadingImage } from '@shared/ui';
+import { LoadingImage,LoadingPlaceholder } from '@shared/ui';
+
 import styles from './StickerPicker.module.css';
 
 export interface StickerPickerProps {

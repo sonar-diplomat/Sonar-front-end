@@ -1,22 +1,30 @@
-import React, { useMemo, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import styles from './Collection.module.css';
-import {
-    CollectionHeader,
-    CollectionCover,
-    CollectionView,
-    CollectionActions,
-    CollectionPlayPanel
-} from '@widgets/CollectionView';
-import type { Track } from '@widgets/CollectionView';
-import { useGetPlaylistQuery, useGetPlaylistTracksQuery } from '@entities/Playlist/api/rtkApi';
-import { useGetAlbumQuery, useGetAlbumTracksQuery } from '@entities/Album/api/rtkApi';
-import { usePlayTracks } from '@shared/lib/audio/usePlaybackActions';
-import { getImageUrlById } from '@shared/lib/image-utils';
+import React,{ useMemo,useState } from 'react';
+
+import { useNavigate,useParams } from 'react-router-dom';
+
+import { useGetAlbumQuery,useGetAlbumTracksQuery } from '@entities/Album/api/rtkApi';
 import type { TrackDTO } from '@entities/Music';
-import { getArtistNames } from '@widgets/MiniPlayer/lib/utils';
-import {ActionMenu, LoadingPlaceholder} from '@shared/ui';
+import { useUpdatePlaylistNameMutation, useDeletePlaylistMutation , useGetPlaylistQuery,useGetPlaylistTracksQuery } from '@entities/Playlist/api/rtkApi';
+import { usePlayTracks } from '@shared/lib/audio/usePlaybackActions';
+import { useCurrentUserId } from '@shared/lib/auth';
+import { getImageUrlById } from '@shared/lib/image-utils';
+import { markDirty } from '@shared/store/features/library/librarySlice';
 import { usePlayer } from '@shared/store/features/player';
+import { useAppDispatch } from '@shared/store/hooks';
+import { useNotifications } from '@shared/store/notificationStore';
+import type { ActionMenuContext } from '@shared/ui';
+import { Modal, Input, Button , ActionMenu,LoadingPlaceholder } from '@shared/ui';
+import type { Track } from '@widgets/CollectionView';
+import {
+CollectionActions,
+CollectionCover,
+CollectionHeader,
+CollectionPlayPanel,
+CollectionView
+} from '@widgets/CollectionView';
+import { getArtistNames } from '@widgets/MiniPlayer/lib/utils';
+
+import styles from './Collection.module.css';
 
 export interface CollectionProps {
     type: 'playlist' | 'album';
@@ -25,7 +33,7 @@ export interface CollectionProps {
 const convertTrackDTOToTrack = (trackDTO: TrackDTO): Track => {
     const artistName = getArtistNames(trackDTO);
     const coverUrl = trackDTO.cover?.url || getImageUrlById(trackDTO.coverId);
-    
+
     return {
         id: String(trackDTO.id),
         title: trackDTO.title,
@@ -38,10 +46,19 @@ const convertTrackDTOToTrack = (trackDTO: TrackDTO): Track => {
 export const Collection: React.FC<CollectionProps> = ({ type }) => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const collectionId = id ? Number.parseInt(id, 10) : null;
-    
+    const currentUserId = useCurrentUserId();
+    const dispatch = useAppDispatch();
+    const { showSuccess, showError } = useNotifications();
+    const [editOpen, setEditOpen] = useState(false);
+    const [newName, setNewName] = useState('');
+    const [confirmDelete, setConfirmDelete] = useState(false);
+    const [renamePlaylist, { isLoading: renaming }] = useUpdatePlaylistNameMutation();
+    const [deletePlaylist, { isLoading: deleting }] = useDeletePlaylistMutation();
+    const parsedId = Number(id);
+    const collectionId = Number.isSafeInteger(parsedId) && parsedId > 0 ? parsedId : null;
+
     const [sortBy, setSortBy] = useState<'none' | 'title' | 'artist'>('none');
-    const [actionMenuContext, setActionMenuContext] = useState<import('@shared/ui').ActionMenuContext | null>(null);
+    const [actionMenuContext, setActionMenuContext] = useState<ActionMenuContext | null>(null);
 
     const playTracks = usePlayTracks();
     const { play, togglePlayPause, isPlaying, collectionContext } = usePlayer();
@@ -57,7 +74,7 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
         { skip: !collectionId || type !== 'playlist' }
     );
 
-    const { data: playlistTracksData, isLoading: playlistTracksLoading } = useGetPlaylistTracksQuery(
+    const { data: playlistTracksData, isLoading: playlistTracksLoading, error: playlistTracksError } = useGetPlaylistTracksQuery(
         collectionId!,
         { skip: !collectionId || type !== 'playlist' }
     );
@@ -67,7 +84,7 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
         { skip: !collectionId || type !== 'album' }
     );
 
-    const { data: albumTracksData, isLoading: albumTracksLoading } = useGetAlbumTracksQuery(
+    const { data: albumTracksData, isLoading: albumTracksLoading, error: albumTracksError } = useGetAlbumTracksQuery(
         collectionId!,
         { skip: !collectionId || type !== 'album' }
     );
@@ -126,14 +143,14 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
         }
         return [];
     }, [type, playlistTracksData, albumTracksData]);
-    
+
     const isLoading = playlistLoading || playlistTracksLoading || albumLoading || albumTracksLoading;
-    const hasError = playlistError || albumError;
-    
+    const hasError = playlistError || albumError || playlistTracksError || albumTracksError || !collectionId;
+
     const handleBackClick = () => {
         navigate(-1);
     };
-    
+
     const handleMenuClick = () => {
         if (!collectionId) return;
         setActionMenuContext({
@@ -155,7 +172,7 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
 
         if (!collectionId || rawTracks.length === 0) return;
 
-        let tracksToPlay = [...rawTracks];
+        const tracksToPlay = [...rawTracks];
         if (sortBy === 'title') {
             tracksToPlay.sort((a, b) => a.title.localeCompare(b.title));
         } else if (sortBy === 'artist') {
@@ -165,11 +182,11 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
         playTracks(tracksToPlay, 0, { type, id: collectionId });
         play();
     };
-    
+
     const handleShuffleClick = () => {
         if (!collectionId || rawTracks.length === 0) return;
 
-        let tracksToShuffle = [...rawTracks];
+        const tracksToShuffle = [...rawTracks];
         if (sortBy === 'title') {
             tracksToShuffle.sort((a, b) => a.title.localeCompare(b.title));
         } else if (sortBy === 'artist') {
@@ -180,7 +197,7 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
             const j = Math.floor(Math.random() * (i + 1));
             [tracksToShuffle[i], tracksToShuffle[j]] = [tracksToShuffle[j], tracksToShuffle[i]];
         }
-        
+
         playTracks(tracksToShuffle, 0, { type, id: collectionId });
         play();
     };
@@ -188,7 +205,7 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
     const handleTrackClick = (trackId: string) => {
         if (!collectionId || rawTracks.length === 0) return;
 
-        let tracksToPlay = [...rawTracks];
+        const tracksToPlay = [...rawTracks];
         if (sortBy === 'title') {
             tracksToPlay.sort((a, b) => a.title.localeCompare(b.title));
         } else if (sortBy === 'artist') {
@@ -201,7 +218,7 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
             play();
         }
     };
-    
+
     const handleTrackMenuClick = (trackId: string) => {
         const track = tracks.find(t => t.id === trackId);
         if (!track) return;
@@ -213,10 +230,21 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
         });
     };
 
-    const handleEditClick = () => {
-        console.log('Edit clicked - edit collection details');
+    const canEdit = type === 'playlist' && playlistData?.creatorId === currentUserId && !isFavoritesPlaylist;
+    const handleEditClick = () => { setNewName(collectionData.title); setConfirmDelete(false); setEditOpen(true); };
+    const saveName = async (event: React.FormEvent) => {
+        event.preventDefault();
+        if (!collectionId || !canEdit) return;
+        if (!newName.trim()) { showError('Enter a playlist name'); return; }
+        try { await renamePlaylist({ playlistId: collectionId, newName: newName.trim() }).unwrap(); dispatch(markDirty()); setEditOpen(false); showSuccess('Playlist renamed'); }
+        catch { showError('Unable to rename playlist'); }
     };
-    
+    const removePlaylist = async () => {
+        if (!collectionId || !canEdit) return;
+        try { await deletePlaylist(collectionId).unwrap(); dispatch(markDirty()); setEditOpen(false); await navigate('/library'); }
+        catch { showError('Unable to delete playlist'); }
+    };
+
     const handleSortClick = () => {
         if (sortBy === 'none') {
             setSortBy('title');
@@ -226,7 +254,7 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
             setSortBy('none');
         }
     };
-    
+
     if (isLoading) {
         return (
             <div className={styles.collection}>
@@ -234,7 +262,7 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
             </div>
         );
     }
-    
+
     if (hasError) {
         return (
             <div className={styles.collection}>
@@ -242,7 +270,7 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
             </div>
         );
     }
-    
+
     return (
         <div className={styles.collection}>
             <CollectionHeader
@@ -254,13 +282,13 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
                 imageSrc={collectionData.coverImage}
             />
             <CollectionPlayPanel
-                onPlayClick={handlePlayClick}
-                onShuffleClick={handleShuffleClick}
+                onPlayClick={rawTracks.length ? handlePlayClick : undefined}
+                onShuffleClick={rawTracks.length ? handleShuffleClick : undefined}
                 isPlaying={isPlaying}
                 isCurrentCollection={isCurrentCollection}
             />
             <CollectionActions
-                onEditClick={handleEditClick}
+                onEditClick={canEdit ? handleEditClick : undefined}
                 onSortClick={handleSortClick}
                 sortBy={sortBy}
             />
@@ -270,6 +298,14 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
                 onTrackClick={handleTrackClick}
                 onTrackMenuClick={handleTrackMenuClick}
             />
+            <Modal isOpen={editOpen} onClose={() => setEditOpen(false)} title="Edit playlist">
+                <form onSubmit={event => void saveName(event)} style={{ display: 'grid', gap: 16 }}>
+                    <Input label="Playlist name" value={newName} maxLength={200} required onChange={event => setNewName(event.target.value)} />
+                    <Button type="submit" disabled={renaming || deleting}>Save playlist</Button>
+                    {confirmDelete ? <><p>Delete this playlist? This removes the playlist and its track list.</p><Button type="button" disabled={deleting} onClick={() => void removePlaylist()}>Confirm delete playlist</Button></> : <Button type="button" theme="dark" onClick={() => setConfirmDelete(true)}>Delete playlist</Button>}
+                    <Button type="button" theme="dark" onClick={() => setEditOpen(false)}>Cancel</Button>
+                </form>
+            </Modal>
             {actionMenuContext && (
                 <ActionMenu
                     isOpen={true}

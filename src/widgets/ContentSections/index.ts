@@ -1,2 +1,2 @@
-export {ContentSections} from './ui';
-export type {ContentSection} from './ui';
+export { ContentSections } from './ui';
+export type { ContentSection } from './ui';

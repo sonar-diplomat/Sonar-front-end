@@ -1,12 +1,13 @@
 import React from 'react';
-import styles from './Input.module.css';
-import { useDropdown } from './hooks/useDropdown';
-import { InputIcon } from './components/InputIcon';
+
 import { InputDropdown } from './components/InputDropdown';
 import { InputHelperText } from './components/InputHelperText';
-import type { InputProps, DropdownOption } from './Input.types';
+import { InputIcon } from './components/InputIcon';
+import { useDropdown } from './hooks/useDropdown';
+import styles from './Input.module.css';
+import type { DropdownOption,InputProps } from './Input.types';
 
-export type { InputProps, DropdownOption };
+export type { DropdownOption,InputProps };
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(({
     label,
@@ -15,6 +16,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({
     iconPosition = 'prefix',
     icon,
     iconClickable = false,
+    iconLabel,
     onIconClick,
     helperIcon,
     helperTextAction,
@@ -65,7 +67,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({
                         icon={icon}
                         position="prefix"
                         clickable={iconClickable}
-                        onClick={onIconClick}
+                        label={iconLabel || (props.type === 'password' ? 'Show password' : 'Input action')} onClick={onIconClick}
                     />
                 )}
 
@@ -83,7 +85,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({
                         icon={icon}
                         position="suffix"
                         clickable={iconClickable}
-                        onClick={onIconClick}
+                        label={iconLabel || (props.type === 'password' ? 'Show password' : 'Input action')} onClick={onIconClick}
                     />
                 )}
 

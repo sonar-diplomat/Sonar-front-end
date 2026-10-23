@@ -1,7 +1,9 @@
 import React from 'react';
+
+import { DropDown } from "@shared/ui/icons.tsx";
+
 import styles from '../Input.module.css';
 import type { DropdownOption } from '../Input.types';
-import {DropDown} from "@shared/ui/icons.tsx";
 
 interface InputDropdownProps {
     text: string;

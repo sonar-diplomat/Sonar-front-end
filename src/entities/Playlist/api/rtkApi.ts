@@ -1,9 +1,9 @@
+import type { TrackDTO } from '@entities/Music';
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
-import type { TrackDTO } from '@entities/Music';
-import type { PlaylistDTO, CreatePlaylistDTO, CursorPageDTO } from '../model/types';
-import { store } from '@shared/store';
 import { markDirty } from '@shared/store/features/library/librarySlice';
+
+import type { CreatePlaylistDTO,CursorPageDTO,PlaylistDTO } from '../model/types';
 
 /**
  * Playlist API endpoints
@@ -16,7 +16,7 @@ export const playlistApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, playlistId) => [{ type: 'Playlist', id: playlistId }],
+      providesTags: (_result, _error, playlistId) => [{ type: 'Playlist', id: playlistId }, 'DemoState'],
     }),
 
     getPlaylistShareLink: builder.query<string, number>({
@@ -25,7 +25,7 @@ export const playlistApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, playlistId) => [{ type: 'Share', id: `playlist-${playlistId}` }],
+      providesTags: (_result, _error, playlistId) => [{ type: 'Share', id: `playlist-${playlistId}` }, 'DemoState'],
     }),
 
     createPlaylist: builder.mutation<PlaylistDTO, CreatePlaylistDTO>({
@@ -49,8 +49,9 @@ export const playlistApi = rtkApi.injectEndpoints({
         { type: 'Playlist', id: 'LIST' },
         { type: 'Folder', id: 'LIST' }, // Инвалидируем также список папок, так как плейлист может быть добавлен в папку
       ],
-      async onQueryStarted(_arg) {
-        store.dispatch(markDirty());
+      async onQueryStarted(_arg, { dispatch }) {
+        void _arg;
+        dispatch(markDirty());
       },
     }),
 
@@ -64,8 +65,9 @@ export const playlistApi = rtkApi.injectEndpoints({
         { type: 'Playlist', id: playlistId },
         { type: 'Playlist', id: 'LIST' },
       ],
-      async onQueryStarted(_arg) {
-        store.dispatch(markDirty());
+      async onQueryStarted(_arg, { dispatch }) {
+        void _arg;
+        dispatch(markDirty());
       },
     }),
 
@@ -122,8 +124,9 @@ export const playlistApi = rtkApi.injectEndpoints({
         { type: 'Playlist', id: playlistId },
         { type: 'Track', id: 'LIST' },
       ],
-      async onQueryStarted() {
-        store.dispatch(markDirty());
+      async onQueryStarted(arg, {dispatch}) {
+        void arg;
+        dispatch(markDirty());
       },
     }),
 
@@ -164,7 +167,7 @@ export const playlistApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, playlistId) => [{ type: 'Playlist', id: playlistId }, { type: 'Track', id: 'LIST' }],
+      providesTags: (_result, _error, playlistId) => [{ type: 'Playlist', id: playlistId }, { type: 'Track', id: 'LIST' }, 'DemoState'],
     }),
   }),
 });

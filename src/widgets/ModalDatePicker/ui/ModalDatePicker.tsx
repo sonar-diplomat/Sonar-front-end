@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React,{ useState } from 'react';
 
-import {Button, Modal, WheelPicker, WheelPickerWrapper} from "@shared/ui";
-import {dayOptions, monthOptions, yearOptions} from "@widgets/ModalDatePicker/model";
+import { Button,Modal,WheelPicker,WheelPickerWrapper } from "@shared/ui";
+import { dayOptions,monthOptions,yearOptions } from "@widgets/ModalDatePicker/model";
 
 export interface ModalDatePickerProps {
     isOpen: boolean;

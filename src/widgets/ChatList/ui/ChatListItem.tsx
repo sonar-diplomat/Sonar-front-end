@@ -1,14 +1,15 @@
 import React from 'react';
+
 import type { Chat } from '@entities/Chat';
-import type { ImageFile } from '@entities/User';
 import { formatChatDate } from '@shared/lib/date-utils';
 import { LoadingImage } from '@shared/ui';
+
 import styles from './ChatListItem.module.css';
 
 export interface ChatListItemProps {
-    chat: Chat & { 
+    chat: Chat & {
         lastMessage?: { textContent: string; createdAt?: string };
-        cover?: ImageFile;
+
     };
     onClick?: (chatId: number) => void;
 }
@@ -26,7 +27,7 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({ chat, onClick }) => 
         <div className={styles.container} onClick={handleClick}>
             <div className={styles.avatar}>
                 {chat.cover ? (
-                    <LoadingImage src={chat.cover.url || ''} alt={chat.name} className={styles.avatarImage} />
+                    <LoadingImage src={(chat.cover as { url?: string }).url || ''} alt={chat.name} className={styles.avatarImage} />
                 ) : (
                     <div className={styles.avatarPlaceholder}>
                         {chat.name.charAt(0).toUpperCase()}
@@ -45,4 +46,3 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({ chat, onClick }) => 
         </div>
     );
 };
-

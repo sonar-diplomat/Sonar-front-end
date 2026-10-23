@@ -1,46 +1,49 @@
-import React, { useMemo } from 'react';
+import React,{ useMemo } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import { ItemCard, Button } from '@shared/ui';
-import { ItemCardContainer } from '@shared/ui/ItemCard';
-import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
-import { useGetUserByIdQuery, useGetUserProfileByIdentifierQuery } from '@entities/User/api/rtkApi';
-import { useUserLibrary } from '@shared/lib/user-hooks/useUserLibrary';
-import { getImageUrlById } from '@shared/lib/image-utils';
-import { GetPremiumCard } from '@widgets/GetPremium';
-import {
-    useGetPopularCollectionsQuery,
-    useGetRecentCollectionsQuery,
-    useGetRecentTracksQuery,
-} from '@entities/Recommendations';
+
 import { useGetAlbumQuery } from '@entities/Album/api/rtkApi';
-import { useGetPlaylistQuery } from '@entities/Playlist/api/rtkApi';
 import { useGetTrackQuery } from '@entities/Music/api/rtkApi';
-import { getArtistNames } from '@widgets/MiniPlayer/lib/utils';
+import { useGetPlaylistQuery } from '@entities/Playlist/api/rtkApi';
+import {
+useGetPopularCollectionsQuery,
+useGetRecentCollectionsQuery,
+useGetRecentTracksQuery,
+} from '@entities/Recommendations';
+import { useGetUserByIdQuery,useGetUserProfileByIdentifierQuery } from '@entities/User/api/rtkApi';
+import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
+import { getImageUrlById } from '@shared/lib/image-utils';
+import { useUserLibrary } from '@shared/lib/user-hooks/useUserLibrary';
 import { usePlayer } from '@shared/store/features/player';
-import { MainPageSkeleton } from './MainPageSkeleton';
+import { Button,ItemCard } from '@shared/ui';
+import { ItemCardContainer } from '@shared/ui/ItemCard';
+import { GetPremiumCard } from '@widgets/GetPremium';
+import { getArtistNames } from '@widgets/MiniPlayer/lib/utils';
+
 import styles from './MainPage.module.css';
+import { MainPageSkeleton } from './MainPageSkeleton';
 
 export const MainPage: React.FC = () => {
     const navigate = useNavigate();
     const currentUserId = useCurrentUserId();
-    const { data: currentUser, isLoading: isLoadingUser } = useGetUserByIdQuery(currentUserId!, {
+    const { data: currentUser } = useGetUserByIdQuery(currentUserId!, {
         skip: !currentUserId,
     });
-    const { data: currentUserProfile, isLoading: isLoadingUserProfile } = useGetUserProfileByIdentifierQuery(
+    const { data: currentUserProfile } = useGetUserProfileByIdentifierQuery(
         currentUser?.publicIdentifier || '',
         {
             skip: !currentUser?.publicIdentifier,
         }
     );
-    const { library, isLoading: isLoadingLibrary } = useUserLibrary();
+    const { library } = useUserLibrary();
 
     // Fetch recommendations
     const { data: popularCollections, isLoading: isLoadingPopularCollections } = useGetPopularCollectionsQuery({ limit: 6 });
-    const { data: recentCollections, isLoading: isLoadingRecentCollections } = useGetRecentCollectionsQuery(
+    const { data: recentCollections } = useGetRecentCollectionsQuery(
         { limit: 12 },
         { skip: !currentUserId }
     );
-    const { data: recentTracks, isLoading: isLoadingRecentTracks } = useGetRecentTracksQuery(
+    const { data: recentTracks } = useGetRecentTracksQuery(
         { limit: 12 },
         { skip: !currentUserId }
     );
@@ -264,7 +267,7 @@ const TrackCard: React.FC<{
 }> = ({ trackId, onClick }) => {
     const { data: track } = useGetTrackQuery(trackId);
     const { playTrack } = usePlayer();
-    
+
     if (!track) {
         return null;
     }
@@ -289,4 +292,3 @@ const TrackCard: React.FC<{
         />
     );
 };
-

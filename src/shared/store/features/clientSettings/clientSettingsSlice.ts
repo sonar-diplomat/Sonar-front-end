@@ -1,5 +1,7 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice,type PayloadAction } from '@reduxjs/toolkit';
+
 import type { Settings } from '@entities/ClientSettings';
+import { isDemoMode } from '@shared/config/data-source';
 
 interface ClientSettingsState {
   settings: Settings | null;
@@ -9,6 +11,7 @@ interface ClientSettingsState {
 
 // Загружаем настройки из localStorage при инициализации
 const loadSettingsFromStorage = (): Settings | null => {
+  if (isDemoMode) return null;
   try {
     const stored = localStorage.getItem('sonar_client_settings');
     if (stored) {
@@ -33,6 +36,7 @@ const clientSettingsSlice = createSlice({
     setSettings: (state, action: PayloadAction<Settings>) => {
       state.settings = action.payload;
       state.error = null;
+      if (isDemoMode) return;
       
       // Сохраняем в localStorage
       try {
@@ -46,6 +50,7 @@ const clientSettingsSlice = createSlice({
       if (state.settings) {
         state.settings = { ...state.settings, ...action.payload };
         state.error = null;
+        if (isDemoMode) return;
         
         // Сохраняем обновленные настройки в localStorage
         try {
@@ -67,6 +72,7 @@ const clientSettingsSlice = createSlice({
     clearSettings: (state) => {
       state.settings = null;
       state.error = null;
+      if (isDemoMode) return;
       
       // Очищаем localStorage
       try {

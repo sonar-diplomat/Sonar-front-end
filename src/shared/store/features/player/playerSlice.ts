@@ -1,14 +1,16 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice,type PayloadAction } from '@reduxjs/toolkit';
+
 import type { TrackDTO } from '@entities/Music';
 
 export type QueueTrack = TrackDTO & { _queueId: number };
-
+type Context = { type: 'playlist' | 'album' | 'blend'; id: number };
 export interface PlayerState {
     currentTrack: TrackDTO | null;
     pendingTrack: TrackDTO | null;
     isLoadingNextTrack: boolean;
     queue: QueueTrack[];
     customQueue: QueueTrack[];
+    originalQueue: QueueTrack[];
     queueIndex: number;
     queueItemIdCounter: number;
     isPlaying: boolean;
@@ -18,497 +20,183 @@ export interface PlayerState {
     isMuted: boolean;
     repeatMode: 'off' | 'one' | 'all';
     isShuffled: boolean;
-    originalQueue: QueueTrack[];
-    collectionContext: {
-        type: 'playlist' | 'album' | 'blend' | null;
-        id: number | null;
-    } | null;
+    collectionContext: Context | null;
     favoriteTrackIds: number[];
     isStockCollection: boolean;
+    playbackRevision: number;
+    seekRevision: number;
+    playbackStatus: 'idle' | 'loading' | 'playing' | 'paused' | 'error';
+    playbackError: string | null;
 }
-
-const loadFavoritesFromStorage = (): number[] => {
-    try {
-        const stored = localStorage.getItem('favoriteTrackIds');
-        return stored ? JSON.parse(stored) : [];
-    } catch (error) {
-        console.error('Failed to load favorites from localStorage:', error);
-        return [];
-    }
-};
-
-const saveFavoritesToStorage = (favorites: number[]) => {
-    try {
-        localStorage.setItem('favoriteTrackIds', JSON.stringify(favorites));
-    } catch (error) {
-        console.error('Failed to save favorites to localStorage:', error);
-    }
-};
-
 const initialState: PlayerState = {
-    currentTrack: null,
-    pendingTrack: null,
-    isLoadingNextTrack: false,
-    queue: [],
-    customQueue: [],
-    queueIndex: -1,
-    queueItemIdCounter: 0,
-    isPlaying: false,
-    currentTime: 0,
-    duration: 0,
-    volume: 1,
-    isMuted: false,
-    repeatMode: 'off',
-    isShuffled: false,
-    originalQueue: [],
-    collectionContext: null,
-    favoriteTrackIds: loadFavoritesFromStorage(),
-    isStockCollection: false,
+    currentTrack: null, pendingTrack: null, isLoadingNextTrack: false,
+    queue: [], customQueue: [], originalQueue: [], queueIndex: -1, queueItemIdCounter: 0,
+    isPlaying: false, currentTime: 0, duration: 0, volume: 1, isMuted: false,
+    repeatMode: 'off', isShuffled: false, collectionContext: null, favoriteTrackIds: [],
+    isStockCollection: false, playbackRevision: 0, seekRevision: 0,
+    playbackStatus: 'idle', playbackError: null,
 };
-
+const finiteTime = (n: number) => Number.isFinite(n) ? Math.max(0, n) : 0;
+function selectTrack(state: PlayerState, index: number, playing = true) {
+    state.queueIndex = index;
+    state.currentTrack = state.queue[index] ?? null;
+    state.pendingTrack = null;
+    state.currentTime = 0;
+    state.duration = 0;
+    state.isPlaying = !!state.currentTrack && playing;
+    state.isLoadingNextTrack = !!state.currentTrack;
+    state.playbackStatus = state.currentTrack ? 'loading' : 'idle';
+    state.playbackError = null;
+    state.playbackRevision++;
+}
 const playerSlice = createSlice({
-    name: 'player',
-    initialState,
+    name: 'player', initialState,
     reducers: {
-        setCurrentTrack: (state, action: PayloadAction<TrackDTO | null>) => {
-            state.currentTrack = action.payload;
-            state.currentTime = 0;
-            
-            if (action.payload) {
-                const trackId = action.payload.id;
-                // Always use store state as source of truth for display
-                // Sync with API only if API value differs and we don't have it in store
-                const isInStore = state.favoriteTrackIds.includes(trackId);
-                const isFavoriteFromApi = action.payload.isFavorite;
-                
-                // Only sync from API if we don't have this track in store and API says it's favorite
-                // This handles the case when track is loaded for the first time
-                if (isFavoriteFromApi === true && !isInStore) {
-                    state.favoriteTrackIds.push(trackId);
-                    saveFavoritesToStorage(state.favoriteTrackIds);
-                }
-                
-                // Always set isFavorite based on store state
-                action.payload.isFavorite = state.favoriteTrackIds.includes(trackId);
-            }
+        setCurrentTrack(state, action: PayloadAction<TrackDTO | null>) {
+            state.queue = action.payload ? [{ ...action.payload, _queueId: state.queueItemIdCounter++ }] : [];
+            state.originalQueue = [...state.queue];
+            state.customQueue = [];
+            state.collectionContext = null;
+            selectTrack(state, state.queue.length ? 0 : -1, false);
         },
-
-        setQueue: (state, action: PayloadAction<{ tracks: TrackDTO[]; startIndex?: number; collectionContext?: { type: 'playlist' | 'album' | 'blend'; id: number } }>) => {
-            // Sync favorites from API only for tracks that are not in store
-            // Store state is the source of truth, so we only add new favorites from API
-            let favoritesChanged = false;
-            action.payload.tracks.forEach(track => {
-                if (track.isFavorite === true) {
-                    const trackId = track.id;
-                    const isInStore = state.favoriteTrackIds.includes(trackId);
-                    
-                    // Only add if API says it's favorite but not in store
-                    if (!isInStore) {
-                        state.favoriteTrackIds.push(trackId);
-                        favoritesChanged = true;
-                    }
-                }
-            });
-
-            if (favoritesChanged) {
-                saveFavoritesToStorage(state.favoriteTrackIds);
-            }
-
-            // Create new track objects with isFavorite based on store state
-            const collectionTracks = action.payload.tracks.map(track => ({
-                ...track,
-                isFavorite: state.favoriteTrackIds.includes(track.id),
-                _queueId: state.queueItemIdCounter++
-            }));
-
-            state.queue = [...state.customQueue, ...collectionTracks];
-            state.queueIndex = state.customQueue.length + (action.payload.startIndex ?? 0);
-            state.currentTrack = state.queue[state.queueIndex] || null;
-            state.currentTime = 0;
+        setQueue(state, action: PayloadAction<{ tracks: TrackDTO[]; startIndex?: number; collectionContext?: Context }>) {
+            state.queue = action.payload.tracks.map(track => ({ ...track, _queueId: state.queueItemIdCounter++ }));
+            state.customQueue = [];
             state.originalQueue = [...state.queue];
             state.collectionContext = action.payload.collectionContext ?? null;
-            state.isStockCollection = !!action.payload.collectionContext && state.customQueue.length === 0;
+            state.isStockCollection = !!state.collectionContext;
+            state.isShuffled = false;
+            selectTrack(state, state.queue.length ? Math.max(0, Math.min(state.queue.length - 1, action.payload.startIndex ?? 0)) : -1);
         },
-
-        addToQueue: (state, action: PayloadAction<TrackDTO>) => {
-            const queueTrack: QueueTrack = {
-                ...action.payload,
-                _queueId: state.queueItemIdCounter++
-            };
-
-            state.customQueue.push(queueTrack);
-
-            let customTracksAfterCurrent = 0;
-            for (let i = state.queueIndex + 1; i < state.queue.length; i++) {
-                const track = state.queue[i];
-                if (state.customQueue.slice(0, -1).some(ct => ct._queueId === track._queueId)) {
-                    customTracksAfterCurrent++;
-                } else {
-                    break;
-                }
-            }
-
-            const insertIndex = state.queueIndex + 1 + customTracksAfterCurrent;
-            state.queue.splice(insertIndex, 0, queueTrack);
-
-
-            state.isStockCollection = false;
-
-            if (state.queue.length === 1) {
-                state.queueIndex = 0;
-                state.currentTrack = queueTrack;
-            }
-        },
-
-        addToQueueNext: (state, action: PayloadAction<TrackDTO>) => {
-            const insertIndex = state.queueIndex + 1;
-            const queueTrack: QueueTrack = {
-                ...action.payload,
-                _queueId: state.queueItemIdCounter++
-            };
-
-            state.customQueue.push(queueTrack);
-            state.queue.splice(insertIndex, 0, queueTrack);
-            state.isStockCollection = false;
-        },
-
-        removeFromQueue: (state, action: PayloadAction<number>) => {
-            const indexToRemove = action.payload;
-            const trackToRemove = state.queue[indexToRemove];
-
-            const customQueueIndex = state.customQueue.findIndex(t => t._queueId === trackToRemove?._queueId);
-            if (customQueueIndex !== -1) {
-                state.customQueue.splice(customQueueIndex, 1);
-            }
-
-            if (indexToRemove === state.queueIndex) {
-                state.queue.splice(indexToRemove, 1);
-                if (state.queue.length > 0) {
-                    state.queueIndex = Math.min(state.queueIndex, state.queue.length - 1);
-                    state.currentTrack = state.queue[state.queueIndex];
-                } else {
-                    state.queueIndex = -1;
-                    state.currentTrack = null;
-                }
-            } else {
-                state.queue.splice(indexToRemove, 1);
-                if (indexToRemove < state.queueIndex) {
-                    state.queueIndex--;
-                }
-            }
-        },
-
-        clearQueue: (state) => {
-            state.queue = [];
+        playTrack(state, action: PayloadAction<TrackDTO>) {
+            state.queue = [{ ...action.payload, _queueId: state.queueItemIdCounter++ }];
             state.customQueue = [];
-            state.queueIndex = -1;
-            state.currentTrack = null;
-            state.pendingTrack = null;
-            state.isLoadingNextTrack = false;
-            state.isPlaying = false;
-            state.currentTime = 0;
-            state.originalQueue = [];
+            state.originalQueue = [...state.queue];
             state.collectionContext = null;
             state.isStockCollection = false;
+            state.isShuffled = false;
+            selectTrack(state, 0);
         },
-
-
-        playTrack: (state, action: PayloadAction<TrackDTO>) => {
-            const queueTrack: QueueTrack = {
-                ...action.payload,
-                _queueId: state.queueItemIdCounter++
-            };
-
-            state.queue = [queueTrack];
-            state.customQueue = [];
-            state.queueIndex = 0;
-            state.currentTrack = queueTrack;
-            state.isPlaying = true;
-            state.currentTime = 0;
-            state.collectionContext = null;
-            state.originalQueue = [queueTrack];
+        addToQueue(state, action: PayloadAction<TrackDTO>) {
+            const track = { ...action.payload, _queueId: state.queueItemIdCounter++ };
+            state.queue.push(track);
+            state.customQueue.push(track);
+            state.originalQueue.push(track);
             state.isStockCollection = false;
-
-            // Sync from API only if track is favorite in API but not in store
-            const trackId = action.payload.id;
-            const isInStore = state.favoriteTrackIds.includes(trackId);
-            const isFavoriteFromApi = action.payload.isFavorite;
-            
-            if (isFavoriteFromApi === true && !isInStore) {
-                state.favoriteTrackIds.push(trackId);
-                saveFavoritesToStorage(state.favoriteTrackIds);
+            if (!state.currentTrack) selectTrack(state, state.queue.length - 1, false);
+        },
+        addToQueueNext(state, action: PayloadAction<TrackDTO>) {
+            const track = { ...action.payload, _queueId: state.queueItemIdCounter++ };
+            state.queue.splice(state.queueIndex + 1, 0, track);
+            state.customQueue.push(track);
+            state.originalQueue.push(track);
+            state.isStockCollection = false;
+            if (!state.currentTrack) selectTrack(state, 0, false);
+        },
+        removeFromQueue(state, action: PayloadAction<number>) {
+            const index = action.payload;
+            const removed = state.queue[index];
+            if (!removed) return;
+            state.queue.splice(index, 1);
+            state.customQueue = state.customQueue.filter(t => t._queueId !== removed._queueId);
+            state.originalQueue = state.originalQueue.filter(t => t._queueId !== removed._queueId);
+            if (index === state.queueIndex) selectTrack(state, Math.min(index, state.queue.length - 1), state.isPlaying);
+            else if (index < state.queueIndex) state.queueIndex--;
+        },
+        clearQueue(state) {
+            const { volume, isMuted, favoriteTrackIds } = state;
+            return { ...initialState, volume, isMuted, favoriteTrackIds, playbackRevision: state.playbackRevision + 1 };
+        },
+        setPendingTrack(state, action: PayloadAction<TrackDTO | null>) { state.pendingTrack = action.payload; },
+        confirmTrackSwitch(state) {
+            if (!state.pendingTrack) return;
+            let index = state.queue.findIndex(t => t.id === state.pendingTrack?.id);
+            if (index < 0) {
+                state.queue.push({ ...state.pendingTrack, _queueId: state.queueItemIdCounter++ });
+                index = state.queue.length - 1;
             }
-            
-            // Always set isFavorite based on store state
-            queueTrack.isFavorite = state.favoriteTrackIds.includes(trackId);
+            selectTrack(state, index);
         },
-        setPendingTrack: (state, action: PayloadAction<TrackDTO | null>) => {
-            state.pendingTrack = action.payload;
-            state.isLoadingNextTrack = action.payload !== null;
+        playNext(state) {
+            if (state.queueIndex + 1 < state.queue.length) selectTrack(state, state.queueIndex + 1);
+            else if (state.repeatMode === 'all' && state.queue.length) selectTrack(state, 0);
+            else { state.isPlaying = false; state.playbackStatus = 'paused'; }
         },
-
-        confirmTrackSwitch: (state) => {
-            if (state.pendingTrack) {
-                state.currentTrack = state.pendingTrack;
-                state.pendingTrack = null;
-                state.isLoadingNextTrack = false;
-                state.isPlaying = true;
-                state.currentTime = 0;
-
-                if (state.currentTrack) {
-                    const trackId = state.currentTrack.id;
-                    // Sync from API only if track is favorite in API but not in store
-                    const isInStore = state.favoriteTrackIds.includes(trackId);
-                    const isFavoriteFromApi = state.currentTrack.isFavorite;
-                    
-                    if (isFavoriteFromApi === true && !isInStore) {
-                        state.favoriteTrackIds.push(trackId);
-                        saveFavoritesToStorage(state.favoriteTrackIds);
-                    }
-                    
-                    // Always set isFavorite based on store state
-                    state.currentTrack.isFavorite = state.favoriteTrackIds.includes(trackId);
-                }
-
-                const existingIndex = state.queue.findIndex(t => t.id === state.currentTrack!.id);
-                if (existingIndex >= 0) {
-                    state.queueIndex = existingIndex;
-                } else {
-                    const queueTrack: QueueTrack = {
-                        ...state.currentTrack,
-                        _queueId: state.queueItemIdCounter++
-                    };
-                    state.queue.push(queueTrack);
-                    state.queueIndex = state.queue.length - 1;
-                }
-            }
+        playPrevious(state) {
+            if (state.currentTime > 3) { state.currentTime = 0; state.seekRevision++; }
+            else if (state.queueIndex > 0) selectTrack(state, state.queueIndex - 1);
+            else if (state.repeatMode === 'all' && state.queue.length) selectTrack(state, state.queue.length - 1);
+            else { state.currentTime = 0; state.seekRevision++; }
         },
-
-        playNext: (state) => {
-            if (state.repeatMode === 'one') {
-                state.currentTime = 0;
-                return;
-            }
-
-            const nextIndex = state.queueIndex + 1;
-            if (nextIndex < state.queue.length) {
-                state.queueIndex = nextIndex;
-                state.currentTrack = state.queue[nextIndex];
-                state.currentTime = 0;
-                state.isPlaying = true;
-            } else if (state.repeatMode === 'all' && state.queue.length > 0) {
-                state.queueIndex = 0;
-                state.currentTrack = state.queue[0];
-                state.currentTime = 0;
-                state.isPlaying = true;
-            } else {
-                state.isPlaying = false;
-                state.currentTrack = null;
-                state.currentTime = 0;
-                state.pendingTrack = null;
-                state.isLoadingNextTrack = false;
-            }
+        playFromQueue(state, action: PayloadAction<number>) {
+            const index = state.queue.findIndex(t => t._queueId === action.payload);
+            if (index >= 0) selectTrack(state, index);
         },
-
-        playPrevious: (state) => {
-            const prevIndex = state.queueIndex - 1;
-            if (prevIndex >= 0) {
-                state.queueIndex = prevIndex;
-                state.currentTrack = state.queue[prevIndex];
-                state.currentTime = 0;
-                state.isPlaying = true;
-            } else if (state.repeatMode === 'all' && state.queue.length > 0) {
-                state.queueIndex = state.queue.length - 1;
-                state.currentTrack = state.queue[state.queueIndex];
-                state.currentTime = 0;
-                state.isPlaying = true;
-            }
+        togglePlayPause(state) { if (state.currentTrack) { state.isPlaying = !state.isPlaying; state.playbackError = null; } },
+        play(state) { if (state.currentTrack) { state.isPlaying = true; state.playbackError = null; } },
+        pause(state) { state.isPlaying = false; },
+        setCurrentTime(state, action: PayloadAction<number>) { state.currentTime = finiteTime(action.payload); },
+        seekTo(state, action: PayloadAction<number>) {
+            state.currentTime = state.duration > 0 ? Math.min(state.duration, finiteTime(action.payload)) : 0;
+            state.seekRevision++;
         },
-
-        playFromQueue: (state, action: PayloadAction<number>) => {
-            const queueId = action.payload;
-            const trackIndex = state.queue.findIndex(t => t._queueId === queueId);
-
-            if (trackIndex !== -1) {
-                if (state.collectionContext) {
-                    state.queueIndex = trackIndex;
-                    state.currentTrack = state.queue[trackIndex];
-                    state.currentTime = 0;
-                    state.isPlaying = true;
-                } else {
-                    state.queue = state.queue.slice(trackIndex);
-                    state.queueIndex = 0;
-                    state.currentTrack = state.queue[0];
-                    state.currentTime = 0;
-                    state.isPlaying = true;
-
-                    if (state.isShuffled) {
-                        state.originalQueue = state.originalQueue.filter(t =>
-                            state.queue.some(qt => qt._queueId === t._queueId)
-                        );
-                    } else {
-                        state.originalQueue = [...state.queue];
-                    }
-                }
-            }
+        setDuration(state, action: PayloadAction<number>) { state.duration = finiteTime(action.payload); },
+        setVolume(state, action: PayloadAction<number>) {
+            state.volume = Math.min(1, finiteTime(action.payload));
+            if (state.volume > 0) state.isMuted = false;
         },
-
-        togglePlayPause: (state) => {
-            state.isPlaying = !state.isPlaying;
-        },
-
-        play: (state) => {
-            state.isPlaying = true;
-        },
-
-        pause: (state) => {
-            state.isPlaying = false;
-        },
-
-        setCurrentTime: (state, action: PayloadAction<number>) => {
-            state.currentTime = action.payload;
-        },
-
-        setDuration: (state, action: PayloadAction<number>) => {
-            state.duration = action.payload;
-        },
-
-        setVolume: (state, action: PayloadAction<number>) => {
-            state.volume = Math.max(0, Math.min(1, action.payload));
-            if (state.volume > 0) {
-                state.isMuted = false;
-            }
-        },
-
-        toggleMute: (state) => {
-            state.isMuted = !state.isMuted;
-        },
-
-        setRepeatMode: (state, action: PayloadAction<'off' | 'one' | 'all'>) => {
-            state.repeatMode = action.payload;
-        },
-
-        toggleShuffle: (state) => {
+        toggleMute(state) { state.isMuted = !state.isMuted; },
+        setRepeatMode(state, action: PayloadAction<PlayerState['repeatMode']>) { state.repeatMode = action.payload; },
+        toggleShuffle(state) {
+            if (!state.queue.length) return;
             state.isShuffled = !state.isShuffled;
-
+            const currentId = state.queue[state.queueIndex]?._queueId;
             if (state.isShuffled) {
                 state.originalQueue = [...state.queue];
-
-                const currentTrack = state.queue[state.queueIndex];
-                const otherTracks = state.queue.filter((_, i) => i !== state.queueIndex);
-
-                for (let i = otherTracks.length - 1; i > 0; i--) {
+                const others = state.queue.filter(t => t._queueId !== currentId);
+                for (let i = others.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
-                    [otherTracks[i], otherTracks[j]] = [otherTracks[j], otherTracks[i]];
+                    [others[i], others[j]] = [others[j], others[i]];
                 }
-
-                state.queue = [currentTrack, ...otherTracks];
-                state.queueIndex = 0;
-            } else {
-                if (state.originalQueue.length > 0) {
-                    const currentTrack = state.currentTrack;
-                    state.queue = [...state.originalQueue];
-                    state.queueIndex = currentTrack
-                        ? state.queue.findIndex(t => t.id === currentTrack.id)
-                        : 0;
-                }
-            }
+                const current = state.queue.find(t => t._queueId === currentId);
+                state.queue = current ? [current, ...others] : others;
+            } else state.queue = [...state.originalQueue];
+            state.queueIndex = state.queue.findIndex(t => t._queueId === currentId);
         },
-
-        toggleFavoriteTrack: (state, action: PayloadAction<number>) => {
-            const trackId = action.payload;
-            const index = state.favoriteTrackIds.indexOf(trackId);
-            const isNowFavorite = index === -1;
-            
-            if (isNowFavorite) {
-                state.favoriteTrackIds.push(trackId);
-            } else {
-                state.favoriteTrackIds.splice(index, 1);
-            }
-            saveFavoritesToStorage(state.favoriteTrackIds);
-            
-            if (state.currentTrack && state.currentTrack.id === trackId) {
-                state.currentTrack.isFavorite = isNowFavorite;
-            }
-            
-            state.queue.forEach(track => {
-                if (track.id === trackId) {
-                    track.isFavorite = isNowFavorite;
-                }
-            });
-            
-
-            if (state.pendingTrack && state.pendingTrack.id === trackId) {
-                state.pendingTrack.isFavorite = isNowFavorite;
-            }
+        toggleFavoriteTrack(state, action: PayloadAction<number>) {
+            const id = action.payload;
+            state.favoriteTrackIds = state.favoriteTrackIds.includes(id)
+                ? state.favoriteTrackIds.filter(value => value !== id) : [...state.favoriteTrackIds, id];
         },
-
-        setFavoriteTracks: (state, action: PayloadAction<number[]>) => {
-            state.favoriteTrackIds = action.payload;
-            saveFavoritesToStorage(state.favoriteTrackIds);
+        setFavoriteTracks(state, action: PayloadAction<number[]>) { state.favoriteTrackIds = action.payload; },
+        setPlaybackStatus(state, action: PayloadAction<PlayerState['playbackStatus']>) {
+            state.playbackStatus = action.payload;
+            state.isLoadingNextTrack = action.payload === 'loading';
         },
-
-        restoreQueue: (state, action: PayloadAction<{
-            queue: TrackDTO[];
-            customQueue: TrackDTO[];
-            queueIndex: number;
-            collectionContext: { type: 'playlist' | 'album' | 'blend'; id: number } | null;
-            currentTime?: number;
-            isStockCollection?: boolean;
-        }>) => {
-            const { queue, customQueue, queueIndex, collectionContext, currentTime, isStockCollection } = action.payload;
-
-            state.customQueue = customQueue.map(track => ({
-                ...track,
-                _queueId: state.queueItemIdCounter++
-            }));
-
-            state.queue = queue.map(track => ({
-                ...track,
-                _queueId: state.queueItemIdCounter++
-            }));
-
-            state.queueIndex = queueIndex;
-            state.currentTrack = state.queue[queueIndex] || null;
-            state.collectionContext = collectionContext;
+        setPlaybackError(state, action: PayloadAction<string>) {
+            state.playbackError = action.payload;
+            state.playbackStatus = 'error';
+            state.isPlaying = false;
+            state.isLoadingNextTrack = false;
+        },
+        restoreQueue(state, action: PayloadAction<{
+            queue: TrackDTO[]; customQueue: TrackDTO[]; queueIndex: number; collectionContext: Context | null;
+            currentTime?: number; isStockCollection?: boolean;
+        }>) {
+            state.queue = action.payload.queue.map(track => ({ ...track, _queueId: state.queueItemIdCounter++ }));
+            const customIds = new Set(action.payload.customQueue.map(t => t.id));
+            state.customQueue = state.queue.filter(t => customIds.has(t.id));
             state.originalQueue = [...state.queue];
-
-            state.isStockCollection = isStockCollection !== undefined
-                ? isStockCollection
-                : (!!collectionContext && customQueue.length === 0);
-
-            if (currentTime !== undefined) {
-                state.currentTime = currentTime;
-            }
+            state.collectionContext = action.payload.collectionContext;
+            state.isStockCollection = action.payload.isStockCollection ?? false;
+            selectTrack(state, state.queue.length ? Math.max(0, Math.min(state.queue.length - 1, action.payload.queueIndex)) : -1, false);
+            state.currentTime = finiteTime(action.payload.currentTime ?? 0);
         },
     },
 });
-
-export const {
-    setCurrentTrack,
-    setQueue,
-    addToQueue,
-    addToQueueNext,
-    removeFromQueue,
-    clearQueue,
-    setPendingTrack,
-    confirmTrackSwitch,
-    playTrack,
-    playNext,
-    playPrevious,
-    playFromQueue,
-    togglePlayPause,
-    play,
-    pause,
-    setCurrentTime,
-    setDuration,
-    setVolume,
-    toggleMute,
-    setRepeatMode,
-    toggleShuffle,
-    toggleFavoriteTrack,
-    setFavoriteTracks,
-    restoreQueue,
-} = playerSlice.actions;
-
+export const { setCurrentTrack, setQueue, addToQueue, addToQueueNext, removeFromQueue, clearQueue,
+    setPendingTrack, confirmTrackSwitch, playTrack, playNext, playPrevious, playFromQueue,
+    togglePlayPause, play, pause, setCurrentTime, seekTo, setDuration, setVolume, toggleMute,
+    setRepeatMode, toggleShuffle, toggleFavoriteTrack, setFavoriteTracks, restoreQueue,
+    setPlaybackStatus, setPlaybackError } = playerSlice.actions;
 export default playerSlice.reducer;

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Modal, Button, Input } from '@shared/ui';
-import { SearchIcon, PlusIcon, ClearIcon, LeftArrow } from '@shared/ui';
+import React,{ useState } from 'react';
+
+import { useAddUserToChatMutation,useCreateChatMutation,useGetChatsQuery } from '@entities/Chat/api/rtkApi';
 import { useGetUserProfileByIdentifierQuery } from '@entities/User/api/rtkApi';
-import { useCreateChatMutation, useAddUserToChatMutation, useGetChatsQuery } from '@entities/Chat/api/rtkApi';
 import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
+import { Button,ClearIcon,Input,LeftArrow,Modal,PlusIcon,SearchIcon } from '@shared/ui';
+
 import styles from './CreateGroupChatModal.module.css';
 
 interface SelectedUser {

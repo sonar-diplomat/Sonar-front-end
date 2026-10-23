@@ -1,8 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React,{ useEffect,useRef,useState } from 'react';
+
 import type { Message as MessageType } from '@entities/Chat';
-import { CheckMark, ClockIcon, ErrorIcon, ReplyIcon, CopyIcon, EditIcon, DeleteIcon, Info, Button, LoadingImage } from '@shared/ui';
-import { MessageContentRenderer, shouldShowEmbed } from '@shared/lib/chat-embeds';
+import { MessageContentRenderer,shouldShowEmbed } from '@shared/lib/chat-embeds';
 import { isStickerMessage } from '@shared/lib/chat-stickers';
+import { Button,CheckMark,ClockIcon,CopyIcon,DeleteIcon,EditIcon,ErrorIcon,Info,LoadingImage,ReplyIcon } from '@shared/ui';
+
 import styles from './Message.module.css';
 
 export interface MessageProps {
@@ -36,7 +38,7 @@ export const Message: React.FC<MessageProps> = ({
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
     const messageRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
-    const longPressTimerRef = useRef<number | null>(null);
+    const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const touchStartPosRef = useRef<{ x: number; y: number } | null>(null);
 
     useEffect(() => {
@@ -64,7 +66,7 @@ export const Message: React.FC<MessageProps> = ({
         const handleTouchStart = (e: TouchEvent) => {
             const touch = e.touches[0];
             touchStartPosRef.current = { x: touch.clientX, y: touch.clientY };
-            
+
             longPressTimerRef.current = setTimeout(() => {
                 if (touchStartPosRef.current) {
                     e.preventDefault();
@@ -79,7 +81,7 @@ export const Message: React.FC<MessageProps> = ({
                 const touch = e.touches[0];
                 const deltaX = Math.abs(touch.clientX - touchStartPosRef.current.x);
                 const deltaY = Math.abs(touch.clientY - touchStartPosRef.current.y);
-                
+
                 if (deltaX > 10 || deltaY > 10) {
                     if (longPressTimerRef.current) {
                         clearTimeout(longPressTimerRef.current);
@@ -147,19 +149,19 @@ export const Message: React.FC<MessageProps> = ({
 
     const getStatusIcon = () => {
         if (!isOwn) return null;
-        
+
         const status = message.status || 'sent';
-        
+
         if (status === 'pending') {
             return <ClockIcon className={styles.statusIcon} />;
         }
-        
+
         if (status === 'error') {
             return <ErrorIcon className={`${styles.statusIcon} ${styles.error}`} />;
         }
-        
+
         const isRead = status === 'read';
-        
+
         return (
             <span className={styles.statusIcons}>
                 <CheckMark className={`${styles.checkIcon} ${isRead ? styles.read : ''}`} />
@@ -308,4 +310,3 @@ export const Message: React.FC<MessageProps> = ({
         </div>
     );
 };
-

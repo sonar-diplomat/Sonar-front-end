@@ -1,9 +1,13 @@
-import React, {useState, useCallback, useMemo, useEffect} from 'react';
-import styles from './RegistrationForm.module.css';
-import {Button, Input, RightArrow, Checkbox, Form, DropDown} from '@shared/ui';
+import React,{ useCallback,useEffect,useMemo,useState } from 'react';
+
+import { Link } from 'react-router-dom';
+
 import type { RegistrationFormData } from "@features/registration";
+import { useNotifications } from "@shared/store/notificationStore.tsx";
+import { Button,Checkbox,DropDown,Form,Input,RightArrow } from '@shared/ui';
 import { ModalDatePicker } from "@widgets/ModalDatePicker/ui/ModalDatePicker.tsx";
-import {useNotifications} from "@shared/store/notificationStore.tsx";
+
+import styles from './RegistrationForm.module.css';
 
 export interface RegistrationFormProps {
   onSubmit?: (data: RegistrationFormData) => void;
@@ -49,9 +53,9 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, da
   const consentLabel = useMemo(() => (
     <>
       I consent to the{' '}
-      <a href="/terms" className={styles.link}>
+      <Link to="/terms" className={styles.link}>
         processing and storage of my personal data.
-      </a>
+      </Link>
     </>
   ), []);
 

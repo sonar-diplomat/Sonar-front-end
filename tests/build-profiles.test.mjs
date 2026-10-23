@@ -29,6 +29,11 @@ test('an ordinary build defaults to API aliases without demo source paths', () =
   assert.equal(result.profile.dataSource, 'api');
   assert.equal(result.profile.base, '/');
   assert.equal(result.profile.proxy, true);
+  assert.match(result.profile.aliases['@shared/demo/media'], /src[\\/]shared[\\/]config[\\/]empty-demo-media\.ts$/);
+  for (const name of ['@shared/ui/DemoOutboxNotice', '@shared/ui/DemoStatus']) {
+    assert.match(result.profile.aliases[name], /src[\\/]shared[\\/]config[\\/]empty-demo-ui\.ts$/);
+  }
+  assert.match(result.profile.aliases['@shared/lib/audio/DemoPlayerSync'], /src[\\/]shared[\\/]config[\\/]empty-demo-player\.ts$/);
   for (const name of ['@demo-runtime', '@demo-dispatcher', '@demo-seed', '@demo-media']) {
     assert.match(result.profile.aliases[name], /src[\\/]shared[\\/]config[\\/]/);
     assert.doesNotMatch(result.profile.aliases[name], /[\\/]demo[\\/]/);

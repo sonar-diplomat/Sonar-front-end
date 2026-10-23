@@ -1,132 +1,42 @@
-import React, { useMemo, useState } from 'react';
-import { useParams, Outlet, useNavigate } from 'react-router-dom';
-import { ProfileCard } from '@shared/ui';
-import { ProfileLayout } from '@widgets/ProfileLayout';
-import { ContentSections } from '@widgets/ContentSections';
-import { ProfileActionButtons } from '@widgets/ProfileActionButtons';
-import { useProfileNavigation } from '@shared/hooks';
-import { getMockPlaylists } from '@shared/lib/mocks';
-import { createPlaylistSection } from '@shared/lib/profile';
-import { getImageUrl } from '@shared/lib/image-utils';
-import { MarkdownRenderer } from '@shared/lib/markdown/MarkdownRenderer';
-import type { ViewerType } from '@shared/types';
-import { useCurrentUserId } from '@shared/lib/auth';
+import React,{ useMemo } from 'react';
+
+import { useNavigate,useParams } from 'react-router-dom';
+
 import { useGetArtistByIdQuery } from '@entities/Artist';
+import { useFollowUserMutation,useGetFollowersQuery,useUnfollowUserMutation } from '@entities/User/api/rtkApi';
+import { useSearchQuery } from '@shared/api';
+import { useCurrentUserId } from '@shared/lib/auth';
+import { getImageUrl,getImageUrlById } from '@shared/lib/image-utils';
+import { MarkdownRenderer } from '@shared/lib/markdown/MarkdownRenderer';
+import { useNotifications } from '@shared/store/notificationStore';
+import type { ViewerType } from '@shared/types';
+import { Button,ItemCard,ProfileCard } from '@shared/ui';
+import { ProfileActionButtons } from '@widgets/ProfileActionButtons';
+import { ProfileLayout } from '@widgets/ProfileLayout';
+
 import styles from './ArtistProfile.module.css';
-
-interface ArtistProfileProps {
-    viewerType?: ViewerType;
-}
-
-export const ArtistProfile: React.FC<ArtistProfileProps> = ({
-    viewerType: initialViewerType
-}) => {
-    const { id } = useParams<{ id: string }>();
-    const { handleBackClick } = useProfileNavigation();
+export const ArtistProfile: React.FC<{ viewerType?: ViewerType }> = ({ viewerType: initialViewerType }) => {
+    const { id } = useParams();
     const navigate = useNavigate();
     const currentUserId = useCurrentUserId();
-
-    const [playlists] = useState(getMockPlaylists);
-
-    // Fetch artist data by ID
-    const {
-        data: artistData,
-        isLoading: isLoadingArtist,
-        error: artistError
-    } = useGetArtistByIdQuery(Number(id), {
-        skip: !id,
-    });
-
-    const viewerType: ViewerType = useMemo(() => {
-        if (initialViewerType) return initialViewerType;
-        if (currentUserId && artistData && currentUserId === artistData.userId) {
-            return 'owner';
-        }
-        return 'guest';
-    }, [initialViewerType, currentUserId, artistData]);
-
-    const sections = useMemo(() => [createPlaylistSection(playlists)], [playlists]);
-
-    const handleTabChange = (tab: string) => {
-        if (tab === 'posts') {
-            navigate(`/artist/${id}/posts`);
-        } else {
-            navigate(`/artist/${id}`);
-        }
-    };
-
-    const handleMessageClick = () => {
-        console.log('Message clicked');
-    };
-
-    if (isLoadingArtist || !artistData) {
-        return <div>Loading artist profile...</div>;
-    }
-
-    if (artistError) {
-        console.error('Artist profile error:', artistError);
-        return <div>Error loading artist profile</div>;
-    }
-
-    // Calculate avatar URL from API data
-    const avatarUrl = getImageUrl(artistData.user?.avatarImageId) || 'https://placehold.co/378x264';
-
-    // Check if the artist is verified based on access features
-    const isVerified = artistData.user?.accessFeatures?.some(
-        (feature) => feature.name?.toLowerCase().includes('verified')
-    ) ?? false;
-
-    const profileCard = (
-        <ProfileCard
-            isVerified={isVerified}
-            name={artistData.artistName}
-            monthlyListeners={18200000}
-            src={avatarUrl}
-            alt={`${artistData.artistName} profile image`}
-        />
-    );
-
-    const actionButtons = viewerType === 'owner' ? null : (
-        <ProfileActionButtons
-            viewerType={viewerType}
-            profileType="artist"
-        />
-    );
-
-    const bioSection = artistData.user?.biography ? (
-        <div className={styles.bioSection}>
-            <h3 className={styles.bioLabel}>About the Artist</h3>
-            <MarkdownRenderer content={artistData.user.biography} className={styles.bioText} />
-        </div>
-    ) : null;
-
-    const profileView = (
-        <>
-            <ContentSections sections={sections} />
-            {bioSection && (
-                <div className={styles.widgetsContainer}>
-                    <div className={styles.topRow}>
-                        {bioSection}
-                    </div>
-                </div>
-            )}
-        </>
-    );
-
-    const postsView = <Outlet />;
-
-    return (
-        <ProfileLayout
-            viewerType={viewerType}
-            profileType="artist"
-            secondaryTab="Posts"
-            onBackClick={handleBackClick}
-            onMessageClick={handleMessageClick}
-            onTabChange={handleTabChange}
-            profileCard={profileCard}
-            actionButtons={actionButtons}
-            profileView={profileView}
-            secondaryView={postsView}
-        />
-    );
+    const { data: artist, isLoading, error, refetch } = useGetArtistByIdQuery(Number(id), { skip: !id });
+    const { data: catalog } = useSearchQuery({ query: artist?.artistName || '', limit: 100 }, { skip: !artist });
+    const { data: followers } = useGetFollowersQuery(artist?.userId || 0, { skip: !artist });
+    const [follow, { isLoading: following }] = useFollowUserMutation();
+    const [unfollow, { isLoading: unfollowing }] = useUnfollowUserMutation();
+    const { showError } = useNotifications();
+    const viewerType = useMemo(() => initialViewerType || (currentUserId === artist?.userId ? 'owner' : 'guest'), [initialViewerType, currentUserId, artist]);
+    if (isLoading) return <p style={{ padding: 24 }} role="status">Loading artist profile…</p>;
+    if (error || !artist) return <main style={{ padding: 24 }}><h1>Artist not found</h1><Button onClick={() => void refetch()}>Retry</Button><Button onClick={() => navigate('/search')}>Search</Button></main>;
+    const isFollowing = followers?.items.some(user => user.id === currentUserId) || false;
+    const changeFollow = async () => { try { await (isFollowing ? unfollow(artist.userId) : follow(artist.userId)).unwrap(); } catch { showError('Unable to change following'); } };
+    return <ProfileLayout viewerType={viewerType} profileType="artist" secondaryTab="Posts"
+        onBackClick={() => navigate('/home')} onMessageClick={() => navigate('/chats')} onTabChange={tab => navigate(tab.toLowerCase() === 'posts' ? `/artist/${id}/posts` : `/artist/${id}`)}
+        profileCard={<ProfileCard name={artist.artistName} src={getImageUrl(artist.user?.avatarImageId) || ''} alt={`${artist.artistName} profile`} />}
+        actionButtons={<ProfileActionButtons viewerType={viewerType} profileType="artist" isFollowing={isFollowing} isLoading={following || unfollowing} onFollow={() => void changeFollow()} onUnfollow={() => void changeFollow()} />}
+        profileView={<div className={styles.widgetsContainer}>
+            <section><h2>Albums</h2><div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>{catalog?.albums?.items.map(album => <ItemCard key={album.id} image={getImageUrlById(album.coverId)} textContent={{ title: album.name }} to={`/album/${album.id}`} />)}</div>{catalog?.albums?.items.length === 0 && <p>No albums yet.</p>}</section>
+            <section><h2>Songs</h2><div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>{catalog?.tracks?.items.map(track => <ItemCard key={track.id} image={getImageUrlById(track.coverId)} textContent={{ title: track.title }} to={`/track/${track.id}`} />)}</div>{catalog?.tracks?.items.length === 0 && <p>No songs yet.</p>}</section>
+            {artist.user?.biography && <section><h2>About the artist</h2><MarkdownRenderer content={artist.user.biography} /></section>}
+        </div>} />;
 };

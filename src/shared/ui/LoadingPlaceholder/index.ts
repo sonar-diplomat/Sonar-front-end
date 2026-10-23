@@ -1,7 +1,5 @@
 export { LoadingPlaceholder } from './LoadingPlaceholder';
 export type {
-  LoadingPlaceholderProps,
-  LoadingPlaceholderVariant,
-  LoadingPlaceholderSize,
+LoadingPlaceholderProps,LoadingPlaceholderSize,LoadingPlaceholderVariant
 } from './LoadingPlaceholder';
 

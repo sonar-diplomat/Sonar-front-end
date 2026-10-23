@@ -1,7 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React,{ useCallback,useState } from 'react';
+
+import { AppleIcon,Button,EyeIcon,EyeOffIcon,Form,GoogleIcon,Input,RightArrow } from '@shared/ui';
+
+import type { LoginFormData,LoginFormProps } from '../model/types';
+
 import styles from './LoginForm.module.css';
-import {Button, Input, RightArrow, Form, EyeIcon, EyeOffIcon, GoogleIcon, AppleIcon} from '@shared/ui';
-import type { LoginFormData, LoginFormProps } from '../model/types';
 
 export const LoginForm: React.FC<LoginFormProps> = ({
     onSubmit, 

@@ -1,7 +1,9 @@
 import React from 'react';
-import styles from './TrackItem.module.css';
+
 import type { TrackItemProps } from '@shared/ui';
-import {LoadingImage, MoreIcon} from '@shared/ui';
+import { LoadingImage,MoreIcon } from '@shared/ui';
+
+import styles from './TrackItem.module.css';
 
 export const TrackItem: React.FC<TrackItemProps> = ({
     title,
@@ -26,7 +28,7 @@ export const TrackItem: React.FC<TrackItemProps> = ({
     };
 
     return (
-        <div className={wrapperClasses} onClick={onClick}>
+        <div className={wrapperClasses} onClick={onClick} role={onClick ? "button" : undefined} tabIndex={onClick ? 0 : undefined} aria-label={onClick ? `Play ${title}` : undefined} onKeyDown={event => { if (event.target === event.currentTarget && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); onClick?.(); } }}>
             <div className={styles.content}>
                 {imageSrc ? (
                     <div className={styles.imageWrapper}>

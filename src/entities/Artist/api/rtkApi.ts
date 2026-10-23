@@ -1,6 +1,7 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
-import type { PostDTO, Artist, Post } from '../model/types';
+
+import type { Artist,Post,PostDTO } from '../model/types';
 
 /**
  * Artist API endpoints
@@ -12,7 +13,7 @@ export const artistApi = rtkApi.injectEndpoints({
         url: API_ENDPOINTS.artist.byId(artistId),
         method: 'GET',
       }),
-      providesTags: (result, error, artistId) => [{ type: 'Artist', id: artistId }],
+      providesTags: (_result, _error, artistId) => [{ type: 'Artist', id: artistId }, 'DemoState'],
     }),
 
     getArtistPosts: builder.query<Post[], number>({
@@ -20,10 +21,9 @@ export const artistApi = rtkApi.injectEndpoints({
         url: API_ENDPOINTS.artist.posts(artistId),
         method: 'GET',
       }),
-      providesTags: (result, error, artistId) => [
+      providesTags: (_result, _error, artistId) => [
         { type: 'Post', id: 'LIST' },
-        { type: 'Artist', id: artistId },
-      ],
+        { type: 'Artist', id: artistId }, 'DemoState'],
     }),
 
     registerArtist: builder.mutation<void, void>({

@@ -1,4 +1,6 @@
-import { API_ENDPOINTS, MEDIA_BASE_URL } from '@shared/config';
+import { API_ENDPOINTS,MEDIA_BASE_URL } from '@shared/config';
+import { isDemoMode } from '@shared/config/data-source';
+import { resolveDemoAudioUrl,resolveDemoImageUrl } from '@shared/demo/media';
 
 /**
  * Converts image ID to blob API URL for image retrieval
@@ -7,8 +9,8 @@ import { API_ENDPOINTS, MEDIA_BASE_URL } from '@shared/config';
  */
 export const getImageUrlById = (imageId: number | null | undefined): string | undefined => {
   if (!imageId || imageId <= 0) return undefined;
-  
-  return `${MEDIA_BASE_URL}${API_ENDPOINTS.blob.image(imageId)}`;
+
+  return isDemoMode ? resolveDemoImageUrl(imageId) : `${MEDIA_BASE_URL}${API_ENDPOINTS.blob.image(imageId)}`;
 };
 
 /**
@@ -26,16 +28,16 @@ export const getImageUrl = (
   source?: number | string | File | { id?: number; url?: string } | null
 ): string | undefined => {
   if (!source) return undefined;
-  
+
   // Number source (image ID)
   if (typeof source === 'number') {
     return getImageUrlById(source);
   }
-  
+
   // String source
   if (typeof source === 'string') {
     // If already a full URL, return as is
-    if (source.startsWith('http://') || source.startsWith('https://')) {
+    if (source.startsWith('http://') || source.startsWith('https://') || source.startsWith('blob:') || source.startsWith('data:image/') || source.startsWith(import.meta.env.BASE_URL)) {
       return source;
     }
     // Try to parse as number (for backward compatibility)
@@ -45,21 +47,21 @@ export const getImageUrl = (
     }
     return undefined;
   }
-  
+
   // File object
   if (source instanceof File) {
     return URL.createObjectURL(source);
   }
-  
+
   // Object with id property (priority)
   if (typeof source === 'object' && 'id' in source && typeof source.id === 'number') {
     return getImageUrlById(source.id);
   }
-  
+
   // Object with url property (fallback)
   if (typeof source === 'object' && 'url' in source && source.url) {
     const url = source.url;
-    if (url.startsWith('http://') || url.startsWith('https://')) {
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('data:image/') || url.startsWith(import.meta.env.BASE_URL)) {
       return url;
     }
     // Try to parse as number
@@ -69,7 +71,7 @@ export const getImageUrl = (
     }
     return undefined;
   }
-  
+
   return undefined;
 };
 
@@ -83,18 +85,18 @@ export const getTrackStreamUrl = (
   trackId: number,
   params?: { startPosition?: string; length?: string; download?: boolean }
 ): string => {
+  if (isDemoMode) return resolveDemoAudioUrl(trackId) ?? '';
   const baseUrl = `${MEDIA_BASE_URL}${API_ENDPOINTS.track.stream(trackId)}`;
-  
+
   if (!params || Object.keys(params).length === 0) {
     return baseUrl;
   }
-  
+
   const searchParams = new URLSearchParams();
   if (params.startPosition) searchParams.append('startPosition', params.startPosition);
   if (params.length) searchParams.append('length', params.length);
   if (params.download !== undefined) searchParams.append('download', String(params.download));
-  
+
   const queryString = searchParams.toString();
   return queryString ? `${baseUrl}?${queryString}` : baseUrl;
 };
-

@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
-import { usePlayer } from '@shared/store/features/player';
+import { useEffect,useRef } from 'react';
+
 import { useSaveQueueMutation } from '@entities/UserState/api/rtkApi';
+import { usePlayer } from '@shared/store/features/player';
 import { useAppSelector } from '@shared/store/hooks';
 
 export const useQueuePersistence = () => {

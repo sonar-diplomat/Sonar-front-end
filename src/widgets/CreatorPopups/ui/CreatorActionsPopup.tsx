@@ -1,8 +1,11 @@
 import React from "react";
+
+import { ProfileIcon,ShareIcon,UnfollowIcon,WarningIcon } from "@shared/ui";
+
 import { creatorPopupsTexts } from "../model/texts";
-import styles from "./CreatorPopup.module.css";
+
 import { CreatorBasePopup } from "./CreatorBasePopup";
-import {ProfileIcon, ShareIcon, UnfollowIcon, WarningIcon} from "@shared/ui";
+import styles from "./CreatorPopup.module.css";
 
 
 type Props = {

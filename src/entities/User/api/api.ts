@@ -1,6 +1,6 @@
+import type { User,UserUpdateDTO } from '@entities/User'
 import { apiClient } from '@shared/api/oldBaseApi.ts'
 import { API_ENDPOINTS } from '@shared/config'
-import type { User, UserUpdateDTO } from '@entities/User'
 import type { RequestConfig } from '@shared/types'
 
 export const Api = {

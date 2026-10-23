@@ -1,7 +1,9 @@
 import React from 'react';
-import styles from './SongItem.module.css';
+
 import type { SongItemProps } from '@shared/ui';
-import { MoreIcon, LoadingImage } from '@shared/ui';
+import { LoadingImage,MoreIcon } from '@shared/ui';
+
+import styles from './SongItem.module.css';
 
 export const SongItem: React.FC<SongItemProps> = ({
     rank,

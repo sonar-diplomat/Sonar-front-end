@@ -1,17 +1,23 @@
-import { useCallback, useMemo, useState } from 'react';
-import { Api } from '../api/api.ts';
-import type { PlaylistDTO, CursorPageDTO } from './types';
-import type { TrackDTO } from '@entities/Music';
-import type { State } from '@shared/types/store';
-import type {RequestConfig} from "@shared/types";
-import type {ShareLinkDTO} from "@entities/Collection";
+import { useCallback,useMemo,useState } from 'react';
 
-const pickError = (res: any) =>
+import type { ShareLinkDTO } from "@entities/Collection";
+import type { TrackDTO } from '@entities/Music';
+import { legacyQuery } from '@shared/api/legacyQuery';
+import { store } from '@shared/store';
+import type { RequestConfig } from "@shared/types";
+import type { State } from '@shared/types/store';
+
+import { Api } from '../api/api.ts';
+import { playlistApi } from '../api/rtkApi';
+
+import type { CreatePlaylistDTO,CursorPageDTO,PlaylistDTO } from './types';
+
+const pickError = (res: { success: boolean; errors?: string[]; details?: string[]; message?: string }) =>
     res?.success ? undefined : res?.errors?.[0] || res?.details?.[0] || res?.message;
 
 export const useCreatePlaylist = () => {
     const [state, setState] = useState<State<PlaylistDTO>>({ loading: false });
-    const mutate = useCallback(async (body: any, cfg?: RequestConfig) => {
+    const mutate = useCallback(async (body: CreatePlaylistDTO, cfg?: RequestConfig) => {
         setState({ loading: true });
         const res = await Api.create(body, cfg);
         setState({ loading: false, data: res.data, error: pickError(res) });
@@ -115,7 +121,7 @@ export const usePlaylistById = () => {
     const [state, setState] = useState<State<PlaylistDTO>>({ loading: false });
     const refetch = useCallback(async (playlistId: number, cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }));
-        const res = await Api.byId(playlistId, cfg);
+        const res = await legacyQuery(() => store.dispatch(playlistApi.endpoints.getPlaylist.initiate(playlistId, {subscribe:false,forceRefetch:true})).unwrap(), cfg);
         setState({ loading: false, data: res.data, error: pickError(res) });
         return res;
     }, []);
@@ -140,7 +146,7 @@ export const usePlaylistShareLink = () => {
     const [state, setState] = useState<State<ShareLinkDTO>>({ loading: false });
     const refetch = useCallback(async (playlistId: number, cfg?: RequestConfig) => {
         setState({ loading: true });
-        const res = await Api.shareLink(playlistId, cfg);
+        const res = await legacyQuery(async () => ({url: await store.dispatch(playlistApi.endpoints.getPlaylistShareLink.initiate(playlistId, {subscribe:false,forceRefetch:true})).unwrap()}), cfg);
         setState({ loading: false, data: res.data, error: pickError(res) });
         return res;
     }, []);
@@ -152,7 +158,7 @@ export const usePlaylistShareQr = () => {
     const refetch = useCallback(async (playlistId: number, cfg?: RequestConfig) => {
         setState({ loading: true });
         const res = await Api.shareQr(playlistId, cfg);
-        setState({ loading: false, data: (res as any).data as Blob, error: pickError(res) });
+        setState({ loading: false, data: res.ok ? await res.blob() : undefined, error: res.ok ? undefined : res.statusText });
         return res;
     }, []);
     return useMemo(() => ({ ...state, refetch }), [state, refetch]);

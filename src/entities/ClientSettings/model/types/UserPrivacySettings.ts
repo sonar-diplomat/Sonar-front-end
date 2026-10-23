@@ -6,6 +6,8 @@ export interface UserPrivacySettings {
  settingsId: number;
  whichCanViewProfileId: number;
  whichCanMessageId: number;
+ whichCanViewProfile?: { id: number; name: string };
+ whichCanMessage?: { id: number; name: string };
  /*
  *
  *

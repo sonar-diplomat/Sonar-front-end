@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React,{ useCallback,useEffect,useRef,useState } from 'react';
 
-import { Button, SendRight } from '@shared/ui';
+import { Button,SendRight } from '@shared/ui';
 
 import styles from './CodeVerification.module.css';
 

@@ -1,10 +1,12 @@
 import React from 'react';
+
 import styles from '../Input.module.css';
 
 interface InputIconProps {
     icon: React.ReactNode;
     position: 'prefix' | 'suffix';
     clickable?: boolean;
+    label?: string;
     onClick?: () => void;
 }
 
@@ -12,7 +14,7 @@ export const InputIcon: React.FC<InputIconProps> = ({
     icon,
     position,
     clickable = false,
-    onClick
+    label, onClick
 }) => {
     const className = clickable
         ? styles[`icon_${position}_button`]
@@ -32,7 +34,7 @@ export const InputIcon: React.FC<InputIconProps> = ({
                 className={className}
                 onClick={onClick}
                 onKeyDown={handleKeyDown}
-                tabIndex={-1}
+                aria-label={label || 'Input action'}
             >
                 {icon}
             </button>

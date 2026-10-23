@@ -5,7 +5,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-    { ignores: ['node_modules/**', 'dist/**', '.pages/**', '.pages-probe/**', 'coverage/**'] },
+    { ignores: ['node_modules/**', 'dist/**', '.pages/**', '.pages-probe/**', 'coverage/**', '.cache/**', '.media-cache/**', '.tools/**', '.task/**', 'test-results/**', 'playwright-report/**'] },
     eslint.configs.recommended,
     ...tseslint.configs.recommended,
     {
@@ -28,7 +28,7 @@ export default tseslint.config(
             'import/resolver': {
                 typescript: {
                     alwaysTryTypes: true,
-                    project: ['./tsconfig.app.json', './tsconfig.node.json'],
+                    project: './tsconfig.json',
                 },
                 node: true,
             },

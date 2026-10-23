@@ -1,6 +1,9 @@
 import React from "react";
+
 import { HeartIcon } from '@shared/ui';
+
 import type { PlayerActionsProps } from '../model/types';
+
 import styles from './MiniPlayer.module.css';
 
 export const PlayerActions = ({ isLiked, onLike }: PlayerActionsProps) => {
