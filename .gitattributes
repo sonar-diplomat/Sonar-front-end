@@ -1,0 +1,14 @@
+# Scope LFS to source music; JSON and small covers remain ordinary Git files.
+/demo/audio/**/*.mp3 filter=lfs diff=lfs merge=lfs -text
+/demo/audio/**/*.wav filter=lfs diff=lfs merge=lfs -text
+/demo/audio/**/*.ogg filter=lfs diff=lfs merge=lfs -text
+/demo/audio/**/*.flac filter=lfs diff=lfs merge=lfs -text
+/demo/audio/**/*.m4a filter=lfs diff=lfs merge=lfs -text
+
+# Hashes describe identical source bytes on Windows and Linux checkouts.
+/demo/images/**/*.svg text eol=lf
+/demo/images/**/*.png -text
+/demo/images/**/*.jpg -text
+/demo/images/**/*.jpeg -text
+/demo/images/**/*.webp -text
+/demo/*.json text eol=lf
