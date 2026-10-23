@@ -2,7 +2,8 @@ import React, {useMemo} from 'react';
 import {useNavigate, useParams, Outlet, useLocation} from 'react-router-dom';
 import {Button, PlusIcon} from '@shared/ui';
 import {ArtistPostCard} from '@widgets/ArtistMessageCard';
-import {useGetArtistPostsQuery} from '@entities/Artist';
+import {useGetArtistPostsQuery, useGetArtistByIdQuery} from '@entities/Artist';
+import {useCurrentUserId} from '@shared/lib/auth';
 import type {ArtistMessage} from '@widgets/ArtistMessageCard';
 import styles from './ArtistProfile.module.css';
 import {ProfileHeader, type ProfileType} from "@widgets/ProfileHeader";
@@ -29,10 +30,16 @@ export const ArtistPosts: React.FC = ({
     const navigate = useNavigate();
     const location = useLocation();
     const {id} = useParams<{ id: string }>();
+    const currentUserId = useCurrentUserId();
 
     const isCreateRoute = location.pathname.includes('/create');
 
-    // Fetch posts from API
+    const { data: artistData } = useGetArtistByIdQuery(Number(id), {
+        skip: !id,
+    });
+
+    const isOwner = currentUserId && artistData && currentUserId === artistData.userId;
+
     const {
         data: posts,
         isLoading,
@@ -41,7 +48,6 @@ export const ArtistPosts: React.FC = ({
         skip: !id || isCreateRoute,
     });
 
-    // Convert API posts to ArtistMessage format
     const artistMessages: ArtistMessage[] = useMemo(() => {
         if (!posts) return [];
 
@@ -96,17 +102,19 @@ export const ArtistPosts: React.FC = ({
                 onMessageClick={onMessageClick}
             />
             <div className={styles.messagesView}>
-                <Button
-                    className={styles.createBtn}
-                    icon={<PlusIcon/>}
-                    variant="filled"
-                    theme="dark"
-                    onClick={handleCreateNew}
-                >
-                    Create New
-                </Button>
+                {isOwner && (
+                    <Button
+                        className={styles.createBtn}
+                        icon={<PlusIcon/>}
+                        variant="filled"
+                        theme="dark"
+                        onClick={handleCreateNew}
+                    >
+                        Create New
+                    </Button>
+                )}
                 {artistMessages.length === 0 ? (
-                    <div>No posts yet. Create your first post!</div>
+                    <div>No posts yet.{isOwner && ' Create your first post!'}</div>
                 ) : (
                     artistMessages.map((message) => (
                         <ArtistPostCard
