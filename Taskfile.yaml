@@ -1,0 +1,13 @@
+version: '3'
+
+# One command graph for Windows development and GitHub's Linux runners.
+includes:
+  build: { taskfile: tasks/build.yaml }
+  media: { taskfile: tasks/media.yaml }
+  pages: { taskfile: tasks/pages.yaml }
+  ci: { taskfile: tasks/ci.yaml }
+
+tasks:
+  default:
+    desc: List available development, media and publication tasks
+    cmds: [task --list]

@@ -1,0 +1,66 @@
+name: GitHub Pages demo
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Probe one MP3 before allowing full catalogue publication
+        type: choice
+        options: [probe, full]
+        default: probe
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+env:
+  GIT_LFS_SKIP_SMUDGE: '1'
+jobs:
+  checks:
+    if: github.event_name != 'workflow_dispatch' || inputs.mode == 'full'
+    uses: ./.github/workflows/frontend-ci.yml
+  probe:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'probe'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: { lfs: false }
+      - uses: ./.github/actions/setup
+      - run: task ci:tools
+      - run: task ci:yaml
+      - run: npm run test:media
+      # Standalone delivery experiment; it does not claim full demo acceptance.
+      - run: task media:pull TRACK_IDS=1 MEDIA_SKIP_SEED=1
+      - run: task pages:probe
+        env:
+          PAGES_BASE: ${{ vars.PAGES_BASE || format('/{0}/', github.event.repository.name) }}
+      - run: task pages:smoke PAGES_DIR=.pages-probe
+      - uses: actions/upload-pages-artifact@v5
+        with: { path: .pages-probe/ }
+  package:
+    needs: checks
+    # Set only after recording real published MP3 and seek proof.
+    if: vars.PAGES_MEDIA_PROBE_VERIFIED == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with: { name: demo-pages, path: .pages/ }
+      - uses: actions/upload-pages-artifact@v5
+        with: { path: .pages/ }
+  deploy:
+    needs: [probe, package]
+    if: always() && (needs.probe.result == 'success' || needs.package.result == 'success')
+    runs-on: ubuntu-latest
+    # This is the only publish-capable job; publication follows successful artifact verification.
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy verified ordinary static files
+        id: deployment
+        uses: actions/deploy-pages@v5

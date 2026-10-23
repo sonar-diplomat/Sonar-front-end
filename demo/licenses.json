@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "id": "original-covers",
+      "title": "Sonar procedural covers",
+      "author": "Sonar demo contributors",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourceUrl": "https://github.com/sonar-diplomat/Sonar-front-end/blob/feat/mock-demo-github-pages/scripts/create-demo-covers.mjs",
+      "sourcePath": "scripts/create-demo-covers.mjs",
+      "attribution": "Original SVG geometry generated deterministically by the repository source; no third-party artwork. CC0 to the extent copyright or related rights exist.",
+      "changes": "None; original generated SVG files.",
+      "files": [
+        "images/101.svg",
+        "images/102.svg",
+        "images/103.svg",
+        "images/201.svg",
+        "images/202.svg",
+        "images/203.svg",
+        "images/204.svg",
+        "images/301.svg",
+        "images/302.svg",
+        "images/303.svg",
+        "images/304.svg",
+        "images/305.svg",
+        "images/401.svg",
+        "images/402.svg"
+      ]
+    },
+    {
+      "id": "audio-1",
+      "title": "Carefree",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carefree.mp3",
+      "catalogUrl": "https://incompetech.com/music/royalty-free/pieces.json",
+      "isrc": "USUAN1400037",
+      "checkedOn": "2026-10-23",
+      "attribution": "Carefree — Kevin MacLeod (incompetech.com). Licensed under Creative Commons Attribution 4.0 International: https://creativecommons.org/licenses/by/4.0/",
+      "changes": "None; the original MP3 bytes are redistributed unchanged.",
+      "files": [
+        "audio/1.mp3"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "audio": [
+    {
+      "id": 1,
+      "audioFileId": 1,
+      "path": "audio/1.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 6566713,
+      "sha256": "8433b770a630d9b1594fd484442c677907ece899a4d149954cd2e74fd733e311",
+      "durationSeconds": 205.113469,
+      "coverId": 101,
+      "licenseId": "audio-1",
+      "artistName": "Kevin MacLeod",
+      "sourceTitle": "Carefree",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037"
+    }
+  ],
+  "images": [
+    {
+      "id": 101,
+      "path": "images/101.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1222,
+      "sha256": "66f683ca44105403e83fc844ad1cc5bca94f0f8cf3ed3694cf4e91d314e9fc32",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 102,
+      "path": "images/102.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1221,
+      "sha256": "353a40a20f5fda5e32afc90195222943aa499a14d5041c787f7ed10ce6acf70c",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 103,
+      "path": "images/103.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1218,
+      "sha256": "5a884a1744caffafa97fd8bba7d33ea09543f076e70d45612d5b7c20b66f389e",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 201,
+      "path": "images/201.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1222,
+      "sha256": "34df2a9a7d8e3b74ea9f5d6a1260e372af03c77d71974ec38d74f1ad6654ed58",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 202,
+      "path": "images/202.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1216,
+      "sha256": "4a92c56aef697a57517d6f432874372aecf84381aec78ba9f184c51d6e03337c",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 203,
+      "path": "images/203.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1220,
+      "sha256": "27160ecc682cf77a12bcc896cc47511105dbc1b3f7e90b39945c836dff4ca2b5",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 204,
+      "path": "images/204.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1220,
+      "sha256": "04af3d15d9b086beb0f98ae11776bb6b22333d977aeb69c1e80226ba30979931",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 301,
+      "path": "images/301.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1220,
+      "sha256": "bc14fb0553da37f23c07b0c38513523aaca65401925e3fd70c529850dbde7ef2",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 302,
+      "path": "images/302.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1214,
+      "sha256": "ad409a9d0ddfc8e66642539c667458cdb35b9b7021d32fb66676da58811bcf49",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 303,
+      "path": "images/303.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1221,
+      "sha256": "e87c6462a3be642d55db8139afe778dcf428af334668c1e2cfad223fd2671b8a",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 304,
+      "path": "images/304.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1219,
+      "sha256": "493a3a14236fde892290688a3fd4d96d90efc419b5f547ccf22d2f3e4b148f23",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 305,
+      "path": "images/305.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1213,
+      "sha256": "cce539d99d3a06fb8e852c5ef326a67c28f4557f5a2b225539b52515f461b467",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 401,
+      "path": "images/401.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1221,
+      "sha256": "57707c79fc20e4a9538b8b4dc123f3a4505aa986206f3ab913616716392abaa6",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 402,
+      "path": "images/402.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1214,
+      "sha256": "9e70987a49d1e0958c8321069cd4d8d31112cd97a7fdd8be3af78fafd52d9188",
+      "licenseId": "original-covers"
+    }
+  ]
+}

@@ -12,6 +12,16 @@ dist
 dist-ssr
 *.local
 
+# Generated publication, caches, tools and test output; source audio stays tracked.
+.pages/
+.pages-probe/
+.media-cache/
+.cache/
+.tools/
+.task/
+test-results/
+playwright-report/
+
 # Environment variables
 .env
 .env.local

@@ -1,0 +1,32 @@
+version: '3'
+
+tasks:
+  check:
+    desc: Run the same type, lint, data, YAML and automated checks as CI (no LFS pull)
+    cmds:
+      - task: yaml
+      - npm run typecheck
+      - npm run lint
+      - task: data
+      - npm run test:demo
+      - npm run test:profiles
+      - npm run test:media
+
+  data:
+    desc: Validate seed and manifest metadata without fetching audio
+    cmds: [node scripts/check-demo-data.mjs]
+
+  yaml:
+    desc: Parse Task files with Task and validate GitHub workflows with actionlint
+    cmds: [npm run yaml:check]
+
+  tools:
+    desc: Install the pinned checksum-verified actionlint binary into .tools
+    cmds: [node scripts/install-actionlint.mjs]
+
+  docker:
+    desc: Inspect the actual Docker context, builder and final Nginx image
+    preconditions:
+      - sh: docker info
+        msg: Start a Linux Docker engine before Docker verification
+    cmds: [npm run docker:verify]

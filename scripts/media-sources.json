@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "author": "Kevin MacLeod",
+  "license": "CC-BY-4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "catalogUrl": "https://incompetech.com/music/royalty-free/pieces.json",
+  "checkedOn": "2026-10-23",
+  "tracks": [
+    { "id": 1, "title": "Carefree", "filename": "Carefree.mp3", "isrc": "USUAN1400037", "coverId": 101 },
+    { "id": 2, "title": "Sneaky Snitch", "filename": "Sneaky Snitch.mp3", "isrc": "USUAN1100772", "coverId": 101 },
+    { "id": 3, "title": "Cipher", "filename": "Cipher2.mp3", "isrc": "USUAN1100844", "coverId": 101 },
+    { "id": 4, "title": "Chill Wave", "filename": "Chill Wave.mp3", "isrc": "USUAN1600048", "coverId": 101 },
+    { "id": 5, "title": "Easy Lemon", "filename": "Easy Lemon.mp3", "isrc": "USUAN1200076", "coverId": 102 },
+    { "id": 6, "title": "Americana", "filename": "Americana.mp3", "isrc": "USUAN1200092", "coverId": 102 },
+    { "id": 7, "title": "Dream Culture", "filename": "Dream Culture.mp3", "isrc": "USUAN1300046", "coverId": 102 },
+    { "id": 8, "title": "Funkorama", "filename": "Funkorama.mp3", "isrc": "USUAN1100474", "coverId": 102 },
+    { "id": 9, "title": "Digital Lemonade", "filename": "Digital Lemonade.mp3", "isrc": "USUAN1700010", "coverId": 103 },
+    { "id": 10, "title": "Local Forecast", "filename": "Local Forecast.mp3", "isrc": "USUAN1300010", "coverId": 103 },
+    { "id": 11, "title": "Wallpaper", "filename": "Wallpaper.mp3", "isrc": "USUAN1100843", "coverId": 103 },
+    { "id": 12, "title": "Monkeys Spinning Monkeys", "filename": "Monkeys Spinning Monkeys.mp3", "isrc": "USUAN1400011", "coverId": 103 }
+  ]
+}
