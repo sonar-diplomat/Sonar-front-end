@@ -1,8 +1,6 @@
 name: Deploy Frontend to Test Server (AWS EC2 + ECR)
 on:
-  push:
-    branches:
-      - dev
+  workflow_dispatch:
 concurrency:
   group: deploy-frontend-${{ github.ref }}
   cancel-in-progress: true
@@ -12,6 +10,8 @@ env:
   IMAGE_TAG: ${{ github.sha }}
 jobs:
   deploy:
+    # Retained for reference; legacy server deployments are disabled.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - name: "[1/6] Checkout repository"

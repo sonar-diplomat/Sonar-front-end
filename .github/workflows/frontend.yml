@@ -1,12 +1,12 @@
 name: Deploy Frontend to Test Server
 
 on:
-  push:
-    branches:
-      - dev
+  workflow_dispatch:
 
 jobs:
   deploy:
+    # Retained for reference; legacy server deployments are disabled.
+    if: ${{ false }}
     runs-on: self-hosted
 
     steps:
