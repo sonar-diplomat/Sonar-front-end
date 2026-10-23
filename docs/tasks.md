@@ -60,6 +60,8 @@ The workflow setup action is pinned to a verified commit and receives the corres
 
 `pages:package` depends on `media:verify` and checks the presence/type of `dist/build-profile.json`. It does not rebuild `dist/`. `build:release` and `build:demo` both write `dist/`; run them sequentially in one checkout, and rebuild the demo immediately before packaging. CI places them in separate jobs.
 
+`ci:check` runs YAML, typecheck, lint and all test suites before the mandatory `ci:data` gate. A pending catalogue therefore does not mask automated tests; an incomplete seed/media relationship still makes the entire task fail and prevents dependent builds/publication.
+
 ## Add a task
 
 1. Put the operation in one Node script or npm command, with nonzero exit codes on failed prerequisites. Keep platform-specific behavior inside that implementation.
@@ -86,4 +88,4 @@ Do not put secrets, machine paths or duplicated multiline deployment scripts in 
 
 `ci:yaml` uses Task's own parser in addition to strict YAML parsing. Active/proposed Pages workflows receive unsuppressed actionlint checks. The two archived workflows keep their mandatory `if: false` guards and original checkout version; two narrowly scoped actionlint diagnostics are suppressed only for those files, after verifying they have no automatic trigger and cannot run. ShellCheck/pyflakes are optional and disabled consistently in the portable actionlint invocation.
 
-Windows checks already exercised Task listing, pinned actionlint installation, media tests, probe packaging and HTTP range smoke. Full seed/CI/build and Linux/container results remain acceptance gates until their commands succeed; a parsed YAML file is not evidence of a successful runner or deployment.
+Validated locally on 2026-10-23: Task/actionlint and media/profile tests on Windows and isolated Linux; first-file packaging and HTTP range smoke on both platforms; actual Linux Docker context, builder and final Nginx image checks. An earlier isolated Linux quality run passed typecheck/lint and the demo/player/profile/media suites; the six current media/importer tests were also rerun after the maintenance changes. The quality run's full `ci:check` stopped at the catalogue gate: seed track 2 has no imported manifest audio yet. This is not a green full-CI result. Published probe, twelve-file verification and GitHub-hosted workflow execution remain required; local parser/container results do not prove a deployment. The final Docker run includes the API cancellation/chunk changes and is recorded in [CI/CD](ci-cd.md).

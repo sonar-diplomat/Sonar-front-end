@@ -4,8 +4,9 @@ import { fileURLToPath } from 'node:url';
 
 export async function assertRelease(root = path.resolve('dist')) {
   const profile = JSON.parse(await readFile(path.join(root, 'build-profile.json'), 'utf8'));
-  if (profile.dataSource !== 'api' || !Array.isArray(profile.modules)) throw new Error('Release requires an audited API build');
-  const unexpected = profile.modules.filter(id => /(^|\/)(demo\/|shared\/demo\/)/.test(id) || /\/(DemoOutboxNotice|DemoPlayerSync)\.tsx?$/.test(id));
+  if (profile.dataSource !== 'api' || !Array.isArray(profile.modules) || profile.modules.length === 0) throw new Error('Release requires an audited API application build');
+  if (!(await lstat(path.join(root, 'index.html'))).isFile()) throw new Error('Release application index is missing');
+  const unexpected = profile.modules.filter(id => /(^|\/)(demo\/|shared\/demo\/)/.test(id) || /\/(DemoOutboxNotice|DemoPlayerSync|DemoStatus)\.tsx?$/.test(id));
   if (unexpected.length) throw new Error(`Rendered demo modules in API build: ${unexpected.join(', ')}`);
   let count = 0;
   async function inspect(directory) {

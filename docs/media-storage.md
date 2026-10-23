@@ -58,11 +58,15 @@ Manifest schema version 1 has `audio` and `images` arrays. Every entry has a num
 1. Confirm redistribution rights on the original creator's page. Record a verifiable author, source, exact license and attribution; do not infer a license from an unofficial mirror.
 2. Add a stable numeric ID and source metadata to `scripts/media-sources.json`. Agree its audio/cover/seed relationships before changing the data. For an existing recording, preserve the source bytes and filename history; a new version can use a new path.
 3. Import explicitly with `node scripts/acquire-demo-media.mjs --ids=ID`. This maintenance command downloads once, measures the recording and writes manifest/license records. It reuses registered files only after verifying their previous hash, and refuses to overwrite an unregistered file. CI uses LFS instead of this importer.
-4. Update the seed title, measured duration and real credit/source fields. Update the corresponding UI/DTO support if the media contract changes. For replacement, preserve old Git history and explicitly update the registration; the importer intentionally does not overwrite a registered recording automatically.
+4. Update the seed title, measured duration and real credit/source fields. Update the corresponding UI/DTO support if the media contract changes. For replacement, set a **different** source `path` such as `audio/1-v2.mp3`, update the source metadata, and run `node scripts/acquire-demo-media.mjs --ids=1 --replace=1`. This preserves the numeric ID, registers new measured bytes and leaves the old source file/history intact; existing files are never overwritten. Retire an unused old source only through a separate reviewed change.
 5. Run `task ci:data`, `task media:verify`, `npm run test:media`, `task build:demo`, `task pages:package` and `task pages:smoke`. Listen in a browser, seek, pause/resume and switch tracks. Confirm different recordings have different hashes and audible musical content.
 6. Check attributes before staging. Review `git lfs ls-files` and the staged pointer with `git show :demo/audio/ID.mp3`; the working file must still contain MP3 bytes. Commit the attributes, pointer, manifest, license and seed together. Push normal Git and LFS through the repository's reviewed change process.
 
 Do not overwrite a missing LFS object by automatically acquiring an upstream copy: an upstream file could have changed. Diagnose authentication, object availability and quota first. For a deliberate replacement, register the newly measured hash and credit changes in a reviewed commit.
+
+The maintenance CLI is covered by a temporary-fixture test: an interrupted second download preserves the first registered file, retry does not fetch that file again, same-path replacement is rejected, a new path preserves the original, and an existing unregistered file cannot be overwritten. Mocked downloads and metadata-only MPEG fixtures stay outside the catalogue. The test also checks that attribution uses the configured author/license fields; real recording/playback verification remains a separate gate.
+
+All six media/importer tests, scoped script lint and Task/actionlint validation passed on Windows and isolated Linux. The maintenance test made no external audio requests and left the real catalogue unchanged.
 
 ## Packaging, Docker and limits
 

@@ -7,10 +7,11 @@ tasks:
       - task: yaml
       - npm run typecheck
       - npm run lint
-      - task: data
       - npm run test:demo
       - npm run test:profiles
       - npm run test:media
+      # Keep metadata mandatory, after tests so a pending catalogue does not mask them.
+      - task: data
 
   data:
     desc: Validate seed and manifest metadata without fetching audio

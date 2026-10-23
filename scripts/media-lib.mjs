@@ -14,6 +14,12 @@ export function safeMediaPath(value) {
 }
 export const readJson = async filename => JSON.parse(await readFile(filename, 'utf8'));
 
+export function verifyPointerDeclaration(data, entry) {
+  if (!isPointer(data)) return;
+  const pointer = /^version https:\/\/git-lfs\.github\.com\/spec\/v1\noid sha256:([a-f0-9]{64})\nsize (\d+)\n?$/.exec(data.toString('utf8').replaceAll('\r\n', '\n'));
+  invariant(pointer && pointer[1] === entry.sha256 && Number(pointer[2]) === entry.bytes, `LFS pointer disagrees with manifest: ${entry.path}`);
+}
+
 export async function readManifest(root = process.cwd()) {
   const manifest = await readJson(path.join(root, 'demo/media-manifest.json'));
   const licenses = await readJson(path.join(root, 'demo/licenses.json'));

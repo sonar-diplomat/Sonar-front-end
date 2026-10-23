@@ -40,6 +40,8 @@ The probe and full package contain extracted ordinary MP3 files. They never rely
 
 Pages Source has been observed as GitHub Actions. Environment/ref rules, default-branch registration and actual external MP3 proof remain independent checks. An enabled Source or successful local preview does not prove a published deployment.
 
+The observed `github-pages` environment currently permits only `master`. This blocks the prepared demo branch and `dev`, independently of workflow registration. A Maintainer must explicitly accept the intended probe/deployment refs in that environment before the corresponding deployment can proceed. The default-branch registration [PR #122](https://github.com/sonar-diplomat/Sonar-front-end/pull/122) is also pending normal review. Keep dependent publication stopped; do not change protection rules, deploy from the registration stub or use a different ref to bypass the restriction. LFS quota/remote object availability still need confirmation before catalogue expansion.
+
 ## Variables, credentials and artifacts
 
 | Name | Use |
@@ -67,6 +69,8 @@ The report is `test-results/docker-audit.json`. A context-only run (`node script
 
 Before a deliberate restoration, a Maintainer reviews the retained scripts, current action/runner versions, deployment environment and required credentials. Relevant names include `VITE_API_BASE_URL`, `FRONT_SERVER_HOST`, `FRONT_SERVER_USER`, `FRONT_SSH_PRIVATE_KEY`, `FRONT_DEPLOY_PATH`, `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `VITE_API_BASE_URL_AWS`, `EC2_HOST`, `EC2_USER` and `EC2_SSH_KEY`. Verify destination/state and avoid overlapping Pages/server deployments. Remove the guard/change triggers only in a separately reviewed change; do not restore automatically during demo work.
 
+That restoration must also deliberately update the corresponding disabled-workflow assertions in `scripts/check-yaml.mjs`; otherwise CI correctly rejects the newly runnable legacy job.
+
 ## Rollback and diagnosis
 
 For a bad demo, stop new publication and select the previous successful reviewed commit. If its artifact is still usable, rerun the appropriate approved deployment through Actions. Otherwise run the workflow against that commit/ref, rebuild from the lockfile, pull its exact LFS objects, verify hashes and package again. Retain the probe gate and environment rules. Revert a bad code/media change through a new commit/PR; do not rewrite history or delete original sources.
@@ -77,4 +81,8 @@ For a bad demo, stop new publication and select the previous successful reviewed
 - An MP3 returning HTML often indicates an incorrect base/path or a fallback route; inspect bytes and MIME.
 - A local HTTP pass with a failed remote URL is an unresolved publication failure. Record the real status/headers and stop catalogue expansion.
 
-Current acceptance is partial: local first-file byte/HTTP/playback checks passed; published probe/full catalogue and remote Linux workflow execution still require their own observed results.
+Final local Docker verification on 2026-10-23 passed with 601 context files, a no-demo/no-LFS builder, 373 rendered API modules and 98 compiled output files. The final Nginx inspection passed with 99 application files (including the base image's `50x.html`), valid configuration and HTTP 200 for index/profile. No demo runtime/UI or music was present. This result includes the final API request-cancellation and chunk-splitting changes.
+
+An earlier isolated Linux quality snapshot passed Task/actionlint, typecheck/lint and the demo/player/profile/media suites. All six current media/importer tests, scoped script lint and Task/actionlint were additionally rerun successfully on Windows and isolated Linux after the maintenance changes. One-file package/GET/HEAD/hash/MIME/206 range checks passed on both platforms; local Chromium playback/seek was observed separately.
+
+Acceptance remains partial: the manifest currently has audio 1 while the seed references twelve tracks, so full metadata/CI checks correctly stop at missing audio 2. The actual published probe, catalogue expansion/verification, complete `.pages/`, remote workflow execution and full deployed browser acceptance still require observed results. Do not describe the standalone probe as full application acceptance.

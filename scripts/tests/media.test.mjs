@@ -4,8 +4,8 @@ import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { createServer } from 'node:http';
-import { safeMediaPath, sha256, selectAudio, verifyFile } from '../media-lib.mjs';
-import { staticMiddleware } from '../static-server.mjs';
+import { safeMediaPath, sha256, selectAudio, verifyFile, verifyPointerDeclaration } from '../media-lib.mjs';
+import { staticMiddleware, normalizeBase } from '../static-server.mjs';
 import { demoMediaPlugin } from '../demo-media-plugin.mjs';
 
 test('dev media middleware leaves JSON source imports to Vite', async () => {
@@ -25,6 +25,8 @@ test('media paths reject traversal, remote URLs, hidden files and ambiguous sepa
   assert.equal(safeMediaPath('audio/1.mp3'), 'audio/1.mp3');
   assert.throws(() => selectAudio({ audio: [{ id: 1 }] }, '2'));
   assert.throws(() => selectAudio({ audio: [{ id: 1 }] }, '1,1'));
+  assert.equal(normalizeBase('/my.site/'), '/my.site/');
+  for (const base of ['/repo/../', '/./', '//host/', '/repo?x/']) assert.throws(() => normalizeBase(base));
 });
 
 test('verifier rejects pointers, changed bytes and wrong size before publication', async () => {
@@ -39,6 +41,14 @@ test('verifier rejects pointers, changed bytes and wrong size before publication
     await assert.rejects(verifyFile(filename, entry), /Size mismatch/);
     await assert.rejects(verifyFile(filename, { ...entry, bytes: 15 }), /SHA-256 mismatch/);
   } finally { await rm(root, { recursive: true, force: true }); }
+});
+
+test('LFS pointer identity and size must agree with manifest before fetching', () => {
+  const entry = { path: 'audio/1.mp3', sha256: 'a'.repeat(64), bytes: 1000 };
+  const pointer = Buffer.from(`version https://git-lfs.github.com/spec/v1\noid sha256:${entry.sha256}\nsize 1000\n`);
+  assert.doesNotThrow(() => verifyPointerDeclaration(pointer, entry));
+  assert.throws(() => verifyPointerDeclaration(pointer, { ...entry, bytes: 999 }), /disagrees/);
+  assert.throws(() => verifyPointerDeclaration(pointer, { ...entry, sha256: 'b'.repeat(64) }), /disagrees/);
 });
 
 test('HTTP serves exact bytes with base, HEAD, middle/suffix ranges; rejects invalid ranges and pointers', async () => {

@@ -12,7 +12,7 @@ const types = {
 };
 
 export function normalizeBase(base = '/') {
-  if (!/^\/(?:[A-Za-z0-9_-]+\/)*$/.test(base)) throw new Error('Base must be an absolute URL pathname ending with /');
+  if (typeof base !== 'string' || !/^\/(?:[A-Za-z0-9._-]+\/)*$/.test(base) || base.includes('..') || base.split('/').includes('.')) throw new Error('Base must be an absolute URL pathname ending with /');
   return base;
 }
 
