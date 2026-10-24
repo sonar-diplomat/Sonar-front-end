@@ -7,6 +7,9 @@ import { ClearIcon } from '../icons';
 import styles from './Modal.module.css';
 
 const openDialogs: HTMLDivElement[] = [];
+const getControls = (modal: HTMLDivElement) => [...modal.querySelectorAll<HTMLElement>(
+  'button:not(:disabled), a[href], input:not(:disabled), textarea:not(:disabled), select:not(:disabled), [tabindex]:not([tabindex="-1"])'
+)].filter(element => element.tabIndex >= 0 && element.getClientRects().length > 0);
 
 export interface ModalProps {
   isOpen: boolean;
@@ -43,9 +46,7 @@ export const Modal: React.FC<ModalProps> = ({
     if (!modal) return;
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     openDialogs.push(modal);
-    const focusable = () => [...modal.querySelectorAll<HTMLElement>(
-      'button:not(:disabled), a[href], input:not(:disabled), textarea:not(:disabled), select:not(:disabled), [tabindex]:not([tabindex="-1"])'
-    )].filter(element => element.tabIndex >= 0 && element.getClientRects().length > 0);
+    const focusable = () => getControls(modal);
     (focusable()[0] || modal).focus();
 
     const originalOverflow = document.body.style.overflow;
@@ -108,6 +109,14 @@ export const Modal: React.FC<ModalProps> = ({
       }
     };
   }, [isOpen, closeOnEscape]);
+
+  // A menu can replace its controls with a selector while keeping this dialog open.
+  useEffect(() => {
+    const modal = modalRef.current;
+    if (isOpen && modal && openDialogs.at(-1) === modal && !modal.contains(document.activeElement)) {
+      (getControls(modal)[0] || modal).focus();
+    }
+  });
 
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (closeOnBackdropClick && event.target === event.currentTarget) {

@@ -7,12 +7,13 @@ Baseline: the published mock demo at `https://sonar-diplomat.github.io/Sonar-fro
 | Area | Reproduction | Result after the fix |
 | --- | --- | --- |
 | Profile navigation | Open the demo profile, Followers, then River Listener. The previous query's owner data redirects back to the demo profile. | Read RTK Query `currentData` for the requested identifier. The guest profile opens; following and its count survive reload. |
-| Dialog keyboard access | Open playlist editing or the date picker. Focus remains behind the overlay; Tab escapes; dialogs have no accessible role/name. | Dialog semantics, initial focus, Tab/Shift+Tab containment, Escape and focus restoration. Inline close callbacks no longer restart focus on each edit. |
+| Dialog keyboard access | Open playlist editing or the date picker. Focus remains behind the overlay; Tab escapes; dialogs have no accessible role/name. | Dialog semantics, initial focus, Tab/Shift+Tab containment, Escape and focus restoration. Inline close callbacks no longer restart focus on each edit. Replacing menu controls with a playlist selector refocuses the open dialog. |
 | Nested player menu | Open the full player, Song actions, then press Escape. | Only the top dialog closes; focus returns to Song actions and the player remains open. |
 | Input and button names | Search, creation forms, message input and playback switches lack accessible names. Several icon buttons have no text alternative. | Shared inputs use their placeholder as a fallback name; explicit names cover switches, post fields, group/member controls and folder navigation. |
 | Keyboard actions | Chat rows, group members and top songs respond only to pointer clicks. | Chats and members are buttons; top songs support Enter/Space without nesting the menu button inside the playback control. |
 | Light theme | The date picker's selected text is dark on a hardcoded dark dialog. Recovery headings, Terms headings, registration consent and the Premium banner also lose contrast. | Theme tokens for dialogs, forms, consent and chat surfaces; explicit white title on the intentionally dark Premium banner. |
 | Empty playlist | A newly created playlist shows “Start listening” without an available playback action. | Hide the playback panel until there are playable tracks. The empty-state guidance remains visible. |
+| Contextual reporting | The playlist menu uses a hardcoded User type ID, so the report cannot save; its old modal also suggests contacting real support. | Route menus to the shared report page, resolve types by catalog name and prefill the entity ID. Unsupported album/artist contexts are explicit. Changing report context resets the form/result. |
 | Unsupported demo actions | Scheduling publishes immediately because the local transport ignores the requested publication date. Chat notification changes do not provide notifications. | Disable these two controls in mock mode and explain the limitation. API-profile controls retain their existing behavior. |
 
 ## Browser coverage
@@ -28,7 +29,7 @@ Browser viewport checks used 1440 × 1000, 390 × 844 and 320 × 740. These are 
 | Dialogs | Date picker at 320 px in light theme; Tab/Shift+Tab wrapping; Escape and focus return; playlist input retains focus while editing; nested player menu closes independently. |
 | Chats | Send a local message; create a group with a searched member; open it with Enter; member list and chat details; report link preselects the user. |
 | Settings | Account, sessions, privacy, blocked accounts, appearance, playback and About render; theme/privacy/explicit-content changes save and survive reload; local demo reset returns to Home. |
-| Premium and reporting | Local plan activation creates a receipt; Track report saves locally; reports do not claim to contact moderation. |
+| Premium, sharing and reporting | Local plan activation creates a receipt; Track/Playlist reports save locally with the correct type; unsupported Album context shows an unavailable state; a track share link and QR render and Copy Link succeeds. Reports do not claim to contact moderation. |
 | Entry and ancillary routes | Three welcome steps, entry/login, required-field validation, registration form, local recovery inbox/reset form, Terms link, incomplete confirmation and 404/home recovery; read-only diagnostics returns Track/1. Credential replacement and legal consent were not repeated in this regression. |
 
 No console errors or warnings were captured during these browser flows. This does not certify every backend error path or every browser engine.

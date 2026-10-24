@@ -18,7 +18,6 @@ import { useFolders } from '@shared/store/features/library/useLibrary';
 import { usePlayer } from '@shared/store/features/player';
 import { useAppDispatch } from '@shared/store/hooks';
 import { useNotifications } from '@shared/store/notificationStore';
-import { ReportComponent } from '@widgets/ReportComponent';
 import type { ShareEntityType } from '@widgets/ShareComponent';
 import { ShareComponent } from '@widgets/ShareComponent';
 
@@ -51,15 +50,6 @@ export interface ActionMenuProps {
   context: ActionMenuContext;
   customActions?: ActionMenuItem[];
 }
-
-// TODO: Retrieve these IDs from the API (properly seed them)
-const REPORT_ENTITY_TYPE_IDS: Record<ActionMenuContextType, number> = {
-  track: 1,
-  album: 2,
-  playlist: 3,
-  artist: 4,
-  user: 5,
-};
 
 const SHARE_ENTITY_TYPE_MAP: Record<ActionMenuContextType, ShareEntityType> = {
   track: 'Track',
@@ -184,7 +174,6 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [showShareModal, setShowShareModal] = useState(false);
-  const [showReportModal, setShowReportModal] = useState(false);
   const [showFolderSelector, setShowFolderSelector] = useState(false);
   const [showPlaylistSelector, setShowPlaylistSelector] = useState(false);
   const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);
@@ -354,22 +343,13 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
   }, []);
 
   const handleReport = useCallback(() => {
-    setShowReportModal(true);
-  }, []);
+    onClose();
+    navigate(`/report?type=${context.type}&entityId=${context.entityId}`);
+  }, [context.type, context.entityId, navigate, onClose]);
 
   const handleCloseShare = useCallback(() => {
     setShowShareModal(false);
   }, []);
-
-  const handleCloseReport = useCallback(() => {
-    setShowReportModal(false);
-    onClose();
-  }, [onClose]);
-
-  const handleReportSuccess = useCallback(() => {
-    setShowReportModal(false);
-    onClose();
-  }, [onClose]);
 
   const handleAddToQueue = useCallback(async (trackId: number) => {
     try {
@@ -502,19 +482,6 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
         entityId={context.entityId}
         title={`Share ${context.entityName || context.type}`}
       />
-    );
-  }
-
-  if (showReportModal) {
-    return (
-      <Modal isOpen={true} onClose={handleCloseReport} title="Report">
-        <ReportComponent
-          entityId={context.entityId}
-          entityTypeId={REPORT_ENTITY_TYPE_IDS[context.type]}
-          onSuccess={handleReportSuccess}
-          onCancel={handleCloseReport}
-        />
-      </Modal>
     );
   }
 
