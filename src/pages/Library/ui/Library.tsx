@@ -651,6 +651,7 @@ export const Library: React.FC<LibraryProps> = () => {
                 shape="cr-16"
                 iconOnly
                 icon={<LeftArrow />}
+                aria-label="Back to parent folder"
                 onClick={handleBack}
                 className={styles.backButton}
             />
@@ -668,7 +669,7 @@ export const Library: React.FC<LibraryProps> = () => {
                 className={styles.createBtn}
                 icon={<PlusIcon/>}
                 variant={"filled"}
-                theme={"light"}
+                theme={"dark"}
                 onClick={handleCreateNew}
                 disabled={isLoading}
             >

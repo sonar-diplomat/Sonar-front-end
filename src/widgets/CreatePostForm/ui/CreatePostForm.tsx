@@ -1,5 +1,6 @@
 import React,{ useState } from 'react';
 
+import { isDemoMode } from '@shared/config/data-source';
 import { Button,CalendarIcon,LoadingImage,RightArrow } from '@shared/ui';
 import { ModalDatePicker } from '@widgets/ModalDatePicker';
 
@@ -70,6 +71,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({
                                 value={topic}
                                 onChange={(e) => setTopic(e.target.value)}
                                 placeholder="Add a topic"
+                                aria-label="Post topic"
                                 className={styles.topicInput}
                             />
                             <span className={styles.artistName}>{artistName}</span>
@@ -81,6 +83,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="What's new?"
+                            aria-label="Post content"
                             className={styles.contentInput}
                         />
                     </div>
@@ -98,11 +101,12 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({
                     className={styles.scheduleButton}
                     icon={<CalendarIcon />}
                     onClick={handleOpenDatePicker}
+                    disabled={isDemoMode}
                 >
                     {scheduledDate ? `Posting at ${scheduledDate}` : 'Schedule'}
                 </Button>
 
-                <p>Text posts support links. File attachments are unavailable.</p>
+                <p>Text posts support links. File attachments are unavailable.{isDemoMode && ' Scheduled publishing is unavailable in demo; posts appear immediately.'}</p>
             </div>
 
             <Button

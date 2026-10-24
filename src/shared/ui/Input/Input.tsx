@@ -78,6 +78,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({
                     aria-invalid={error ? 'true' : 'false'}
                     aria-describedby={hasHelperContent ? `${inputId}-helper` : undefined}
                     {...props}
+                    aria-label={props['aria-label'] ?? (!label && !props['aria-labelledby'] ? props.placeholder : undefined)}
                 />
 
                 {showSuffixIcon && (

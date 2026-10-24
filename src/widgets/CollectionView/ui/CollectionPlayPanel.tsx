@@ -12,6 +12,8 @@ export const CollectionPlayPanel: React.FC<CollectionPlayPanelProps> = ({
     isCurrentCollection = false,
     className = ''
 }) => {
+    if (!onPlayClick && !onShuffleClick) return null;
+
     const wrapperClasses = [
         styles.collectionPlayPanel,
         className,

@@ -48,7 +48,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
     const isIdentifierValid = identifier !== null && identifier !== undefined && identifier.length > 0;
 
     const {
-        data: profileData,
+        currentData: profileData,
         isLoading: isLoadingProfile,
         error: profileError
     } = useGetUserProfileByIdentifierQuery(identifier!, {

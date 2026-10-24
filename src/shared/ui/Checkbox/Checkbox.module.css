@@ -20,11 +20,17 @@
     width: 0;
 }
 
+.input:focus-visible + .checkmark {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 3px;
+}
+
 .checkmark {
     position: relative;
     height: 24px;
     width: 24px;
-    background: #1F1F1F;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
     border-radius: 8px;
     flex-shrink: 0;
     transition: all 0.2s ease;
@@ -46,7 +52,7 @@
 }
 
 .input:checked ~ .checkmark .icon path {
-    stroke: #EAEAEA;
+    stroke: var(--text-primary);
 }
 
 .container.disabled .checkmark {
@@ -62,7 +68,7 @@
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-    color: #ffffff;
+    color: var(--text-primary);
     flex: 1;
 }
 

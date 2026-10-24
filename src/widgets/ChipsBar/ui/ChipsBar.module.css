@@ -7,6 +7,10 @@
     flex-wrap: wrap;
 }
 
+.container > button {
+    flex: 0 0 auto;
+}
+
 @media (min-width: 420px) and (max-width: 470px) {
     .container {
         gap: 6px;

@@ -112,7 +112,7 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
     const canCreate = chatName.trim().length > 0 && selectedUsers.length > 0 && !isCreating;
 
     return (
-        <Modal isOpen={isOpen} onClose={handleClose}>
+        <Modal isOpen={isOpen} onClose={handleClose} ariaLabel="Create group chat">
             <div className={styles.container}>
                 <div className={styles.header}>
                     <Button
@@ -121,6 +121,7 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
                         size="medium"
                         iconOnly
                         icon={<LeftArrow />}
+                        aria-label="Cancel group creation"
                         onClick={handleClose}
                         className={styles.backButton}
                     />
@@ -157,6 +158,7 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
                                 theme="light"
                                 size="medium"
                                 icon={<SearchIcon />}
+                                aria-label="Search members"
                                 onClick={handleSearch}
                                 disabled={!searchQuery.trim() || isSearching}
                                 className={styles.searchButton}
@@ -214,6 +216,7 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
                                             size="small"
                                             iconOnly
                                             icon={<ClearIcon />}
+                                            aria-label={`Remove ${user.userName}`}
                                             onClick={() => handleRemoveUser(user.id)}
                                         />
                                     </div>

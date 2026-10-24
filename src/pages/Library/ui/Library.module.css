@@ -64,10 +64,6 @@
     margin: 0 auto;
 }
 
-:root[data-theme='light'] .createBtn {
-    background-color: #1F1F1F;
-}
-
 @media (min-width: 426px) {
     .container {
         max-width: 1200px;
