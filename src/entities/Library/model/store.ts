@@ -1,18 +1,24 @@
-import { useCallback, useMemo, useState } from 'react';
-import { Api } from '../api/api';
-import type { FolderDTO, CreateFolderDTO } from './types';
-import type { State } from '@shared/types/store';
-import type { RequestConfig } from '@shared/types';
-import { withAuth } from '@shared/lib/auth/withAuth';
+import { useCallback,useMemo,useState } from 'react';
 
-const pickError = (res: any) =>
+import { legacyQuery } from '@shared/api/legacyQuery';
+import { withAuth } from '@shared/lib/auth/withAuth';
+import { store } from '@shared/store';
+import type { RequestConfig } from '@shared/types';
+import type { State } from '@shared/types/store';
+
+import { Api } from '../api/api';
+import { libraryApi } from '../api/rtkApi';
+
+import type { CreateFolderDTO,FolderDTO } from './types';
+
+const pickError = (res: { success: boolean; errors?: string[]; details?: string[]; message?: string }) =>
     res?.success ? undefined : res?.errors?.[0] || res?.details?.[0] || res?.message;
 
 export const useGetFolder = () => {
     const [state, setState] = useState<State<FolderDTO>>({ loading: false });
     const refetch = useCallback(async (folderId: number, cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }));
-        const res = await Api.byId(folderId, cfg);
+        const res = await legacyQuery(() => store.dispatch(libraryApi.endpoints.getFolder.initiate(folderId, {subscribe:false,forceRefetch:true})).unwrap(), cfg);
         setState({ loading: false, data: res.data, error: pickError(res) });
         return res;
     }, []);
@@ -23,7 +29,7 @@ export const useGetAllFolders = () => {
     const [state, setState] = useState<State<FolderDTO[]>>({ loading: false });
     const refetch = useCallback(async (cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }));
-        const res = await Api.list(cfg);
+        const res = await legacyQuery(() => store.dispatch(libraryApi.endpoints.getFolders.initiate(undefined, {subscribe:false,forceRefetch:true})).unwrap(), cfg);
         setState({ loading: false, data: res.data, error: pickError(res) });
         return res;
     }, []);

@@ -1,6 +1,9 @@
 import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
+
 import { Button } from '@shared/ui';
+
 import styles from './UserNotFound.module.css';
 
 export const UserNotFound: React.FC = () => {

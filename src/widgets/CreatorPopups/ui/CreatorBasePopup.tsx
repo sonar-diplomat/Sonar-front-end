@@ -1,4 +1,5 @@
-import React, {type ReactNode } from "react";
+import React,{ type ReactNode } from "react";
+
 import styles from "./CreatorPopup.module.css";
 
 type BasePopupProps = {

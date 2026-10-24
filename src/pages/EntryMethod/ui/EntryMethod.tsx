@@ -1,6 +1,9 @@
 import React from "react";
+
 import { useNavigate } from "react-router-dom";
-import { Button, RightArrow } from "@shared/ui";
+
+import { Button,RightArrow } from "@shared/ui";
+
 import styles from "./EntryMethod.module.css";
 
 export const EntryMethod: React.FC = () => {

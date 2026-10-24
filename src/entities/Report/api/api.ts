@@ -1,13 +1,11 @@
 import { apiClient } from '@shared/api/oldBaseApi.ts';
 import { API_ENDPOINTS } from '@shared/config';
+import type { RequestConfig } from "@shared/types";
+
 import type {
-    CreateReportDTO,
-    ReportDTO,
-    ReportFilterDTO,
-    ReportReasonTypeDTO,
-    ReportableEntityTypeDTO,
+CreateReportDTO,
+ReportDTO
 } from '../model/types.ts';
-import type {RequestConfig} from "@shared/types";
 
 
 export const ReportApi = {

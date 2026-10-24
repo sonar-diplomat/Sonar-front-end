@@ -31,7 +31,7 @@ export const Api = {
     deleteFromQueue: (trackId: number, config?: RequestConfig) =>
         apiClient.delete<void>(API_ENDPOINTS.userState.deleteFromQueue, {
             ...config,
-            body: JSON.stringify(trackId) as any,
+            body: JSON.stringify(trackId),
         }),
 
     /**

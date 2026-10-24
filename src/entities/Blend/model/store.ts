@@ -1,10 +1,12 @@
-import { useCallback, useMemo, useState } from 'react';
-import { Api } from '../api/api';
-import type { State } from '@shared/types/store';
-import type { RequestConfig } from '@shared/types';
-import { withAuth } from '@shared/lib/auth/withAuth';
+import { useCallback,useMemo,useState } from 'react';
 
-const pickError = (res: any) =>
+import { withAuth } from '@shared/lib/auth/withAuth';
+import type { RequestConfig } from '@shared/types';
+import type { State } from '@shared/types/store';
+
+import { Api } from '../api/api';
+
+const pickError = (res: { success: boolean; errors?: string[]; details?: string[]; message?: string }) =>
     res?.success ? undefined : res?.errors?.[0] || res?.details?.[0] || res?.message;
 
 export const useUpdateBlendVisibility = () => {

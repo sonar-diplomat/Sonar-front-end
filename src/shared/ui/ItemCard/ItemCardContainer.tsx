@@ -1,7 +1,9 @@
 import React from 'react';
-import styles from './ItemCardContainer.module.css';
-import type {ItemCardContainerProps} from '@shared/ui';
+
+import type { ItemCardContainerProps } from '@shared/ui';
 import { LoadingImage } from '@shared/ui';
+
+import styles from './ItemCardContainer.module.css';
 
 export const ItemCardContainer: React.FC<ItemCardContainerProps> = ({title, count, countLabel, avatar, children, className = ''}) => {
     return (

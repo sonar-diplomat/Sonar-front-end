@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import styles from './FolderCard.module.css';
+import React,{ useState } from 'react';
+
+import { FolderCoverIcon } from "@shared/ui";
 import { ItemCard } from '@shared/ui/ItemCard/ItemCard.tsx';
+
+import styles from './FolderCard.module.css';
 import type { FolderCardProps } from './FolderCard.types.ts';
-import {FolderCoverIcon} from "@shared/ui";
 
 export const FolderCard: React.FC<FolderCardProps> = ({ 
     label, 

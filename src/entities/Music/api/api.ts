@@ -1,9 +1,12 @@
 import { apiClient } from '@shared/api/oldBaseApi.ts';
 import { API_ENDPOINTS } from '@shared/config';
-import type { TrackDTO, UpdateTrackDTO, UpdateTrackFileDTO } from '../model/types.ts';
-import type {RequestConfig} from "@shared/types";
+import { isDemoMode } from '@shared/config/data-source';
+import { resolveDemoAudioUrl } from '@shared/demo/media';
 import { authManager } from '@shared/lib/auth/auth-manager';
 import { shouldRefreshToken } from '@shared/lib/auth/jwt-utils';
+import type {RequestConfig} from "@shared/types";
+
+import type { TrackDTO, UpdateTrackDTO, UpdateTrackFileDTO } from '../model/types.ts';
 
 
 export const Api = {
@@ -44,6 +47,11 @@ export const Api = {
         },
         config?: Omit<RequestConfig, 'bodyType'>
     ) => {
+        if (isDemoMode) {
+            const url = resolveDemoAudioUrl(trackId);
+            if (!url) throw new Error('Demo audio not found');
+            return fetch(url, { signal: config?.signal });
+        }
         // Для download нужно проверить авторизацию вручную, так как это не NormalizedApiResponse
         let accessToken = authManager.getAccessToken();
         const refreshToken = authManager.getRefreshToken();
@@ -58,7 +66,7 @@ export const Api = {
             // Если токен истекает или истек, пытаемся обновить его через refresh token
             if (shouldRefreshToken(accessToken) && refreshToken) {
                 const newToken = await authManager.refreshAccessToken();
-                
+
                 // Если refresh не удался, требуется новый логин
                 if (!newToken) {
                     throw new Error('Session expired. Please login again');
@@ -69,7 +77,7 @@ export const Api = {
         } else if (refreshToken) {
             // Если нет access token, но есть refresh token, пытаемся обновить
             const newToken = await authManager.refreshAccessToken();
-            
+
             if (!newToken) {
                 // Если refresh не удался, требуется новый логин
                 throw new Error('Session expired. Please login again');
@@ -82,7 +90,7 @@ export const Api = {
             throw new Error('Authentication required');
         }
 
-        const queryParams: Record<string, any> = { ...(config?.params ?? {}) };
+        const queryParams: NonNullable<RequestConfig['params']> = { ...(config?.params ?? {}) };
         if (opts?.startPosition) queryParams.startPosition = opts.startPosition;
         if (opts?.length) queryParams.length = opts.length;
         if (opts?.download) queryParams.download = opts.download;

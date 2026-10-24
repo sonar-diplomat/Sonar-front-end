@@ -1,12 +1,15 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import styles from './ReportComponent.module.css';
-import { Button, Radio, Modal } from '@shared/ui';
-import { useCreateReportMutation, useGetReportReasonTypesByEntityTypeQuery } from '@shared/api';
+import React,{ useCallback,useMemo,useState } from 'react';
+
 import type { CreateReportDTO } from '@entities/Report';
-import { useNotifications } from '@shared/store/notificationStore';
+import { useCreateReportMutation,useGetReportReasonTypesByEntityTypeQuery } from '@shared/api';
 import {
-  getReportDescription,
+getReportDescription,
 } from '@shared/config/report.config';
+import { useNotifications } from '@shared/store/notificationStore';
+import { Button,Modal,Radio } from '@shared/ui';
+import { asUiApiError } from '@shared/ui/api-error';
+
+import styles from './ReportComponent.module.css';
 
 export interface ReportComponentProps {
   entityId: number;
@@ -26,9 +29,9 @@ export const ReportComponent: React.FC<ReportComponentProps> = ({
   description,
 }) => {
   const [createReport, { isLoading: isSubmitting }] = useCreateReportMutation();
-  const { 
-    data: reasonTypes, 
-    isLoading: reasonTypesLoading, 
+  const {
+    data: reasonTypes,
+    isLoading: reasonTypesLoading,
     isError: reasonTypesError,
     refetch: refetchReasonTypes
   } = useGetReportReasonTypesByEntityTypeQuery(entityTypeId, {
@@ -90,7 +93,7 @@ export const ReportComponent: React.FC<ReportComponentProps> = ({
       };
 
       const result = await createReport(dto).unwrap();
-      
+
       if (result) {
         showSuccess('Report submitted successfully. Thank you for helping keep Sonar safe.');
         setSelectedReason(null);
@@ -98,11 +101,11 @@ export const ReportComponent: React.FC<ReportComponentProps> = ({
       } else {
         showError('Report submission failed. Please try again.');
       }
-    } catch (err: any) {
+    } catch (caught: unknown) { const err = asUiApiError(caught);
       // Enhanced error handling
       const errorMessage = err?.data?.message || err?.message || 'Failed to submit report';
       const errorDetails = err?.data?.errors || err?.data?.details || [];
-      
+
       // Handle specific error cases
       if (err?.status === 401) {
         showError('You are not authorized to submit reports. Please log in and try again.');
@@ -207,8 +210,8 @@ export const ReportComponent: React.FC<ReportComponentProps> = ({
             <p className={styles.reasonsHelper}>Select a reason</p>
             <div className={styles.reasonsList}>
               {reasonTypes.map((reason) => (
-                <div 
-                  key={reason.id} 
+                <div
+                  key={reason.id}
                   className={styles.reasonItem}
                 >
                   <Radio
@@ -272,4 +275,3 @@ export const ReportComponent: React.FC<ReportComponentProps> = ({
 
   return renderContent();
 };
-

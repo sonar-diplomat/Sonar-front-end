@@ -1,6 +1,7 @@
 import type { Message } from '@entities/Chat';
-import type { Chat } from '../types/Chat';
 import type { User } from '@entities/User';
+
+import type { Chat } from '../types/Chat';
 
 const currentUserId = 1;
 

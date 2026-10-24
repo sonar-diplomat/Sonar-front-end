@@ -1,27 +1,31 @@
-import React, {useState, useMemo, useCallback} from 'react';
+import React,{ useCallback,useMemo,useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import styles from './ActionMenu.module.css';
-import { Modal } from '../Modal';
-import { ShareIcon, WarningIcon, HeartIcon, PlusIcon, FolderCoverIcon } from '../icons';
-import { ShareComponent } from '@widgets/ShareComponent';
-import type { ShareEntityType } from '@widgets/ShareComponent';
-import { ReportComponent } from '@widgets/ReportComponent';
+
 import { useToggleCollectionFavorite } from '@entities/Collection';
 import {
-  useAddCollectionToFolderMutation,
-  useRemoveCollectionFromFolderMutation
+useAddCollectionToFolderMutation,
+useRemoveCollectionFromFolderMutation
 } from '@entities/Library/api/rtkApi';
-import {
-  useAddToQueueMutation,
-  useDeleteFromQueueMutation
-} from '@entities/UserState/api/rtkApi';
-import { musicApi, useToggleTrackFavoriteMutation } from '@entities/Music/api/rtkApi';
+import type { CollectionSummaryDTO,FolderDTO } from '@entities/Library/model/types';
+import { musicApi,useToggleTrackFavoriteMutation } from '@entities/Music/api/rtkApi';
 import { useAddTrackToPlaylistMutation } from '@entities/Playlist/api/rtkApi';
-import { useNotifications } from '@shared/store/notificationStore';
+import {
+useAddToQueueMutation,
+useDeleteFromQueueMutation
+} from '@entities/UserState/api/rtkApi';
+import { useFolders } from '@shared/store/features/library/useLibrary';
 import { usePlayer } from '@shared/store/features/player';
 import { useAppDispatch } from '@shared/store/hooks';
-import { useFolders } from '@shared/store/features/library/useLibrary';
-import type { FolderDTO, CollectionSummaryDTO } from '@entities/Library/model/types';
+import { useNotifications } from '@shared/store/notificationStore';
+import { ReportComponent } from '@widgets/ReportComponent';
+import type { ShareEntityType } from '@widgets/ShareComponent';
+import { ShareComponent } from '@widgets/ShareComponent';
+
+import { FolderCoverIcon,HeartIcon,PlusIcon,ShareIcon,WarningIcon } from '../icons';
+import { Modal } from '../Modal';
+
+import styles from './ActionMenu.module.css';
 
 export type ActionMenuContextType = 'track' | 'album' | 'playlist' | 'artist' | 'user';
 
@@ -29,7 +33,7 @@ export interface ActionMenuContext {
   type: ActionMenuContextType;
   entityId: number;
   entityName?: string;
-  additionalData?: {};
+  additionalData?: Record<string, unknown>;
 }
 
 export interface ActionMenuItem {
@@ -124,8 +128,7 @@ const contextualActions: ActionConfig[] = [
     icon: <PlusIcon />,
     handler: (context, helpers) => {
       helpers.addToQueue(context.entityId);
-      helpers.showSuccess('Added to queue');
-      helpers.closeMenu();
+
     },
   },
   {
@@ -137,7 +140,7 @@ const contextualActions: ActionConfig[] = [
         await helpers.toggleFavoriteTrack(context.entityId);
         helpers.showSuccess('Added to favorites');
         helpers.closeMenu();
-      } catch (error) {
+      } catch {
         helpers.showError('Failed to add to favorites');
       }
     },
@@ -212,9 +215,9 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
         flatList.push(folder);
 
         if (folder.subFolders && Array.isArray(folder.subFolders) && folder.subFolders.length > 0) {
-          const firstSub = folder.subFolders[0] as any;
+          const firstSub = folder.subFolders[0] as unknown as FolderDTO;
           if (firstSub && 'collections' in firstSub) {
-            flattenFolders(folder.subFolders as any);
+            flattenFolders(folder.subFolders as unknown as FolderDTO[]);
           }
         }
       }
@@ -295,7 +298,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
       setCurrentFolderId(null);
       setNavigationPath([]);
       onClose();
-    } catch (error) {
+    } catch {
       showError('Failed to add to library');
     }
   }, [addCollectionToFolder, context.entityId, showSuccess, showError, onClose]);
@@ -308,7 +311,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
       setCurrentFolderId(null);
       setNavigationPath([]);
       onClose();
-    } catch (error) {
+    } catch {
       showError('Failed to add to playlist');
     }
   }, [addTrackToPlaylist, context.entityId, showSuccess, showError, onClose]);
@@ -329,7 +332,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
       await addCollectionToFolder({ folderId: rootFolder.id, collectionId: context.entityId }).unwrap();
       showSuccess('Added to library successfully');
       onClose();
-    } catch (error) {
+    } catch {
       showError('Failed to add to library');
     }
   }, [allFolders, addCollectionToFolder, context.entityId, showSuccess, showError, onClose]);
@@ -341,7 +344,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
       removeCollectionFromFolder({ folderId: collectionFolderInfo.folderId, collectionId: context.entityId });
       showSuccess('Removed from library successfully');
       onClose();
-    } catch (error) {
+    } catch {
       showError('Failed to remove from library');
     }
   }, [removeCollectionFromFolder, collectionFolderInfo.folderId, context.entityId, showSuccess, showError, onClose]);
@@ -376,11 +379,9 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
       }));
 
       if (result && result.id) {
+        await addToQueueMutation(trackId).unwrap();
         addToQueueLocal(result);
-
-        addToQueueMutation(trackId).unwrap().catch(err => {
-          console.error('Failed to sync queue with backend:', err);
-        });
+        showSuccess('Added to queue');
 
         onClose();
       } else {
@@ -394,6 +395,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
 
   const handleRemoveFromQueue = useCallback(async (trackId: number) => {
     try {
+      await deleteFromQueueMutation(trackId).unwrap();
       const queueIndex = queue.findIndex((track) => track.id === trackId);
 
       if (queueIndex !== -1) {
@@ -401,7 +403,6 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ isOpen, onClose, context
         showSuccess('Removed from queue');
       }
 
-      await deleteFromQueueMutation(trackId).unwrap();
       onClose();
     } catch (error) {
       console.error('Failed to remove from queue:', error);

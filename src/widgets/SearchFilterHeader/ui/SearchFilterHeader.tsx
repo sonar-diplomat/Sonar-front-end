@@ -1,8 +1,9 @@
 import React from 'react';
-import {ChipsBar, type Category} from "@widgets/ChipsBar";
+
+import { ChipsBar,type Category } from "@widgets/ChipsBar";
+import { SearchBar } from "@widgets/SearchBar";
 
 import styles from './SearchFilterHeader.module.css';
-import {SearchBar} from "@widgets/SearchBar";
 
 interface SearchFilterHeaderProps {
     title: string;

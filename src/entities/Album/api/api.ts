@@ -1,8 +1,8 @@
 import { apiClient } from '@shared/api/oldBaseApi.ts';
 import { API_ENDPOINTS } from '@shared/config';
-import type { AlbumDTO, UploadAlbumDTO } from '../model/types.ts';
-import type { ShareLinkDTO } from '@entities/Collection';
-import type {RequestConfig} from "@shared/types";
+import type { RequestConfig } from "@shared/types";
+
+import type { AlbumDTO,UploadAlbumDTO } from '../model/types.ts';
 
 export const AlbumApi = {
     /**

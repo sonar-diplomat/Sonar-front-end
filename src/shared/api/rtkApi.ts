@@ -1,4 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
+
 import { rtkBaseQuery } from './rtkBaseQuery';
 
 /**
@@ -9,6 +10,7 @@ export const rtkApi = createApi({
   reducerPath: 'rtkApi',
   baseQuery: rtkBaseQuery,
   tagTypes: [
+    'DemoState',
     'Track',
     'User',
     'Chat',

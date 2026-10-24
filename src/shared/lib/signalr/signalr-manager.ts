@@ -1,17 +1,25 @@
-import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType, LogLevel } from '@microsoft/signalr';
-import { authManager } from '../auth/auth-manager';
-import { SIGNALR_HUB_URL } from '@shared/config';
+import type {HubConnection,HubConnectionState} from '@microsoft/signalr';
 
+import { SIGNALR_HUB_URL } from '@shared/config';
+import { isDemoMode } from '@shared/config/data-source';
+
+import { authManager } from '../auth/auth-manager';
+
+export const connectionStates = {Disconnected:'Disconnected' as HubConnectionState,Connecting:'Connecting' as HubConnectionState,Connected:'Connected' as HubConnectionState,Disconnecting:'Disconnecting' as HubConnectionState,Reconnecting:'Reconnecting' as HubConnectionState};
 class SignalRManager {
   private connection: HubConnection | null = null;
   private joinedChats: Set<number> = new Set();
   private isConnecting: boolean = false;
+  private localConnected = false;
+  private localUnsubscribe: (() => void) | null = null;
+  private localListeners = new Map<string, Set<(data: unknown) => void>>();
 
   private getHubUrl(): string {
     return SIGNALR_HUB_URL;
   }
 
-  private createConnection(): HubConnection {
+  private async createConnection(): Promise<HubConnection> {
+    const {HubConnectionBuilder,HttpTransportType,LogLevel}=await import('@microsoft/signalr');
     const hubUrl = this.getHubUrl();
 
     const builder = new HubConnectionBuilder()
@@ -24,7 +32,7 @@ class SignalRManager {
         },
         // Disable credentials to avoid CORS issues when server uses wildcard origin
         withCredentials: false,
-      } as any)
+      })
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
           if (retryContext.previousRetryCount < 3) {
@@ -45,7 +53,15 @@ class SignalRManager {
   }
 
   async connect(): Promise<void> {
-    if (this.connection?.state === HubConnectionState.Connected) {
+    if (isDemoMode) {
+      if (!authManager.isAuthenticated() || this.localConnected) return;
+      const { subscribeDemoEvents } = await import('@demo-runtime');
+      this.localUnsubscribe?.();
+      this.localUnsubscribe = subscribeDemoEvents(event => { for (const callback of this.localListeners.get(event.name) ?? []) callback(event.payload); });
+      this.localConnected = true;
+      return;
+    }
+    if (this.connection?.state === connectionStates.Connected) {
       return;
     }
 
@@ -64,7 +80,7 @@ class SignalRManager {
         await this.connection.stop();
       }
 
-      this.connection = this.createConnection();
+      this.connection = await this.createConnection();
       this.setupEventHandlers();
 
       await this.connection.start();
@@ -83,6 +99,7 @@ class SignalRManager {
   }
 
   async disconnect(): Promise<void> {
+    if (isDemoMode) { this.localUnsubscribe?.(); this.localUnsubscribe = null; this.localConnected = false; this.joinedChats.clear(); return; }
     if (this.connection) {
       try {
         for (const chatId of this.joinedChats) {
@@ -104,11 +121,12 @@ class SignalRManager {
   }
 
   async joinChat(chatId: number): Promise<void> {
-    if (!this.connection || this.connection.state !== HubConnectionState.Connected) {
+    if (isDemoMode) { await this.connect(); this.joinedChats.add(chatId); return; }
+    if (!this.connection || this.connection.state !== connectionStates.Connected) {
       await this.connect();
       
       let attempts = 0;
-      while (this.connection && this.connection.state !== HubConnectionState.Connected && attempts < 10) {
+      while (this.connection && this.connection.state !== connectionStates.Connected && attempts < 10) {
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
       }
@@ -118,7 +136,7 @@ class SignalRManager {
       throw new Error('SignalR connection not available');
     }
 
-    if (this.connection.state !== HubConnectionState.Connected) {
+    if (this.connection.state !== connectionStates.Connected) {
       throw new Error(`SignalR connection is not in Connected state. Current state: ${this.connection.state}`);
     }
 
@@ -136,7 +154,8 @@ class SignalRManager {
   }
 
   async leaveChat(chatId: number): Promise<void> {
-    if (!this.connection || this.connection.state !== HubConnectionState.Connected) {
+    if (isDemoMode) { this.joinedChats.delete(chatId); return; }
+    if (!this.connection || this.connection.state !== connectionStates.Connected) {
       return;
     }
 
@@ -154,7 +173,8 @@ class SignalRManager {
   }
 
   async sendTyping(chatId: number): Promise<void> {
-    if (!this.connection || this.connection.state !== HubConnectionState.Connected) {
+    if (isDemoMode) { await this.localOperation(`Chat/${chatId}/typing`, 'POST'); return; }
+    if (!this.connection || this.connection.state !== connectionStates.Connected) {
       return;
     }
 
@@ -166,7 +186,8 @@ class SignalRManager {
   }
 
   async readMessages(chatId: number, messageIds: number[]): Promise<void> {
-    if (!this.connection || this.connection.state !== HubConnectionState.Connected) {
+    if (isDemoMode) { await this.localOperation(`Chat/${chatId}/read`, 'PUT', messageIds); return; }
+    if (!this.connection || this.connection.state !== connectionStates.Connected) {
       throw new Error('SignalR connection not available');
     }
 
@@ -184,7 +205,8 @@ class SignalRManager {
   }
 
   async readAllMessages(chatId: number): Promise<void> {
-    if (!this.connection || this.connection.state !== HubConnectionState.Connected) {
+    if (isDemoMode) { await this.localOperation(`Chat/${chatId}/read-all`, 'PUT'); return; }
+    if (!this.connection || this.connection.state !== connectionStates.Connected) {
       throw new Error('SignalR connection not available');
     }
 
@@ -220,7 +242,14 @@ class SignalRManager {
     }
   }
 
-  on<T = any>(eventName: string, callback: (data: T) => void): void {
+  private async localOperation(url: string, method: string, body?: unknown): Promise<void> {
+    const { dispatchMock } = await import('@demo-dispatcher');
+    const result = await dispatchMock({ url, method, body });
+    if (!result.success) throw new Error(result.message);
+  }
+
+  on<T = unknown>(eventName: string, callback: (data: T) => void): void {
+    if (isDemoMode) { if (!this.localListeners.has(eventName)) this.localListeners.set(eventName, new Set()); this.localListeners.get(eventName)!.add(callback as (data: unknown) => void); return; }
     if (!this.connection) {
       console.warn(`[SignalR] Cannot subscribe to ${eventName}: connection not initialized`);
       return;
@@ -229,7 +258,8 @@ class SignalRManager {
     this.connection.on(eventName, callback);
   }
 
-  off(eventName: string, callback?: (...args: any[]) => void): void {
+  off<T = unknown>(eventName: string, callback?: (data: T) => void): void {
+    if (isDemoMode) { if (callback) this.localListeners.get(eventName)?.delete(callback as (data: unknown) => void); else this.localListeners.delete(eventName); return; }
     if (!this.connection) {
       return;
     }
@@ -242,11 +272,13 @@ class SignalRManager {
   }
 
   isConnected(): boolean {
-    return this.connection?.state === HubConnectionState.Connected;
+    if (isDemoMode) return this.localConnected;
+    return this.connection?.state === connectionStates.Connected;
   }
 
   getConnectionState(): HubConnectionState {
-    return this.connection?.state ?? HubConnectionState.Disconnected;
+    if (isDemoMode) return this.localConnected ? connectionStates.Connected : connectionStates.Disconnected;
+    return this.connection?.state ?? connectionStates.Disconnected;
   }
 
   private setupEventHandlers(): void {
@@ -269,7 +301,7 @@ class SignalRManager {
   }
 
   private async rejoinChats(): Promise<void> {
-    if (!this.connection || this.connection.state !== HubConnectionState.Connected) {
+    if (!this.connection || this.connection.state !== connectionStates.Connected) {
       return;
     }
 

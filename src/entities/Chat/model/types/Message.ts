@@ -1,6 +1,8 @@
-import type { Chat } from "./Chat";
 import type { User } from '@entities/User';
+
 import type { MessageReadDTO } from '../types';
+
+import type { Chat } from "./Chat";
 
 export type MessageStatus = 'pending' | 'sent' | 'delivered' | 'read' | 'error';
 

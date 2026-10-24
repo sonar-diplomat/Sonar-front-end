@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useLazySearchTracksQuery } from '@entities/Search/api/rtkApi';
+import { useCallback,useEffect,useRef,useState } from 'react';
+
 import type { TrackSearchItemDTO } from '@entities/Search';
+import { useLazySearchTracksQuery } from '@entities/Search/api/rtkApi';
 
 const PAGE_SIZE = 20;
 

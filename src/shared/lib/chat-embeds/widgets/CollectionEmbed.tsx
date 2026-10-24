@@ -1,10 +1,12 @@
 import React from 'react';
+
 import { useGetAlbumQuery } from '@entities/Album/api/rtkApi';
 import { useGetPlaylistQuery } from '@entities/Playlist/api/rtkApi';
-import { AlbumEmbed } from './AlbumEmbed';
-import { PlaylistEmbed } from './PlaylistEmbed';
 import { LoadingPlaceholder } from '@shared/ui';
+
+import { AlbumEmbed } from './AlbumEmbed';
 import styles from './EmbedWidget.module.css';
+import { PlaylistEmbed } from './PlaylistEmbed';
 
 export interface CollectionEmbedProps {
   collectionId: number;
@@ -17,14 +19,14 @@ export const CollectionEmbed: React.FC<CollectionEmbedProps> = ({ collectionId, 
 
   if (playlistQuery.isSuccess && playlistQuery.data) {
     const playlist = playlistQuery.data;
-    if (playlist.creator || playlist.contributors || (playlist as any).creatorName) {
+    if (playlist.creator || playlist.contributors) {
       return <PlaylistEmbed playlistId={collectionId} url={url} />;
     }
   }
 
   if (albumQuery.isSuccess && albumQuery.data) {
     const album = albumQuery.data;
-    if (album.distributor || album.albumArtists || (album as any).distributorName) {
+    if (album.distributor || album.albumArtists) {
       return <AlbumEmbed albumId={collectionId} url={url} />;
     }
   }
@@ -47,4 +49,3 @@ export const CollectionEmbed: React.FC<CollectionEmbedProps> = ({ collectionId, 
     </a>
   );
 };
-

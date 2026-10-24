@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 1,
+  "audio": [
+    {
+      "id": 1,
+      "audioFileId": 1,
+      "path": "audio/1.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 6566713,
+      "sha256": "8433b770a630d9b1594fd484442c677907ece899a4d149954cd2e74fd733e311",
+      "durationSeconds": 205.113469,
+      "coverId": 101,
+      "licenseId": "audio-1",
+      "artistName": "Kevin MacLeod",
+      "sourceTitle": "Carefree",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037"
+    },
+    {
+      "id": 2,
+      "audioFileId": 2,
+      "path": "audio/2.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 5466943,
+      "sha256": "db1710333d68a215277f77e4e17e1a64bf4ed38f87c70f8d0f56b16b6aa4f884",
+      "durationSeconds": 136.594286,
+      "coverId": 101,
+      "licenseId": "audio-2",
+      "artistName": "Kevin MacLeod",
+      "sourceTitle": "Sneaky Snitch",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100772"
+    },
+    {
+      "id": 3,
+      "audioFileId": 3,
+      "path": "audio/3.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 9252699,
+      "sha256": "d3d0614535a61d748e2fd8d5117fc4d781022a7624794802a2462d8af3fdd522",
+      "durationSeconds": 231.235918,
+      "coverId": 101,
+      "licenseId": "audio-3",
+      "artistName": "Kevin MacLeod",
+      "sourceTitle": "Cipher",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100844"
+    },
+    {
+      "id": 4,
+      "audioFileId": 4,
+      "path": "audio/4.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 7684325,
+      "sha256": "7f07fbf89860959ff527f7b74606146dd0b0de263739989a70ce712c7c361614",
+      "durationSeconds": 240.039184,
+      "coverId": 101,
+      "licenseId": "audio-4",
+      "artistName": "Kevin MacLeod",
+      "sourceTitle": "Chill Wave",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1600048"
+    },
+    {
+      "id": 5,
+      "audioFileId": 5,
+      "path": "audio/5.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 5057420,
+      "sha256": "2486b8ecfe4575f9ab31613a2c03c2ee45e6e5280301d05b4dd7237c9e1c2531",
+      "durationSeconds": 126.380408,
+      "coverId": 102,
+      "licenseId": "audio-5",
+      "artistName": "Kevin MacLeod",
+      "sourceTitle": "Easy Lemon",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200076"
+    },
+    {
+      "id": 6,
+      "audioFileId": 6,
+      "path": "audio/6.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 8090770,
+      "sha256": "664880bb7368b8b85e362a5dae28338de4e4741205991a0817ceeaabe7366153",
+      "durationSeconds": 202.187755,
+      "coverId": 102,
+      "licenseId": "audio-6",
+      "artistName": "Kevin MacLeod",
+      "sourceTitle": "Americana",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200092"
+    },
+    {
+      "id": 7,
+      "audioFileId": 7,
+      "path": "audio/7.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 8576659,
+      "sha256": "f12cbb52bd4b92bd6cf8a343645567c119627e9cbf98108a3eb6ac2cc275ee46",
+      "durationSeconds": 214.334694,
+      "coverId": 102,
+      "licenseId": "audio-7",
+      "artistName": "Kevin MacLeod",
+      "sourceTitle": "Dream Culture",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1300046"
+    },
+    {
+      "id": 8,
+      "audioFileId": 8,
+      "path": "audio/8.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 8199078,
+      "sha256": "6be229815d85a0b99382b944d31098b882702c04ac7ad899e44ab7f8ba89b5ad",
+      "durationSeconds": 201.430204,
+      "coverId": 102,
+      "licenseId": "audio-8",
+      "artistName": "Kevin MacLeod",
+      "sourceTitle": "Funkorama",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100474"
+    },
+    {
+      "id": 9,
+      "audioFileId": 9,
+      "path": "audio/9.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 5764221,
+      "sha256": "be9f665efd035dea23a1e9539c534ba905f44144f7dda05a0a663ccecda1ab21",
+      "durationSeconds": 180.035918,
+      "coverId": 103,
+      "licenseId": "audio-9",
+      "artistName": "Kevin MacLeod",
+      "sourceTitle": "Digital Lemonade",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700010"
+    },
+    {
+      "id": 10,
+      "audioFileId": 10,
+      "path": "audio/10.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 6611177,
+      "sha256": "c0b120cb91a62468f5024162c8942dd2310696c076b6a1df2b88892350575b87",
+      "durationSeconds": 165.198367,
+      "coverId": 103,
+      "licenseId": "audio-10",
+      "artistName": "Kevin MacLeod",
+      "sourceTitle": "Local Forecast",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1300010"
+    },
+    {
+      "id": 11,
+      "audioFileId": 11,
+      "path": "audio/11.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 8804339,
+      "sha256": "9fa810e5193c88f1b360537366f210f16c2588106d5292f0659e9957fa274f96",
+      "durationSeconds": 220.029388,
+      "coverId": 103,
+      "licenseId": "audio-11",
+      "artistName": "Kevin MacLeod",
+      "sourceTitle": "Wallpaper",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100843"
+    },
+    {
+      "id": 12,
+      "audioFileId": 12,
+      "path": "audio/12.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 5005207,
+      "sha256": "a5bb345c23849ad0786aa0bc5157a9f2d4039660fe00282e55754d475f36dc14",
+      "durationSeconds": 125.074286,
+      "coverId": 103,
+      "licenseId": "audio-12",
+      "artistName": "Kevin MacLeod",
+      "sourceTitle": "Monkeys Spinning Monkeys",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400011"
+    }
+  ],
+  "images": [
+    {
+      "id": 101,
+      "path": "images/101.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1222,
+      "sha256": "66f683ca44105403e83fc844ad1cc5bca94f0f8cf3ed3694cf4e91d314e9fc32",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 102,
+      "path": "images/102.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1221,
+      "sha256": "353a40a20f5fda5e32afc90195222943aa499a14d5041c787f7ed10ce6acf70c",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 103,
+      "path": "images/103.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1218,
+      "sha256": "5a884a1744caffafa97fd8bba7d33ea09543f076e70d45612d5b7c20b66f389e",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 201,
+      "path": "images/201.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1222,
+      "sha256": "34df2a9a7d8e3b74ea9f5d6a1260e372af03c77d71974ec38d74f1ad6654ed58",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 202,
+      "path": "images/202.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1216,
+      "sha256": "4a92c56aef697a57517d6f432874372aecf84381aec78ba9f184c51d6e03337c",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 203,
+      "path": "images/203.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1220,
+      "sha256": "27160ecc682cf77a12bcc896cc47511105dbc1b3f7e90b39945c836dff4ca2b5",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 204,
+      "path": "images/204.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1220,
+      "sha256": "04af3d15d9b086beb0f98ae11776bb6b22333d977aeb69c1e80226ba30979931",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 301,
+      "path": "images/301.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1220,
+      "sha256": "bc14fb0553da37f23c07b0c38513523aaca65401925e3fd70c529850dbde7ef2",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 302,
+      "path": "images/302.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1214,
+      "sha256": "ad409a9d0ddfc8e66642539c667458cdb35b9b7021d32fb66676da58811bcf49",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 303,
+      "path": "images/303.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1221,
+      "sha256": "e87c6462a3be642d55db8139afe778dcf428af334668c1e2cfad223fd2671b8a",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 304,
+      "path": "images/304.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1219,
+      "sha256": "493a3a14236fde892290688a3fd4d96d90efc419b5f547ccf22d2f3e4b148f23",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 305,
+      "path": "images/305.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1213,
+      "sha256": "cce539d99d3a06fb8e852c5ef326a67c28f4557f5a2b225539b52515f461b467",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 401,
+      "path": "images/401.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1221,
+      "sha256": "57707c79fc20e4a9538b8b4dc123f3a4505aa986206f3ab913616716392abaa6",
+      "licenseId": "original-covers"
+    },
+    {
+      "id": 402,
+      "path": "images/402.svg",
+      "mime": "image/svg+xml",
+      "bytes": 1214,
+      "sha256": "9e70987a49d1e0958c8321069cd4d8d31112cd97a7fdd8be3af78fafd52d9188",
+      "licenseId": "original-covers"
+    }
+  ]
+}

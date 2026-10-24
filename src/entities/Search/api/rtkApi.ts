@@ -1,20 +1,21 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
+
 import type {
-  SearchResultDTO,
-  SearchTracksResultDTO,
-  SearchAlbumsResultDTO,
-  SearchPlaylistsResultDTO,
-  SearchArtistsResultDTO,
-  SearchUsersResultDTO,
-  SearchParams,
-  SearchTracksParams,
-  SearchAlbumsParams,
-  SearchPlaylistsParams,
-  SearchArtistsParams,
-  SearchUsersParams,
-  SearchSuggestionsParams,
-  SearchPopularParams,
+SearchAlbumsParams,
+SearchAlbumsResultDTO,
+SearchArtistsParams,
+SearchArtistsResultDTO,
+SearchParams,
+SearchPlaylistsParams,
+SearchPlaylistsResultDTO,
+SearchPopularParams,
+SearchResultDTO,
+SearchSuggestionsParams,
+SearchTracksParams,
+SearchTracksResultDTO,
+SearchUsersParams,
+SearchUsersResultDTO,
 } from '../model/types';
 
 /**
@@ -24,6 +25,7 @@ export const searchApi = rtkApi.injectEndpoints({
   endpoints: (builder) => ({
     // Main search endpoint
     search: builder.query<SearchResultDTO, SearchParams>({
+      providesTags: ['DemoState'],
       query: ({ query, category, limit, offset }) => {
         // Преобразуем категорию в lowercase для бэкенда
         // Бэкенд ожидает: "all", "tracks", "album", "playlist", "artist", "users"
@@ -62,6 +64,7 @@ export const searchApi = rtkApi.injectEndpoints({
 
     // Search by category
     searchTracks: builder.query<SearchTracksResultDTO, SearchTracksParams>({
+      providesTags: ['DemoState'],
       query: ({ query, limit, offset }) => ({
         url: API_ENDPOINTS.search.tracks,
         method: 'GET',
@@ -79,6 +82,7 @@ export const searchApi = rtkApi.injectEndpoints({
     }),
 
     searchAlbums: builder.query<SearchAlbumsResultDTO, SearchAlbumsParams>({
+      providesTags: ['DemoState'],
       query: ({ query, limit, offset }) => ({
         url: API_ENDPOINTS.search.albums,
         method: 'GET',
@@ -95,6 +99,7 @@ export const searchApi = rtkApi.injectEndpoints({
     }),
 
     searchPlaylists: builder.query<SearchPlaylistsResultDTO, SearchPlaylistsParams>({
+      providesTags: ['DemoState'],
       query: ({ query, limit, offset }) => ({
         url: API_ENDPOINTS.search.playlists,
         method: 'GET',
@@ -111,6 +116,7 @@ export const searchApi = rtkApi.injectEndpoints({
     }),
 
     searchArtists: builder.query<SearchArtistsResultDTO, SearchArtistsParams>({
+      providesTags: ['DemoState'],
       query: ({ query, limit, offset }) => ({
         url: API_ENDPOINTS.search.artists,
         method: 'GET',
@@ -127,6 +133,7 @@ export const searchApi = rtkApi.injectEndpoints({
     }),
 
     searchUsers: builder.query<SearchUsersResultDTO, SearchUsersParams>({
+      providesTags: ['DemoState'],
       query: ({ query, limit, offset }) => ({
         url: API_ENDPOINTS.search.users,
         method: 'GET',
@@ -144,6 +151,7 @@ export const searchApi = rtkApi.injectEndpoints({
 
     // Search suggestions
     getSearchSuggestions: builder.query<string[], SearchSuggestionsParams>({
+      providesTags: ['DemoState'],
       query: ({ query, limit }) => ({
         url: API_ENDPOINTS.search.suggestions,
         method: 'GET',
@@ -157,6 +165,7 @@ export const searchApi = rtkApi.injectEndpoints({
 
     // Popular queries
     getPopularQueries: builder.query<string[], SearchPopularParams>({
+      providesTags: ['DemoState'],
       query: ({ limit } = {}) => ({
         url: API_ENDPOINTS.search.popular,
         method: 'GET',

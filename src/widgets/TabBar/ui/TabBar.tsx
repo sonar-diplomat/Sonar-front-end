@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import type { TabId } from '../model/types';
+import React, { useState, useEffect } from 'react';
+
 import { TAB_ITEMS } from '../lib/constants';
-import { TabItem } from './TabItem';
+import type { TabId } from '../model/types';
+
 import styles from './TabBar.module.css';
+import { TabItem } from './TabItem';
 
 interface TabBarProps {
   defaultActiveTab?: TabId;
@@ -14,6 +16,8 @@ export const TabBar: React.FC<TabBarProps> = ({
   onTabChange,
 }) => {
   const [activeTab, setActiveTab] = useState<TabId>(defaultActiveTab);
+
+  useEffect(() => setActiveTab(defaultActiveTab), [defaultActiveTab]);
 
   const handleTabClick = (tabId: TabId) => {
     setActiveTab(tabId);

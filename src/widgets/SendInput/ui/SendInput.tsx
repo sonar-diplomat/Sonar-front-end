@@ -1,7 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Button, Input, SendRight, PlusIcon, ClearIcon } from '@shared/ui';
+import React,{ useEffect,useRef,useState } from 'react';
+
 import type { Message } from '@entities/Chat';
+import { Button,ClearIcon,Input,PlusIcon,SendRight } from '@shared/ui';
 import { StickerPicker } from '@widgets/StickerPicker';
+
 import styles from './SendInput.module.css';
 
 export interface SendInputProps {

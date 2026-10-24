@@ -1,7 +1,8 @@
 import { apiClient } from '@shared/api/oldBaseApi.ts';
 import { API_ENDPOINTS } from '@shared/config';
-import type { Settings } from '../model/types/Settings';
 import type { RequestConfig } from '@shared/types';
+
+import type { Settings } from '../model/types/Settings';
 
 export const Api = {
     // Закомментировано: используйте useGetClientSettingsQuery из @shared/api/rtkApi

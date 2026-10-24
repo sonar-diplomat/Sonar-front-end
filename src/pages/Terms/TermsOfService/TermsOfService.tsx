@@ -1,6 +1,9 @@
 import React from "react";
-import styles from './TermsOfService.module.css';
+
+import { isDemoMode } from '@shared/config/data-source';
 import { Button } from "@shared/ui";
+
+import styles from './TermsOfService.module.css';
 
 const handleBack = () => {
     window.history.back();
@@ -9,6 +12,7 @@ const handleBack = () => {
 export const TermsOfService: React.FC = () => {
     return (
         <div className={styles.container}>
+            {isDemoMode && <p>Demo preview: accounts, email and subscriptions are local simulations. No real payment or email is performed.</p>}
             <div className={styles.card}>
                 <div className={styles.title}>
                     <h2 className={styles.titleText}>Sonar Terms of Service</h2>

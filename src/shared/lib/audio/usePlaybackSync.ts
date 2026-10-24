@@ -1,103 +1,35 @@
-import { useEffect, useRef } from 'react';
-import { usePlayer } from '@shared/store/features/player';
-import { useUpdateListeningTargetMutation, useUpdateCurrentPositionMutation } from '@entities/UserState/api/rtkApi';
-import { useAppSelector } from '@shared/store/hooks';
+import { useEffect } from 'react';
 
+import { apiClient } from '@shared/api/oldBaseApi';
+import { API_ENDPOINTS } from '@shared/config';
+import { store } from '@shared/store';
+import { useNotifications } from '@shared/store/notificationStore';
+const timeSpan = (time: number) => `${Math.floor(time / 3600).toString().padStart(2, '0')}:${Math.floor(time % 3600 / 60).toString().padStart(2, '0')}:${(time % 60).toFixed(6).padStart(9, '0')}`;
+/** Keep transport writes outside React render and update progress on a stable timer. */
 export const usePlaybackSync = () => {
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
-  const { currentTrack, collectionContext, currentTime, isPlaying, isStockCollection } = usePlayer();
-  const [updateListeningTarget] = useUpdateListeningTargetMutation();
-  const [updatePosition] = useUpdateCurrentPositionMutation();
-
-  const previousTrackIdRef = useRef<number | null>(null);
-  const previousCollectionIdRef = useRef<number | null>(null);
-  const positionSaveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    if (!isAuthenticated || !currentTrack) {
-      previousTrackIdRef.current = null;
-      previousCollectionIdRef.current = null;
-      return;
-    }
-
-    const trackId = currentTrack.id;
-    const collectionId = (isStockCollection && collectionContext?.id) ? collectionContext.id : null;
-
-    if (
-      trackId !== previousTrackIdRef.current ||
-      collectionId !== previousCollectionIdRef.current
-    ) {
-      console.log('[usePlaybackSync] Updating listening target:', { trackId, collectionId, isStockCollection });
-
-      updateListeningTarget({ trackId, collectionId: collectionId || undefined })
-        .unwrap()
-        .then(() => {
-          console.log('[usePlaybackSync] Listening target updated successfully');
-        })
-        .catch((error) => {
-          console.error('[usePlaybackSync] Failed to update listening target:', error);
-        });
-
-      previousTrackIdRef.current = trackId;
-      previousCollectionIdRef.current = collectionId;
-    }
-  }, [currentTrack, collectionContext, isStockCollection, updateListeningTarget, isAuthenticated]);
-
-  useEffect(() => {
-    if (positionSaveIntervalRef.current) {
-      clearInterval(positionSaveIntervalRef.current);
-      positionSaveIntervalRef.current = null;
-    }
-
-    if (!isAuthenticated || !isPlaying || !currentTrack) {
-      return;
-    }
-
-    positionSaveIntervalRef.current = setInterval(() => {
-      if (currentTime > 0) {
-        const hours = Math.floor(currentTime / 3600);
-        const minutes = Math.floor((currentTime % 3600) / 60);
-        const seconds = currentTime % 60;
-        const timeSpanString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toFixed(6).padStart(9, '0')}`;
-
-        updatePosition(timeSpanString)
-          .unwrap()
-          .then(() => {
-            console.log('[usePlaybackSync] Position updated:', timeSpanString);
-          })
-          .catch((error) => {
-            console.error('[usePlaybackSync] Failed to update position:', error);
-          });
-      }
-    }, 5000);
-
-    return () => {
-      if (positionSaveIntervalRef.current) {
-        clearInterval(positionSaveIntervalRef.current);
-      }
-    };
-  }, [isPlaying, currentTrack, currentTime, updatePosition, isAuthenticated]);
-
-  useEffect(() => {
-    return () => {
-      if (!isAuthenticated || !currentTrack || currentTime <= 0) {
-        return;
-      }
-
-      const hours = Math.floor(currentTime / 3600);
-      const minutes = Math.floor((currentTime % 3600) / 60);
-      const seconds = currentTime % 60;
-      const timeSpanString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toFixed(6).padStart(9, '0')}`;
-
-      updatePosition(timeSpanString)
-        .unwrap()
-        .then(() => {
-          console.log('[usePlaybackSync] Final position saved:', timeSpanString);
-        })
-        .catch((error) => {
-          console.error('[usePlaybackSync] Failed to save final position:', error);
-        });
-    };
-  }, []);
+    const { showError } = useNotifications();
+    useEffect(() => {
+        let target = '';
+        let latest = store.getState().player;
+        const savePosition = (time: number) => {
+            void apiClient.put(API_ENDPOINTS.userState.updateCurrentPosition, timeSpan(time), { bodyType: 'raw', headers: { 'Content-Type': 'text/plain' } }).then(response => { if (!response.success) showError('Playback position could not be saved.'); });
+        };
+        const synchronize = () => {
+            const state = store.getState();
+            const player = state.player;
+            if (!state.auth.isAuthenticated) { target = ''; latest = player; return; }
+            const collection = player.isStockCollection ? player.collectionContext?.id : undefined;
+            const key = player.currentTrack ? `${player.currentTrack.id}:${collection || ''}` : '';
+            if (key !== target) {
+                target = key;
+                if (latest.isPlaying && latest.currentTrack) savePosition(latest.currentTime);
+                if (player.currentTrack) void apiClient.put(API_ENDPOINTS.userState.updateListeningTarget(player.currentTrack.id, collection ?? undefined)).then(response => { if (!response.success) showError('Listening progress could not be synchronized.'); });
+            } else if (latest.isPlaying && !player.isPlaying && player.currentTrack) savePosition(player.currentTime);
+            latest = player;
+        };
+        const unsubscribe = store.subscribe(synchronize);
+        synchronize();
+        const timer = setInterval(() => { const state = store.getState(); if (state.auth.isAuthenticated && state.player.isPlaying && state.player.currentTrack) savePosition(state.player.currentTime); }, 5000);
+        return () => { unsubscribe(); clearInterval(timer); if (latest.isPlaying && latest.currentTrack) savePosition(latest.currentTime); };
+    }, [showError]);
 };
-

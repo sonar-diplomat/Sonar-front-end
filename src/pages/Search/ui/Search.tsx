@@ -1,24 +1,26 @@
-import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import React,{ useCallback,useEffect,useMemo,useRef,useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import { useDebounce } from '@shared/lib/hooks/useDebounce';
-import { getImageUrlById } from '@shared/lib/image-utils';
-import { useUserState } from '@shared/store/features/userState/useUserState';
-import { usePlayer } from '@shared/store/features/player';
-import { ItemCard, LoadingPlaceholder } from '@shared/ui';
-import type { Category } from '@widgets/ChipsBar';
-import { ContentSections, type ContentSection } from '@widgets/ContentSections';
-import { SearchFilterHeader } from '@widgets/SearchFilterHeader';
-import { useLazySearchQuery } from '@shared/api';
+
 import { useGetTrackQuery } from '@entities/Music/api/rtkApi';
 import type {
-  TrackSearchItemDTO,
-  AlbumSearchItemDTO,
-  PlaylistSearchItemDTO,
-  ArtistSearchItemDTO,
-  UserSearchItemDTO,
-  SearchResultDTO,
-  SearchCategory,
+AlbumSearchItemDTO,
+ArtistSearchItemDTO,
+PlaylistSearchItemDTO,
+SearchCategory,
+SearchResultDTO,
+TrackSearchItemDTO,
+UserSearchItemDTO,
 } from '@entities/Search';
+import { useLazySearchQuery } from '@shared/api';
+import { useDebounce } from '@shared/lib/hooks/useDebounce';
+import { getImageUrlById } from '@shared/lib/image-utils';
+import { usePlayer } from '@shared/store/features/player';
+import { Button,ItemCard,LoadingPlaceholder } from '@shared/ui';
+import { asUiApiError } from '@shared/ui/api-error';
+import type { Category } from '@widgets/ChipsBar';
+import { ContentSections,type ContentSection } from '@widgets/ContentSections';
+import { SearchFilterHeader } from '@widgets/SearchFilterHeader';
 
 import styles from './Search.module.css';
 
@@ -26,8 +28,8 @@ import styles from './Search.module.css';
 const TrackCard: React.FC<{
   trackId: number;
   trackItem: TrackSearchItemDTO;
-  onTrackClick: (track: TrackSearchItemDTO) => void;
-}> = ({ trackId, trackItem, onTrackClick }) => {
+
+}> = ({ trackId, trackItem }) => {
   const { data: track } = useGetTrackQuery(trackId);
   const { playTrack } = usePlayer();
 
@@ -35,7 +37,7 @@ const TrackCard: React.FC<{
     if (track) {
       playTrack(track);
     }
-    onTrackClick(trackItem);
+
   };
 
   return (
@@ -47,7 +49,7 @@ const TrackCard: React.FC<{
         subtitle1: trackItem.artists.map((a) => a.pseudonym).join(', '),
         subtitle2: trackItem.albumName,
       }}
-      onClick={handleClick}
+      onClick={track ? handleClick : undefined}
     />
   );
 };
@@ -57,8 +59,7 @@ export const Search: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
-  const { updateListeningTarget } = useUserState();
-  const { playTrack } = usePlayer();
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const PAGE_SIZE = 20;
@@ -72,6 +73,8 @@ export const Search: React.FC = () => {
   const [offset, setOffset] = useState(0);
 
   const shouldSearch = debouncedSearchQuery.trim().length > 0;
+  const requestKey = useRef('');
+  requestKey.current = debouncedSearchQuery + ':' + selectedCategory;
 
   const getBackendCategory = (category: Category): SearchCategory | undefined =>
     category === 'All' ? undefined : (category as SearchCategory);
@@ -87,6 +90,7 @@ export const Search: React.FC = () => {
   const loadPage = useCallback(
     async (nextOffset: number) => {
       if (!shouldSearch) return;
+      const expectedKey = requestKey.current;
       if (nextOffset === 0) {
         setIsSearchLoading(true);
         setSearchError(null);
@@ -101,6 +105,7 @@ export const Search: React.FC = () => {
           offset: nextOffset,
         }).unwrap();
 
+        if (expectedKey !== requestKey.current) return;
         setSearchData((prev) => {
           const prevTracks = prev?.tracks?.items ?? [];
           const prevAlbums = prev?.albums?.items ?? [];
@@ -133,12 +138,13 @@ export const Search: React.FC = () => {
             users: res.users ? { total: res.users.total, items: mergedUsers } : prev?.users,
           };
         });
-      } catch (e: any) {
+      } catch (caught: unknown) { const e = asUiApiError(caught);
+        if (expectedKey !== requestKey.current) return;
         setSearchError(e?.data?.message || e?.message || 'Search failed');
         setHasMore(false);
       } finally {
-        setIsSearchLoading(false);
-        setIsLoadingMore(false);
+        if (expectedKey === requestKey.current) setIsSearchLoading(false);
+        if (expectedKey === requestKey.current) setIsLoadingMore(false);
       }
     },
     [shouldSearch, fetchSearch, debouncedSearchQuery, selectedCategory, PAGE_SIZE]
@@ -232,31 +238,19 @@ export const Search: React.FC = () => {
   const currentData = getDataForCategory();
   const isLoading = isSearchLoading;
 
-  const handleTrackClick = useCallback(
-    async (track: TrackSearchItemDTO) => {
-      try {
-        // Получаем полный трек и запускаем воспроизведение
-        // Используем useGetTrackQuery внутри компонента для получения данных
-        // Здесь просто обновляем listening target, но трек должен запуститься через playTrack
-        await updateListeningTarget(track.id);
-      } catch (error) {
-        console.error('Failed to start track:', error);
-      }
-    },
-    [updateListeningTarget]
-  );
+
 
   const handleAlbumClick = useCallback((album: AlbumSearchItemDTO) => {
-    console.log('Opening album:', album);
-  }, []);
+    navigate(`/album/${album.id}`);
+  }, [navigate]);
 
   const handlePlaylistClick = useCallback((playlist: PlaylistSearchItemDTO) => {
-    console.log('Opening playlist:', playlist);
-  }, []);
+    navigate(`/playlist/${playlist.id}`);
+  }, [navigate]);
 
   const handleArtistClick = useCallback((artist: ArtistSearchItemDTO) => {
-    console.log('Opening artist:', artist);
-  }, []);
+    navigate(`/artist/${artist.id}`);
+  }, [navigate]);
 
   const handleUserClick = useCallback(
     (user: UserSearchItemDTO) => {
@@ -288,7 +282,7 @@ export const Search: React.FC = () => {
                 key={trackItem.id}
                 trackId={trackItem.id}
                 trackItem={trackItem}
-                onTrackClick={handleTrackClick}
+
               />
             );
           },
@@ -425,7 +419,7 @@ export const Search: React.FC = () => {
     artistsData,
     usersData,
     albumsData,
-    handleTrackClick,
+
     handleAlbumClick,
     handlePlaylistClick,
     handleArtistClick,
@@ -434,7 +428,7 @@ export const Search: React.FC = () => {
 
   const handleSearch = useCallback((value: string) => {
     setSearchQuery(value);
-  }, []);
+  }, [navigate]);
 
   return (
     <div className={styles.container} ref={scrollRef}>
@@ -447,13 +441,13 @@ export const Search: React.FC = () => {
         searchPlaceholder="Search for tracks, albums, playlists, artists..."
       />
       {isLoading && shouldSearch && <LoadingPlaceholder variant="spinner" fullWidth />}
-      {searchError && <div className={styles.error}>Error: Failed to search</div>}
+      {searchError && <div role="alert" className={styles.error}>{searchError}<Button onClick={() => void loadPage(0)}>Try again</Button></div>}
       {!shouldSearch && (
         <div className={styles.emptyState}>
           Enter a search query to find tracks, albums, playlists, artists, and users
         </div>
       )}
-      {shouldSearch && !isLoading && sections.length === 0 && (
+      {shouldSearch && !isLoading && !searchError && sections.length === 0 && (
         <div className={styles.emptyState}>No results found</div>
       )}
       {shouldSearch && !isLoading && sections.length > 0 && <ContentSections sections={sections} />}
@@ -465,4 +459,3 @@ export const Search: React.FC = () => {
     </div>
   );
 };
-

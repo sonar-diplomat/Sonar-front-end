@@ -1,28 +1,33 @@
+import type { ActiveSessionDTO,LoginResponseDTO,RefreshTokenResponse } from '@features/auth';
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
+
 import type {
-  DistributorDTO,
-  DistributorAccountDTO,
-  ArtistRegistrationRequestDTO,
-  CreateDistributorDTO,
-  UpdateDistributorDTO,
-  DistributorAccountRegisterDTO,
-  DistributorAccountChangePasswordDTO,
+ArtistRegistrationRequestDTO,
+CreateDistributorDTO,
+DistributorAccountChangePasswordDTO,
+DistributorAccountDTO,
+DistributorAccountRegisterDTO,
+DistributorDTO,
+UpdateDistributorDTO,
 } from '../model/types';
-import type { LoginResponseDTO, RefreshTokenResponse } from '@features/auth';
 
 /**
  * Distribution API endpoints
  */
 export const distributionApi = rtkApi.injectEndpoints({
   endpoints: (builder) => ({
+    getDistributorSessions: builder.query<ActiveSessionDTO[], void>({
+      query: () => ({ url: API_ENDPOINTS.authDistributor.getSessions, method: 'GET', withAuth: true }),
+      providesTags: ['DemoState', 'Session'],
+    }),
     getDistributors: builder.query<DistributorDTO[], void>({
       query: () => ({
         url: API_ENDPOINTS.distributor.list,
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: [{ type: 'Distributor', id: 'LIST' }],
+      providesTags: [{ type: 'Distributor', id: 'LIST' }, 'DemoState'],
     }),
 
     getDistributor: builder.query<DistributorDTO, number>({
@@ -31,7 +36,7 @@ export const distributionApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: (_result, _error, id) => [{ type: 'Distributor', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Distributor', id }, 'DemoState'],
     }),
 
     getDistributorAccount: builder.query<DistributorAccountDTO, number>({
@@ -40,7 +45,7 @@ export const distributionApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, id) => [{ type: 'DistributorAccount', id }],
+      providesTags: (_result, _error, id) => [{ type: 'DistributorAccount', id }, 'DemoState'],
     }),
 
     getArtistRequests: builder.query<ArtistRegistrationRequestDTO[], void>({
@@ -49,7 +54,7 @@ export const distributionApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: [{ type: 'ArtistRegistrationRequest', id: 'LIST' }],
+      providesTags: [{ type: 'ArtistRegistrationRequest', id: 'LIST' }, 'DemoState'],
     }),
 
     getArtistRequest: builder.query<ArtistRegistrationRequestDTO, number>({
@@ -58,7 +63,7 @@ export const distributionApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, requestId) => [{ type: 'ArtistRegistrationRequest', id: requestId }],
+      providesTags: (_result, _error, requestId) => [{ type: 'ArtistRegistrationRequest', id: requestId }, 'DemoState'],
     }),
 
     createDistributor: builder.mutation<DistributorDTO, CreateDistributorDTO>({

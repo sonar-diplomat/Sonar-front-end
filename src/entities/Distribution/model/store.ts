@@ -1,20 +1,26 @@
-import { useCallback, useMemo, useState } from 'react';
-import { DistributorApi, AuthDistributorApi, DistributorMasterApi } from '../api/api';
-import type {
-    DistributorDTO,
-    CreateDistributorDTO,
-    UpdateDistributorDTO,
-    DistributorAccountDTO,
-    DistributorAccountRegisterDTO,
-    DistributorAccountChangePasswordDTO,
-    ArtistRegistrationRequestDTO,
-} from './types';
-import type { State } from '@shared/types/store';
-import type { RequestConfig } from '@shared/types';
-import { withAuth } from '@shared/lib/auth/withAuth';
-import type { LoginResponseDTO, RefreshTokenResponse, ActiveSessionDTO } from '@features/auth';
+import { useCallback,useMemo,useState } from 'react';
 
-const pickError = (res: any) =>
+import type { ActiveSessionDTO,LoginResponseDTO,RefreshTokenResponse } from '@features/auth';
+import { legacyQuery } from '@shared/api/legacyQuery';
+import { withAuth } from '@shared/lib/auth/withAuth';
+import { store } from '@shared/store';
+import type { RequestConfig } from '@shared/types';
+import type { State } from '@shared/types/store';
+
+import { AuthDistributorApi,DistributorApi,DistributorMasterApi } from '../api/api';
+import { distributionApi } from '../api/rtkApi';
+
+import type {
+ArtistRegistrationRequestDTO,
+CreateDistributorDTO,
+DistributorAccountChangePasswordDTO,
+DistributorAccountDTO,
+DistributorAccountRegisterDTO,
+DistributorDTO,
+UpdateDistributorDTO,
+} from './types';
+
+const pickError = (res: { success: boolean; errors?: string[]; details?: string[]; message?: string }) =>
     res?.success ? undefined : res?.errors?.[0] || res?.details?.[0] || res?.message;
 
 // Distributor hooks
@@ -33,7 +39,7 @@ export const useGetDistributors = () => {
     const [state, setState] = useState<State<DistributorDTO[]>>({ loading: false });
     const refetch = useCallback(async (cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }));
-        const res = await withAuth(() => DistributorApi.list(cfg));
+        const res = await withAuth(() => legacyQuery(() => store.dispatch(distributionApi.endpoints.getDistributors.initiate(undefined, {subscribe:false,forceRefetch:true})).unwrap(), cfg));
         setState({ loading: false, data: res.data, error: pickError(res) });
         return res;
     }, []);
@@ -44,7 +50,7 @@ export const useGetDistributor = () => {
     const [state, setState] = useState<State<DistributorDTO>>({ loading: false });
     const refetch = useCallback(async (id: number, cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }));
-        const res = await DistributorApi.byId(id, cfg);
+        const res = await legacyQuery(() => store.dispatch(distributionApi.endpoints.getDistributor.initiate(id, {subscribe:false,forceRefetch:true})).unwrap(), cfg);
         setState({ loading: false, data: res.data, error: pickError(res) });
         return res;
     }, []);
@@ -88,7 +94,7 @@ export const useGetArtistRequests = () => {
     const [state, setState] = useState<State<ArtistRegistrationRequestDTO[]>>({ loading: false });
     const refetch = useCallback(async (cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }));
-        const res = await withAuth(() => DistributorApi.getArtistRequest(cfg));
+        const res = await withAuth(() => legacyQuery(() => store.dispatch(distributionApi.endpoints.getArtistRequests.initiate(undefined, {subscribe:false,forceRefetch:true})).unwrap(), cfg));
         setState({ loading: false, data: res.data, error: pickError(res) });
         return res;
     }, []);
@@ -99,7 +105,7 @@ export const useGetArtistRequest = () => {
     const [state, setState] = useState<State<ArtistRegistrationRequestDTO>>({ loading: false });
     const refetch = useCallback(async (requestId: number, cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }));
-        const res = await withAuth(() => DistributorApi.getArtistRequestById(requestId, cfg));
+        const res = await withAuth(() => legacyQuery(() => store.dispatch(distributionApi.endpoints.getArtistRequest.initiate(requestId, {subscribe:false,forceRefetch:true})).unwrap(), cfg));
         setState({ loading: false, data: res.data, error: pickError(res) });
         return res;
     }, []);
@@ -188,7 +194,7 @@ export const useGetDistributorSessions = () => {
     const [state, setState] = useState<State<ActiveSessionDTO[]>>({ loading: false });
     const refetch = useCallback(async (cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }));
-        const res = await withAuth(() => AuthDistributorApi.getSessions(cfg));
+        const res = await withAuth(() => legacyQuery(() => store.dispatch(distributionApi.endpoints.getDistributorSessions.initiate(undefined, {subscribe:false,forceRefetch:true})).unwrap(), cfg));
         setState({ loading: false, data: res.data, error: pickError(res) });
         return res;
     }, []);
@@ -222,7 +228,7 @@ export const useGetDistributorAccount = () => {
     const [state, setState] = useState<State<DistributorAccountDTO>>({ loading: false });
     const refetch = useCallback(async (id: number, cfg?: RequestConfig) => {
         setState((s) => ({ ...s, loading: true }));
-        const res = await withAuth(() => DistributorMasterApi.getAccount(id, cfg));
+        const res = await withAuth(() => legacyQuery(() => store.dispatch(distributionApi.endpoints.getDistributorAccount.initiate(id, {subscribe:false,forceRefetch:true})).unwrap(), cfg));
         setState({ loading: false, data: res.data, error: pickError(res) });
         return res;
     }, []);

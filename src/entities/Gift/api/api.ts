@@ -1,8 +1,9 @@
+import type { SubscriptionPaymentDTO } from '@entities/Subscription';
 import { apiClient } from '@shared/api/oldBaseApi.ts';
 import { API_ENDPOINTS } from '@shared/config';
-import type { GiftResponseDTO, GiftStyleDTO, SendGiftDTO } from '../model/types';
 import type { RequestConfig } from '@shared/types';
-import type { SubscriptionPaymentDTO } from '@entities/Subscription';
+
+import type { GiftResponseDTO,SendGiftDTO } from '../model/types';
 
 export const Api = {
     /**

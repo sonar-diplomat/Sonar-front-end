@@ -1,17 +1,20 @@
-import React, { useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Checkbox, ProfileIcon, Info, PlusIcon, ErrorIcon, LoadingPlaceholder, VerifyIcon, NotificationIcon, RightArrow, BlockIcon, DeleteIcon, Button } from '@shared/ui';
-import { 
-    useGetChatInfoQuery,
-    useDeleteChatMutation,
-    useLeaveChatMutation,
-    useRemoveUserFromChatMutation,
+import React,{ useMemo,useState } from 'react';
+
+import { useNavigate,useParams } from 'react-router-dom';
+
+import {
+useDeleteChatMutation,
+useGetChatInfoQuery,
+useLeaveChatMutation,
+useRemoveUserFromChatMutation,
 } from '@entities/Chat/api/rtkApi';
-import { useGetUserByIdQuery, useGetUserProfileByIdentifierQuery } from '@entities/User/api/rtkApi';
-import { usePatchClientSettingsMutation, useGetClientSettingsQuery } from '@entities/ClientSettings/api/rtkApi';
+import { useGetClientSettingsQuery,usePatchClientSettingsMutation } from '@entities/ClientSettings/api/rtkApi';
+import { useGetUserByIdQuery,useGetUserProfileByIdentifierQuery } from '@entities/User/api/rtkApi';
 import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
-import { MemberContextMenu } from '@widgets/MemberContextMenu';
+import { BlockIcon,Button,Checkbox,DeleteIcon,ErrorIcon,Info,LoadingPlaceholder,NotificationIcon,PlusIcon,ProfileIcon,RightArrow,VerifyIcon } from '@shared/ui';
 import { AddMembersModal } from '@widgets/AddMembersModal';
+import { MemberContextMenu } from '@widgets/MemberContextMenu';
+
 import { MemberItem } from './MemberItem';
 import styles from './UserInfo.module.css';
 
@@ -25,11 +28,11 @@ export const UserInfo: React.FC = () => {
     const currentUserId = useCurrentUserId();
 
     const chatIdNumber = chatId ? Number(chatId) : 0;
-    
+
     const { data: chatInfo, isLoading, error, refetch: refetchChatInfo } = useGetChatInfoQuery(chatIdNumber, {
         skip: !chatIdNumber,
     });
-    
+
     const [deleteChat, { isLoading: isDeletingChat }] = useDeleteChatMutation();
     const [leaveChat] = useLeaveChatMutation();
     const [removeUserFromChat] = useRemoveUserFromChatMutation();
@@ -71,7 +74,7 @@ export const UserInfo: React.FC = () => {
     };
 
     const handleReport = () => {
-        console.log('Report user');
+        if (otherUserId) navigate(`/report?userId=${otherUserId}`);
     };
 
     const handleBlockUser = async () => {
@@ -79,25 +82,25 @@ export const UserInfo: React.FC = () => {
             console.warn('Cannot block user: missing otherUserId or currentSettings');
             return;
         }
-        
+
         try {
             const currentBlockedIds = currentSettings.blockedUserIds || [];
-            
+
             if (currentBlockedIds.includes(otherUserId)) {
                 console.log('User is already blocked');
                 return;
             }
-            
+
             const updatedBlockedIds = [...currentBlockedIds, otherUserId];
-            
+
             console.log('Blocking user:', { otherUserId, updatedBlockedIds });
-            
+
             await patchSettings({
                 blockedUserIds: updatedBlockedIds,
             }).unwrap();
-            
+
             console.log('User blocked successfully');
-            
+
             navigate('/chats');
         } catch (error) {
             console.error('Failed to block user:', error);
@@ -106,7 +109,7 @@ export const UserInfo: React.FC = () => {
 
     const handleDeleteChat = async () => {
         if (!chatIdNumber) return;
-        
+
         try {
             await deleteChat(chatIdNumber).unwrap();
             navigate('/chats');
@@ -133,15 +136,15 @@ export const UserInfo: React.FC = () => {
 
     const handleBlockMember = async () => {
         if (!selectedMemberId || !currentSettings) return;
-        
+
         try {
             const currentBlockedIds = currentSettings.blockedUserIds || [];
             const updatedBlockedIds = [...currentBlockedIds, selectedMemberId];
-            
+
             await patchSettings({
                 blockedUserIds: updatedBlockedIds,
             }).unwrap();
-            
+
             navigate('/chats');
         } catch (error) {
             console.error('Failed to block user:', error);
@@ -150,7 +153,7 @@ export const UserInfo: React.FC = () => {
 
     const handleRemoveMemberFromChat = async () => {
         if (!selectedMemberId || !chatIdNumber) return;
-        
+
         try {
             await removeUserFromChat({
                 chatId: chatIdNumber,
@@ -164,7 +167,7 @@ export const UserInfo: React.FC = () => {
 
     const handleLeaveGroup = async () => {
         if (!chatIdNumber) return;
-        
+
         try {
             await leaveChat(chatIdNumber).unwrap();
             navigate('/chats');
@@ -267,10 +270,10 @@ export const UserInfo: React.FC = () => {
                 )}
 
                 {isGroup && isAdmin && (
-                    <Button 
-                        variant="text" 
-                        theme="dark" 
-                        className={styles.optionItem} 
+                    <Button
+                        variant="text"
+                        theme="dark"
+                        className={styles.optionItem}
                         onClick={handleAddMembers}
                     >
                         <div className={styles.optionLeft}>
@@ -291,8 +294,8 @@ export const UserInfo: React.FC = () => {
                             <RightArrow className={styles.arrowIcon} color="#fff" />
                         </button>
 
-                        <button 
-                            className={styles.optionItem} 
+                        <button
+                            className={styles.optionItem}
                             onClick={handleBlockUser}
                             disabled={!otherUserId || !currentSettings || isBlockingUser}
                         >
@@ -315,10 +318,10 @@ export const UserInfo: React.FC = () => {
                     </button>
                 )}
 
-                <Button 
-                    variant="text" 
-                    theme="dark" 
-                    className={`${styles.optionItem} ${styles.danger}`} 
+                <Button
+                    variant="text"
+                    theme="dark"
+                    className={`${styles.optionItem} ${styles.danger}`}
                     onClick={handleDeleteChat}
                     disabled={isDeletingChat}
                 >
@@ -361,4 +364,3 @@ export const UserInfo: React.FC = () => {
         </div>
     );
 };
-

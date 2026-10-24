@@ -1,11 +1,14 @@
 import React from "react";
-import styles from './AssignNewPassword.module.css';
-import { Button, LeftArrow } from "@shared/ui";
-import { AssignNewPassword as AssignNewPasswordFeature } from "@features/password-recovery";
-import type { AssignNewPasswordFormData } from "@features/password-recovery";
-import { useNavigate, useSearchParams } from "react-router-dom";
+
+import { useNavigate,useSearchParams } from "react-router-dom";
+
 import { useResetPassword } from "@features/auth/model/store.ts";
+import type { AssignNewPasswordFormData } from "@features/password-recovery";
+import { AssignNewPassword as AssignNewPasswordFeature } from "@features/password-recovery";
 import { useNotifications } from "@shared/store/notificationStore";
+import { Button,LeftArrow } from "@shared/ui";
+
+import styles from './AssignNewPassword.module.css';
 
 export const AssignNewPassword: React.FC = () => {
     const navigate = useNavigate();

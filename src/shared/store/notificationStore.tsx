@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+
 import type { NormalizedApiResponse } from '@shared/types';
 
 export interface NotificationItem {

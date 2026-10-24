@@ -1,0 +1,25 @@
+version: '3'
+
+vars:
+  TRACK_IDS: '{{default "all" .TRACK_IDS}}'
+  MEDIA_REMOTE: '{{default "origin" .MEDIA_REMOTE}}'
+  MEDIA_SKIP_SEED: '{{default "0" .MEDIA_SKIP_SEED}}'
+
+tasks:
+  pull:
+    desc: Pull only selected manifest audio from LFS and verify the actual bytes
+    preconditions:
+      - sh: git lfs version
+        msg: Install Git LFS before pulling audio
+    env:
+      TRACK_IDS: '{{.TRACK_IDS}}'
+      MEDIA_REMOTE: '{{.MEDIA_REMOTE}}'
+      MEDIA_SKIP_SEED: '{{.MEDIA_SKIP_SEED}}'
+    cmds: [npm run media:pull]
+
+  verify:
+    desc: Verify selected audio, covers, MIME, duration, licenses, sizes and SHA-256
+    env:
+      TRACK_IDS: '{{.TRACK_IDS}}'
+      MEDIA_SKIP_SEED: '{{.MEDIA_SKIP_SEED}}'
+    cmds: [npm run media:verify]

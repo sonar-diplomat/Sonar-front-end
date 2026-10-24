@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Button, CalendarIcon, LinkIcon, ImageIcon, MusicNoteIcon, RightArrow, LoadingImage } from '@shared/ui';
+import React,{ useState } from 'react';
+
+import { Button,CalendarIcon,LoadingImage,RightArrow } from '@shared/ui';
 import { ModalDatePicker } from '@widgets/ModalDatePicker';
+
 import styles from './CreatePostForm.module.css';
 
 export interface CreatePostFormProps {
@@ -22,11 +24,7 @@ const COMMON_BUTTON_PROPS = {
     shape: 'cr-16' as const,
 };
 
-const ATTACHMENT_BUTTONS = [
-    { icon: LinkIcon, key: 'link' },
-    { icon: ImageIcon, key: 'image' },
-    { icon: MusicNoteIcon, key: 'music' },
-] as const;
+
 
 export const CreatePostForm: React.FC<CreatePostFormProps> = ({
     artistName = 'Artist',
@@ -104,17 +102,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({
                     {scheduledDate ? `Posting at ${scheduledDate}` : 'Schedule'}
                 </Button>
 
-                <div className={styles.iconButtons}>
-                    {ATTACHMENT_BUTTONS.map(({ icon: Icon, key }) => (
-                        <Button
-                            key={key}
-                            {...COMMON_BUTTON_PROPS}
-                            icon={<Icon />}
-                            iconOnly
-                            className={styles.iconButton}
-                        />
-                    ))}
-                </div>
+                <p>Text posts support links. File attachments are unavailable.</p>
             </div>
 
             <Button
@@ -124,7 +112,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({
                 className={styles.submitButton}
                 onClick={handleSubmit}
                 icon={<RightArrow />}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !topic.trim() || !content.trim()}
             >
                 {isSubmitting ? 'Posting...' : 'Post'}
             </Button>

@@ -1,9 +1,11 @@
-import styles from './MiniPlayer.module.css';
 import React from "react";
+
+import type { MiniPlayerProps } from "../model/types";
+
+import styles from './MiniPlayer.module.css';
 // {useMemo}
 // import {getArtistNames} from "@widgets/MiniPlayer/lib/utils.ts";
-import type {MiniPlayerProps} from "../model/types";
-import {PlayerActions} from "./PlayerActions";
+import { PlayerActions } from "./PlayerActions";
 
 interface TrackInfoProps {
     currentTrack: MiniPlayerProps['currentTrack'];

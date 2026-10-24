@@ -5,8 +5,26 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev:demo": "cross-env VITE_DATA_SOURCE=mock vite --mode demo",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.node.json --noEmit",
+    "lint": "eslint .",
+    "test:profiles": "node --test tests/build-profiles.test.mjs",
+    "build": "npm run typecheck && vite build",
+    "build:demo": "npm run typecheck && cross-env VITE_DATA_SOURCE=mock vite build --mode demo",
+    "preview": "vite preview",
+    "test:demo": "node --experimental-strip-types --test src/shared/demo/*.test.ts src/shared/store/features/player/*.test.ts",
+    "media:pull": "node scripts/media.mjs pull",
+    "media:verify": "node scripts/media.mjs verify",
+    "pages:package": "node scripts/pages.mjs package",
+    "pages:preview": "node scripts/pages.mjs preview",
+    "pages:probe": "node scripts/pages.mjs probe",
+    "yaml:check": "node scripts/check-yaml.mjs",
+    "docker:verify": "node scripts/docker-verify.mjs",
+    "release:verify": "node scripts/assert-release.mjs",
+    "test:media": "node --test scripts/tests/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=24.14.0 <25"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",
@@ -15,6 +33,7 @@
     "@microsoft/signalr": "^10.0.0",
     "@reduxjs/toolkit": "^2.10.1",
     "jiti": "^2.6.1",
+    "qrcode": "1.5.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-redux": "^9.2.0",
@@ -24,17 +43,21 @@
     "@capacitor/cli": "^8.0.0",
     "@eslint/js": "^9.38.0",
     "@types/node": "^24.6.2",
+    "@types/qrcode": "1.5.6",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.0.4",
+    "cross-env": "10.1.0",
     "eslint": "^9.38.0",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.23",
     "globals": "^16.4.0",
+    "music-metadata": "12.2.3",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.1",
-    "vite": "npm:rolldown-vite@7.1.14"
+    "vite": "npm:rolldown-vite@7.1.14",
+    "yaml": "2.9.1"
   }
 }

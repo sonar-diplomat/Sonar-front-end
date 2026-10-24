@@ -1,10 +1,11 @@
 import type { TrackDTO } from '@entities/Music';
+import type { QueueTrack } from '@shared/store/features/player/playerSlice';
 
 export interface MacroPlayerProps {
   isOpen: boolean;
   onClose: () => void;
   currentTrack: TrackDTO | null;
-  queue: TrackDTO[];
+  queue: QueueTrack[];
   isPlaying: boolean;
   currentTime: number;
   duration: number;
@@ -17,4 +18,3 @@ export interface MacroPlayerProps {
   onTrackSelect?: (queueId: number) => void;
   onRemoveFromQueue?: (queueId: number) => void;
 }
-

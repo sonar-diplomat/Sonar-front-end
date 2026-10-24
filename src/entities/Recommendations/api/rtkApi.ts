@@ -1,10 +1,11 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
+
 import type {
-  PopularCollectionDTO,
-  RecentCollectionDTO,
-  RecentTrackDTO,
-  CursorPageDTO,
+CursorPageDTO,
+PopularCollectionDTO,
+RecentCollectionDTO,
+RecentTrackDTO,
 } from '../model/types';
 
 /**
@@ -13,6 +14,7 @@ import type {
 export const recommendationsApi = rtkApi.injectEndpoints({
   endpoints: (builder) => ({
     getPopularCollections: builder.query<PopularCollectionDTO[], { limit?: number }>({
+      providesTags: ['DemoState'],
       query: ({ limit = 4 }) => ({
         url: API_ENDPOINTS.recommendations.popularCollections,
         method: 'GET',
@@ -25,6 +27,7 @@ export const recommendationsApi = rtkApi.injectEndpoints({
       CursorPageDTO<RecentCollectionDTO>,
       { limit?: number; cursor?: string | null }
     >({
+      providesTags: ['DemoState'],
       query: ({ limit = 5, cursor }) => ({
         url: API_ENDPOINTS.recommendations.recentCollections,
         method: 'GET',
@@ -37,6 +40,7 @@ export const recommendationsApi = rtkApi.injectEndpoints({
     }),
 
     getRecentTracks: builder.query<CursorPageDTO<RecentTrackDTO>, { limit?: number; cursor?: string | null }>({
+      providesTags: ['DemoState'],
       query: ({ limit = 5, cursor }) => ({
         url: API_ENDPOINTS.recommendations.recentTracks,
         method: 'GET',

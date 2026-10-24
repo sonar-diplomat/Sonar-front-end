@@ -1,11 +1,13 @@
 import React from 'react';
-import { splitTextWithEmbeds, shouldShowEmbed } from './parser';
+
 import { isStickerMessage, extractStickerId } from '@shared/lib/chat-stickers';
-import { TrackEmbed } from './widgets/TrackEmbed';
-import { CollectionEmbed } from './widgets/CollectionEmbed';
 import { StickerMessage } from '@widgets/StickerMessage';
-import type { EmbedMatch } from './types';
+
 import styles from './MessageContent.module.css';
+import { splitTextWithEmbeds, shouldShowEmbed } from './parser';
+import type { EmbedMatch } from './types';
+import { CollectionEmbed } from './widgets/CollectionEmbed';
+import { TrackEmbed } from './widgets/TrackEmbed';
 
 export interface MessageContentRendererProps {
   text: string;

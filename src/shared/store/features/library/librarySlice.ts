@@ -1,4 +1,5 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice,type PayloadAction } from '@reduxjs/toolkit';
+
 import type { FolderDTO } from '@entities/Library';
 import { libraryApi } from '@entities/Library/api/rtkApi';
 
@@ -63,15 +64,7 @@ const librarySlice = createSlice({
             isArray: Array.isArray(action.payload),
             payload: action.payload,
           });
-          // Пытаемся извлечь массив из объекта, если данные обернуты
-          if (action.payload && typeof action.payload === 'object' && 'data' in action.payload && Array.isArray(action.payload.data)) {
-            console.warn('[librarySlice] Extracting array from wrapped response');
-            state.foldersList = action.payload.data;
-            state.isDirty = false;
-            state.lastUpdated = Date.now();
-          } else {
-            state.foldersList = null;
-          }
+          state.foldersList = null;
         }
       }
     );

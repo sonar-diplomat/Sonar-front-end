@@ -1,7 +1,9 @@
 import React from 'react';
+
+import { TrackItem } from '@shared/ui/TrackItem';
+
 import styles from './CollectionView.module.css';
 import type { CollectionViewProps } from './CollectionView.types';
-import { TrackItem } from '@shared/ui/TrackItem';
 
 export const CollectionView: React.FC<CollectionViewProps> = ({
     title = 'Tracks inside',
@@ -21,6 +23,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                 <h2 className={styles.title}>{title}</h2>
             </div>
             <div className={styles.container}>
+                {tracks.length === 0 && <p>No tracks yet. Add songs using their menu.</p>}
                 <div className={styles.trackList}>
                     {tracks.map((track, index) => (
                         <React.Fragment key={track.id}>

@@ -1,15 +1,6 @@
 export { signalRManager } from './signalr-manager';
 export {
-  useSignalR,
-  type MessageCreatedEvent,
-  type MessageReadEvent,
-  type MessageDeletedEvent,
-  type MessageUpdatedEvent,
-  type ChatNameUpdatedEvent,
-  type ChatCoverUpdatedEvent,
-  type ChatUserAddedEvent,
-  type ChatUserRemovedEvent,
-  type ChatDeletedEvent,
-  type TypingEvent,
+useSignalR,type ChatCoverUpdatedEvent,type ChatDeletedEvent,type ChatNameUpdatedEvent,type ChatUserAddedEvent,
+type ChatUserRemovedEvent,type MessageCreatedEvent,type MessageDeletedEvent,type MessageReadEvent,type MessageUpdatedEvent,type TypingEvent
 } from './useSignalR';
 

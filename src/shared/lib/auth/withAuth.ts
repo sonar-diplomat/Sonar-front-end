@@ -1,6 +1,8 @@
+import { isDemoMode } from '@shared/config/data-source';
 import { authManager } from '@shared/lib';
-import { shouldRefreshToken } from './jwt-utils';
 import type { NormalizedApiResponse } from '@shared/types/api';
+
+import { shouldRefreshToken } from './jwt-utils';
 
 /**
  * Обертка для API запросов, которая автоматически проверяет авторизацию
@@ -9,6 +11,7 @@ import type { NormalizedApiResponse } from '@shared/types/api';
 export async function withAuth<T>(
   apiCall: () => Promise<NormalizedApiResponse<T>>
 ): Promise<NormalizedApiResponse<T>> {
+  if (isDemoMode) return apiCall();
   const accessToken = authManager.getAccessToken();
   const refreshToken = authManager.getRefreshToken();
 

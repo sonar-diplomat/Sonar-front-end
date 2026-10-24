@@ -1,4 +1,4 @@
-import type {WheelPickerOption} from "@shared/ui";
+import type { WheelPickerOption } from "@shared/ui";
 
 const toOptions = (labels: string[]): WheelPickerOption[] =>
     labels.map(label => ({label, value: label}));

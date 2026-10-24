@@ -1,12 +1,13 @@
-import { useCallback, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@shared/store/hooks';
-import { setUserAccessFeatures, setAllAccessFeatures, clearAccess } from './accessSlice';
+import { useCallback,useEffect } from 'react';
+
+import { accessApi } from '@entities/Access/api/rtkApi';
 import {
-  useGetAccessFeaturesQuery,
-  useGetUserAccessFeaturesQuery,
-  useAssignAccessFeaturesMutation,
-  useRevokeAccessFeaturesMutation,
+useGetAccessFeaturesQuery,
 } from '@shared/api';
+import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
+import { useAppDispatch,useAppSelector } from '@shared/store/hooks';
+
+import { clearAccess,setAllAccessFeatures,setUserAccessFeatures } from './accessSlice';
 
 /**
  * Хук для работы с функциями доступа
@@ -16,6 +17,8 @@ import {
 export const useAccess = () => {
   const dispatch = useAppDispatch();
   const { userAccessFeatures, allAccessFeatures } = useAppSelector((state) => state.access);
+  const currentUserId = useCurrentUserId();
+  const [getUserAccess] = accessApi.useLazyGetUserAccessFeaturesQuery();
 
   // Используем RTK Query для загрузки всех функций доступа
   const { data: allFeaturesData, isLoading: isLoadingAll, error: allFeaturesError, refetch: refetchAll } =
@@ -42,12 +45,12 @@ export const useAccess = () => {
   /**
    * Загружает функции доступа для конкретного пользователя
    */
-  const loadUserAccessFeatures = useCallback(async () => {
-    // Используем RTK Query hook для загрузки функций доступа пользователя
-    // Это будет выполнено через useGetUserAccessFeaturesQuery в компоненте
-    // Здесь мы просто возвращаем функцию для совместимости
-    return null;
-  }, []);
+  const loadUserAccessFeatures = useCallback(async (userId: number | null = currentUserId) => {
+    if (!userId) return null;
+    const data = await getUserAccess(userId).unwrap();
+    dispatch(setUserAccessFeatures(data));
+    return data;
+  }, [currentUserId, dispatch, getUserAccess]);
 
   /**
    * Проверяет, есть ли у пользователя указанная функция доступа

@@ -1,7 +1,8 @@
+import type { TrackDTO } from '@entities/Music';
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
-import type { TrackDTO } from '@entities/Music';
-import type { AlbumDTO, UploadAlbumDTO } from '../model/types';
+
+import type { AlbumDTO,UploadAlbumDTO } from '../model/types';
 
 /**
  * Album API endpoints
@@ -14,7 +15,7 @@ export const albumApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, albumId) => [{ type: 'Share', id: `album-${albumId}` }],
+      providesTags: (_result, _error, albumId) => [{ type: 'Share', id: `album-${albumId}` }, 'DemoState'],
     }),
 
     uploadAlbum: builder.mutation<AlbumDTO, UploadAlbumDTO>({
@@ -92,7 +93,7 @@ export const albumApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: (_result, _error, albumId) => [{ type: 'Album', id: albumId }, { type: 'Track', id: 'LIST' }],
+      providesTags: (_result, _error, albumId) => [{ type: 'Album', id: albumId }, { type: 'Track', id: 'LIST' }, 'DemoState'],
     }),
 
     getAlbum: builder.query<AlbumDTO, number>({
@@ -101,7 +102,7 @@ export const albumApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: (_result, _error, albumId) => [{ type: 'Album', id: albumId }],
+      providesTags: (_result, _error, albumId) => [{ type: 'Album', id: albumId }, 'DemoState'],
     }),
   }),
 });

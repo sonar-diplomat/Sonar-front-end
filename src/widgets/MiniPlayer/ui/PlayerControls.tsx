@@ -1,7 +1,10 @@
-import { PlayIcon, PauseIcon, NextIcon, PreviousIcon } from '@shared/ui';
-import type { PlayerControlsProps } from '../model/types';
-import styles from './MiniPlayer.module.css';
 import React from "react";
+
+import { NextIcon,PauseIcon,PlayIcon,PreviousIcon } from '@shared/ui';
+
+import type { PlayerControlsProps } from '../model/types';
+
+import styles from './MiniPlayer.module.css';
 
 export const PlayerControls = ({
   isPlaying,

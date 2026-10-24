@@ -27,7 +27,11 @@ export interface MoodTagDTO {
 
 export interface TrackDTO {
     id: number;
+    demoCredits?: { artist: string; title: string; sourceUrl: string; license: string; licenseUrl: string };
     title: string;
+    durationInSeconds?: number;
+    albumId?: number;
+    albumName?: string;
     duration: string | null;
     isExplicit: boolean;
     drivingDisturbingNoises: boolean;
@@ -42,6 +46,10 @@ export interface TrackDTO {
     visibilityState?: VisibilityStateDTO | null;
     cover?: ImageFileDTO | null;
     artists?: Array<{
+        id?: number;
+        artistId?: number;
+        artistName?: string;
+        pseudonym?: string;
         user?: {
             firstName?: string;
             lastName?: string;

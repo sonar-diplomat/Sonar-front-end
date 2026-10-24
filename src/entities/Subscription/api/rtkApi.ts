@@ -1,11 +1,15 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
+
 import type {
-  SubscriptionPackDTO,
-  SubscriptionPaymentDTO,
-  SubscriptionFeatureDTO,
-  PurchaseSubscriptionDTO,
+PurchaseSubscriptionDTO,
+SubscriptionFeatureDTO,
+SubscriptionPackDTO,
+SubscriptionPaymentDTO,
 } from '../model/types';
+
+import { normalizeSubscriptionPack } from './normalizeSubscription';
+
 
 /**
  * Subscription API endpoints
@@ -13,21 +17,26 @@ import type {
 export const subscriptionApi = rtkApi.injectEndpoints({
   endpoints: (builder) => ({
     getSubscriptionPacks: builder.query<SubscriptionPackDTO[], void>({
+      transformResponse: (response: unknown) => {
+        if (!Array.isArray(response)) throw new Error('Invalid subscription pack list');
+        return response.map(normalizeSubscriptionPack);
+      },
       query: () => ({
         url: API_ENDPOINTS.subscription.packs,
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: [{ type: 'SubscriptionPack', id: 'LIST' }],
+      providesTags: [{ type: 'SubscriptionPack', id: 'LIST' }, 'DemoState'],
     }),
 
     getSubscriptionPack: builder.query<SubscriptionPackDTO, number>({
+      transformResponse: normalizeSubscriptionPack,
       query: (id) => ({
         url: API_ENDPOINTS.subscription.packById(id),
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: (_result, _error, id) => [{ type: 'SubscriptionPack', id }],
+      providesTags: (_result, _error, id) => [{ type: 'SubscriptionPack', id }, 'DemoState'],
     }),
 
     getSubscriptionPayments: builder.query<SubscriptionPaymentDTO[], void>({
@@ -36,7 +45,7 @@ export const subscriptionApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: [{ type: 'SubscriptionPayment', id: 'LIST' }],
+      providesTags: [{ type: 'SubscriptionPayment', id: 'LIST' }, 'DemoState'],
     }),
 
     getSubscriptionPayment: builder.query<SubscriptionPaymentDTO, number>({
@@ -45,7 +54,7 @@ export const subscriptionApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: (_result, _error, id) => [{ type: 'SubscriptionPayment', id }],
+      providesTags: (_result, _error, id) => [{ type: 'SubscriptionPayment', id }, 'DemoState'],
     }),
 
     getSubscriptionFeatures: builder.query<SubscriptionFeatureDTO[], void>({
@@ -54,7 +63,7 @@ export const subscriptionApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: [{ type: 'SubscriptionFeature', id: 'LIST' }],
+      providesTags: [{ type: 'SubscriptionFeature', id: 'LIST' }, 'DemoState'],
     }),
 
     getSubscriptionFeature: builder.query<SubscriptionFeatureDTO, number>({
@@ -63,7 +72,7 @@ export const subscriptionApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: (_result, _error, id) => [{ type: 'SubscriptionFeature', id }],
+      providesTags: (_result, _error, id) => [{ type: 'SubscriptionFeature', id }, 'DemoState'],
     }),
 
     purchaseSubscription: builder.mutation<SubscriptionPaymentDTO, PurchaseSubscriptionDTO>({

@@ -1,11 +1,9 @@
-export type { PostDTO, Artist, Post } from './model/types';
 export { Api } from './api/api';
-export * from './model/store';
 export {
-  useGetArtistByIdQuery,
-  useGetArtistPostsQuery,
-  useCreatePostMutation,
-  useDeletePostMutation,
-  useUpdatePostMutation,
+useCreatePostMutation,
+useDeletePostMutation,useGetArtistByIdQuery,
+useGetArtistPostsQuery,useUpdatePostMutation
 } from './api/rtkApi';
+export * from './model/store';
+export type { Artist,Post,PostDTO } from './model/types';
 

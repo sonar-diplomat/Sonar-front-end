@@ -1,7 +1,9 @@
 import React from 'react';
+
+import { Button,PauseIcon,PlayIcon,ShuffleIcon } from '@shared/ui';
+
 import styles from './CollectionPlayPanel.module.css';
 import type { CollectionPlayPanelProps } from './CollectionPlayPanel.types';
-import { Button, PlayIcon, PauseIcon, ShuffleIcon } from '@shared/ui';
 
 export const CollectionPlayPanel: React.FC<CollectionPlayPanelProps> = ({
     onPlayClick,
@@ -29,7 +31,7 @@ export const CollectionPlayPanel: React.FC<CollectionPlayPanelProps> = ({
                         shape="cr-16"
                         icon={showPauseIcon ? <PauseIcon/> : <PlayIcon/>}
                         iconOnly
-                        onClick={onPlayClick}
+                        aria-label={playText} onClick={onPlayClick}
                     />
                 )}
                 <p className={styles.playText}>{playText}</p>
@@ -42,10 +44,9 @@ export const CollectionPlayPanel: React.FC<CollectionPlayPanelProps> = ({
                     shape="cr-16"
                     icon={<ShuffleIcon/>}
                     iconOnly
-                    onClick={onShuffleClick}
+                    aria-label="Shuffle collection" onClick={onShuffleClick}
                 />
             )}
         </div>
     );
 };
-

@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React,{ useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import styles from './ItemCard.module.css';
-import type {ItemCardProps} from '@shared/ui';
+
+import type { ItemCardProps } from '@shared/ui';
 import { LoadingImage } from '@shared/ui';
+
+import styles from './ItemCard.module.css';
 
 export const ItemCard: React.FC<ItemCardProps> = ({
     size = 'medium', 

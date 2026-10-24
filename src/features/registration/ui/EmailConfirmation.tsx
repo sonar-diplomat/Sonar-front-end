@@ -1,6 +1,11 @@
 import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
+
+import { isDemoMode } from '@shared/config/data-source';
 import { Button } from '@shared/ui';
+import { DemoOutboxNotice } from '@shared/ui/DemoOutboxNotice';
+
 import styles from './EmailConfirmation.module.css';
 
 export interface EmailConfirmationModalProps {
@@ -9,7 +14,7 @@ export interface EmailConfirmationModalProps {
   onResend?: () => void;
 }
 
-export const EmailConfirmation: React.FC<EmailConfirmationModalProps> = () => {
+export const EmailConfirmation: React.FC<EmailConfirmationModalProps> = ({ email = '' }) => {
   const navigate = useNavigate();
 
   const handleOk = () => {
@@ -19,10 +24,11 @@ export const EmailConfirmation: React.FC<EmailConfirmationModalProps> = () => {
   return (
     <div className={styles.container}>
       <div className={styles.message}>
-        <h2 className={styles.title}>Check your email</h2>
+        <h2 className={styles.title}>{isDemoMode ? 'Confirm local demo account' : 'Check your email'}</h2>
         <p className={styles.description}>
-          Please check your email to activate your account.
+          {isDemoMode ? 'This account exists only in this browser. No email is sent.' : 'Please check your email to activate your account.'}
         </p>
+        {isDemoMode && <DemoOutboxNotice kind="confirm-email" email={email} />}
         <Button
           variant="filled"
           theme="dark"

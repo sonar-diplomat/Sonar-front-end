@@ -1,25 +1,14 @@
 import { useMemo } from 'react';
-import { useAppSelector } from '@shared/store/hooks';
+
 import {
-  useSearchQuery,
-  useSearchTracksQuery,
-  useSearchAlbumsQuery,
-  useSearchPlaylistsQuery,
-  useSearchArtistsQuery,
-  useSearchUsersQuery,
+useSearchAlbumsQuery,
+useSearchArtistsQuery,
+useSearchPlaylistsQuery,
+useSearchQuery,
+useSearchTracksQuery,
+useSearchUsersQuery,
 } from '@entities/Search/api/rtkApi';
-import type {
-  TrackSearchItemDTO,
-  AlbumSearchItemDTO,
-  PlaylistSearchItemDTO,
-  ArtistSearchItemDTO,
-  UserSearchItemDTO,
-  SearchTracksResultDTO,
-  SearchAlbumsResultDTO,
-  SearchPlaylistsResultDTO,
-  SearchArtistsResultDTO,
-  SearchUsersResultDTO,
-} from '@entities/Search';
+import { useAppSelector } from '@shared/store/hooks';
 
 /**
  * Получает все результаты из кэша, которые соответствуют текущему запросу

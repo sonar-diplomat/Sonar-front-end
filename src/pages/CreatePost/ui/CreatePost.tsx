@@ -1,10 +1,13 @@
 import React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { CreatePostForm, type PostFormData } from '@widgets/CreatePostForm';
-import { useCreatePostMutation, useGetArtistByIdQuery } from '@entities/Artist';
+
+import { useNavigate,useParams } from 'react-router-dom';
+
+import { useCreatePostMutation,useGetArtistByIdQuery } from '@entities/Artist';
 import { useCurrentUserId } from '@shared/lib/auth';
 import { getImageUrl } from '@shared/lib/image-utils';
 import { useNotifications } from '@shared/lib/notifications';
+import { CreatePostForm,type PostFormData } from '@widgets/CreatePostForm';
+
 import styles from './CreatePost.module.css';
 
 export const CreatePost: React.FC = () => {
@@ -32,7 +35,7 @@ export const CreatePost: React.FC = () => {
             showSuccess('Post created successfully');
             navigate(`/artist/${id}/posts`);
         } catch (error: unknown) {
-            const apiError = error as { data?: { message?: string; errors?: unknown } };
+            const apiError = error as { data?: { message?: string; errors?: string[] } };
             showError(
                 apiError.data?.message || 'Failed to create post',
                 apiError.data?.errors
@@ -45,7 +48,7 @@ export const CreatePost: React.FC = () => {
     }
 
     if (!artistData || !isOwner) {
-        return null;
+        return <div className={styles.container}>Only the artist owner can create posts here.</div>;
     }
 
     const avatarUrl = getImageUrl(artistData.user?.avatarImageId) || 'https://placehold.co/52x52';

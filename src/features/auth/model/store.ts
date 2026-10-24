@@ -1,29 +1,31 @@
-import { useCallback, useMemo } from 'react'
-import { useAppDispatch } from '@shared/store/hooks'
-import { setCredentials, updateTokens } from '@shared/store/features/auth/authSlice'
-import {
-  useRegisterMutation,
-  useLoginMutation,
-  useVerify2FAMutation,
-  useRefreshTokenMutation,
-  useRequestEmailChangeMutation,
-  useConfirmEmailChangeMutation,
-  useConfirmPasswordChangeMutation,
-  useRequestPasswordChangeMutation,
-  useForgotPasswordMutation,
-  useResetPasswordMutation,
-  useGetSessionsQuery,
-  useRevokeSessionMutation,
-  useRevokeAllSessionsMutation,
-} from '@shared/api'
+function authError(error: unknown) { const value = error && typeof error === 'object' ? error as {status?: number;message?: string;data?: {message?: string;errors?: string[];details?: string[]}} : {}; return value; }
+import { useCallback,useMemo } from 'react'
+
 import type {
-    ConfirmEmailChangeDTO,
-    ConfirmPasswordChangeDTO,
-    UserRegisterDTO,
-    Verify2FaDTO,
-    ForgotPasswordDTO,
-    ResetPasswordDTO,
+ConfirmEmailChangeDTO,
+ConfirmPasswordChangeDTO,
+ForgotPasswordDTO,
+ResetPasswordDTO,
+UserRegisterDTO,
+Verify2FaDTO,
 } from '@features/auth'
+import {
+useConfirmEmailChangeMutation,
+useConfirmPasswordChangeMutation,
+useForgotPasswordMutation,
+useGetSessionsQuery,
+useLoginMutation,
+useRefreshTokenMutation,
+useRegisterMutation,
+useRequestEmailChangeMutation,
+useRequestPasswordChangeMutation,
+useResetPasswordMutation,
+useRevokeAllSessionsMutation,
+useRevokeSessionMutation,
+useVerify2FAMutation,
+} from '@shared/api'
+import { setCredentials,updateTokens } from '@shared/store/features/auth/authSlice'
+import { useAppDispatch } from '@shared/store/hooks'
 
 export const useRegister = () => {
     const [trigger, result] = useRegisterMutation()
@@ -31,7 +33,8 @@ export const useRegister = () => {
         try {
             await trigger(dto).unwrap()
             return { success: true, data: undefined }
-        } catch (error: any) {
+        } catch (caught: unknown) {
+            const error = authError(caught)
             const errorMsg = error?.data?.message || error?.message || 'Registration failed'
             return {
                 success: false,
@@ -44,7 +47,7 @@ export const useRegister = () => {
     }, [trigger])
     return useMemo(() => ({
         loading: result.isLoading,
-        error: result.error ? (result.error as any)?.data?.message || (result.error as any)?.message : undefined,
+        error: result.error ? authError(result.error)?.data?.message || authError(result.error)?.message : undefined,
         mutate,
     }), [result.isLoading, result.error, mutate])
 }
@@ -60,7 +63,8 @@ export const useLogin = () => {
                 dispatch(setCredentials(data))
             }
             return { success: true, data }
-        } catch (error: any) {
+        } catch (caught: unknown) {
+            const error = authError(caught)
             const errorMsg = error?.data?.message || error?.message || 'Login failed'
             return {
                 success: false,
@@ -74,7 +78,7 @@ export const useLogin = () => {
     return useMemo(() => ({
         loading: result.isLoading,
         data: result.data,
-        error: result.error ? (result.error as any)?.data?.message || (result.error as any)?.message : undefined,
+        error: result.error ? authError(result.error)?.data?.message || authError(result.error)?.message : undefined,
         mutate,
     }), [result.isLoading, result.data, result.error, mutate])
 }
@@ -94,7 +98,8 @@ export const useVerify2FA = () => {
                 }))
             }
             return { success: true, data }
-        } catch (error: any) {
+        } catch (caught: unknown) {
+            const error = authError(caught)
             const errorMsg = error?.data?.message || error?.message || '2FA verification failed'
             return {
                 success: false,
@@ -108,7 +113,7 @@ export const useVerify2FA = () => {
     return useMemo(() => ({
         loading: result.isLoading,
         data: result.data,
-        error: result.error ? (result.error as any)?.data?.message || (result.error as any)?.message : undefined,
+        error: result.error ? authError(result.error)?.data?.message || authError(result.error)?.message : undefined,
         mutate,
     }), [result.isLoading, result.data, result.error, mutate])
 }
@@ -127,7 +132,8 @@ export const useRefreshToken = () => {
                 }))
             }
             return { success: true, data }
-        } catch (error: any) {
+        } catch (caught: unknown) {
+            const error = authError(caught)
             const errorMsg = error?.data?.message || error?.message || 'Token refresh failed'
             return {
                 success: false,
@@ -141,7 +147,7 @@ export const useRefreshToken = () => {
     return useMemo(() => ({
         loading: result.isLoading,
         data: result.data,
-        error: result.error ? (result.error as any)?.data?.message || (result.error as any)?.message : undefined,
+        error: result.error ? authError(result.error)?.data?.message || authError(result.error)?.message : undefined,
         mutate,
     }), [result.isLoading, result.data, result.error, mutate])
 }
@@ -152,7 +158,8 @@ export const useRequestEmailChange = () => {
         try {
             await trigger(newEmail).unwrap()
             return { success: true, data: undefined }
-        } catch (error: any) {
+        } catch (caught: unknown) {
+            const error = authError(caught)
             const errorMsg = error?.data?.message || error?.message || 'Request email change failed'
             return {
                 success: false,
@@ -165,7 +172,7 @@ export const useRequestEmailChange = () => {
     }, [trigger])
     return useMemo(() => ({
         loading: result.isLoading,
-        error: result.error ? (result.error as any)?.data?.message || (result.error as any)?.message : undefined,
+        error: result.error ? authError(result.error)?.data?.message || authError(result.error)?.message : undefined,
         mutate,
     }), [result.isLoading, result.error, mutate])
 }
@@ -176,7 +183,8 @@ export const useConfirmEmailChange = () => {
         try {
             await trigger(dto).unwrap()
             return { success: true, data: undefined }
-        } catch (error: any) {
+        } catch (caught: unknown) {
+            const error = authError(caught)
             const errorMsg = error?.data?.message || error?.message || 'Confirm email change failed'
             return {
                 success: false,
@@ -189,7 +197,7 @@ export const useConfirmEmailChange = () => {
     }, [trigger])
     return useMemo(() => ({
         loading: result.isLoading,
-        error: result.error ? (result.error as any)?.data?.message || (result.error as any)?.message : undefined,
+        error: result.error ? authError(result.error)?.data?.message || authError(result.error)?.message : undefined,
         mutate,
     }), [result.isLoading, result.error, mutate])
 }
@@ -200,7 +208,8 @@ export const useConfirmPasswordChange = () => {
         try {
             await trigger(dto).unwrap()
             return { success: true, data: undefined }
-        } catch (error: any) {
+        } catch (caught: unknown) {
+            const error = authError(caught)
             const errorMsg = error?.data?.message || error?.message || 'Confirm password change failed'
             return {
                 success: false,
@@ -213,7 +222,7 @@ export const useConfirmPasswordChange = () => {
     }, [trigger])
     return useMemo(() => ({
         loading: result.isLoading,
-        error: result.error ? (result.error as any)?.data?.message || (result.error as any)?.message : undefined,
+        error: result.error ? authError(result.error)?.data?.message || authError(result.error)?.message : undefined,
         mutate,
     }), [result.isLoading, result.error, mutate])
 }
@@ -224,7 +233,8 @@ export const useRequestPasswordChange = () => {
         try {
             await trigger().unwrap()
             return { success: true, data: undefined }
-        } catch (error: any) {
+        } catch (caught: unknown) {
+            const error = authError(caught)
             const errorMsg = error?.data?.message || error?.message || 'Request password change failed'
             return {
                 success: false,
@@ -237,7 +247,7 @@ export const useRequestPasswordChange = () => {
     }, [trigger])
     return useMemo(() => ({
         loading: result.isLoading,
-        error: result.error ? (result.error as any)?.data?.message || (result.error as any)?.message : undefined,
+        error: result.error ? authError(result.error)?.data?.message || authError(result.error)?.message : undefined,
         mutate,
     }), [result.isLoading, result.error, mutate])
 }
@@ -248,7 +258,8 @@ export const useForgotPassword = () => {
         try {
             await trigger(dto).unwrap()
             return { success: true, data: undefined }
-        } catch (error: any) {
+        } catch (caught: unknown) {
+            const error = authError(caught)
             const errorMsg = error?.data?.message || error?.message || 'Forgot password request failed'
             return {
                 success: false,
@@ -261,7 +272,7 @@ export const useForgotPassword = () => {
     }, [trigger])
     return useMemo(() => ({
         loading: result.isLoading,
-        error: result.error ? (result.error as any)?.data?.message || (result.error as any)?.message : undefined,
+        error: result.error ? authError(result.error)?.data?.message || authError(result.error)?.message : undefined,
         mutate,
     }), [result.isLoading, result.error, mutate])
 }
@@ -272,7 +283,8 @@ export const useResetPassword = () => {
         try {
             await trigger(dto).unwrap()
             return { success: true, data: undefined }
-        } catch (error: any) {
+        } catch (caught: unknown) {
+            const error = authError(caught)
             const errorMsg = error?.data?.message || error?.message || 'Reset password failed'
             return {
                 success: false,
@@ -285,7 +297,7 @@ export const useResetPassword = () => {
     }, [trigger])
     return useMemo(() => ({
         loading: result.isLoading,
-        error: result.error ? (result.error as any)?.data?.message || (result.error as any)?.message : undefined,
+        error: result.error ? authError(result.error)?.data?.message || authError(result.error)?.message : undefined,
         mutate,
     }), [result.isLoading, result.error, mutate])
 }
@@ -313,7 +325,8 @@ export const useSessions = () => {
             await revokeSessionTrigger(sessionId).unwrap()
             await refetchQuery()
             return { success: true, data: undefined }
-        } catch (error: any) {
+        } catch (caught: unknown) {
+            const error = authError(caught)
             const errorMsg = error?.data?.message || error?.message || 'Revoke session failed'
             return {
                 success: false,
@@ -330,7 +343,8 @@ export const useSessions = () => {
             await revokeAllSessionsTrigger().unwrap()
             await refetchQuery()
             return { success: true, data: undefined }
-        } catch (error: any) {
+        } catch (caught: unknown) {
+            const error = authError(caught)
             const errorMsg = error?.data?.message || error?.message || 'Revoke all sessions failed'
             return {
                 success: false,
@@ -345,7 +359,7 @@ export const useSessions = () => {
     return useMemo(() => ({
         loading: isLoading,
         data: data,
-        error: error ? ((error as any)?.data?.message || (error as any)?.message) : undefined,
+        error: error ? (authError(error)?.data?.message || authError(error)?.message) : undefined,
         refetch,
         revoke,
         revokeAll,

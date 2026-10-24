@@ -1,2 +1,2 @@
+export type { TabId,TabItem } from './model/types';
 export { TabBar } from './ui/TabBar';
-export type { TabItem, TabId } from './model/types';

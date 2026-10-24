@@ -1,12 +1,13 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { searchApi } from '@entities/Search/api/rtkApi';
+import { createSlice,type PayloadAction } from '@reduxjs/toolkit';
+
 import type {
-  TrackSearchItemDTO,
-  AlbumSearchItemDTO,
-  PlaylistSearchItemDTO,
-  ArtistSearchItemDTO,
-  UserSearchItemDTO,
+AlbumSearchItemDTO,
+ArtistSearchItemDTO,
+PlaylistSearchItemDTO,
+TrackSearchItemDTO,
+UserSearchItemDTO,
 } from '@entities/Search';
+import { searchApi } from '@entities/Search/api/rtkApi';
 
 export interface SearchCacheEntry {
   query: string;

@@ -1,16 +1,16 @@
+import type { LoginResponseDTO,RefreshTokenResponse } from '@features/auth';
 import { apiClient } from '@shared/api/oldBaseApi.ts';
 import { API_ENDPOINTS } from '@shared/config';
-import type {
-    DistributorDTO,
-    CreateDistributorDTO,
-    UpdateDistributorDTO,
-    DistributorAccountDTO,
-    DistributorAccountRegisterDTO,
-    DistributorAccountChangePasswordDTO,
-    ArtistRegistrationRequestDTO,
-} from '../model/types';
 import type { RequestConfig } from '@shared/types';
-import type { LoginResponseDTO, RefreshTokenResponse, ActiveSessionDTO } from '@features/auth';
+
+import type {
+CreateDistributorDTO,
+DistributorAccountChangePasswordDTO,
+DistributorAccountDTO,
+DistributorAccountRegisterDTO,
+DistributorDTO,
+UpdateDistributorDTO
+} from '../model/types';
 
 export const DistributorApi = {
     /**

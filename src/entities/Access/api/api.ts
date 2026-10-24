@@ -1,6 +1,5 @@
 import { apiClient } from '@shared/api/oldBaseApi.ts';
 import { API_ENDPOINTS } from '@shared/config';
-import type { AccessFeatureDTO } from '../model/types.ts';
 
 export const Api = {
     // Закомментировано: используйте useGetAccessFeaturesQuery из @shared/api/rtkApi

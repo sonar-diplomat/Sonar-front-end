@@ -1,13 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React,{ useEffect,useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import styles from './ActiveSessions.module.css';
-import { Button, Modal, LeftArrow } from '@shared/ui';
-import { useSessions } from '@features/auth/model/store';
+
 import type { ActiveSessionDTO } from '@features/auth';
+import { useSessions } from '@features/auth/model/store';
+import { authManager } from '@shared/lib/auth/auth-manager';
+import { useAppSelector } from '@shared/store/hooks';
+import { useNotifications } from '@shared/store/notificationStore';
+import { Button,LeftArrow,Modal } from '@shared/ui';
+
+import styles from './ActiveSessions.module.css';
 
 export const ActiveSessions: React.FC = () => {
   const navigate = useNavigate();
   const { data: sessions, loading, refetch, revoke, revokeAll } = useSessions();
+  const currentSessionId = useAppSelector(state => state.auth.sessionId);
+  const { showError } = useNotifications();
   const [showRevokeModal, setShowRevokeModal] = useState(false);
   const [showRevokeAllModal, setShowRevokeAllModal] = useState(false);
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
@@ -22,6 +30,12 @@ export const ActiveSessions: React.FC = () => {
       if (result.success) {
         setShowRevokeModal(false);
         setSelectedSessionId(null);
+        if (selectedSessionId === currentSessionId) {
+          await navigate('/login', { replace: true });
+          await authManager.logout();
+        }
+      } else {
+        showError(result.message || 'Unable to revoke the session', result.errors);
       }
     }
   };
@@ -30,6 +44,10 @@ export const ActiveSessions: React.FC = () => {
     const result = await revokeAll();
     if (result.success) {
       setShowRevokeAllModal(false);
+      await navigate('/login', { replace: true });
+      await authManager.logout();
+    } else {
+      showError(result.message || 'Unable to revoke sessions', result.errors);
     }
   };
 
@@ -55,6 +73,7 @@ export const ActiveSessions: React.FC = () => {
           onClick={() => navigate(-1)}
           className={styles.backButton}
           iconOnly
+          aria-label="Back to settings"
         />
         <h2 className={styles.title}>Active Sessions</h2>
       </div>
@@ -86,6 +105,7 @@ export const ActiveSessions: React.FC = () => {
                   <div className={styles.sessionHeader}>
                     <span className={styles.deviceName}>
                       {session.deviceName || 'Unknown Device'}
+                      {session.id === currentSessionId && ' (This device)'}
                     </span>
                   </div>
                   <div className={styles.sessionDetails}>
@@ -143,7 +163,7 @@ export const ActiveSessions: React.FC = () => {
         <div className={styles.modalContent}>
           <h2 className={styles.modalTitle}>Revoke All Sessions</h2>
           <p className={styles.modalText}>
-            Are you sure you want to revoke all sessions? You will be logged out from all devices except this one.
+            Revoke every active session, including this device? You will need to sign in again.
           </p>
           <div className={styles.modalActions}>
             <Button variant="filled" theme="light" onClick={() => setShowRevokeAllModal(false)}>

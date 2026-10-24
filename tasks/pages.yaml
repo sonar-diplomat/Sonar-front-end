@@ -1,0 +1,41 @@
+version: '3'
+
+vars:
+  PAGES_DIR: '{{default ".pages" .PAGES_DIR}}'
+  PAGES_BASE: '{{default "/Sonar-front-end/" .PAGES_BASE}}'
+  PORT: '{{default "4173" .PORT}}'
+
+tasks:
+  package:
+    desc: Combine an audited demo dist and verified ordinary media into .pages
+    # Compilation is deliberately separate; packaging must not replace dist.
+    deps: [':media:verify']
+    preconditions:
+      - sh: node -e "if(!require('node:fs').existsSync('dist/build-profile.json'))process.exit(1)"
+        msg: Run task build:demo first
+    cmds: [npm run pages:package]
+
+  probe:
+    desc: Package one real MP3 and an audio-controls page into .pages-probe
+    deps:
+      - task: ':media:verify'
+        vars: { TRACK_IDS: '1', MEDIA_SKIP_SEED: '1' }
+    env:
+      PAGES_BASE: '{{.PAGES_BASE}}'
+    cmds: [npm run pages:probe]
+
+  preview:
+    desc: Serve .pages (or .pages-probe) over HTTP with the artifact base and ranges
+    preconditions:
+      - sh: node -e "if(!['.pages','.pages-probe'].includes(process.env.PAGES_DIR))process.exit(1)"
+        msg: PAGES_DIR must be .pages or .pages-probe
+    env:
+      PAGES_DIR: '{{.PAGES_DIR}}'
+      PORT: '{{.PORT}}'
+    cmds: [npm run pages:preview]
+
+  smoke:
+    desc: Verify a packaged site's HTTP status, bytes, MIME, hash and seek ranges
+    env:
+      PAGES_DIR: '{{.PAGES_DIR}}'
+    cmds: [node scripts/pages-smoke.mjs]

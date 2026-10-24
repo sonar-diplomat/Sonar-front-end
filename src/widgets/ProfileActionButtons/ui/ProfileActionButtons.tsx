@@ -1,6 +1,10 @@
 import React from 'react';
-import { Button, MoreIcon, UpRightArrow, EditProfileIcon, StatisticsIcon, ShuffleIcon, PlayIcon } from '@shared/ui';
+
+import { useNavigate } from 'react-router-dom';
+
 import type { ViewerType } from '@shared/types';
+import { Button,EditProfileIcon,UpRightArrow } from '@shared/ui';
+
 import styles from './ProfileActionButtons.module.css';
 
 export type ProfileType = 'user' | 'artist';
@@ -23,16 +27,11 @@ const FILLED_BUTTON_PROPS = {
     fullWidth: true,
 };
 
-const ICON_BUTTON_PROPS = {
-    variant: 'text' as const,
-    theme: 'dark' as const,
-    size: 'medium' as const,
-    iconOnly: true,
-};
 
-export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({ 
-    viewerType, 
-    profileType,
+
+export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({
+    viewerType,
+
     isFollowing = false,
     isFriend = false,
     onFollow,
@@ -40,30 +39,18 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({
     onCreateChat,
     isLoading = false,
 }) => {
+    const navigate = useNavigate();
     // Owner viewing their own profile (same for both user and artist)
     if (viewerType === 'owner') {
         return (
             <div className={styles.container}>
-                <Button {...FILLED_BUTTON_PROPS} theme="dark" icon={<EditProfileIcon />} iconOnly>
-                </Button>
-                <Button {...FILLED_BUTTON_PROPS} theme="dark" icon={<StatisticsIcon />} iconOnly>
+                <Button {...FILLED_BUTTON_PROPS} theme="dark" icon={<EditProfileIcon />} iconOnly aria-label="Edit profile" onClick={() => navigate('/settings/account')}>
                 </Button>
             </div>
         );
     }
 
-    if (profileType === 'artist') {
-        return (
-            <div className={styles.container}>
-                <Button {...FILLED_BUTTON_PROPS} theme="light" icon={<UpRightArrow />}>
-                    Follow
-                </Button>
-                <Button {...ICON_BUTTON_PROPS} icon={<MoreIcon />} />
-                <Button {...ICON_BUTTON_PROPS} icon={<ShuffleIcon />} />
-                <Button {...ICON_BUTTON_PROPS} icon={<PlayIcon />} />
-            </div>
-        );
-    }
+
 
     const handleFollowClick = () => {
         if (isFollowing) {
@@ -77,17 +64,17 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({
         <div className={styles.container}>
             {isFriend ? (
                 <>
-                    <Button 
-                        {...FILLED_BUTTON_PROPS} 
-                        theme="light" 
+                    <Button
+                        {...FILLED_BUTTON_PROPS}
+                        theme="light"
                         onClick={onCreateChat}
                         loading={isLoading}
                     >
                         Message
                     </Button>
-                    <Button 
-                        {...FILLED_BUTTON_PROPS} 
-                        theme="dark" 
+                    <Button
+                        {...FILLED_BUTTON_PROPS}
+                        theme="dark"
                         onClick={handleFollowClick}
                         loading={isLoading}
                     >
@@ -96,9 +83,9 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({
                 </>
             ) : (
                 <>
-                    <Button 
+                    <Button
                         {...FILLED_BUTTON_PROPS}
-                        theme="light" 
+                        theme="light"
                         icon={isFollowing ? undefined : <UpRightArrow />}
                         onClick={handleFollowClick}
                         loading={isLoading}
@@ -107,7 +94,7 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({
                     </Button>
                 </>
             )}
-            <Button {...ICON_BUTTON_PROPS} icon={<MoreIcon />} />
+
         </div>
     );
 };

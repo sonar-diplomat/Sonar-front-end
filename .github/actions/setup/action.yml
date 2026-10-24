@@ -1,0 +1,14 @@
+name: Set up frontend tasks
+description: Install Node, checksum-pinned Task and locked npm dependencies
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v7
+      with: { node-version-file: .nvmrc, cache: npm }
+    - name: Install Task 3.50.0
+      uses: go-task/setup-task@a00fbb05ce67b35648be3c78cbc9fd85354c757e # v2.2.0
+      with:
+        version: '3.50.0'
+        checksum: ${{ runner.os == 'Windows' && '82c20fbd19ac62073b8ecf89e026fbd209f702a2922106e4ff2ed6934d193038' || 'd449ba85ab85a0769989d78f8b9872938e4ba9347f7f4f925f73d98272a0a655' }}
+    - run: npm ci --no-audit --no-fund
+      shell: bash

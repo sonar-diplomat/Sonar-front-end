@@ -1,12 +1,14 @@
-import React, {useMemo} from "react";
-import styles from './MiniPlayer.module.css';
+import React,{ useMemo } from "react";
+
+import { LoadingImage } from '@shared/ui';
 import type { MiniPlayerProps } from '@widgets/MiniPlayer';
+import { formatTime } from "@widgets/MiniPlayer/lib/utils.ts";
+import { TrackInfo } from "@widgets/MiniPlayer/ui/TrackInfo.tsx";
+
+import styles from './MiniPlayer.module.css';
 import { PlayerControls } from './PlayerControls';
 import { ProgressBar } from './ProgressBar';
-import {TrackInfo} from "@widgets/MiniPlayer/ui/TrackInfo.tsx";
-import { LoadingImage } from '@shared/ui';
 
-import {formatTime} from "@widgets/MiniPlayer/lib/utils.ts";
 
 
 export const MiniPlayer = ({
@@ -35,8 +37,8 @@ export const MiniPlayer = ({
   );
 
   const formattedDuration = useMemo(() =>
-          formatTime(parseInt(currentTrack?.duration ?? "0")),
-      [currentTrack?.duration]
+          duration > 0 ? formatTime(duration) : '—:—',
+      [duration]
   );
 
 

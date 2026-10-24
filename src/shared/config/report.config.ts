@@ -23,7 +23,7 @@ export const USER_ENTITY_TYPE = ENTITY_TYPE_IDS.user;
  * @returns 'content' for track/album/playlist/artist, 'user' for user
  */
 export function getEntityCategory(entityTypeId: number): ReportEntityCategory {
-  return CONTENT_ENTITY_TYPES.includes(entityTypeId as any) ? 'content' : 'user';
+  return CONTENT_ENTITY_TYPES.some(contentId => contentId === entityTypeId) ? 'content' : 'user';
 }
 
 /**

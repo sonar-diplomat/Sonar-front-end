@@ -1,8 +1,10 @@
 import React from 'react';
+
+import { useLocation,useNavigate } from 'react-router-dom';
+
+import { Button,LeftArrow,PlusIcon } from "@shared/ui";
+
 import styles from './Create.module.css';
-import {Button, PlusIcon} from "@shared/ui";
-import {LeftArrow} from "@shared/ui";
-import {useNavigate, useLocation} from 'react-router-dom';
 
 export interface CreateProps {
     className?: string;
@@ -46,7 +48,7 @@ export const Create: React.FC<CreateProps> = ({className = ''}) => {
                     shape="cr-16"
                     iconOnly
                     icon={<LeftArrow/>}
-                    onClick={handleBack}
+                    aria-label="Back to library" onClick={handleBack}
                     className={styles.backButton}
                 />
                 <h1 className={styles.title}>Create new</h1>

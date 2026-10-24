@@ -1,9 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React,{ useMemo,useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import styles from './AppearanceSettings.module.css';
-import { SettingsSection, Select, Button, LeftArrow } from '@shared/ui';
+
+import { useGetLanguagesQuery,useGetThemesQuery } from '@shared/api';
+import { isDemoMode } from '@shared/config/data-source';
 import { useClientSettings } from '@shared/store/features/clientSettings/useClientSettings';
-import { useGetLanguagesQuery, useGetThemesQuery } from '@shared/api';
+import { Button,LeftArrow,Select,SettingsSection } from '@shared/ui';
+
+import styles from './AppearanceSettings.module.css';
 export const AppearanceSettings: React.FC = () => {
   const navigate = useNavigate();
   const { settings, patchSettings, isLoading: isPatching } = useClientSettings();
@@ -35,7 +39,7 @@ export const AppearanceSettings: React.FC = () => {
       languageId: langId,
       themeId: themeId,
     };
-    await patchSettings(updates);
+    if (!await patchSettings(updates)) return;
     setHasChanges(false);
   };
   const handleLanguageChange = (value: string | number) => {
@@ -61,13 +65,14 @@ export const AppearanceSettings: React.FC = () => {
           onClick={() => navigate(-1)}
           className={styles.backButton}
           iconOnly
+          aria-label="Back to settings"
         />
         <h2 className={styles.title}>Language and Theme</h2>
       </div>
       <div className={styles.content}>
         <SettingsSection title="Language">
           <Select
-            label="App Language"
+            label={isDemoMode ? "Language preference (demo interface stays English)" : "App Language"}
             options={languageOptions}
             value={currentLanguage!}
             onChange={handleLanguageChange}

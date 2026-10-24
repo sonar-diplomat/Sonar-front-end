@@ -1,7 +1,9 @@
 import React from 'react';
+
+import { Button,LeftArrow,MoreIcon } from '@shared/ui';
+
 import styles from './CollectionHeader.module.css';
 import type { CollectionHeaderProps } from './CollectionHeader.types';
-import { Button, LeftArrow, MoreIcon } from '@shared/ui';
 
 export const CollectionHeader: React.FC<CollectionHeaderProps> = ({
     title = 'Your mix',
@@ -23,7 +25,7 @@ export const CollectionHeader: React.FC<CollectionHeaderProps> = ({
                     size="medium"
                     shape="cr-16"
                     icon={<LeftArrow />}
-                    onClick={onBackClick}
+                    aria-label="Back" onClick={onBackClick}
                     iconOnly
                     className={styles.backButton}
                 />
@@ -36,7 +38,7 @@ export const CollectionHeader: React.FC<CollectionHeaderProps> = ({
                     size="medium"
                     shape="cr-16"
                     icon={<MoreIcon />}
-                    onClick={onMenuClick}
+                    aria-label="Collection actions" onClick={onMenuClick}
                     iconOnly
                     className={styles.menuButton}
                 />

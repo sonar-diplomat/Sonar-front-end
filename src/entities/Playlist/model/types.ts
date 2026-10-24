@@ -6,6 +6,9 @@ export interface UserRefDTO {
 }
 
 export interface PlaylistDTO extends CollectionDTO {
+    creatorName?: string;
+    contributorNames?: string[];
+    trackCount?: number;
     creatorId: number;
     creator?: UserRefDTO | null;
     contributors?: UserRefDTO[] | null;

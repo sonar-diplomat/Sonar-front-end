@@ -1,8 +1,10 @@
 import React from 'react';
-import { Notification, type NotificationProps } from '@shared/ui';
+
+import { Notification,type NotificationProps } from '@shared/ui';
+
 import styles from './NotificationContainer.module.css';
 
-interface NotificationItem extends Omit<NotificationProps, 'onClose'> {}
+type NotificationItem = Omit<NotificationProps, 'onClose'>;
 
 interface NotificationContainerProps {
   notifications: NotificationItem[];
@@ -27,4 +29,3 @@ export const NotificationContainer: React.FC<NotificationContainerProps> = ({
     </div>
   );
 };
-

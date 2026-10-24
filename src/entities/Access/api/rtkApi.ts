@@ -1,5 +1,6 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
+
 import type { AccessFeatureDTO } from '../model/types';
 
 /**
@@ -13,7 +14,7 @@ export const accessApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: [{ type: 'AccessFeature', id: 'LIST' }],
+      providesTags: [{ type: 'AccessFeature', id: 'LIST' }, 'DemoState'],
     }),
 
     getAccessFeatureById: builder.query<AccessFeatureDTO, number>({
@@ -22,7 +23,7 @@ export const accessApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: (_result, _error, id) => [{ type: 'AccessFeature', id }],
+      providesTags: (_result, _error, id) => [{ type: 'AccessFeature', id }, 'DemoState'],
     }),
 
     getUserAccessFeatures: builder.query<AccessFeatureDTO[], number>({
@@ -31,7 +32,7 @@ export const accessApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, userId) => [{ type: 'AccessFeature', id: `user-${userId}` }],
+      providesTags: (_result, _error, userId) => [{ type: 'AccessFeature', id: `user-${userId}` }, 'DemoState'],
     }),
 
     assignAccessFeatures: builder.mutation<void, { userId: number; accessFeatureIds: number[] }>({

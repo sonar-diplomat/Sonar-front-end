@@ -1,5 +1,7 @@
 import React from 'react';
-import { useGetUserByIdQuery, useGetUserProfileByIdentifierQuery } from '@entities/User/api/rtkApi';
+
+import { useGetUserByIdQuery,useGetUserProfileByIdentifierQuery } from '@entities/User/api/rtkApi';
+
 import styles from './UserInfo.module.css';
 
 interface MemberItemProps {

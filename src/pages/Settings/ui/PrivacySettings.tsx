@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React,{ useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import styles from './PrivacySettings.module.css';
-import { SettingsSection, Select, Button, LeftArrow } from '@shared/ui';
+
 import { useClientSettings } from '@shared/store/features/clientSettings/useClientSettings';
 import { useNotifications } from '@shared/store/notificationStore';
+import { Button,LeftArrow,Select,SettingsSection } from '@shared/ui';
+import { asUiApiError } from '@shared/ui/api-error';
+
+import styles from './PrivacySettings.module.css';
 
 const privacyOptions = [
   { value: 1, label: 'Everyone' },
@@ -20,21 +24,24 @@ export const PrivacySettings: React.FC = () => {
   const { showSuccess, showError } = useNotifications();
 
   const handleSave = async () => {
-    if (!settings || whichCanViewProfile === undefined || whichCanMessage === undefined) return;
+    if (!settings) return;
+    const viewId = whichCanViewProfile ?? settings.userPrivacy?.whichCanViewProfileId;
+    const messageId = whichCanMessage ?? settings.userPrivacy?.whichCanMessageId;
+    if (viewId === undefined || messageId === undefined) return;
     const updates = {
       userPrivacySettingsId: settings.userPrivacySettingsId,
       userPrivacy: {
         id: settings.userPrivacy?.id || settings.userPrivacySettingsId,
         settingsId: settings.id,
-        whichCanViewProfileId: whichCanViewProfile,
-        whichCanMessageId: whichCanMessage,
+        whichCanViewProfileId: viewId,
+        whichCanMessageId: messageId,
       }
     };
     try {
-      await patchSettings(updates);
+      if (!await patchSettings(updates)) return;
       setHasChanges(false);
       showSuccess('Privacy settings updated successfully!');
-    } catch (err: any) {
+    } catch (caught: unknown) { const err = asUiApiError(caught);
       showError(err?.data?.message || err?.message || 'Failed to update privacy settings', err?.data?.errors || err?.data?.details);
     }
   };
@@ -47,8 +54,8 @@ export const PrivacySettings: React.FC = () => {
     setHasChanges(true);
   };
 
-  const currentViewProfile = whichCanViewProfile ?? (settings?.userPrivacy as any)?.whichCanViewProfile?.id;
-  const currentMessage = whichCanMessage ?? (settings?.userPrivacy as any)?.whichCanMessage?.id;
+  const currentViewProfile = whichCanViewProfile ?? settings?.userPrivacy?.whichCanViewProfile?.id;
+  const currentMessage = whichCanMessage ?? settings?.userPrivacy?.whichCanMessage?.id;
 
   return (
     <div className={styles.container}>
@@ -61,6 +68,7 @@ export const PrivacySettings: React.FC = () => {
           onClick={() => navigate(-1)}
           className={styles.backButton}
           iconOnly
+          aria-label="Back to settings"
         />
         <h2 className={styles.title}>Privacy</h2>
       </div>

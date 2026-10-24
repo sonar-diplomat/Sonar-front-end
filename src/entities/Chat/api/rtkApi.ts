@@ -1,7 +1,8 @@
+import type { CursorPageDTO } from '@entities/Playlist';
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
-import type { ChatDTO, MessageDTO, CreateChatDTO, ChatListItemDTO } from '../model/types';
-import type { CursorPageDTO } from '@entities/Playlist';
+
+import type { ChatDTO,ChatListItemDTO,CreateChatDTO,MessageDTO } from '../model/types';
 
 /**
  * Chat API endpoints
@@ -14,7 +15,7 @@ export const chatApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: [{ type: 'Chat', id: 'LIST' }],
+      providesTags: [{ type: 'Chat', id: 'LIST' }, 'DemoState'],
     }),
 
     getMessage: builder.query<MessageDTO, number>({
@@ -23,7 +24,7 @@ export const chatApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, messageId) => [{ type: 'Message', id: messageId }],
+      providesTags: (_result, _error, messageId) => [{ type: 'Message', id: messageId }, 'DemoState'],
     }),
 
     getChatInfo: builder.query<ChatDTO, number>({
@@ -32,7 +33,7 @@ export const chatApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: true,
       }),
-      providesTags: (_result, _error, chatId) => [{ type: 'Chat', id: chatId }],
+      providesTags: (_result, _error, chatId) => [{ type: 'Chat', id: chatId }, 'DemoState'],
     }),
 
     getChatMessages: builder.query<
@@ -48,7 +49,7 @@ export const chatApi = rtkApi.injectEndpoints({
           ...(take !== undefined ? { take } : {}),
         },
       }),
-      providesTags: (_result, _error, { chatId }) => [{ type: 'Message', id: `chat-${chatId}` }],
+      providesTags: (_result, _error, { chatId }) => [{ type: 'Message', id: `chat-${chatId}` }, 'DemoState'],
     }),
 
     createChat: builder.mutation<void, CreateChatDTO>({

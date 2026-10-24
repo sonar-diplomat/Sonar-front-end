@@ -7,16 +7,20 @@
  * @param token - JWT токен
  * @returns Декодированный payload или null
  */
-export function decodeJWT(token: string): any | null {
+export interface JwtPayload { [key: string]: unknown; exp?: number; sub?: string | number; nameid?: string | number; userId?: string | number; id?: string | number }
+export function decodeJWT(token: string): JwtPayload | null {
   try {
     const parts = token.split('.');
     if (parts.length !== 3) {
       return null;
     }
 
-    const payload = parts[1];
-    const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
-    return JSON.parse(decoded);
+    const encodedPayload = parts[1];
+    const decoded = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+    const payload: unknown = JSON.parse(decoded);
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return null;
+    if ('exp' in payload && typeof payload.exp !== 'number') return null;
+    return payload as JwtPayload;
   } catch {
     return null;
   }

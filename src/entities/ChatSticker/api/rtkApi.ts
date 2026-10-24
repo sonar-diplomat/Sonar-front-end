@@ -1,5 +1,6 @@
 import { rtkApi } from '@shared/api/rtkApi';
 import { API_ENDPOINTS } from '@shared/config';
+
 import type { ChatStickerDTO } from '../model/types';
 
 export const chatStickerApi = rtkApi.injectEndpoints({
@@ -10,7 +11,7 @@ export const chatStickerApi = rtkApi.injectEndpoints({
         method: 'GET',
         withAuth: false,
       }),
-      providesTags: [{ type: 'ChatSticker', id: 'LIST' }],
+      providesTags: [{ type: 'ChatSticker', id: 'LIST' }, 'DemoState'],
     }),
   }),
 });

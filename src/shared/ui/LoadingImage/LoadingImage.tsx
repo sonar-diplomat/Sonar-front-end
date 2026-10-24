@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React,{ useEffect,useRef,useState } from 'react';
+
 import styles from './LoadingImage.module.css';
 
 export interface LoadingImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
@@ -26,16 +27,16 @@ export const LoadingImage: React.FC<LoadingImageProps> = ({
   style,
   ...props
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-  const [currentSrc, setCurrentSrc] = useState(src);
+  const [isLoading, setIsLoading] = useState(Boolean(src || fallbackSrc));
+  const [hasError, setHasError] = useState(!src && !fallbackSrc);
+  const [currentSrc, setCurrentSrc] = useState(src || fallbackSrc || '');
   const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    setIsLoading(true);
-    setHasError(false);
-    setCurrentSrc(src);
-  }, [src]);
+    setIsLoading(Boolean(src || fallbackSrc));
+    setHasError(!src && !fallbackSrc);
+    setCurrentSrc(src || fallbackSrc || '');
+  }, [src, fallbackSrc]);
 
   // Проверка для Chrome: если картинка уже загружена из кеша
   // Выполняется после обновления DOM с новым src
@@ -45,12 +46,12 @@ export const LoadingImage: React.FC<LoadingImageProps> = ({
         setIsLoading(false);
       }
     };
-    
+
     // Проверяем сразу (для случая, когда изображение уже в кеше)
     // и с небольшой задержкой для надежности
     checkComplete();
     const timeoutId = setTimeout(checkComplete, 0);
-    
+
     return () => clearTimeout(timeoutId);
   }, [currentSrc]);
 
@@ -94,7 +95,7 @@ export const LoadingImage: React.FC<LoadingImageProps> = ({
           <div className={styles.spinner}></div>
         </div>
       )}
-      {hasError && !fallbackSrc ? (
+      {hasError || !currentSrc ? (
         <div className={styles.errorPlaceholder}>
           <div className={styles.errorIcon}>📷</div>
         </div>
@@ -113,4 +114,3 @@ export const LoadingImage: React.FC<LoadingImageProps> = ({
     </div>
   );
 };
-

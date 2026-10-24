@@ -13,8 +13,7 @@ export const shareApi = rtkApi.injectEndpoints({
         withAuth: true,
       }),
       providesTags: (_result, _error, { entityType, entityId }) => [
-        { type: 'Share', id: `${entityType}-${entityId}` },
-      ],
+        { type: 'Share', id: `${entityType}-${entityId}` }, 'DemoState'],
     }),
 
     getShareQr: builder.query<string, { entityType: string; entityId: number }>({
@@ -24,8 +23,7 @@ export const shareApi = rtkApi.injectEndpoints({
         withAuth: true,
       }),
       providesTags: (_result, _error, { entityType, entityId }) => [
-        { type: 'Share', id: `${entityType}-${entityId}-qr` },
-      ],
+        { type: 'Share', id: `${entityType}-${entityId}-qr` }, 'DemoState'],
     }),
   }),
 });

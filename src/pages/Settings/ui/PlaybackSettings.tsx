@@ -1,9 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React,{ useMemo,useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import styles from './PlaybackSettings.module.css';
-import { SettingsSection, SettingsItem, Toggle, Select, Button, LeftArrow } from '@shared/ui';
-import { useClientSettings } from '@shared/store/features/clientSettings/useClientSettings';
+
 import { useGetPlaybackQualitiesQuery } from '@shared/api';
+import { isDemoMode } from '@shared/config/data-source';
+import { useClientSettings } from '@shared/store/features/clientSettings/useClientSettings';
+import { Button,LeftArrow,Select,SettingsItem,SettingsSection,Toggle } from '@shared/ui';
+
+import styles from './PlaybackSettings.module.css';
 export const PlaybackSettings: React.FC = () => {
   const navigate = useNavigate();
   const { settings, patchSettings, isLoading: isPatching } = useClientSettings();
@@ -33,7 +37,7 @@ export const PlaybackSettings: React.FC = () => {
       explicitContent: explicit,
       preferredPlaybackQualityId: quality,
     };
-    await patchSettings(updates);
+    if (!await patchSettings(updates)) return;
     setHasChanges(false);
   };
   const handleAutoPlayChange = (checked: boolean) => {
@@ -69,13 +73,14 @@ export const PlaybackSettings: React.FC = () => {
           onClick={() => navigate(-1)}
           className={styles.backButton}
           iconOnly
+          aria-label="Back to settings"
         />
         <h2 className={styles.title}>Playback</h2>
       </div>
       <div className={styles.content}>
         <SettingsSection title="Audio Quality">
           <Select
-            label="Preferred playback quality"
+            label={isDemoMode ? "Quality preference (demo has one MP3 rendition)" : "Preferred playback quality"}
             options={qualityOptions}
             value={currentQuality}
             onChange={handleQualityChange}
@@ -84,10 +89,10 @@ export const PlaybackSettings: React.FC = () => {
         <SettingsSection title="Playback Options">
           <SettingsItem
             label="Autoplay"
-            description="Automatically play similar content when your music ends"
+            description={isDemoMode ? "Unavailable in demo. Playback follows your queue." : "Automatically play similar content when your music ends"}
             rightContent={
               <Toggle
-                checked={currentAutoPlay}
+                disabled={isDemoMode} checked={currentAutoPlay}
                 onChange={handleAutoPlayChange}
               />
             }
@@ -95,10 +100,10 @@ export const PlaybackSettings: React.FC = () => {
           />
           <SettingsItem
             label="Crossfade"
-            description="Fade between tracks for seamless listening"
+            description={isDemoMode ? "Crossfade is unavailable in demo." : "Fade between tracks for seamless listening"}
             rightContent={
               <Toggle
-                checked={currentCrossfade}
+                disabled={isDemoMode} checked={currentCrossfade}
                 onChange={handleCrossfadeChange}
               />
             }

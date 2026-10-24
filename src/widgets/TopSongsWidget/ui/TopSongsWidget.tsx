@@ -1,9 +1,12 @@
 import React from 'react';
-import styles from './TopSongsWidget.module.css';
-import type { TopSongsWidgetProps, Song } from '../TopSongsWidget.types';
-import { SongItem, WidgetErrorState, LoadingPlaceholder } from '@shared/ui';
+
 import { useGetTrackQuery } from '@entities/Music/api/rtkApi';
 import { usePlayer } from '@shared/store/features/player';
+import { LoadingPlaceholder,SongItem,WidgetErrorState } from '@shared/ui';
+
+import type { Song,TopSongsWidgetProps } from '../TopSongsWidget.types';
+
+import styles from './TopSongsWidget.module.css';
 
 // Component to handle track playback on click
 const PlayableSongItem: React.FC<{

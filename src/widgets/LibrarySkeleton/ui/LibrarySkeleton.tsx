@@ -1,5 +1,7 @@
 import React from 'react';
-import { LoadingPlaceholder, ItemCardContainer } from '@shared/ui';
+
+import { ItemCardContainer,LoadingPlaceholder } from '@shared/ui';
+
 import styles from './LibrarySkeleton.module.css';
 
 export const LibrarySkeleton: React.FC = () => {

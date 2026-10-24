@@ -1,12 +1,15 @@
-import React, { useState } from "react"
-import styles from './Login.module.css';
-import {Button, LeftArrow} from "@shared/ui";
-import {LoginForm, TwoFactorVerification} from "@features/login";
+import React,{ useState } from "react";
+
+import { useNavigate } from "react-router-dom";
+
+import { useLogin,useVerify2FA } from "@features/auth/model/store.ts";
 import type { LoginFormData } from "@features/login";
-import {useNavigate} from "react-router-dom";
-import { useLogin, useVerify2FA } from "@features/auth/model/store.ts";
-import { authManager } from "@shared/lib/auth/auth-manager";
+import { LoginForm,TwoFactorVerification } from "@features/login";
+import { isDemoMode } from '@shared/config/data-source';
 import { useNotifications } from "@shared/store/notificationStore";
+import { Button,LeftArrow } from "@shared/ui";
+
+import styles from './Login.module.css';
 
 export const Login: React.FC = () =>{
     const [showTwoFactor, setShowTwoFactor] = useState(false);
@@ -59,7 +62,7 @@ export const Login: React.FC = () =>{
     };
 
     const handleTwoFactorResend = () => {
-        console.log('Resend 2FA code to:', userEmail);
+        showError('Code resend is unavailable in this client.');
     };
 
     const handleForgotPassword = () => {
@@ -67,11 +70,11 @@ export const Login: React.FC = () =>{
     };
 
     const handleContinueWithGoogle = () => {
-        console.log('Continue with Google');
+        showError('Google sign-in is unavailable in this client.');
     };
 
     const handleContinueWithApple = () => {
-        console.log('Continue with Apple');
+        showError('Apple sign-in is unavailable in this client.');
     };
 
     const handleCreateAccount = () => {
@@ -90,6 +93,7 @@ export const Login: React.FC = () =>{
                 className={styles.backButton}
             />
 
+            {isDemoMode && <><p>Demo accounts stay in this browser. Use fictional credentials.</p><Button onClick={() => { void import('@demo-runtime').then(runtime => runtime.enterDemoSession()).then(() => navigate('/home')); }}>Continue demo as guest</Button></>}
             {showTwoFactor ? (
                 <TwoFactorVerification
                     email={userEmail}

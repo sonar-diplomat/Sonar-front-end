@@ -1,8 +1,11 @@
 import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
+
+import type { UserFollowerDTO,UserFollowingDTO } from '@entities/User/model/types';
 import { getImageUrl } from '@shared/lib/image-utils';
-import type { UserFollowerDTO, UserFollowingDTO } from '@entities/User/model/types';
 import { LoadingImage } from '@shared/ui';
+
 import styles from './UserListItem.module.css';
 
 interface UserListItemProps {

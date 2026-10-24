@@ -1,5 +1,7 @@
 import React from 'react';
-import { Button, LeftArrow, PlusIcon, MoreIcon } from '@shared/ui';
+
+import { Button,LeftArrow,MoreIcon,PlusIcon } from '@shared/ui';
+
 import styles from './ChatHeader.module.css';
 
 export interface ChatHeaderProps {
@@ -27,7 +29,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                 <Button
                     iconOnly
                     icon={<LeftArrow />}
-                    onClick={onBack}
+                    aria-label="Back to chats" onClick={onBack}
                     variant="text"
                     theme="dark"
                     size="medium"
@@ -40,7 +42,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                 <Button
                     iconOnly
                     icon={icon}
-                    onClick={onAction}
+                    aria-label={actionIcon === 'plus' ? 'Create chat' : 'Chat details'} onClick={onAction}
                     variant="text"
                     theme="dark"
                     size="medium"
@@ -52,4 +54,3 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         </>
     );
 };
-

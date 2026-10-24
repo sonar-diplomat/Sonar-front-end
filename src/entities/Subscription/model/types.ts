@@ -13,10 +13,13 @@ export interface SubscriptionPackDTO {
     description: string;
     price: number;
     subscriptionFeatures: SubscriptionFeatureDTO[];
+    features?: SubscriptionFeatureDTO[];
     // TODO: createdAt/updatedAt if present
 }
 
 export interface SubscriptionPaymentDTO {
+    createdAt?: string;
+    subscriptionPackName?: string;
     id: number;
     amount: number;
     buyerId: number;

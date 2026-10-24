@@ -1,7 +1,9 @@
 import React from 'react';
+
+import { LoadingImage } from '@shared/ui';
+
 import styles from './CollectionCover.module.css';
 import type { CollectionCoverProps } from './CollectionCover.types';
-import { LoadingImage } from '@shared/ui';
 
 export const CollectionCover: React.FC<CollectionCoverProps> = ({
     imageSrc,

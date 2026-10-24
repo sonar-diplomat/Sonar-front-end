@@ -266,3 +266,8 @@
     padding-top: max(32px, env(safe-area-inset-top, 32px));
   }
 }
+.extraControls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.volumeLabel { display: flex; flex: 1 1 140px; gap: 12px; align-items: center; min-width: 0; }
+.volumeLabel input { width: 100%; min-width: 60px; accent-color: var(--text-primary); }
+.credits { font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; color: var(--text-secondary); }
+.mainContent { padding-bottom: max(32px, env(safe-area-inset-bottom)); }

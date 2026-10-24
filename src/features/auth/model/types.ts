@@ -10,6 +10,7 @@ export interface UserRegisterDTO {
 }
 
 export interface LoginResponseDTO {
+    demoUserId?: number;
     accessToken: string;
     refreshToken: string;
     sessionId: number;

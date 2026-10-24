@@ -1,8 +1,10 @@
 import React from 'react';
-import styles from './ProfileCard.module.css';
-import {type ProfileCardProps, VerifyIcon, LoadingImage} from '@shared/ui';
+
 import { formatNumber } from '@shared/lib';
 import { MarkdownRenderer } from '@shared/lib/markdown/MarkdownRenderer';
+import { LoadingImage,type ProfileCardProps,VerifyIcon } from '@shared/ui';
+
+import styles from './ProfileCard.module.css';
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({
     src,

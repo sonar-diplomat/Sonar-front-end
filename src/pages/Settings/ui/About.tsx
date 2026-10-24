@@ -1,7 +1,10 @@
 import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
+
+import { Button,LeftArrow,SettingsItem,SettingsSection } from '@shared/ui';
+
 import styles from './About.module.css';
-import { SettingsSection, SettingsItem, Button, LeftArrow } from '@shared/ui';
 
 export const About: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +20,7 @@ export const About: React.FC = () => {
           onClick={() => navigate(-1)}
           className={styles.backButton}
           iconOnly
+          aria-label="Back to settings"
         />
         <h2 className={styles.title}>About</h2>
       </div>

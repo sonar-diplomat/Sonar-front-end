@@ -1,5 +1,9 @@
-import React, { useEffect } from 'react';
+import type React from 'react';
+import { useEffect } from 'react';
+
 import { useNavigate } from 'react-router-dom';
+
+import { isDemoMode } from '@shared/config/data-source';
 
 const FIRST_VISIT_KEY = 'hasVisitedBefore';
 
@@ -7,6 +11,7 @@ export const FirstVisitGuard: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (isDemoMode) { navigate('/home', { replace: true }); return; }
         const hasVisited = localStorage.getItem(FIRST_VISIT_KEY);
 
         if (!hasVisited) {

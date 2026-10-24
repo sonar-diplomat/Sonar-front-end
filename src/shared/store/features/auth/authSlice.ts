@@ -1,7 +1,10 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice,type PayloadAction } from '@reduxjs/toolkit';
+
 import type { LoginResponseDTO } from '@features/auth';
+import { isDemoMode } from '@shared/config/data-source';
 
 interface AuthState {
+  demoUserId: number | null;
   accessToken: string | null;
   refreshToken: string | null;
   sessionId: number | null;
@@ -13,6 +16,7 @@ interface AuthState {
 // Access token хранится в sessionStorage (более безопасно, очищается при закрытии вкладки)
 // Refresh token хранится в localStorage (для долгосрочной сессии)
 const loadTokensFromStorage = (): Partial<AuthState> => {
+  if (isDemoMode) return { accessToken: null, refreshToken: null, sessionId: null, isAuthenticated: false };
   try {
     const accessToken = sessionStorage.getItem('sonar_access_token');
     const refreshToken = localStorage.getItem('sonar_refresh_token');
@@ -35,6 +39,7 @@ const loadTokensFromStorage = (): Partial<AuthState> => {
 };
 
 const initialState: AuthState = {
+  demoUserId: null,
   ...loadTokensFromStorage(),
   isLoading: false,
 } as AuthState;
@@ -43,7 +48,24 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    setDemoSession: (state, action: PayloadAction<{ userId: number; sessionId: number } | null>) => {
+      if (!isDemoMode) return;
+      state.demoUserId = action.payload?.userId ?? null;
+      state.sessionId = action.payload?.sessionId ?? null;
+      state.isAuthenticated = action.payload !== null;
+      state.accessToken = null;
+      state.refreshToken = null;
+      state.isLoading = false;
+    },
     setCredentials: (state, action: PayloadAction<LoginResponseDTO>) => {
+      if (isDemoMode) {
+        state.demoUserId = action.payload.demoUserId ?? 1;
+        state.sessionId = action.payload.sessionId;
+        state.isAuthenticated = true;
+        state.accessToken = null;
+        state.refreshToken = null;
+        return;
+      }
       const { accessToken, refreshToken, sessionId } = action.payload;
       
       state.accessToken = accessToken;
@@ -62,6 +84,7 @@ const authSlice = createSlice({
     },
     
     updateAccessToken: (state, action: PayloadAction<string>) => {
+      if (isDemoMode) return;
       state.accessToken = action.payload;
       try {
         // Access token хранится в sessionStorage для безопасности
@@ -72,6 +95,7 @@ const authSlice = createSlice({
     },
     
     updateTokens: (state, action: PayloadAction<{ accessToken: string; refreshToken: string }>) => {
+      if (isDemoMode) return;
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
       state.isAuthenticated = true; // Устанавливаем isAuthenticated при обновлении токенов
@@ -90,6 +114,8 @@ const authSlice = createSlice({
       state.refreshToken = null;
       state.sessionId = null;
       state.isAuthenticated = false;
+      state.demoUserId = null;
+      if (isDemoMode) return;
       
       // Очищаем токены из обоих хранилищ
       try {
@@ -110,6 +136,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, updateAccessToken, updateTokens, logout, setLoading } = authSlice.actions;
+export const { setDemoSession, setCredentials, updateAccessToken, updateTokens, logout, setLoading } = authSlice.actions;
 export default authSlice.reducer;
 

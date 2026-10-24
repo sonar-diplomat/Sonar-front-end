@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice,type PayloadAction } from '@reduxjs/toolkit';
 
 interface UserStateState {
   currentPosition: string | null; // TimeSpan в формате строки

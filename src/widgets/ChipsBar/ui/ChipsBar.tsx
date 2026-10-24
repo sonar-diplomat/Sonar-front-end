@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React,{ useState } from 'react';
 
-import {Button} from "@shared/ui";
+import { Button } from "@shared/ui";
 
 import styles from './ChipsBar.module.css';
-
-import type {ChipsBarProps, Category} from './ChipsBar.types';
+import type { Category,ChipsBarProps } from './ChipsBar.types';
 
 const defaultCategories: Category[] = ['All', 'Tracks', 'Albums', 'Playlists', 'Artists', 'Users'];
 

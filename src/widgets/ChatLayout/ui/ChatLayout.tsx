@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ChatHeader } from './ChatHeader';
+import React,{ useState } from 'react';
+
+import { Outlet,useLocation,useNavigate,useParams } from 'react-router-dom';
+
+import { chatApi } from '@entities/Chat/api/rtkApi';
+import { usePlayer } from '@shared/store/features/player';
+import { useAppSelector } from '@shared/store/hooks';
 import { CreateGroupChatModal } from '@widgets/CreateGroupChatModal';
 import { MicroPlayer } from '@widgets/MicroPlayer';
-import { chatApi } from '@entities/Chat/api/rtkApi';
-import { useAppSelector } from '@shared/store/hooks';
-import { usePlayer } from '@shared/store/features/player';
+
+import { ChatHeader } from './ChatHeader';
 import styles from './ChatLayout.module.css';
 
 export const ChatLayout: React.FC = () => {

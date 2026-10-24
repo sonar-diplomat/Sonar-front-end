@@ -1,8 +1,11 @@
 import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
+
 import { useGetPlaylistQuery } from '@entities/Playlist/api/rtkApi';
-import { API_BASE_URL, API_ENDPOINTS } from '@shared/config';
+import { getImageUrlById } from '@shared/lib/image-utils';
 import { LoadingPlaceholder, LoadingImage } from '@shared/ui';
+
 import styles from './EmbedWidget.module.css';
 
 export interface PlaylistEmbedProps {
@@ -15,8 +18,7 @@ export const PlaylistEmbed: React.FC<PlaylistEmbedProps> = ({ playlistId, url })
   const { data: playlist, isLoading, isError } = useGetPlaylistQuery(playlistId, { skip: !playlistId });
 
   const handleClick = () => {
-    const path = new URL(url).pathname;
-    navigate(path);
+    navigate(`/playlist/${playlistId}`);
   };
 
   if (isLoading) {
@@ -39,14 +41,12 @@ export const PlaylistEmbed: React.FC<PlaylistEmbedProps> = ({ playlistId, url })
     );
   }
 
-  const coverImageUrl = playlist.coverId
-    ? `${API_BASE_URL}${API_ENDPOINTS.blob.image(playlist.coverId)}`
-    : undefined;
+  const coverImageUrl = getImageUrlById(playlist.coverId);
 
-  const creatorName = (playlist as any).creatorName || '';
+  const creatorName = playlist.creatorId ? `Creator #${playlist.creatorId}` : '';
 
   return (
-    <div className={styles.embed} onClick={handleClick} role="button" tabIndex={0}>
+    <div className={styles.embed} onClick={handleClick} role="button" tabIndex={0} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); handleClick(); } }}>
       <div className={styles.type}>Playlist</div>
       <div className={styles.cover}>
         {coverImageUrl && (
@@ -67,4 +67,3 @@ export const PlaylistEmbed: React.FC<PlaylistEmbedProps> = ({ playlistId, url })
     </div>
   );
 };
-

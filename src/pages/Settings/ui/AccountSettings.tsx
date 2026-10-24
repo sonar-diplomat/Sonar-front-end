@@ -1,32 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import styles from './AccountSettings.module.css';
-import { SettingsSection, SettingsItem, Input, Button, Modal, DropDown, LeftArrow, Form, LoadingImage } from '@shared/ui';
-import { useAuth } from '@shared/lib/auth/useAuth';
-import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
-import { ModalDatePicker } from '@widgets/ModalDatePicker';
+import React,{ useEffect,useState } from 'react';
+
+import { useLocation,useNavigate } from 'react-router-dom';
+
+import type { UserUpdateDTO, User } from '@entities/User/model/types';
 import {
-  useRequestEmailChangeMutation,
-  useConfirmPasswordChangeMutation,
-  useUpdateUserMutation,
-  useRequestPasswordChangeMutation,
-  useUpdateUserAvatarMutation,
-  useGetUserByIdQuery,
-  useGetUserProfileQuery,
-  useGetUsersQuery,
-  userApi
+useConfirmPasswordChangeMutation,
+useGetUserByIdQuery,
+useGetUserProfileQuery,
+useGetUsersQuery,
+userApi,
+useRequestEmailChangeMutation,
+useRequestPasswordChangeMutation,
+useUpdateUserAvatarMutation,
+useUpdateUserMutation
 } from '@shared/api';
+import { isDemoMode } from '@shared/config/data-source';
+import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
 import { getImageUrlById } from '@shared/lib/image-utils';
-import { useNotifications } from '@shared/store/notificationStore';
 import { useAppDispatch } from '@shared/store/hooks';
+import { useNotifications } from '@shared/store/notificationStore';
+import { Button,DropDown,Form,Input,LeftArrow,LoadingImage,Modal,SettingsItem,SettingsSection } from '@shared/ui';
+import { asUiApiError } from '@shared/ui/api-error';
+import { DemoOutboxNotice } from '@shared/ui/DemoOutboxNotice';
+import { ModalDatePicker } from '@widgets/ModalDatePicker';
+
+import styles from './AccountSettings.module.css';
 
 export const AccountSettings: React.FC = () => {
   const navigate = useNavigate();
+  const [outboxRevision, setOutboxRevision] = useState(0);
   const location = useLocation();
   const dispatch = useAppDispatch();
-  const { logout } = useAuth();
+
   const currentUserId = useCurrentUserId();
-  
+
   const [updateUser] = useUpdateUserMutation();
   const [requestEmailChange] = useRequestEmailChangeMutation();
   const [confirmPasswordChange] = useConfirmPasswordChangeMutation();
@@ -46,7 +53,7 @@ export const AccountSettings: React.FC = () => {
   const { data: usersList } = useGetUsersQuery(undefined, {
     skip: !currentUserId,
   });
-  
+
   const currentUserFullData = usersList?.find(user => user.id === currentUserId);
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -101,7 +108,7 @@ export const AccountSettings: React.FC = () => {
         }
       }
     }
-    
+
     // Also use currentUserData for publicIdentifier if profile is not available
     if (currentUserData && !currentUserProfile && !currentUserFullData) {
       setPublicIdentifier(currentUserData.publicIdentifier || '');
@@ -117,25 +124,25 @@ export const AccountSettings: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const updates: any = {};
-      
+      const updates: UserUpdateDTO = {};
+
       // Save old public identifier before update
       const oldPublicIdentifier = currentUserProfile?.publicIdentifier || currentUserData?.publicIdentifier;
       const publicIdentifierChanged = publicIdentifier.trim() && publicIdentifier !== oldPublicIdentifier;
-      
+
       if (username.trim() && username !== currentUserProfile?.userName) {
         // Note: UserName might not be updatable via this endpoint
         // Keeping it for potential future API support
       }
-      
+
       if (publicIdentifierChanged) {
         updates.PublicIdentifier = publicIdentifier.trim();
       }
-      
+
       if (dateOfBirth) {
         updates.DateOfBirth = dateOfBirth;
       }
-      
+
       if (biography !== (currentUserFullData?.biography || currentUserProfile?.biography || '')) {
         updates.Biography = biography.trim() || null;
       }
@@ -143,7 +150,7 @@ export const AccountSettings: React.FC = () => {
       // Update avatar if selected
       if (selectedAvatarFile) {
         await updateUserAvatar(selectedAvatarFile).unwrap();
-        
+
         // Invalidate user profile and user data caches after avatar update
         if (currentUserId) {
           const tagsToInvalidate: Array<{ type: 'User'; id: string | number }> = [
@@ -151,29 +158,29 @@ export const AccountSettings: React.FC = () => {
             { type: 'User', id: `PROFILE_${currentUserId}` },
             { type: 'User', id: 'LIST' },
           ];
-          
+
           // Also invalidate profile by identifier if we have it
           const currentPublicIdentifier = currentUserProfile?.publicIdentifier || currentUserData?.publicIdentifier;
           if (currentPublicIdentifier) {
             tagsToInvalidate.push({ type: 'User', id: `PROFILE_${currentPublicIdentifier}` });
           }
-          
+
           dispatch(userApi.util.invalidateTags(tagsToInvalidate));
         }
       }
 
       // Update user data if there are changes
-      let updatedUserData: any = null;
+      let updatedUserData: User | null = null;
       let newPublicIdentifierFromResponse: string | null = null;
-      
+
       if (Object.keys(updates).length > 0) {
         updatedUserData = await updateUser(updates).unwrap();
-        
+
         // Get new publicIdentifier from response if it was updated
         if (publicIdentifierChanged && updatedUserData?.publicIdentifier) {
           newPublicIdentifierFromResponse = updatedUserData.publicIdentifier;
         }
-        
+
         // Update form with returned data (including dateOfBirth and biography)
         if (updatedUserData?.dateOfBirth) {
           setDateOfBirth(updatedUserData.dateOfBirth);
@@ -181,7 +188,7 @@ export const AccountSettings: React.FC = () => {
         if (updatedUserData?.biography !== undefined) {
           setBiography(updatedUserData.biography || '');
         }
-        
+
         // Update RTK Query cache with new data immediately
         if (currentUserId && updatedUserData) {
           dispatch(
@@ -190,7 +197,7 @@ export const AccountSettings: React.FC = () => {
             })
           );
         }
-        
+
         // Invalidate user profile caches after any user data update (including biography)
         if (currentUserId) {
           const tagsToInvalidate: Array<{ type: 'User'; id: string | number }> = [
@@ -198,13 +205,13 @@ export const AccountSettings: React.FC = () => {
             { type: 'User', id: `PROFILE_${currentUserId}` },
             { type: 'User', id: 'LIST' },
           ];
-          
+
           // Also invalidate profile by identifier if we have it
           const currentPublicIdentifier = currentUserProfile?.publicIdentifier || currentUserData?.publicIdentifier;
           if (currentPublicIdentifier) {
             tagsToInvalidate.push({ type: 'User', id: `PROFILE_${currentPublicIdentifier}` });
           }
-          
+
           dispatch(userApi.util.invalidateTags(tagsToInvalidate));
         }
       }
@@ -212,27 +219,27 @@ export const AccountSettings: React.FC = () => {
       // If public identifier changed, update URL and cache
       if (publicIdentifierChanged && oldPublicIdentifier) {
         const newPublicIdentifier = newPublicIdentifierFromResponse || publicIdentifier.trim();
-        
+
         // Invalidate cache for old and new profile identifiers and user data
         const tagsToInvalidate: Array<{ type: 'User'; id: string | number }> = [
           { type: 'User', id: `PROFILE_${oldPublicIdentifier}` },
           { type: 'User', id: `PROFILE_${newPublicIdentifier}` },
           { type: 'User', id: 'LIST' }, // Invalidate user list to refresh all user data
         ];
-        
+
         if (currentUserId) {
           tagsToInvalidate.push(
             { type: 'User', id: currentUserId },
             { type: 'User', id: `PROFILE_${currentUserId}` }
           );
         }
-        
+
         dispatch(userApi.util.invalidateTags(tagsToInvalidate));
-        
+
         // Check if we're currently on the profile page with old identifier
         const profilePathPattern = /^\/user\/([^/]+)$/;
         const match = location.pathname.match(profilePathPattern);
-        
+
         if (match && match[1] === oldPublicIdentifier) {
           // Update URL to new identifier immediately
           navigate(`/user/${newPublicIdentifier}`, { replace: true });
@@ -247,7 +254,7 @@ export const AccountSettings: React.FC = () => {
         showSuccess('Account information updated successfully!');
         setSelectedAvatarFile(null);
       }
-    } catch (err: any) {
+    } catch (caught: unknown) { const err = asUiApiError(caught);
       showError(err?.data?.message || 'Failed to update account information', err?.data?.errors || err?.data?.details);
     } finally {
       setIsLoading(false);
@@ -265,8 +272,9 @@ export const AccountSettings: React.FC = () => {
     try {
       await requestEmailChange(email).unwrap();
       setShowEmailModal(false);
-      showSuccess('Verification email sent. Please check your inbox and click the confirmation link.');
-    } catch (err: any) {
+      setOutboxRevision(value => value + 1);
+      showSuccess(isDemoMode ? 'Local email change link created in the demo inbox.' : 'Verification email sent. Please check your inbox and click the confirmation link.');
+    } catch (caught: unknown) { const err = asUiApiError(caught);
       showError(err?.data?.message || 'Failed to request email change', err?.data?.errors || err?.data?.details);
     } finally {
       setIsLoading(false);
@@ -305,7 +313,7 @@ export const AccountSettings: React.FC = () => {
       setPasswordToken('');
       setTokenSent(false);
       showSuccess('Password changed successfully!');
-    } catch (err: any) {
+    } catch (caught: unknown) { const err = asUiApiError(caught);
       showError(err?.data?.message || 'Failed to change password', err?.data?.errors || err?.data?.details);
     } finally {
       setIsLoading(false);
@@ -313,12 +321,7 @@ export const AccountSettings: React.FC = () => {
   };
 
 
-  const handleDeleteAccount = async () => {
-    console.log('Delete account - API integration needed');
-    setShowDeleteModal(false);
-    logout();
-    navigate('/hello');
-  };
+  const handleDeleteAccount = async () => { setShowDeleteModal(false); showError('Account deletion is unavailable in this client. Use Demo reset for local data.'); };
 
   const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -352,10 +355,11 @@ export const AccountSettings: React.FC = () => {
           onClick={() => navigate(-1)}
           className={styles.backButton}
           iconOnly
+          aria-label="Back to settings"
         />
         <h2 className={styles.title}>Account</h2>
       </div>
-      
+
       <div className={styles.content}>
         <SettingsSection title="Account Information">
           <Form onSubmit={(e) => { e.preventDefault(); handleSaveAccountInfo(); }} className={styles.accountForm}>
@@ -382,11 +386,11 @@ export const AccountSettings: React.FC = () => {
             </div>
 
             <Input
-              label="Username"
-              value={username}
+              label="Username (read only)"
+              readOnly value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter username"
-              helperText="Note: Username update may require verification"
+              helperText="Username changes are unavailable in this client."
             />
 
             <Input
@@ -402,6 +406,7 @@ export const AccountSettings: React.FC = () => {
               icon={<DropDown/>}
               iconPosition="prefix"
               iconClickable={true}
+              iconLabel="Choose date of birth"
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
               onIconClick={() => setIsDatePickerOpen(true)}
@@ -462,9 +467,9 @@ export const AccountSettings: React.FC = () => {
 
         <SettingsSection title="Danger Zone">
           <SettingsItem
-            label="Delete Account"
-            description="Permanently delete your account"
-            onClick={() => setShowDeleteModal(true)}
+            label="Account deletion unavailable"
+            description="Use Demo reset in Settings to restore local data"
+
             showArrow={false}
           />
         </SettingsSection>
@@ -491,13 +496,14 @@ export const AccountSettings: React.FC = () => {
         </div>
       </Modal>
 
+      {isDemoMode && <DemoOutboxNotice kind="change-email" email={email} revision={outboxRevision} />}
       <Modal isOpen={showPasswordModal} onClose={() => { setShowPasswordModal(false); setTokenSent(false); }}>
         <div className={styles.modalContent}>
-          <h2 className={styles.modalTitle}>Change Password</h2>
+          <h2 className={styles.modalTitle}>Change Password</h2>{isDemoMode && tokenSent && <DemoOutboxNotice kind="change-password" email={currentUserFullData?.email || email} revision={outboxRevision} />}
           {!tokenSent ? (
             <>
               <p className={styles.modalDescription}>
-                A verification token will be sent to your email. You'll need this token to complete the password change.
+                {isDemoMode ? 'A local demo token will appear here. No email is sent.' : "A verification token will be sent to your email. You will need this token to complete the password change."}
               </p>
               <div className={styles.modalActions}>
                 <Button variant="filled" theme="light" onClick={() => { setShowPasswordModal(false); setTokenSent(false); }}>
@@ -508,8 +514,9 @@ export const AccountSettings: React.FC = () => {
                   try {
                     await requestPasswordChange().unwrap();
                     setTokenSent(true);
-                    showSuccess('Verification token sent to your email!');
-                  } catch (err: any) {
+                    setOutboxRevision(value => value + 1);
+                    showSuccess(isDemoMode ? 'Local token created. No email was sent.' : 'Verification token sent to your email!');
+                  } catch (caught: unknown) { const err = asUiApiError(caught);
                     showError(err?.data?.message || 'Failed to send token', err?.data?.errors || err?.data?.details);
                   } finally {
                     setIsLoading(false);
@@ -582,4 +589,3 @@ export const AccountSettings: React.FC = () => {
     </div>
   );
 };
-

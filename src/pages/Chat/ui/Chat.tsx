@@ -1,23 +1,26 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import React,{ useCallback,useEffect,useMemo,useRef,useState } from 'react';
+
+import { useLocation,useNavigate,useParams } from 'react-router-dom';
+
+import {
+chatApi,
+useDeleteMessageMutation,
+useEditMessageMutation,
+useGetChatInfoQuery,
+useGetChatMessagesQuery,
+useReadAllMessagesMutation,
+useSendMessageMutation
+} from '@entities/Chat/api/rtkApi';
+import type { MessageDTO,MessageReadDTO } from '@entities/Chat/model/types';
+import type { Message as MessageType } from '@entities/Chat/model/types/Message';
+import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
+import { useSignalR,type ChatCoverUpdatedEvent,type ChatDeletedEvent,type ChatNameUpdatedEvent,type MessageCreatedEvent,type MessageDeletedEvent,type MessageReadEvent,type MessageUpdatedEvent } from '@shared/lib/signalr';
+import { useAppDispatch } from '@shared/store/hooks';
+import { Button,ErrorIcon,LoadingPlaceholder,Modal } from '@shared/ui';
+import { DownArrow } from '@shared/ui/icons';
 import { Message } from '@widgets/Message';
 import { SendInput } from '@widgets/SendInput';
-import { ErrorIcon, Modal, Button, LoadingPlaceholder } from '@shared/ui';
-import { DownArrow } from '@shared/ui/icons';
-import type { Message as MessageType } from '@entities/Chat/model/types/Message';
-import type { MessageDTO, MessageReadDTO } from '@entities/Chat/model/types';
-import { 
-    useGetChatMessagesQuery, 
-    useGetChatInfoQuery,
-    useSendMessageMutation,
-    useDeleteMessageMutation,
-    useEditMessageMutation,
-    useReadAllMessagesMutation,
-    chatApi
-} from '@entities/Chat/api/rtkApi';
-import { useSignalR, type MessageCreatedEvent, type MessageDeletedEvent, type MessageUpdatedEvent, type MessageReadEvent, type ChatNameUpdatedEvent, type ChatCoverUpdatedEvent, type ChatDeletedEvent } from '@shared/lib/signalr';
-import { useAppDispatch } from '@shared/store/hooks';
-import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
+
 import styles from './Chat.module.css';
 
 export const Chat: React.FC = () => {
@@ -38,21 +41,21 @@ export const Chat: React.FC = () => {
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
     const [hasReadAllMessages, setHasReadAllMessages] = useState(false);
     const scrollPositionRef = useRef<number>(0);
-    const readMessagesTimeoutRef = useRef<number | null>(null);
+    const readMessagesTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isReadingMessagesRef = useRef(false); // Use ref to prevent multiple simultaneous calls
     const signalRReadAllDisabledRef = useRef(false); // Disable SignalR ReadAllMessages after first error
-    
+
     const currentUserId = useCurrentUserId();
 
     const chatIdNumber = chatId ? Number(chatId) : 0;
-    
+
     // Get chat info to determine if it's a group chat
     const { data: chatInfo } = useGetChatInfoQuery(chatIdNumber, {
         skip: !chatIdNumber,
     });
-    
+
     const isGroupChat = chatInfo?.isGroup ?? false;
-    
+
     // Helper function to determine message status from ReadBy
     const getMessageStatus = useCallback((msg: MessageDTO, senderId?: number): MessageType['status'] => {
         // Only set status for own messages
@@ -67,7 +70,7 @@ export const Chat: React.FC = () => {
 
         // Find read record from recipient (not sender)
         const recipientRead = msg.readBy.find(read => read.userId !== currentUserId);
-        
+
         if (!recipientRead) {
             // No read record from recipient yet
             return 'sent';
@@ -81,10 +84,10 @@ export const Chat: React.FC = () => {
         // If ReadAt is set, message is read
         return 'read';
     }, [currentUserId]);
-    
+
     const { data: messagesData, isLoading: isLoadingMessages, refetch: refetchMessages } = useGetChatMessagesQuery(
         { chatId: chatIdNumber, take: 50 },
-        { 
+        {
             skip: !chatIdNumber,
             // Force refetch when chatId changes to avoid stale cache
             refetchOnMountOrArgChange: true,
@@ -95,12 +98,12 @@ export const Chat: React.FC = () => {
         { chatId: chatIdNumber, cursor: oldestCursor, take: 50 },
         { skip: !chatIdNumber || !oldestCursor || !isLoadingOlder }
     );
-    
+
     const [sendMessage] = useSendMessageMutation();
     const [deleteMessage] = useDeleteMessageMutation();
     const [editMessage] = useEditMessageMutation();
     const { joinChat, leaveChat, setCallbacks, readAllMessages: readAllMessagesViaSignalR, isConnected: isSignalRConnected } = useSignalR();
-    
+
     // Fallback to HTTP if SignalR is not connected
     const [readAllMessagesHttp] = useReadAllMessagesMutation();
 
@@ -154,7 +157,7 @@ export const Chat: React.FC = () => {
 
         // Check if we already have messages for this chat
         // If we have messages but they're for a different chat, we should still process
-        const hasMessagesForCurrentChat = allMessages.length > 0 && 
+        const hasMessagesForCurrentChat = allMessages.length > 0 &&
             allMessages[0]?.chatId === chatIdNumber;
 
         // Always process messages if:
@@ -180,14 +183,14 @@ export const Chat: React.FC = () => {
 
             // First load - replace all messages
             setAllMessages(newMessages);
-            
+
             if (import.meta.env.DEV) {
                 console.log('[Chat] Set messages:', newMessages.length);
             }
-            
+
             // Set cursor using nextCursor/next/after from API response
             // API returns nextCursor as string, convert to number for next request
-            const nextCursor = (messagesData as any).nextCursor || messagesData.next || messagesData.after;
+            const nextCursor = (messagesData as { nextCursor?: number }).nextCursor || messagesData.next || messagesData.after;
             if (newMessages.length > 0 && nextCursor) {
                 const cursorValue = typeof nextCursor === 'string' ? Number(nextCursor) : nextCursor;
                 if (!isNaN(cursorValue)) {
@@ -237,7 +240,7 @@ export const Chat: React.FC = () => {
             setAllMessages((prev) => {
                 const existingIds = new Set(prev.map(m => m.id));
                 const uniqueOlder = olderMessages.filter(m => !existingIds.has(m.id));
-                
+
                 // Old messages should be added before existing messages (they are older)
                 // Sort all messages by createdAt ascending (oldest first)
                 const combined = [...uniqueOlder, ...prev].sort((a, b) => {
@@ -247,7 +250,7 @@ export const Chat: React.FC = () => {
                 });
 
                 // Update cursor using nextCursor/next/after from API response
-                const nextCursor = (olderMessagesData as any).nextCursor || olderMessagesData.next || olderMessagesData.after;
+                const nextCursor = (olderMessagesData as { nextCursor?: number }).nextCursor || olderMessagesData.next || olderMessagesData.after;
                 if (nextCursor) {
                     const cursorValue = typeof nextCursor === 'string' ? Number(nextCursor) : nextCursor;
                     if (!isNaN(cursorValue)) {
@@ -284,7 +287,7 @@ export const Chat: React.FC = () => {
 
                 return combined;
             });
-            
+
             setIsLoadingOlder(false);
         }
     }, [olderMessagesData, chatIdNumber, isLoadingOlder, currentUserId, getMessageStatus]);
@@ -312,7 +315,7 @@ export const Chat: React.FC = () => {
                         senderAvatarImageId: event.senderAvatarImageId,
                         senderPublicIdentifier: event.senderPublicIdentifier,
                         createdAt: event.createdAtUtc,
-                        readBy: event.senderId === currentUserId 
+                        readBy: event.senderId === currentUserId
                             ? [] // Empty ReadBy for own messages initially
                             : undefined,
                         status: event.senderId === currentUserId ? ('sent' as const) : undefined,
@@ -374,10 +377,10 @@ export const Chat: React.FC = () => {
                             // Update ReadBy array for all messages (not just own)
                             const existingReadBy = msg.readBy || [];
                             const readByIndex = existingReadBy.findIndex((r: MessageReadDTO) => r.userId === event.userId);
-                            
+
                             const updatedReadBy = readByIndex >= 0
-                                ? existingReadBy.map((r: MessageReadDTO, idx: number) => 
-                                    idx === readByIndex 
+                                ? existingReadBy.map((r: MessageReadDTO, idx: number) =>
+                                    idx === readByIndex
                                         ? { ...r, readAt: event.readAtUtc }
                                         : r
                                 )
@@ -461,14 +464,14 @@ export const Chat: React.FC = () => {
     // Process messages to add replyMessage objects
     const messages = React.useMemo(() => {
         if (!allMessages.length) return [];
-        
+
         const messagesMap = new Map(allMessages.map(msg => [msg.id, msg]));
-        
-        return allMessages.map((message) => {
+
+        return [...allMessages].sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || '') || a.id - b.id).map((message) => {
             const processedMessage: MessageType = {
                 ...message,
             };
-            
+
             if (message.replyMessageId) {
                 const replyMsg = messagesMap.get(message.replyMessageId);
                 if (replyMsg) {
@@ -478,7 +481,7 @@ export const Chat: React.FC = () => {
                     } as MessageType;
                 }
             }
-            
+
             return processedMessage;
         });
     }, [allMessages, chatIdNumber]);
@@ -509,12 +512,12 @@ export const Chat: React.FC = () => {
                 if (readMessagesTimeoutRef.current) {
                     clearTimeout(readMessagesTimeoutRef.current);
                 }
-                
+
                 readMessagesTimeoutRef.current = setTimeout(() => {
                     if (!isReadingMessagesRef.current && !hasReadAllMessages && chatIdNumber) {
                         isReadingMessagesRef.current = true;
                         setHasReadAllMessages(true);
-                        
+
                         const markAsRead = () => {
                             if (isSignalRConnected && isChatJoined && !signalRReadAllDisabledRef.current) {
                                 return readAllMessagesViaSignalR(chatIdNumber).catch((error) => {
@@ -526,7 +529,7 @@ export const Chat: React.FC = () => {
                                 return readAllMessagesHttp(chatIdNumber);
                             }
                         };
-                        
+
                         markAsRead()
                             .catch((error) => {
                                 console.error('Failed to mark all messages as read:', error);
@@ -541,13 +544,13 @@ export const Chat: React.FC = () => {
             // Load older messages when scrolling to top (within 100px from top)
             const threshold = 100;
             const canLoad = (
-                scrollTop <= threshold && 
-                hasMoreMessages && 
-                !isLoadingOlder && 
-                !isLoadingMessages && 
+                scrollTop <= threshold &&
+                hasMoreMessages &&
+                !isLoadingOlder &&
+                !isLoadingMessages &&
                 oldestCursor !== null
             );
-            
+
             if (canLoad) {
                 if (import.meta.env.DEV) {
                     console.log('[Chat] Loading older messages:', {
@@ -582,7 +585,7 @@ export const Chat: React.FC = () => {
                     if (chatIdNumber && isChatJoined && !hasReadAllMessages && !isReadingMessagesRef.current) {
                         isReadingMessagesRef.current = true;
                         setHasReadAllMessages(true);
-                        
+
                         const markAsRead = () => {
                             if (isSignalRConnected && isChatJoined && !signalRReadAllDisabledRef.current) {
                                 return readAllMessagesViaSignalR(chatIdNumber).catch((error) => {
@@ -594,7 +597,7 @@ export const Chat: React.FC = () => {
                                 return readAllMessagesHttp(chatIdNumber);
                             }
                         };
-                        
+
                         markAsRead()
                             .catch((error) => {
                                 console.error('Failed to mark all messages as read on initial load:', error);
@@ -614,7 +617,7 @@ export const Chat: React.FC = () => {
                 if (chatIdNumber && isChatJoined && !hasReadAllMessages && !isReadingMessagesRef.current && checkIfNearBottom()) {
                     isReadingMessagesRef.current = true;
                     setHasReadAllMessages(true);
-                    
+
                     const markAsRead = () => {
                         if (isSignalRConnected && isChatJoined && !signalRReadAllDisabledRef.current) {
                             return readAllMessagesViaSignalR(chatIdNumber).catch((error) => {
@@ -626,7 +629,7 @@ export const Chat: React.FC = () => {
                             return readAllMessagesHttp(chatIdNumber);
                         }
                     };
-                    
+
                     markAsRead()
                         .catch((error) => {
                             console.error('Failed to mark all messages as read on new message:', error);
@@ -646,7 +649,7 @@ export const Chat: React.FC = () => {
         // Reset state when pathname changes (including returning to the same chat)
         // This handles both: changing chats AND returning to the same chat after leaving
         const pathnameChanged = prevPathnameRef.current !== location.pathname;
-        
+
         if (pathnameChanged && chatIdNumber) {
             setIsInitialLoad(true);
             setShouldAutoScroll(true);
@@ -662,7 +665,7 @@ export const Chat: React.FC = () => {
                 clearTimeout(readMessagesTimeoutRef.current);
                 readMessagesTimeoutRef.current = null;
             }
-            
+
             if (import.meta.env.DEV) {
                 console.log('[Chat] Resetting state due to pathname change:', {
                     chatIdNumber,
@@ -671,7 +674,7 @@ export const Chat: React.FC = () => {
                 });
             }
         }
-        
+
         prevPathnameRef.current = location.pathname;
     }, [location.pathname, chatIdNumber]);
 
@@ -715,7 +718,7 @@ export const Chat: React.FC = () => {
     //         if (checkIfNearBottom() && messages.length > 0 && !isReadingMessagesRef.current && !hasReadAllMessages) {
     //             isReadingMessagesRef.current = true;
     //             setHasReadAllMessages(true);
-                
+
     //             const markAsRead = () => {
     //                 if (isSignalRConnected && !signalRReadAllDisabledRef.current) {
     //                     return readAllMessagesViaSignalR(chatIdNumber).catch((error) => {
@@ -727,7 +730,7 @@ export const Chat: React.FC = () => {
     //                     return readAllMessagesHttp(chatIdNumber);
     //                 }
     //             };
-                
+
     //             markAsRead()
     //                 .catch((error) => {
     //                     console.error('Failed to mark all messages as read (periodic check):', error);
@@ -751,7 +754,7 @@ export const Chat: React.FC = () => {
             if (!hasReadAllMessages && !isReadingMessagesRef.current && chatIdNumber) {
                 isReadingMessagesRef.current = true;
                 setHasReadAllMessages(true);
-                
+
                 const markAsRead = () => {
                     if (isSignalRConnected && isChatJoined && !signalRReadAllDisabledRef.current) {
                         return readAllMessagesViaSignalR(chatIdNumber).catch((error) => {
@@ -763,7 +766,7 @@ export const Chat: React.FC = () => {
                         return readAllMessagesHttp(chatIdNumber);
                     }
                 };
-                
+
                 markAsRead()
                     .catch((error) => {
                         console.error('Failed to mark all messages as read:', error);
@@ -777,7 +780,7 @@ export const Chat: React.FC = () => {
 
     const handleSend = async (text: string) => {
         if (!chatIdNumber || !text.trim()) return;
-        
+
         try {
             if (editingMessage) {
                 // Edit existing message
@@ -831,7 +834,7 @@ export const Chat: React.FC = () => {
 
     const handleConfirmDelete = async () => {
         if (!messageToDelete) return;
-        
+
         try {
             await deleteMessage(messageToDelete).unwrap();
             setMessageToDelete(null);
@@ -885,7 +888,7 @@ export const Chat: React.FC = () => {
     return (
         <div className={styles.container}>
             {showScrollToBottom && (
-                <button 
+                <button
                     className={styles.scrollToBottomButton}
                     onClick={handleScrollToBottom}
                     aria-label="Scroll to bottom"
@@ -922,8 +925,8 @@ export const Chat: React.FC = () => {
                 ))}
                 <div ref={messagesEndRef} />
             </div>
-            <SendInput 
-                onSend={handleSend} 
+            <SendInput
+                onSend={handleSend}
                 onAttach={handleAttach}
                 replyMessage={replyMessage}
                 onCancelReply={handleCancelReply}
@@ -967,4 +970,3 @@ export const Chat: React.FC = () => {
         </div>
     );
 };
-

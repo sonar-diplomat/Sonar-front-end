@@ -1,6 +1,9 @@
 import React from "react";
+
 import { useNavigate } from "react-router-dom";
-import { Button, RightArrow, HomeIcon } from "@shared/ui";
+
+import { Button,HomeIcon,RightArrow } from "@shared/ui";
+
 import styles from "./NotFound.module.css";
 
 export const NotFound: React.FC = () => {
@@ -8,7 +11,7 @@ export const NotFound: React.FC = () => {
 
     // TODO: Change to Home Page
     const handleGoHome = () => {
-        navigate('/entry');
+        navigate('/home');
     };
 
     const handleGoBack = () => {
@@ -35,7 +38,7 @@ export const NotFound: React.FC = () => {
                     fullWidth
                     icon={<HomeIcon />}
                 >
-                    Go to Entry
+                    Go home
                 </Button>
 
                 <Button
@@ -53,4 +56,3 @@ export const NotFound: React.FC = () => {
         </div>
     );
 };
-

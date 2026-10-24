@@ -1,4 +1,5 @@
 import type { CollectionDTO } from '@entities/Collection';
+import type { TrackDTO } from '@entities/Music';
 
 export interface DistributorDTO {
     id: number;
@@ -22,6 +23,9 @@ export interface MoodTagDTO {
 }
 
 export interface AlbumDTO extends CollectionDTO {
+    trackCount?: number;
+    authors?: { artistId: number; pseudonym: string }[];
+    tracks?: TrackDTO[];
     distributorId: number;
     distributor?: DistributorDTO | null;
     albumArtists?: AlbumArtistDTO[] | null;

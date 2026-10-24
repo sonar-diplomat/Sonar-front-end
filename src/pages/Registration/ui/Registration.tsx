@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
-import styles from './Registration.module.css';
-import { Button, LeftArrow } from '@shared/ui';
-import {
-  RegistrationForm,
-  PasswordForm,
-  EmailConfirmation,
-  type RegistrationFormData,
-  type PasswordFormData
-} from '@features/registration';
-import {useNavigate} from "react-router-dom";
-import { useRegister } from "@features/auth/model/store.ts";
+import React,{ useState } from 'react';
+
+import { useNavigate } from "react-router-dom";
+
 import type { UserRegisterDTO } from "@features/auth";
+import { useRegister } from "@features/auth/model/store.ts";
+import {
+EmailConfirmation,
+PasswordForm,
+RegistrationForm,
+type PasswordFormData,
+type RegistrationFormData
+} from '@features/registration';
+import { isDemoMode } from '@shared/config/data-source';
 import { useNotifications } from "@shared/store/notificationStore";
+import { Button,LeftArrow } from '@shared/ui';
+
+import styles from './Registration.module.css';
 
 type RegistrationStep = 'registration' | 'password' | 'confirmation';
 
@@ -51,7 +55,7 @@ export const Registration: React.FC = () => {
     const res = await register(dto);
 
     if (res.success) {
-      showSuccess('Registration successful! Please check your email for verification.');
+      showSuccess(isDemoMode ? 'Local demo account created. Use the demo inbox to confirm.' : 'Registration successful! Please check your email for verification.');
       setCurrentStep('confirmation');
     } else {
       showError(res.message || 'Registration failed', res.errors || res.details);
@@ -72,6 +76,7 @@ export const Registration: React.FC = () => {
 
   return (
     <div className={styles.container}>
+      {isDemoMode && <p>Local demo registration. Use fictional details; no email is sent.</p>}
       {currentStep !== 'confirmation' && (
         <Button
           icon={<LeftArrow/>}
@@ -84,7 +89,7 @@ export const Registration: React.FC = () => {
       )}
 
       {currentStep === 'registration' && (
-        <RegistrationForm 
+        <RegistrationForm
           onSubmit={handleRegistrationSubmit}
           data={registrationData}
           onDataChange={handleRegistrationDataChange}
@@ -96,7 +101,7 @@ export const Registration: React.FC = () => {
       )}
 
       {currentStep === 'confirmation' && (
-        <EmailConfirmation />
+        <EmailConfirmation email={email} />
       )}
     </div>
   );

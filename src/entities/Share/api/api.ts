@@ -1,6 +1,3 @@
-import { apiClient } from '@shared/api/oldBaseApi.ts';
-import { API_ENDPOINTS } from '@shared/config';
-import type { RequestConfig } from '@shared/types';
 
 export const Api = {
     // Закомментировано: используйте useGetShareLinkQuery из @shared/api/rtkApi

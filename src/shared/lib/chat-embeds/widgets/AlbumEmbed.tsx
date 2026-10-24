@@ -1,8 +1,11 @@
 import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
+
 import { useGetAlbumQuery } from '@entities/Album/api/rtkApi';
-import { API_BASE_URL, API_ENDPOINTS } from '@shared/config';
+import { getImageUrlById } from '@shared/lib/image-utils';
 import { LoadingPlaceholder, LoadingImage } from '@shared/ui';
+
 import styles from './EmbedWidget.module.css';
 
 export interface AlbumEmbedProps {
@@ -15,8 +18,7 @@ export const AlbumEmbed: React.FC<AlbumEmbedProps> = ({ albumId, url }) => {
   const { data: album, isLoading, isError } = useGetAlbumQuery(albumId, { skip: !albumId });
 
   const handleClick = () => {
-    const path = new URL(url).pathname;
-    navigate(path);
+    navigate(`/album/${albumId}`);
   };
 
   if (isLoading) {
@@ -39,18 +41,13 @@ export const AlbumEmbed: React.FC<AlbumEmbedProps> = ({ albumId, url }) => {
     );
   }
 
-  const coverImageUrl = album.coverId
-    ? `${API_BASE_URL}${API_ENDPOINTS.blob.image(album.coverId)}`
-    : undefined;
+  const coverImageUrl = getImageUrlById(album.coverId);
 
   // AlbumResponseDTO имеет authors с pseudonym
-  const authors = (album as any).authors?.map((a: any) => a.pseudonym).join(', ') 
-    || album.albumArtists?.map((aa) => aa.pseudonym).join(', ')
-    || (album as any).distributorName 
-    || '';
+  const authors = album.albumArtists?.map(artist => artist.pseudonym).join(', ') || '';
 
   return (
-    <div className={styles.embed} onClick={handleClick} role="button" tabIndex={0}>
+    <div className={styles.embed} onClick={handleClick} role="button" tabIndex={0} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); handleClick(); } }}>
       <div className={styles.type}>Album</div>
       <div className={styles.cover}>
         {coverImageUrl && (
@@ -71,4 +68,3 @@ export const AlbumEmbed: React.FC<AlbumEmbedProps> = ({ albumId, url }) => {
     </div>
   );
 };
-

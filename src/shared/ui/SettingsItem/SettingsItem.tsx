@@ -1,6 +1,8 @@
 import React from 'react';
-import styles from './SettingsItem.module.css';
+
 import { RightArrow } from '@shared/ui';
+
+import styles from './SettingsItem.module.css';
 
 export interface SettingsItemProps {
   label: string;

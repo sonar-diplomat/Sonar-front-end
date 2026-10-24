@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React,{ useState } from 'react';
+
+import { Button,LinkIcon,LoadingImage,MoreIcon,PlayIcon } from '@shared/ui';
+
 import styles from './ArtistMessageCard.module.css';
-import {Button, PlayIcon, LinkIcon, MoreIcon, LoadingImage} from '@shared/ui';
 
 export interface ArtistMessage {
     id: string;
@@ -74,7 +76,7 @@ export const ArtistPostCard: React.FC<ArtistMessageCardProps> = ({
                             theme="dark"
                             size="medium"
                             icon={<PlayIcon />}
-                            onClick={handleTrackPlay}
+                            aria-label="Play attached song" disabled={!onTrackPlay} onClick={handleTrackPlay}
                             className={styles.playButton}
                         />
                     </div>
@@ -107,7 +109,7 @@ export const ArtistPostCard: React.FC<ArtistMessageCardProps> = ({
                         shape="cr-16"
                         iconOnly
                         icon={<MoreIcon/>}
-                        onClick={handleMenuClick}
+                        aria-label="Post actions" disabled={!onMenuClick} onClick={handleMenuClick}
                     />
                 </div>
 

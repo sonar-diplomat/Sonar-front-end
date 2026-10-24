@@ -1,6 +1,7 @@
 import React from 'react';
-import { Modal, Button } from '@shared/ui';
-import { ProfileIcon, BlockIcon } from '@shared/ui';
+
+import { BlockIcon,Button,Modal,ProfileIcon } from '@shared/ui';
+
 import styles from './MemberContextMenu.module.css';
 
 interface MemberContextMenuProps {
@@ -18,7 +19,7 @@ interface MemberContextMenuProps {
 export const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
     isOpen,
     onClose,
-    memberId,
+
     memberUserName,
     memberPublicIdentifier,
     isAdmin,
@@ -85,4 +86,3 @@ export const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
         </Modal>
     );
 };
-
