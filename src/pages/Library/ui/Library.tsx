@@ -669,7 +669,7 @@ export const Library: React.FC<LibraryProps> = () => {
                 className={styles.createBtn}
                 icon={<PlusIcon/>}
                 variant={"filled"}
-                theme={"light"}
+                theme={"dark"}
                 onClick={handleCreateNew}
                 disabled={isLoading}
             >

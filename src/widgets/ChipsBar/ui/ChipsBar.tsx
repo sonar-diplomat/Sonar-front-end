@@ -37,6 +37,7 @@ export const ChipsBar: React.FC<ChipsBarProps> = ({
                     variant="filled"
                     theme={selectedCategory === category ? 'light' : 'dark'}
                     selected={selectedCategory === category}
+                    aria-pressed={selectedCategory === category}
                     onClick={() => handleCategoryClick(category)}
                 >
                     {category}

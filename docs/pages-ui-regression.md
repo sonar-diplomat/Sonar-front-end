@@ -12,6 +12,8 @@ Baseline: the published mock demo at `https://sonar-diplomat.github.io/Sonar-fro
 | Input and button names | Search, creation forms, message input and playback switches lack accessible names. Several icon buttons have no text alternative. | Shared inputs use their placeholder as a fallback name; explicit names cover switches, post fields, group/member controls and folder navigation. |
 | Keyboard actions | Chat rows, group members and top songs respond only to pointer clicks. | Chats and members are buttons; top songs support Enter/Space without nesting the menu button inside the playback control. |
 | Light theme | The date picker's selected text is dark on a hardcoded dark dialog. Recovery headings, Terms headings, registration consent and the Premium banner also lose contrast. | Theme tokens for dialogs, forms, consent and chat surfaces; explicit white title on the intentionally dark Premium banner. |
+| Library creation control | Light theme forces a dark background onto the creation tile while its text/icon remain dark, making Create New appear empty. | Use the shared dark-button palette in both themes and remove the conflicting background override. The label and plus remain visible; the creation route opens. |
+| Category filters | The selected chip inherits the shared button's growing flex layout, stretching All across the row. | Scope a fixed-content flex layout to ChipsBar buttons and expose selection with `aria-pressed`. All/Albums/Playlists keep their widths when selected. |
 | Empty playlist | A newly created playlist shows “Start listening” without an available playback action. | Hide the playback panel until there are playable tracks. The empty-state guidance remains visible. |
 | Contextual reporting | The playlist menu uses a hardcoded User type ID, so the report cannot save; its old modal also suggests contacting real support. | Route menus to the shared report page, resolve types by catalog name and prefill the entity ID. Unsupported album/artist contexts are explicit. Changing report context resets the form/result. |
 | Unsupported demo actions | Scheduling publishes immediately because the local transport ignores the requested publication date. Chat notification changes do not provide notifications. | Disable these two controls in mock mode and explain the limitation. API-profile controls retain their existing behavior. |
@@ -19,6 +21,8 @@ Baseline: the published mock demo at `https://sonar-diplomat.github.io/Sonar-fro
 ## Browser coverage
 
 Browser viewport checks used 1440 × 1000, 390 × 844 and 320 × 740. These are responsive desktop-browser checks, not physical iOS/Android device certification. Checked pages had no document-level horizontal overflow; catalog carousels retain intentional horizontal scrolling.
+
+The library follow-up also checked 740 × 844 and 1280 × 720 in light theme, plus 320 × 740 in both themes. Create New has contrasting text/icon, filter selection changes the displayed collection type without stretching a chip, and the creation button opens the Playlist/Folder chooser. Console errors and warnings remained absent.
 
 | Flow | Evidence |
 | --- | --- |
