@@ -29,7 +29,7 @@ export const MemberItem: React.FC<MemberItemProps> = ({ userId, currentUserId, o
     const initial = displayName.charAt(0).toUpperCase();
 
     return (
-        <div className={styles.memberItem} onClick={onClick}>
+        <button type="button" className={styles.memberItem} onClick={onClick} aria-label={`Member actions: ${displayName}`}>
             <div className={styles.memberAvatar}>
                 <div className={styles.memberAvatarPlaceholder}>
                     {initial}
@@ -38,7 +38,7 @@ export const MemberItem: React.FC<MemberItemProps> = ({ userId, currentUserId, o
             <span className={styles.memberName}>
                 {displayName}
             </span>
-        </div>
+        </button>
     );
 };
 

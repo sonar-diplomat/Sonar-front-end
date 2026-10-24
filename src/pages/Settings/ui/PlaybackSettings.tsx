@@ -92,6 +92,7 @@ export const PlaybackSettings: React.FC = () => {
             description={isDemoMode ? "Unavailable in demo. Playback follows your queue." : "Automatically play similar content when your music ends"}
             rightContent={
               <Toggle
+                aria-label="Autoplay"
                 disabled={isDemoMode} checked={currentAutoPlay}
                 onChange={handleAutoPlayChange}
               />
@@ -103,6 +104,7 @@ export const PlaybackSettings: React.FC = () => {
             description={isDemoMode ? "Crossfade is unavailable in demo." : "Fade between tracks for seamless listening"}
             rightContent={
               <Toggle
+                aria-label="Crossfade"
                 disabled={isDemoMode} checked={currentCrossfade}
                 onChange={handleCrossfadeChange}
               />
@@ -114,6 +116,7 @@ export const PlaybackSettings: React.FC = () => {
             description="Show songs with explicit lyrics"
             rightContent={
               <Toggle
+                aria-label="Allow Explicit Content"
                 checked={currentExplicitContent}
                 onChange={handleExplicitContentChange}
               />

@@ -7,13 +7,14 @@ import styles from './Checkbox.module.css';
 
 export interface CheckboxProps {
     label?: string | React.ReactNode;
+    'aria-label'?: string;
     checked?: boolean;
     onChange?: (checked: boolean) => void;
     disabled?: boolean;
     className?: string;
 }
 
-export const Checkbox: React.FC<CheckboxProps> = ({label, checked = false, onChange, disabled = false, className}) => {
+export const Checkbox: React.FC<CheckboxProps> = ({label, 'aria-label': ariaLabel, checked = false, onChange, disabled = false, className}) => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (onChange) {
             onChange(event.target.checked);
@@ -24,6 +25,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({label, checked = false, onCha
         <label className={`${styles.container} ${disabled ? styles.disabled : ''} ${className || ''}`}>
             <input
                 type="checkbox"
+                aria-label={ariaLabel}
                 checked={checked}
                 onChange={handleChange}
                 disabled={disabled}

@@ -104,7 +104,7 @@ export const AddMembersModal: React.FC<AddMembersModalProps> = ({
     const canAdd = selectedUsers.length > 0 && !isAdding;
 
     return (
-        <Modal isOpen={isOpen} onClose={handleClose}>
+        <Modal isOpen={isOpen} onClose={handleClose} ariaLabel="Add members">
             <div className={styles.container}>
                 <div className={styles.header}>
                     <Button
@@ -113,6 +113,7 @@ export const AddMembersModal: React.FC<AddMembersModalProps> = ({
                         size="medium"
                         iconOnly
                         icon={<LeftArrow />}
+                        aria-label="Cancel adding members"
                         onClick={handleClose}
                         className={styles.backButton}
                     />
@@ -139,6 +140,7 @@ export const AddMembersModal: React.FC<AddMembersModalProps> = ({
                                 theme="light"
                                 size="medium"
                                 icon={<SearchIcon />}
+                                aria-label="Search members"
                                 onClick={handleSearch}
                                 disabled={!searchQuery.trim() || isSearching}
                                 className={styles.searchButton}
@@ -202,6 +204,7 @@ export const AddMembersModal: React.FC<AddMembersModalProps> = ({
                                             size="small"
                                             iconOnly
                                             icon={<ClearIcon />}
+                                            aria-label={`Remove ${user.userName}`}
                                             onClick={() => handleRemoveUser(user.id)}
                                         />
                                     </div>

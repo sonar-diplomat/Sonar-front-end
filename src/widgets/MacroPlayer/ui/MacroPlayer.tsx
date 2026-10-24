@@ -29,6 +29,7 @@ export const MacroPlayer: React.FC<MacroPlayerProps> = ({ isOpen, onClose, curre
     return <div className={styles.backdrop} onClick={event => { if (event.target === event.currentTarget) onClose(); }}>
         <section ref={dialog} className={styles.macroPlayer} role="dialog" aria-modal="true" aria-label="Now playing"
             onKeyDown={event => {
+                if ((event.target as HTMLElement).closest('[role="dialog"]') !== dialog.current) return;
                 if (event.key === 'Escape') { event.stopPropagation(); onClose(); }
                 if (event.key === 'Tab') {
                     const focusable = [...(dialog.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), a[href]') || [])];

@@ -5,6 +5,7 @@ export interface ToggleProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
   label?: string;
+  'aria-label'?: string;
   disabled?: boolean;
   className?: string;
 }
@@ -12,6 +13,7 @@ export const Toggle: React.FC<ToggleProps> = ({
   checked,
   onChange,
   label,
+  'aria-label': ariaLabel,
   disabled = false,
   className = '',
 }) => {
@@ -33,6 +35,7 @@ export const Toggle: React.FC<ToggleProps> = ({
         type="button"
         role="switch"
         aria-checked={checked}
+        aria-label={ariaLabel || label}
         className={`${styles.toggle} ${checked ? styles.checked : ''} ${disabled ? styles.disabled : ''}`}
         onClick={handleToggle}
         onKeyDown={handleKeyDown}

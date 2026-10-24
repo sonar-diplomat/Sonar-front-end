@@ -24,7 +24,7 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({ chat, onClick }) => 
         : null;
 
     return (
-        <div className={styles.container} onClick={handleClick}>
+        <button type="button" className={styles.container} onClick={handleClick} aria-label={`Open chat: ${chat.name}`}>
             <div className={styles.avatar}>
                 {chat.cover ? (
                     <LoadingImage src={(chat.cover as { url?: string }).url || ''} alt={chat.name} className={styles.avatarImage} />
@@ -43,6 +43,6 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({ chat, onClick }) => 
                     <div className={styles.lastMessage}>{chat.lastMessage.textContent}</div>
                 )}
             </div>
-        </div>
+        </button>
     );
 };

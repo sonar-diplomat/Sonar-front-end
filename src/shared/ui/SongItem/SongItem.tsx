@@ -22,8 +22,15 @@ export const SongItem: React.FC<SongItemProps> = ({
     ].filter(Boolean).join(' ');
 
     return (
-        <div className={wrapperClasses} onClick={onClick}>
-            <div className={styles.content}>
+        <div className={wrapperClasses}>
+            <div className={styles.content} role={onClick ? 'button' : undefined}
+                tabIndex={onClick ? 0 : undefined} aria-label={onClick ? `Play ${title}` : undefined}
+                onClick={onClick} onKeyDown={event => {
+                    if (onClick && (event.key === 'Enter' || event.key === ' ')) {
+                        event.preventDefault();
+                        onClick();
+                    }
+                }}>
                 <p className={styles.rank}>{rank}.</p>
                 <div className={styles.imageWrapper}>
                     <LoadingImage

@@ -10,6 +10,7 @@ useRemoveUserFromChatMutation,
 } from '@entities/Chat/api/rtkApi';
 import { useGetClientSettingsQuery,usePatchClientSettingsMutation } from '@entities/ClientSettings/api/rtkApi';
 import { useGetUserByIdQuery,useGetUserProfileByIdentifierQuery } from '@entities/User/api/rtkApi';
+import { isDemoMode } from '@shared/config/data-source';
 import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
 import { BlockIcon,Button,Checkbox,DeleteIcon,ErrorIcon,Info,LoadingPlaceholder,NotificationIcon,PlusIcon,ProfileIcon,RightArrow,VerifyIcon } from '@shared/ui';
 import { AddMembersModal } from '@widgets/AddMembersModal';
@@ -251,10 +252,12 @@ export const UserInfo: React.FC = () => {
                 <div className={styles.optionItem}>
                     <div className={styles.optionLeft}>
                         <NotificationIcon className={styles.optionIcon} color="#fff" />
-                        <span className={styles.optionText}>Notification</span>
+                        <span className={styles.optionText}>{isDemoMode ? 'Notifications unavailable in demo' : 'Notifications'}</span>
                     </div>
                     <Checkbox
-                        checked={notificationsEnabled}
+                        aria-label={isDemoMode ? 'Chat notifications unavailable in demo' : 'Chat notifications'}
+                        disabled={isDemoMode}
+                        checked={!isDemoMode && notificationsEnabled}
                         onChange={setNotificationsEnabled}
                     />
                 </div>

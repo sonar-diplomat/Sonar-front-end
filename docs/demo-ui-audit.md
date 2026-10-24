@@ -1,5 +1,7 @@
 # Demo UI audit
 
+The published-demo audit and current fixes are recorded in [Pages UI regression — 2026-10-24](pages-ui-regression.md). It supersedes the historical publication-pending status below for the covered flows; the older checkpoint notes remain as history.
+
 Status: UI source checkpoint frozen. A stable compiled preview was checked under `/Sonar-front-end/` with one available MP3. Fresh-package regression checks, distinct-track playback and published Pages acceptance remain pending. A Redux play flag alone is not playback evidence.
 
 The later fresh compiled regression is recorded in [verification](verification.md): Library album/filter, playlist rename/delete/reload, cross-tab preservation while playing, reset-to-home, uploaded cover reload/reset and narrow header geometry passed. Historical checkpoint results below identify the bundle they tested; final `.pages/` and published acceptance remain pending.

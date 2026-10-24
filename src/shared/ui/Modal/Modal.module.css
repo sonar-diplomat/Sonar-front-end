@@ -27,7 +27,8 @@
 
 /* Modal Container */
 .modal {
-  background-color: #0A0A0A;
+  background-color: var(--bg-body);
+  color: var(--text-primary);
   border-radius: 32px 32px 0 0;
   padding-left: 16px;
   padding-right: 16px;
@@ -73,7 +74,7 @@
 }
 
 .title {
-  color: #EAEAEA;
+  color: var(--text-primary);
   font-size: 20px;
   font-weight: 600;
   margin: 0;
@@ -92,7 +93,7 @@
   justify-content: center;
   border-radius: 50%;
   transition: background-color 0.2s ease;
-  color: #EAEAEA;
+  color: var(--text-primary);
   position: absolute;
   top: 20px;
   left: 20px;
@@ -122,7 +123,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: #EAEAEA;
+  color: var(--text-primary);
   gap:64px;
   margin-bottom: 64px;
 }
