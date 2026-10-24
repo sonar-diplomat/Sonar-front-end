@@ -1,0 +1,22 @@
+# Register workflow_dispatch on the default branch before the demo branch is integrated.
+# The selected branch supplies its own workflow definition and deployment restrictions.
+name: GitHub Pages demo
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Use probe first on the prepared demo branch
+        type: choice
+        options: [probe, full]
+        default: probe
+        required: true
+permissions:
+  contents: read
+jobs:
+  select-prepared-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Select the prepared demo branch
+        run: |
+          echo 'Run this workflow from feat/mock-demo-github-pages to build and verify the selected artifact.'
+          echo 'This default-branch entry point has no deployment permissions or publishing steps.'
