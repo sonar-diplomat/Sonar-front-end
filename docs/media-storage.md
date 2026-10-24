@@ -30,7 +30,7 @@ Remove-Item Env:GIT_LFS_SKIP_SMUDGE
 GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/sonar-diplomat/Sonar-front-end.git
 ```
 
-Inside the selected checkout, install dependencies with `npm ci`. `task build:release` does not pull audio. For the full demo, after the published one-file probe has been accepted:
+Inside the selected checkout, install dependencies with `npm ci`. `task build:release` does not pull audio. To prepare the full demo locally:
 
 ```text
 task media:pull
@@ -72,7 +72,7 @@ All six media/importer tests, scoped script lint and Task/actionlint validation 
 
 `build:demo` compiles application/JSON into `dist/`; it must not copy music. `pages:package` checks an audited mock profile and combines it with verified media into `.pages/`. MP3s remain independent static files; there are no MP3 imports or audio data URLs in JS/CSS. Development uses the Vite middleware; preview serves the packaged files, base path and HTTP ranges.
 
-The catalogue budget is 128 MiB and the complete Pages artifact budget is 256 MiB, enforced by scripts. HEAD checks of the twelve original recordings totaled 85,079,551 bytes on 2026-10-23; only imported/verified entries count as present. The full catalogue is pending the published one-file probe. Local `.pages*`, `.media-cache`, `.cache`, `.tools`, `.task` and test output are ignored by Git and excluded from the server context.
+The catalogue budget is 128 MiB and the complete Pages artifact budget is 256 MiB, enforced by scripts. All twelve original recordings were imported and verified on 2026-10-24: 85,079,551 audio bytes, twelve distinct hashes, and measured durations synchronized with the seed. Full `.pages/` packaging contains 86,207,960 bytes. Local catalogue preparation is independent of deployment approval; full publication still requires the real one-file delivery proof. Local `.pages*`, `.media-cache`, `.cache`, `.tools`, `.task` and test output are ignored by Git and excluded from the server context.
 
 GitHub documents that [LFS cannot be used with Pages](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-git-large-file-storage). Do not treat LFS/raw URLs as a CDN or publish pointers. The proposed transport extracts ordinary MP3 bytes, validates them and places them in a Pages artifact. It must first pass an actual one-MP3 publication experiment; local success is not proof of service availability. If it fails, report the observed limitation and stop full publication until a tested alternative is approved.
 
@@ -80,4 +80,4 @@ GitHub documents that [LFS cannot be used with Pages](https://docs.github.com/en
 
 ## Verification status
 
-The initial `Carefree` file is 6,566,713 bytes, measured at 205.113469 seconds, SHA-256 `8433b770a630d9b1594fd484442c677907ece899a4d149954cd2e74fd733e311`. The first `.pages-probe/` package passed local GET/HEAD/MIME/hash/206 range checks. Local Chromium playback and seeking were also observed. Actual published URL, deployment run, CDN headers and remote playback proof are still required before enabling the full catalogue.
+The initial `Carefree` file is 6,566,713 bytes, measured at 205.113469 seconds, SHA-256 `8433b770a630d9b1594fd484442c677907ece899a4d149954cd2e74fd733e311`. Both the first-file probe and the full twelve-track `.pages/` package passed local GET/HEAD/MIME/hash/206 range checks. The full artifact verified all 26 media files. Chromium played distinct tracks 2, 3, 5 and 9 through the packaged application with working navigation, seek and deep-link reload. Actual published URL, deployment run, CDN headers and remote playback proof are still required before enabling full publication.

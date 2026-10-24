@@ -1,5 +1,17 @@
 # Verification record
 
+## Full catalogue preparation: 2026-10-24
+
+All twelve source recordings are registered, with twelve distinct audio hashes, 85,079,551 audio bytes, fourteen covers, required credits and synchronized measured seed durations. Demo seed version `1.1.0` resets older persisted seed snapshots through the existing version check.
+
+- Full `task ci:check` passes, including both TypeScript projects, ESLint, Task/actionlint, all 47 tests and the previously failing mandatory twelve-track metadata gate.
+- `task media:verify` checks all twelve recordings and fourteen images. The full demo compiles and packages into `.pages/` (86,207,960 bytes); HTTP smoke passes GET/HEAD, MIME, SHA-256 and seek/range checks for all 26 files.
+- Chromium checks use the complete packaged `.pages/`, including the real static media. Tracks 5, 9 and 2 load with readyState 4 and advancing playback; Next selects track 3. A seek to 45 seconds, navigation to album 101 and hash deep-link reload work without application console warnings/errors.
+- The current local Docker retry could not run because the Linux engine is unavailable; the earlier actual image audit below is historical evidence. Current remote CI must provide the repeat Linux container check.
+- Pages branch policies allow exactly `master`, `feat/mock-demo-github-pages` and `dev`. Existing environment rules remain in place. The default-branch registration still needs the reviews required by its active ruleset; a normal dispatch currently returns workflow-not-found on the default branch.
+
+Local packaging is complete; an actual published URL, external delivery/seek verification and deployment acceptance are still pending.
+
 ## Integration recheck: 2026-10-24
 
 The remaining `chore/pages-workflow-bootstrap` history was consolidated into `feat/mock-demo-github-pages`. Its temporary `pages.yml` entry point conflicts with the full demo workflow; the executable demo workflow was retained, including the published-probe gate and deployment environment. The two legacy server workflows remain manual-only with disabled deployment jobs. This integration does not register a workflow on `master` or change deployment protection rules.
@@ -56,6 +68,6 @@ The [remote CI run for source commit `c896a48`](https://github.com/sonar-diploma
 
 ## Remaining acceptance
 
-The seed references twelve songs, while the manifest contains only audio ID 1. Remaining media and measured durations must be registered after the real published one-file probe succeeds. Full metadata/CI, the complete `.pages/` package, distinct-track playback, a complete network trace, physical mobile playback and deployed deep-link/reload/reset checks remain pending. Local account confirmation/recovery/password-change flows are covered by the compiled checks above; they still need final-package acceptance.
+The seed and manifest now contain all twelve recordings, and the full local `.pages/` package and distinct-track playback pass. The earlier single-file failures above are preserved as historical evidence. A complete network trace, physical mobile playback and actual deployed deep-link/reload/reset checks remain pending. Local account confirmation/recovery/password-change flows are covered by the compiled checks above; they still need deployed acceptance.
 
-Pages Source is configured for GitHub Actions. Default-branch workflow registration still needs normal review/acceptance, and the deployment environment currently permits only `master`. A Maintainer must accept the intended exact deployment refs under the existing protection process before a run can deploy. Publication is waiting; no successful external Pages URL or deployment is recorded. The verified-probe variable must remain unset until actual published delivery/playback/seek evidence exists. See [CI and Pages](ci-cd.md).
+Pages Source is configured for GitHub Actions and the exact deployment refs are permitted. Default-branch workflow registration still needs review/acceptance under the active ruleset. Publication is waiting; no successful external Pages URL or deployment is recorded. The verified-probe variable must remain unset until actual published delivery/playback/seek evidence exists. See [CI and Pages](ci-cd.md).

@@ -40,7 +40,7 @@ The probe and full package contain extracted ordinary MP3 files. They never rely
 
 Pages Source has been observed as GitHub Actions. Environment/ref rules, default-branch registration and actual external MP3 proof remain independent checks. An enabled Source or successful local preview does not prove a published deployment.
 
-The observed `github-pages` environment currently permits only `master`. This blocks the prepared demo branch and `dev`, independently of workflow registration. A Maintainer must explicitly accept the intended probe/deployment refs in that environment before the corresponding deployment can proceed. The default-branch registration [PR #122](https://github.com/sonar-diplomat/Sonar-front-end/pull/122) is also pending normal review. Keep dependent publication stopped; do not change protection rules, deploy from the registration stub or use a different ref to bypass the restriction. LFS quota/remote object availability still need confirmation before catalogue expansion.
+The `github-pages` environment permits exactly the branch names `master`, `feat/mock-demo-github-pages` and `dev`; other environment rules are unchanged. The default-branch registration [PR #122](https://github.com/sonar-diplomat/Sonar-front-end/pull/122) remains pending: the active default-branch ruleset requires two approving reviews and approval of the latest push. The `dev` ruleset requires one approving review and approval of the latest push. Ordinary merge and Pages dispatch are blocked until their respective requirements are met; the workflow is not yet found on the default branch. No protection rules are disabled by the demo implementation.
 
 ## Variables, credentials and artifacts
 
@@ -87,4 +87,4 @@ An earlier isolated Linux quality snapshot passed Task/actionlint, typecheck/lin
 
 The [remote CI run for source commit `c896a48`](https://github.com/sonar-diplomat/Sonar-front-end/actions/runs/40012693139) passed YAML, typecheck, lint and all 47 tests on both Windows and Ubuntu, then failed the mandatory metadata gate at missing audio 2. Its downstream jobs were skipped. The full CI result remains failing until the catalogue is complete.
 
-Acceptance remains partial: the manifest currently has audio 1 while the seed references twelve tracks. The actual published probe, catalogue expansion/verification, complete `.pages/`, Pages workflow execution and full deployed browser acceptance still require observed results. Do not describe the standalone probe as full application acceptance.
+The full twelve-track manifest, synchronized seed, `.pages/` package and local media HTTP checks now pass. Published acceptance remains partial: the actual external probe, Pages workflow execution and full deployed browser acceptance still require observed results. Do not describe a local package or the standalone probe as full deployed application acceptance.

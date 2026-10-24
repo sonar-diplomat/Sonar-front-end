@@ -13,7 +13,7 @@ import type { User } from '../../entities/User/model/types.ts';
 import type { ActiveSessionDTO } from '../../features/auth/model/types.ts';
 
 export const SCHEMA_VERSION = 1;
-export const SEED_VERSION = '1.0.0';
+export const SEED_VERSION = '1.1.0';
 export const STORAGE_KEY = 'sonar-demo:state';
 export interface DemoTrack extends TrackDTO { artistIds: number[]; albumId: number; playCount: number }
 export interface DemoAlbum extends AlbumDTO { trackIds: number[]; artistIds: number[] }

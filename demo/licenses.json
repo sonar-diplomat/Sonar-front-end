@@ -19,6 +19,193 @@
       ]
     },
     {
+      "id": "audio-10",
+      "title": "Local Forecast",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1300010",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Local%20Forecast.mp3",
+      "catalogUrl": "https://incompetech.com/music/royalty-free/pieces.json",
+      "isrc": "USUAN1300010",
+      "checkedOn": "2026-10-23",
+      "attribution": "Local Forecast — Kevin MacLeod (incompetech.com). Licensed under Creative Commons Attribution 4.0 International: https://creativecommons.org/licenses/by/4.0/",
+      "changes": "None; the original MP3 bytes are redistributed unchanged.",
+      "files": [
+        "audio/10.mp3"
+      ]
+    },
+    {
+      "id": "audio-11",
+      "title": "Wallpaper",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100843",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Wallpaper.mp3",
+      "catalogUrl": "https://incompetech.com/music/royalty-free/pieces.json",
+      "isrc": "USUAN1100843",
+      "checkedOn": "2026-10-23",
+      "attribution": "Wallpaper — Kevin MacLeod (incompetech.com). Licensed under Creative Commons Attribution 4.0 International: https://creativecommons.org/licenses/by/4.0/",
+      "changes": "None; the original MP3 bytes are redistributed unchanged.",
+      "files": [
+        "audio/11.mp3"
+      ]
+    },
+    {
+      "id": "audio-12",
+      "title": "Monkeys Spinning Monkeys",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400011",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Monkeys%20Spinning%20Monkeys.mp3",
+      "catalogUrl": "https://incompetech.com/music/royalty-free/pieces.json",
+      "isrc": "USUAN1400011",
+      "checkedOn": "2026-10-23",
+      "attribution": "Monkeys Spinning Monkeys — Kevin MacLeod (incompetech.com). Licensed under Creative Commons Attribution 4.0 International: https://creativecommons.org/licenses/by/4.0/",
+      "changes": "None; the original MP3 bytes are redistributed unchanged.",
+      "files": [
+        "audio/12.mp3"
+      ]
+    },
+    {
+      "id": "audio-2",
+      "title": "Sneaky Snitch",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100772",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Sneaky%20Snitch.mp3",
+      "catalogUrl": "https://incompetech.com/music/royalty-free/pieces.json",
+      "isrc": "USUAN1100772",
+      "checkedOn": "2026-10-23",
+      "attribution": "Sneaky Snitch — Kevin MacLeod (incompetech.com). Licensed under Creative Commons Attribution 4.0 International: https://creativecommons.org/licenses/by/4.0/",
+      "changes": "None; the original MP3 bytes are redistributed unchanged.",
+      "files": [
+        "audio/2.mp3"
+      ]
+    },
+    {
+      "id": "audio-3",
+      "title": "Cipher",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100844",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cipher2.mp3",
+      "catalogUrl": "https://incompetech.com/music/royalty-free/pieces.json",
+      "isrc": "USUAN1100844",
+      "checkedOn": "2026-10-23",
+      "attribution": "Cipher — Kevin MacLeod (incompetech.com). Licensed under Creative Commons Attribution 4.0 International: https://creativecommons.org/licenses/by/4.0/",
+      "changes": "None; the original MP3 bytes are redistributed unchanged.",
+      "files": [
+        "audio/3.mp3"
+      ]
+    },
+    {
+      "id": "audio-4",
+      "title": "Chill Wave",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1600048",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Chill%20Wave.mp3",
+      "catalogUrl": "https://incompetech.com/music/royalty-free/pieces.json",
+      "isrc": "USUAN1600048",
+      "checkedOn": "2026-10-23",
+      "attribution": "Chill Wave — Kevin MacLeod (incompetech.com). Licensed under Creative Commons Attribution 4.0 International: https://creativecommons.org/licenses/by/4.0/",
+      "changes": "None; the original MP3 bytes are redistributed unchanged.",
+      "files": [
+        "audio/4.mp3"
+      ]
+    },
+    {
+      "id": "audio-5",
+      "title": "Easy Lemon",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200076",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Easy%20Lemon.mp3",
+      "catalogUrl": "https://incompetech.com/music/royalty-free/pieces.json",
+      "isrc": "USUAN1200076",
+      "checkedOn": "2026-10-23",
+      "attribution": "Easy Lemon — Kevin MacLeod (incompetech.com). Licensed under Creative Commons Attribution 4.0 International: https://creativecommons.org/licenses/by/4.0/",
+      "changes": "None; the original MP3 bytes are redistributed unchanged.",
+      "files": [
+        "audio/5.mp3"
+      ]
+    },
+    {
+      "id": "audio-6",
+      "title": "Americana",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200092",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Americana.mp3",
+      "catalogUrl": "https://incompetech.com/music/royalty-free/pieces.json",
+      "isrc": "USUAN1200092",
+      "checkedOn": "2026-10-23",
+      "attribution": "Americana — Kevin MacLeod (incompetech.com). Licensed under Creative Commons Attribution 4.0 International: https://creativecommons.org/licenses/by/4.0/",
+      "changes": "None; the original MP3 bytes are redistributed unchanged.",
+      "files": [
+        "audio/6.mp3"
+      ]
+    },
+    {
+      "id": "audio-7",
+      "title": "Dream Culture",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1300046",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Dream%20Culture.mp3",
+      "catalogUrl": "https://incompetech.com/music/royalty-free/pieces.json",
+      "isrc": "USUAN1300046",
+      "checkedOn": "2026-10-23",
+      "attribution": "Dream Culture — Kevin MacLeod (incompetech.com). Licensed under Creative Commons Attribution 4.0 International: https://creativecommons.org/licenses/by/4.0/",
+      "changes": "None; the original MP3 bytes are redistributed unchanged.",
+      "files": [
+        "audio/7.mp3"
+      ]
+    },
+    {
+      "id": "audio-8",
+      "title": "Funkorama",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100474",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Funkorama.mp3",
+      "catalogUrl": "https://incompetech.com/music/royalty-free/pieces.json",
+      "isrc": "USUAN1100474",
+      "checkedOn": "2026-10-23",
+      "attribution": "Funkorama — Kevin MacLeod (incompetech.com). Licensed under Creative Commons Attribution 4.0 International: https://creativecommons.org/licenses/by/4.0/",
+      "changes": "None; the original MP3 bytes are redistributed unchanged.",
+      "files": [
+        "audio/8.mp3"
+      ]
+    },
+    {
+      "id": "audio-9",
+      "title": "Digital Lemonade",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700010",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Digital%20Lemonade.mp3",
+      "catalogUrl": "https://incompetech.com/music/royalty-free/pieces.json",
+      "isrc": "USUAN1700010",
+      "checkedOn": "2026-10-23",
+      "attribution": "Digital Lemonade — Kevin MacLeod (incompetech.com). Licensed under Creative Commons Attribution 4.0 International: https://creativecommons.org/licenses/by/4.0/",
+      "changes": "None; the original MP3 bytes are redistributed unchanged.",
+      "files": [
+        "audio/9.mp3"
+      ]
+    },
+    {
       "id": "original-covers",
       "title": "Sonar procedural covers",
       "author": "Sonar demo contributors",
