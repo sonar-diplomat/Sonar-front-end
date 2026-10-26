@@ -20,7 +20,10 @@ interface CreateGroupChatModalProps {
     onSuccess?: () => void;
 }
 
-export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
+export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = props =>
+    props.isOpen ? <CreateGroupChatDialog {...props} /> : null;
+
+const CreateGroupChatDialog: React.FC<CreateGroupChatModalProps> = ({
     isOpen,
     onClose,
     onSuccess,
@@ -35,12 +38,15 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
     const [creationError, setCreationError] = useState<string | null>(null);
     const submissionPending = useRef(false);
 
-    const { data: searchedUser, isLoading: isSearching, error: searchError } = useGetUserProfileByIdentifierQuery(
-        searchIdentifier!,
+    const { currentData, isFetching: isSearching, isError } = useGetUserProfileByIdentifierQuery(
+        searchIdentifier ?? '',
         {
-            skip: !searchIdentifier || searchIdentifier.length === 0,
+            skip: !searchIdentifier,
+            refetchOnMountOrArgChange: true,
         }
     );
+    const searchedUser = searchIdentifier && !isSearching ? currentData : undefined;
+    const searchError = !!searchIdentifier && !isSearching && isError;
 
     const [createChat] = useCreateChatMutation();
     const [addUserToChat] = useAddUserToChatMutation();
@@ -156,7 +162,10 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
                         <div className={styles.searchContainer}>
                             <Input
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    setSearchIdentifier(null);
+                                }}
                                 onKeyPress={(e) => {
                                     if (e.key === 'Enter') {
                                         handleSearch();
