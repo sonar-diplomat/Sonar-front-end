@@ -5,7 +5,7 @@ import { LoadingImage } from '@shared/ui';
 
 import styles from './ItemCardContainer.module.css';
 
-export const ItemCardContainer: React.FC<ItemCardContainerProps> = ({title, count, countLabel, avatar, children, className = ''}) => {
+export const ItemCardContainer: React.FC<ItemCardContainerProps> = ({title, count, countLabel, avatar, children, className = '', insetCards = false}) => {
     return (
         <div className={`${styles.container} ${className}`}>
             <div className={styles.header}>
@@ -22,7 +22,7 @@ export const ItemCardContainer: React.FC<ItemCardContainerProps> = ({title, coun
                 </div>
             </div>
             <div className={styles.cardsScroll}>
-                <div className={styles.cardsRow}>
+                <div className={`${styles.cardsRow} ${insetCards ? styles.insetCards : ''}`}>
                     {children}
                 </div>
             </div>

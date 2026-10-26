@@ -434,7 +434,6 @@ export const Library: React.FC<LibraryProps> = () => {
             countLabel: 'folders',
             shouldShow: selectedCategory === 'All',
             items: folders,
-            className: styles.foldersSection,
             renderItem: (folder: unknown) => {
                 const folderItem = folder as Folder;
                 return (
@@ -657,6 +656,7 @@ export const Library: React.FC<LibraryProps> = () => {
             />
         )}
         <SearchFilterHeader
+            className={styles.libraryHeader}
             title={headerTitle} categories={['All', 'Albums', 'Playlists']} selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
             searchValue={searchQuery}
@@ -678,7 +678,7 @@ export const Library: React.FC<LibraryProps> = () => {
             {isLoading ? (
                 <LibrarySkeleton />
             ) : (
-                <ContentSections sections={sections} />
+                <ContentSections sections={sections} insetCards />
             )}
         </div>
     );

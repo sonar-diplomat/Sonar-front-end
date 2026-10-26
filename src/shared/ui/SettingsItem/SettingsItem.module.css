@@ -4,7 +4,7 @@
     justify-content: space-between;
     gap: 16px;
     padding: 16px;
-    background-color: #000;
+    background-color: var(--bg-page);
     border-radius: 16px;
     width: 100%;
     border: none;
@@ -18,12 +18,12 @@
 
 @media (hover: hover) and (pointer: fine) {
   .item.clickable:hover {
-    background-color: #2C2C2E;
+    background-color: var(--bg-card);
   }
 }
 
 .item.clickable:active {
-    background-color: #3A3A3C;
+    background-color: var(--overlay-medium);
 }
 
 .content {

@@ -25,6 +25,8 @@ The build emits `dist/build-profile.json` with `dataSource`, `base` and portable
 
 ## Build versus publication
 
+Vite records a UTC timestamp when its configuration is evaluated. `VITE_BUILD_TIME` embeds that value in the application, and `builtAt` records the same ISO 8601 value in `build-profile.json`. Settings → About displays its date and time in UTC and uses its year for the copyright. The date identifies the compiled artifact rather than the viewer's clock or the deployment time; rebuilding creates a new timestamp. Both API and demo builds include it, including Docker builds without Git metadata.
+
 Compilation does not copy MP3 files into `dist/`. The media pull/verify/package stages produce `.pages/` containing ordinary audio bytes, images and attribution alongside application assets. LFS pointers and raw LFS URLs are not playable publication files. See [media storage](media-storage.md) for hashes/provenance and [CI and Pages](ci-cd.md) for ordered tasks.
 
 Use hash links such as `/Sonar-front-end/#/album/101` for demo deep links. Reload requests the static project root; the client reads the hash. API routes retain server rewrite requirements. Do not infer a successful deployed route/audio test from a local build result.

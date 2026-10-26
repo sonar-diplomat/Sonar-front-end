@@ -28,7 +28,7 @@ export const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
     onRemoveFromChat,
 }) => {
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} onClose={onClose} ariaLabel={`Actions for ${memberUserName}`}>
             <div className={styles.container}>
                 <div className={styles.header}>
                     <h3 className={styles.title}>{memberUserName}</h3>
@@ -45,7 +45,7 @@ export const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                         }}
                     >
                         <div className={styles.actionLeft}>
-                            <ProfileIcon className={styles.actionIcon} color="#fff" />
+                            <ProfileIcon className={styles.actionIcon} />
                             <span className={styles.actionText}>Go to profile</span>
                         </div>
                     </Button>
@@ -60,7 +60,7 @@ export const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                             }}
                         >
                             <div className={styles.actionLeft}>
-                                <BlockIcon className={styles.actionIcon} color="#fff" />
+                                <BlockIcon className={styles.actionIcon} />
                                 <span className={styles.actionText}>Block user</span>
                             </div>
                         </Button>
@@ -76,7 +76,7 @@ export const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                             }}
                         >
                             <div className={styles.actionLeft}>
-                                <BlockIcon className={styles.actionIcon} color="#FF3B30" />
+                                <BlockIcon className={styles.actionIcon} />
                                 <span className={styles.actionText}>Remove from chat</span>
                             </div>
                         </Button>
