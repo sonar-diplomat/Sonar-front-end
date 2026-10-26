@@ -44,6 +44,8 @@ Local authentication receipts use an outbox exposed by `getDemoOutbox()`: `{ id,
 
 Preserve typed payloads exported by `src/shared/lib/signalr/useSignalR.ts`. In mock, signalRManager/useSignalR use an in-process bus for message create/read/update/delete, chat name/cover/member/delete and typing. Mutations emit those payloads, and UI deduplicates messages by ID. No Hub object/connect/reconnect or refresh is invoked in mock. API keeps real SignalR loaded as needed.
 
+`POST Chat` returns a success-only `OkResponse` without `data` or the created chat ID. The RTK mutation exposes `void` in both profiles, and mock follows the same response shape. Group creation reads fresh chat lists before and after the POST and compares IDs. Exactly one new group owned by the current user must appear and match the submitted fields; existing IDs are never member-add targets. Missing, failed or ambiguous results stop all member additions and show an error. Member-add failures keep the dialog open and report partial creation; already completed additions remain. Once creation succeeds, this dialog cannot submit another POST, so recovery continues through chat member management.
+
 ## Media and publication
 
 Manifest `demo/media-manifest.json`: `{ "schemaVersion": 1, "audio": [...], "images": [...] }`. Entries: `{ id: number, path: string, mime: string, bytes: number, sha256: string, licenseId: string }`; audio also has `durationSeconds: number`. Paths are relative to `demo/`, e.g. `audio/track-01.mp3`, `images/album-101.svg`. Reject absolute/traversal/remote CDN/LFS URLs. Images/JSON stay in ordinary Git. Scoped audio LFS attributes are configured before staging. `demo/licenses.json` records source, author, license, attribution and files with verifiable provenance.

@@ -52,6 +52,7 @@ export const chatApi = rtkApi.injectEndpoints({
       providesTags: (_result, _error, { chatId }) => [{ type: 'Message', id: `chat-${chatId}` }, 'DemoState'],
     }),
 
+    // POST /Chat returns a non-generic OkResponse, without a chat ID or data.
     createChat: builder.mutation<void, CreateChatDTO>({
       query: (dto) => ({
         url: API_ENDPOINTS.chat.create,
@@ -59,6 +60,7 @@ export const chatApi = rtkApi.injectEndpoints({
         body: dto,
         withAuth: true,
       }),
+      transformResponse: (): void => undefined,
       invalidatesTags: [{ type: 'Chat', id: 'LIST' }],
     }),
 

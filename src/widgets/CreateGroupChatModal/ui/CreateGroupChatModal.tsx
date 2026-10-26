@@ -1,6 +1,7 @@
-import React,{ useState } from 'react';
+import React,{ useRef,useState } from 'react';
 
 import { useAddUserToChatMutation,useCreateChatMutation,useGetChatsQuery } from '@entities/Chat/api/rtkApi';
+import { createGroupChatWithMembers } from '@entities/Chat/model/createGroupChat';
 import { useGetUserProfileByIdentifierQuery } from '@entities/User/api/rtkApi';
 import { useCurrentUserId } from '@shared/lib/auth/useCurrentUserId';
 import { Button,ClearIcon,Input,LeftArrow,Modal,PlusIcon,SearchIcon } from '@shared/ui';
@@ -29,6 +30,10 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedUsers, setSelectedUsers] = useState<SelectedUser[]>([]);
     const [searchIdentifier, setSearchIdentifier] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [hasCreatedChat, setHasCreatedChat] = useState(false);
+    const [creationError, setCreationError] = useState<string | null>(null);
+    const submissionPending = useRef(false);
 
     const { data: searchedUser, isLoading: isSearching, error: searchError } = useGetUserProfileByIdentifierQuery(
         searchIdentifier!,
@@ -37,7 +42,7 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
         }
     );
 
-    const [createChat, { isLoading: isCreating }] = useCreateChatMutation();
+    const [createChat] = useCreateChatMutation();
     const [addUserToChat] = useAddUserToChatMutation();
     const { refetch: refetchChats } = useGetChatsQuery();
 
@@ -67,49 +72,54 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
     };
 
     const handleCreate = async () => {
-        if (!chatName.trim() || selectedUsers.length === 0 || !currentUserId) {
+        if (!chatName.trim() || selectedUsers.length === 0 || !currentUserId ||
+            submissionPending.current || hasCreatedChat) {
             return;
         }
 
+        submissionPending.current = true;
+        setIsSubmitting(true);
+        setCreationError(null);
         try {
-            await createChat({
+            await createGroupChatWithMembers({
                 name: chatName.trim(),
                 isGroup: true,
                 coverId: 1,
-            }).unwrap();
-
-            const chatsResult = await refetchChats();
-            const newChat = chatsResult.data?.find(c => c.name === chatName.trim() && c.isGroup && c.creatorId === currentUserId);
-            
-            if (newChat) {
-                for (const user of selectedUsers) {
-                    try {
-                        await addUserToChat({
-                            chatId: newChat.id,
-                            userId: user.id,
-                        }).unwrap();
-                    } catch (error) {
-                        console.error(`Failed to add user ${user.id} to chat:`, error);
-                    }
-                }
-            }
+            }, currentUserId, selectedUsers.map(user => user.id), {
+                getChats: () => refetchChats().unwrap(),
+                createChat: async dto => {
+                    await createChat(dto).unwrap();
+                    setHasCreatedChat(true);
+                },
+                addUserToChat: async args => { await addUserToChat(args).unwrap(); },
+            });
 
             onSuccess?.();
-            handleClose();
+            resetAndClose();
         } catch (error) {
-            console.error('Failed to create group chat:', error);
+            setCreationError(error instanceof Error ? error.message : 'Could not create the group chat. Check your chats before trying again.');
+        } finally {
+            submissionPending.current = false;
+            setIsSubmitting(false);
         }
     };
 
-    const handleClose = () => {
+    const resetAndClose = () => {
         setChatName('');
         setSearchQuery('');
         setSelectedUsers([]);
         setSearchIdentifier(null);
+        setHasCreatedChat(false);
+        setCreationError(null);
         onClose();
     };
 
-    const canCreate = chatName.trim().length > 0 && selectedUsers.length > 0 && !isCreating;
+    const handleClose = () => {
+        if (!submissionPending.current) resetAndClose();
+    };
+
+    const canCreate = chatName.trim().length > 0 && selectedUsers.length > 0 &&
+        !!currentUserId && !isSubmitting && !hasCreatedChat;
 
     return (
         <Modal isOpen={isOpen} onClose={handleClose} ariaLabel="Create group chat">
@@ -122,6 +132,7 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
                         iconOnly
                         icon={<LeftArrow />}
                         aria-label="Cancel group creation"
+                        disabled={isSubmitting}
                         onClick={handleClose}
                         className={styles.backButton}
                     />
@@ -136,6 +147,7 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
                             onChange={(e) => setChatName(e.target.value)}
                             placeholder="Enter chat name"
                             className={styles.input}
+                            disabled={isSubmitting || hasCreatedChat}
                         />
                     </div>
 
@@ -152,6 +164,7 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
                                 }}
                                 placeholder="Search by public identifier"
                                 className={styles.searchInput}
+                                disabled={isSubmitting || hasCreatedChat}
                             />
                             <Button
                                 variant="filled"
@@ -160,7 +173,7 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
                                 icon={<SearchIcon />}
                                 aria-label="Search members"
                                 onClick={handleSearch}
-                                disabled={!searchQuery.trim() || isSearching}
+                                disabled={!searchQuery.trim() || isSearching || isSubmitting || hasCreatedChat}
                                 className={styles.searchButton}
                             />
                         </div>
@@ -183,6 +196,7 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
                                     size="small"
                                     icon={<PlusIcon />}
                                     onClick={handleAddUser}
+                                    disabled={isSubmitting || hasCreatedChat}
                                 >
                                     Add
                                 </Button>
@@ -218,6 +232,7 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
                                             icon={<ClearIcon />}
                                             aria-label={`Remove ${user.userName}`}
                                             onClick={() => handleRemoveUser(user.id)}
+                                            disabled={isSubmitting || hasCreatedChat}
                                         />
                                     </div>
                                 ))}
@@ -227,6 +242,9 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
                 </div>
 
                 <div className={styles.footer}>
+                    {creationError && (
+                        <div className={styles.errorMessage} role="alert">{creationError}</div>
+                    )}
                     <Button
                         variant="filled"
                         theme="light"
@@ -234,7 +252,7 @@ export const CreateGroupChatModal: React.FC<CreateGroupChatModalProps> = ({
                         shape="cr-16"
                         onClick={handleCreate}
                         disabled={!canCreate}
-                        loading={isCreating}
+                        loading={isSubmitting}
                         fullWidth
                     >
                         Create group chat
