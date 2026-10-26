@@ -3,8 +3,15 @@
     flex-direction: column;
     gap: 20px;
     width: 100%;
-    padding: 16px;
+    max-width: 1200px;
+    min-width: 0;
+    margin: 0 auto;
+    padding: 16px 0;
     position: relative;
+}
+
+.container > * {
+    min-width: 0;
 }
 
 .topDropZone {
@@ -27,9 +34,7 @@
 
 .headerContainer {
     width: 100%;
-    /* Можно оставить просто блок без флекса, т.к. внутри есть headerInner */
-    display: flex;
-    justify-content: flex-start;
+    min-width: 0;
 }
 
 .headerInner {
@@ -38,15 +43,21 @@
     align-items: flex-start;
     gap: 12px;
     width: 100%;
+    min-width: 0;
+}
+
+.headerContainer .libraryHeader {
+    max-width: none;
 }
 
 .backButton {
     flex-shrink: 0;
+    margin-left: 16px;
 }
 
 .createBtn {
     display: flex;
-    width: 100%;
+    width: calc(100% - 32px);
     max-width: 362px;
     height: 128px;
     padding: 6px 10px;
@@ -62,53 +73,4 @@
     font-weight: 400;
     cursor: pointer;
     margin: 0 auto;
-}
-
-@media (min-width: 426px) {
-    .container {
-        max-width: 1200px;
-        width: 100%;
-        margin: 0 auto;
-        justify-content: flex-start;
-        align-items: center;
-    }
-
-    .container > * {
-        width: 100%;
-    }
-
-    .headerContainer {
-        width: 100%;
-    }
-
-    .headerInner {
-        width: 100%;
-        align-items: flex-start;
-    }
-
-    .backButton {
-        align-self: flex-start;
-        width: auto;
-    }
-
-    /* Секция Folders выходит за пределы 425px и центрируется */
-    :global(.foldersSection) {
-        position: relative;
-        width: 100vw !important;
-        max-width: none !important;
-        left: 50%;
-        right: 50%;
-        margin-left: -50vw !important;
-        margin-right: -50vw !important;
-        padding-left: calc(50vw - 600px);
-        padding-right: calc(50vw - 600px);
-        box-sizing: border-box;
-    }
-
-    :global(.foldersSection) :global(.header) {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding-left: 0;
-        padding-right: 0;
-    }
 }

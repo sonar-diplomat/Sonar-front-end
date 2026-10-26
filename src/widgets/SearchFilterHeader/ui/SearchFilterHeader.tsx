@@ -6,6 +6,7 @@ import { SearchBar } from "@widgets/SearchBar";
 import styles from './SearchFilterHeader.module.css';
 
 interface SearchFilterHeaderProps {
+    className?: string;
     title: string;
     selectedCategory: Category;
     onCategoryChange: (category: Category) => void;
@@ -17,6 +18,7 @@ interface SearchFilterHeaderProps {
 }
 
 export const SearchFilterHeader: React.FC<SearchFilterHeaderProps> = ({
+    className = '',
     title,
     selectedCategory,
     onCategoryChange,
@@ -27,7 +29,7 @@ export const SearchFilterHeader: React.FC<SearchFilterHeaderProps> = ({
     showSearch = true,
 }) => {
     return (
-        <div className={styles.header}>
+        <div className={`${styles.header} ${className}`}>
             <div className={styles.title}>
                 {title}
             </div>

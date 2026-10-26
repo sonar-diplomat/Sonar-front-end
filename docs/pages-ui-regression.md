@@ -46,3 +46,16 @@ No console errors or warnings were captured during these browser flows. This doe
 - The PR pipeline must also pass its Windows/Linux checks and actual Docker release audit before deployment.
 
 The demo continues to use local browser data. Email delivery, payments, moderation, scheduled publishing, chat notifications, crossfade and automatic recommendations are outside the published mock implementation. Real backend integration and physical-device checks remain separate acceptance work.
+
+## Dialog and library follow-up — 2026-10-26
+
+Baseline: the Pages deployment from `dev` commit `4f7909d`.
+
+- Group creation, member selection and member actions now use the existing background, border, overlay and text tokens in both themes. Member action icons inherit their text color; removal retains the theme's danger color. Narrow search fields can shrink and long member identifiers can wrap.
+- The chat information page uses the same page palette so the controls that open these dialogs are readable in light theme. Its orange profile banner keeps its existing palette.
+- Library retains its 1200 px desktop limit, rounded creation tile and horizontal card rows. Search, section headings and the first folder/collection card share a 16 px inner inset. The header width is overridden only for Library, and card insets are opt-in; the loading skeleton uses the same spacing. Obsolete viewport-wide folder overrides are removed.
+- About displays the compiled artifact's UTC build date/time and year instead of a fixed date. The shared settings cards also follow the theme, keeping the new metadata readable. See [build profiles](build-profiles.md#build-versus-publication) for the timestamp contract.
+
+The media-complete compiled preview was checked at 1280 × 720, 740 × 844 and 320 × 740. Checks covered both themes, all three dialogs, member search, Tab/Shift+Tab containment, Escape/focus return, Library filters and nested-folder navigation. Search and section headings share their left edge; no document-level horizontal overflow was observed. About showed the same timestamp as `.pages/build-profile.json`. Real MP3 playback advanced while navigating to Library and was paused after the check. The final-build browser session had no console errors or warnings.
+
+Validation: 47 automated tests, TypeScript, ESLint, YAML and seed checks; API build/isolation audit; demo compilation, media verification, Pages packaging and all 26 HTTP GET/HEAD/hash/MIME checks plus MP3 ranges. The PR pipeline additionally checks Windows/Linux and the actual Docker container before merge.

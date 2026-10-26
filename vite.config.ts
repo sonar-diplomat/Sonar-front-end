@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv, type Plugin, type PluginOption } from 'vite';
 
 /** Portable audit of modules that actually contributed code to this build. */
-function profileAudit(dataSource: 'api' | 'mock', base: string): Plugin {
+function profileAudit(dataSource: 'api' | 'mock', base: string, builtAt: string): Plugin {
   return {
     name: 'sonar-build-profile',
     generateBundle(_options, bundle) {
@@ -19,7 +19,7 @@ function profileAudit(dataSource: 'api' | 'mock', base: string): Plugin {
       this.emitFile({
         type: 'asset',
         fileName: 'build-profile.json',
-        source: JSON.stringify({ dataSource, base, modules: [...modules].sort() }, null, 2),
+        source: JSON.stringify({ dataSource, base, builtAt, modules: [...modules].sort() }, null, 2),
       });
     },
   };
@@ -36,7 +36,8 @@ export default defineConfig(async ({ mode }) => {
   if (!base.startsWith('/') || !base.endsWith('/') || base.includes('..') || base.startsWith('//')) {
     throw new Error('VITE_BASE_PATH must be an absolute pathname with a trailing slash');
   }
-  const plugins: PluginOption[] = [react(), profileAudit(dataSource, base)];
+  const builtAt = new Date().toISOString();
+  const plugins: PluginOption[] = [react(), profileAudit(dataSource, base, builtAt)];
   if (mock) {
     const { demoMediaPlugin } = await import('./scripts/demo-media-plugin.mjs');
     plugins.push(demoMediaPlugin());
@@ -45,7 +46,10 @@ export default defineConfig(async ({ mode }) => {
   return {
     base,
     plugins,
-    define: { 'import.meta.env.VITE_DATA_SOURCE': JSON.stringify(dataSource) },
+    define: {
+      'import.meta.env.VITE_DATA_SOURCE': JSON.stringify(dataSource),
+      'import.meta.env.VITE_BUILD_TIME': JSON.stringify(builtAt),
+    },
     resolve: {
       alias: {
         '@app': resolve('src/app'),

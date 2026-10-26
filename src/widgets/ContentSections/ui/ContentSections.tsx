@@ -16,9 +16,10 @@ export interface ContentSection<T = unknown> {
 
 interface ContentSectionsProps {
     sections: ContentSection<unknown>[];
+    insetCards?: boolean;
 }
 
-export const ContentSections: React.FC<ContentSectionsProps> = ({sections}) => {
+export const ContentSections: React.FC<ContentSectionsProps> = ({sections, insetCards = false}) => {
     return (
         <div className={styles.sectionsContainer}>
             {sections
@@ -30,6 +31,7 @@ export const ContentSections: React.FC<ContentSectionsProps> = ({sections}) => {
                         count={section.items.length}
                         countLabel={section.countLabel}
                         className={section.className}
+                        insetCards={insetCards}
                     >
                         {section.items.map((item) => section.renderItem(item))}
                     </ItemCardContainer>

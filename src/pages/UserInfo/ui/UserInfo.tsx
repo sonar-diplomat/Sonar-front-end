@@ -251,7 +251,7 @@ export const UserInfo: React.FC = () => {
             <div className={styles.optionsList}>
                 <div className={styles.optionItem}>
                     <div className={styles.optionLeft}>
-                        <NotificationIcon className={styles.optionIcon} color="#fff" />
+                        <NotificationIcon className={styles.optionIcon} color="currentColor" />
                         <span className={styles.optionText}>{isDemoMode ? 'Notifications unavailable in demo' : 'Notifications'}</span>
                     </div>
                     <Checkbox
@@ -265,10 +265,10 @@ export const UserInfo: React.FC = () => {
                 {!isGroup && (
                     <button className={styles.optionItem} onClick={handleGoToProfile}>
                         <div className={styles.optionLeft}>
-                            <ProfileIcon className={styles.optionIcon} color="#fff" />
+                            <ProfileIcon className={styles.optionIcon} color="currentColor" />
                             <span className={styles.optionText}>Go to profile</span>
                         </div>
-                        <RightArrow className={styles.arrowIcon} color="#fff" />
+                        <RightArrow className={styles.arrowIcon} color="currentColor" />
                     </button>
                 )}
 
@@ -280,10 +280,10 @@ export const UserInfo: React.FC = () => {
                         onClick={handleAddMembers}
                     >
                         <div className={styles.optionLeft}>
-                            <PlusIcon className={styles.optionIcon} color="#fff" />
+                            <PlusIcon className={styles.optionIcon} color="currentColor" />
                             <span className={styles.optionText}>Add members</span>
                         </div>
-                        <RightArrow className={styles.arrowIcon} color="#fff" />
+                        <RightArrow className={styles.arrowIcon} color="currentColor" />
                     </Button>
                 )}
 
@@ -291,10 +291,10 @@ export const UserInfo: React.FC = () => {
                     <>
                         <button className={styles.optionItem} onClick={handleReport}>
                             <div className={styles.optionLeft}>
-                                <Info className={styles.optionIcon} color="#fff" />
+                                <Info className={styles.optionIcon} color="currentColor" />
                                 <span className={styles.optionText}>Report</span>
                             </div>
-                            <RightArrow className={styles.arrowIcon} color="#fff" />
+                            <RightArrow className={styles.arrowIcon} color="currentColor" />
                         </button>
 
                         <button
@@ -303,10 +303,10 @@ export const UserInfo: React.FC = () => {
                             disabled={!otherUserId || !currentSettings || isBlockingUser}
                         >
                             <div className={styles.optionLeft}>
-                                <BlockIcon className={styles.optionIcon} color="#fff" />
+                                <BlockIcon className={styles.optionIcon} color="currentColor" />
                                 <span className={styles.optionText}>Block user</span>
                             </div>
-                            <RightArrow className={styles.arrowIcon} color="#fff" />
+                            <RightArrow className={styles.arrowIcon} color="currentColor" />
                         </button>
                     </>
                 )}
@@ -314,10 +314,10 @@ export const UserInfo: React.FC = () => {
                 {isGroup && (
                     <button className={`${styles.optionItem} ${styles.danger}`} onClick={handleLeaveGroup}>
                         <div className={styles.optionLeft}>
-                            <BlockIcon className={styles.optionIcon} color="#FF3B30" />
+                            <BlockIcon className={styles.optionIcon} color="currentColor" />
                             <span className={styles.optionText}>Leave group</span>
                         </div>
-                        <RightArrow className={styles.arrowIcon} color="#FF3B30" />
+                        <RightArrow className={styles.arrowIcon} color="currentColor" />
                     </button>
                 )}
 
@@ -329,10 +329,10 @@ export const UserInfo: React.FC = () => {
                     disabled={isDeletingChat}
                 >
                     <div className={styles.optionLeft}>
-                        <DeleteIcon className={styles.optionIcon} color="#FF3B30" />
+                        <DeleteIcon className={styles.optionIcon} color="currentColor" />
                         <span className={styles.optionText}>{isGroup ? 'Delete group' : 'Delete chat'}</span>
                     </div>
-                    <RightArrow className={styles.arrowIcon} color="#FF3B30" />
+                    <RightArrow className={styles.arrowIcon} color="currentColor" />
                 </Button>
             </div>
 

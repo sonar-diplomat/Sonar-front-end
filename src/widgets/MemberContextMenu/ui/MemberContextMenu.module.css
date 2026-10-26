@@ -3,27 +3,28 @@
     flex-direction: column;
     width: 100%;
     max-width: 400px;
-    background-color: #1a1a1a;
+    background-color: var(--bg-section);
     border-radius: 16px;
     overflow: hidden;
 }
 
 .header {
     padding: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border-divider);
     text-align: center;
+    overflow-wrap: anywhere;
 }
 
 .title {
     font-size: 18px;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-primary);
     margin: 0 0 4px 0;
 }
 
 .subtitle {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-tertiary);
 }
 
 .actions {
@@ -53,10 +54,14 @@
 
 .actionText {
     font-size: 16px;
-    color: #fff;
+    color: var(--text-primary);
 }
 
 .danger .actionText {
-    color: #FF3B30;
+    color: var(--delete-action);
+}
+
+.danger .actionIcon {
+    color: var(--delete-action);
 }
 

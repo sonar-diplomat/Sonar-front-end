@@ -6,6 +6,9 @@ import { Button,LeftArrow,SettingsItem,SettingsSection } from '@shared/ui';
 
 import styles from './About.module.css';
 
+const buildTime = import.meta.env.VITE_BUILD_TIME;
+const buildLabel = `${buildTime.slice(0, 10)} ${buildTime.slice(11, 16)} UTC`;
+
 export const About: React.FC = () => {
   const navigate = useNavigate();
 
@@ -42,13 +45,13 @@ export const About: React.FC = () => {
           />
           <SettingsItem
             label="Build"
-            description="2025.11.29"
+            description={buildLabel}
             showArrow={false}
           />
         </SettingsSection>
 
         <div className={styles.footer}>
-          <p className={styles.copyright}>© 2025 Sonar. All rights reserved.</p>
+          <p className={styles.copyright}>© {buildTime.slice(0, 4)} Sonar. All rights reserved.</p>
         </div>
       </div>
     </div>
