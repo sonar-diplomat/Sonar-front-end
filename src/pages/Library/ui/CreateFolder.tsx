@@ -80,6 +80,7 @@ export const CreateFolder: React.FC<CreateFolderProps> = ({className = ''}) => {
                 <div className={styles.inputSection}>
                     <Input
                         type="text"
+                        aria-label="Folder name"
                         value={folderName}
                         onChange={(e) => setFolderName(e.target.value)}
                         className={styles.folderInput}
