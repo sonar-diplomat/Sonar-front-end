@@ -21,7 +21,7 @@ export const ConfirmEmail = () => {
         if (changing) void change({ email, token, userId: params.get('userId') || '' });
         else void confirm({ email, token });
     }, [email, token, changing, change, confirm, params]);
-    return <main className={styles.container} style={{ display: 'grid', gap: 20 }}>
+    return <main className={styles.container}>
         <h1>Email confirmation</h1>{isDemoMode && <p>Local demo confirmation. No email is sent.</p>}
         {!email || !token ? <p role="alert">This confirmation link is incomplete.</p> : result.isLoading ? <p role="status">Confirming…</p> : result.isSuccess ? <p role="status">Email confirmed.</p> : result.isError ? <p role="alert">Unable to confirm. The link may be invalid or already used.</p> : null}
         <Link to="/login">Sign in</Link><Link to="/home">Go home</Link>

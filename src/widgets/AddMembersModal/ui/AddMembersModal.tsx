@@ -21,7 +21,10 @@ interface AddMembersModalProps {
     onSuccess?: () => void;
 }
 
-export const AddMembersModal: React.FC<AddMembersModalProps> = ({
+export const AddMembersModal: React.FC<AddMembersModalProps> = props =>
+    props.isOpen ? <AddMembersDialog key={props.chatId} {...props} /> : null;
+
+const AddMembersDialog: React.FC<AddMembersModalProps> = ({
     isOpen,
     onClose,
     chatId,
@@ -33,12 +36,15 @@ export const AddMembersModal: React.FC<AddMembersModalProps> = ({
     const [selectedUsers, setSelectedUsers] = useState<SelectedUser[]>([]);
     const [searchIdentifier, setSearchIdentifier] = useState<string | null>(null);
 
-    const { data: searchedUser, isLoading: isSearching, error: searchError } = useGetUserProfileByIdentifierQuery(
-        searchIdentifier!,
+    const { currentData, isFetching: isSearching, isError } = useGetUserProfileByIdentifierQuery(
+        searchIdentifier ?? '',
         {
-            skip: !searchIdentifier || searchIdentifier.length === 0,
+            skip: !searchIdentifier,
+            refetchOnMountOrArgChange: true,
         }
     );
+    const searchedUser = searchIdentifier && !isSearching ? currentData : undefined;
+    const searchError = !!searchIdentifier && !isSearching && isError;
 
     const [addUserToChat, { isLoading: isAdding }] = useAddUserToChatMutation();
 
@@ -126,7 +132,10 @@ export const AddMembersModal: React.FC<AddMembersModalProps> = ({
                         <div className={styles.searchContainer}>
                             <Input
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    setSearchIdentifier(null);
+                                }}
                                 onKeyPress={(e) => {
                                     if (e.key === 'Enter') {
                                         handleSearch();
