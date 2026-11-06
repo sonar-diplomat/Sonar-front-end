@@ -43,7 +43,7 @@ const AddMembersDialog: React.FC<AddMembersModalProps> = ({
             refetchOnMountOrArgChange: true,
         }
     );
-    const searchedUser = searchIdentifier && !isSearching ? currentData : undefined;
+    const searchedUser = searchIdentifier && !isSearching && !isError ? currentData : undefined;
     const searchError = !!searchIdentifier && !isSearching && isError;
 
     const [addUserToChat, { isLoading: isAdding }] = useAddUserToChatMutation();

@@ -95,6 +95,20 @@ async function mount(kind) {
 }
 
 for (const kind of ['create', 'add']) {
+    test(`${kind}: a failed repeat lookup cannot expose cached successful member data`, async () => {
+        const ui = await mount(kind);
+        try {
+            await ui.search('alpha'); await ui.complete('alpha'); await ui.click('Add');
+            await ui.click('Remove Member A');
+            await ui.search('alpha');
+            assert.equal(ui.button('Add'), undefined);
+            await ui.complete('alpha', true);
+            assert.match(ui.host.textContent, /User not found/);
+            assert.doesNotMatch(ui.host.textContent, /Member A/);
+            assert.equal(ui.button('Add'), undefined);
+        } finally { await ui.close(); }
+    });
+
     test(`${kind}: select A and B, remove A, close and reopen without stale results or false errors`, async () => {
         const ui = await mount(kind);
         try {

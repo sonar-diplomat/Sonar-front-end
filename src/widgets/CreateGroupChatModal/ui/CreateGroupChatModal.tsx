@@ -45,7 +45,7 @@ const CreateGroupChatDialog: React.FC<CreateGroupChatModalProps> = ({
             refetchOnMountOrArgChange: true,
         }
     );
-    const searchedUser = searchIdentifier && !isSearching ? currentData : undefined;
+    const searchedUser = searchIdentifier && !isSearching && !isError ? currentData : undefined;
     const searchError = !!searchIdentifier && !isSearching && isError;
 
     const [createChat] = useCreateChatMutation();
