@@ -4,7 +4,7 @@ import { rtkApi } from '@shared/api/rtkApi';
 
 import accessReducer from './features/access/accessSlice';
 import authReducer from './features/auth/authSlice';
-import clientSettingsReducer from './features/clientSettings/clientSettingsSlice';
+import clientSettingsReducer,{ clearLegacyClientSettings } from './features/clientSettings/clientSettingsSlice';
 import libraryReducer from './features/library/librarySlice';
 import playerReducer,{ clearQueue } from './features/player/playerSlice';
 import searchReducer from './features/search/searchSlice';
@@ -43,10 +43,14 @@ function rootReducer(state: CombinedState | undefined, action: UnknownAction): C
 const sessionBoundaryMiddleware: Middleware<object, CombinedState> = api => next => action => {
   const version = api.getState().auth.sessionVersion;
   const result = next(action);
-  if (version !== api.getState().auth.sessionVersion) api.dispatch(rtkApi.util.resetApiState());
+  if (version !== api.getState().auth.sessionVersion) {
+    clearLegacyClientSettings();
+    api.dispatch(rtkApi.util.resetApiState());
+  }
   return result;
 };
 
+clearLegacyClientSettings();
 export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>

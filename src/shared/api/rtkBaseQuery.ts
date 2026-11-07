@@ -50,8 +50,15 @@ const executeQuery: BaseQueryFn<
   CustomFetchBaseQueryError
 > = async (args, api) => {
   if (isDemoMode) {
+    const version = authManager.getSessionVersion();
+    const session = { id: authManager.getSessionId(), isCurrent: () => authManager.getSessionVersion() === version };
     const { dispatchMock } = await import('@demo-dispatcher');
-    const result = await dispatchMock({ url: args.url, method: args.method, params: args.params, body: args.body, signal: args.signal ? AbortSignal.any([args.signal, api.signal]) : api.signal });
+    const result = await dispatchMock({
+      url: args.url, method: args.method, params: args.params, body: args.body,
+      signal: args.signal ? AbortSignal.any([args.signal, api.signal]) : api.signal,
+      session, sessionMutation: api.type === 'mutation' ? api.endpoint : undefined,
+    });
+    if (!result.sessionChanged && !session.isCurrent()) return sessionChanged();
     return result.success
       ? { data: result.data ?? null, meta: result }
       : { error: { status: result.status, data: result } as CustomFetchBaseQueryError };

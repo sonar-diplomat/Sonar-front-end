@@ -10,26 +10,56 @@ export const usePlaybackSync = () => {
     const { showError } = useNotifications();
     useEffect(() => {
         let target = '';
-        let latest = store.getState().player;
-        const savePosition = (time: number) => {
-            void apiClient.put(API_ENDPOINTS.userState.updateCurrentPosition, timeSpan(time), { bodyType: 'raw', headers: { 'Content-Type': 'text/plain' } }).then(response => { if (!response.success) showError('Playback position could not be saved.'); });
+        const initial = store.getState();
+        let latest = initial.player;
+        let scope = { version: initial.auth.sessionVersion, controller: new AbortController() };
+        const ownsPlayback = (version: number) => {
+            const auth = store.getState().auth;
+            return auth.isAuthenticated && auth.sessionVersion === version;
+        };
+        const savePosition = (time: number, signal?: AbortSignal) => {
+            const { version } = scope;
+            if (!ownsPlayback(version)) return;
+            void apiClient.put(API_ENDPOINTS.userState.updateCurrentPosition, timeSpan(time), {
+                bodyType: 'raw', headers: { 'Content-Type': 'text/plain' }, signal,
+            }).then(response => {
+                if (!response.success && !signal?.aborted && ownsPlayback(version)) showError('Playback position could not be saved.');
+            });
         };
         const synchronize = () => {
             const state = store.getState();
             const player = state.player;
+            if (scope.version !== state.auth.sessionVersion) {
+                scope.controller.abort();
+                scope = { version: state.auth.sessionVersion, controller: new AbortController() };
+                target = '';
+                latest = player;
+            }
             if (!state.auth.isAuthenticated) { target = ''; latest = player; return; }
+            const { version, controller: { signal } } = scope;
             const collection = player.isStockCollection ? player.collectionContext?.id : undefined;
             const key = player.currentTrack ? `${player.currentTrack.id}:${collection || ''}` : '';
             if (key !== target) {
+                if (target && latest.isPlaying && latest.currentTrack) savePosition(latest.currentTime, signal);
                 target = key;
-                if (latest.isPlaying && latest.currentTrack) savePosition(latest.currentTime);
-                if (player.currentTrack) void apiClient.put(API_ENDPOINTS.userState.updateListeningTarget(player.currentTrack.id, collection ?? undefined)).then(response => { if (!response.success) showError('Listening progress could not be synchronized.'); });
-            } else if (latest.isPlaying && !player.isPlaying && player.currentTrack) savePosition(player.currentTime);
+                if (player.currentTrack) {
+                    void apiClient.put(API_ENDPOINTS.userState.updateListeningTarget(player.currentTrack.id, collection), undefined, { signal }).then(response => {
+                        if (!response.success && !signal.aborted && ownsPlayback(version)) showError('Listening progress could not be synchronized.');
+                    });
+                }
+            } else if (latest.isPlaying && !player.isPlaying && player.currentTrack) savePosition(player.currentTime, signal);
             latest = player;
         };
         const unsubscribe = store.subscribe(synchronize);
         synchronize();
-        const timer = setInterval(() => { const state = store.getState(); if (state.auth.isAuthenticated && state.player.isPlaying && state.player.currentTrack) savePosition(state.player.currentTime); }, 5000);
-        return () => { unsubscribe(); clearInterval(timer); if (latest.isPlaying && latest.currentTrack) savePosition(latest.currentTime); };
+        const timer = setInterval(() => {
+            if (latest.isPlaying && latest.currentTrack) savePosition(latest.currentTime, scope.controller.signal);
+        }, 5000);
+        return () => {
+            unsubscribe();
+            clearInterval(timer);
+            scope.controller.abort();
+            if (latest.isPlaying && latest.currentTrack) savePosition(latest.currentTime);
+        };
     }, [showError]);
 };

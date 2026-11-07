@@ -28,22 +28,27 @@ export const useAuth = () => {
     _rememberMe: boolean = false
   ): Promise<boolean | TwoFactorChallengeDTO> => {
     void _rememberMe;
+    let owner = authManager.getSessionVersion();
     dispatch(setLoading(true));
     const request = loginMutation({ userIdentifier, password, deviceName });
     try {
       const data = await request.unwrap();
-      if (data && 'requiresTwoFactor' in data) return data;
+      if (data && 'requiresTwoFactor' in data) return owner === authManager.getSessionVersion() ? data : false;
       
       if (data) {
+        if (owner !== authManager.getSessionVersion() && data.sessionId !== authManager.getSessionId()) return false;
         dispatch(setCredentials(data));
+        owner = authManager.getSessionVersion();
         
         // Загружаем данные пользователя после успешного логина
         try {
           // Загружаем настройки клиента
           await loadSettings();
+          if (owner !== authManager.getSessionVersion()) return false;
           
           // Загружаем все доступные функции доступа (справочник)
           await loadAllAccessFeatures();
+          if (owner !== authManager.getSessionVersion()) return false;
           
           // Загружаем функции доступа текущего пользователя
           // Пытаемся получить userId из JWT токена
@@ -66,7 +71,7 @@ export const useAuth = () => {
           console.error('Failed to load user data after login:', error);
         }
         
-        return true;
+        return owner === authManager.getSessionVersion();
       }
       
       return false;
@@ -76,7 +81,7 @@ export const useAuth = () => {
       return false;
     } finally {
       request.reset();
-      dispatch(setLoading(false));
+      if (owner === authManager.getSessionVersion()) dispatch(setLoading(false));
     }
   }, [loginMutation, dispatch, loadSettings, loadAllAccessFeatures, loadUserAccessFeatures]);
   

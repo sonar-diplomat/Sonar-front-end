@@ -82,8 +82,13 @@ class ApiClient {
         authRetried: boolean
     ): Promise<NormalizedApiResponse<T>> {
         if (isDemoMode) {
+            const version = authManager.getSessionVersion();
+            const session = { id: authManager.getSessionId(), isCurrent: () => authManager.getSessionVersion() === version };
             const { dispatchMock } = await import('@demo-dispatcher');
-            return await dispatchMock({ url: endpoint, method: cfg.method, params: cfg.params, body: cfg.body, signal: cfg.signal ?? undefined }) as NormalizedApiResponse<T>;
+            const result = await dispatchMock({ url: endpoint, method: cfg.method, params: cfg.params, body: cfg.body, signal: cfg.signal ?? undefined, session });
+            return result.sessionChanged || session.isCurrent()
+                ? result as NormalizedApiResponse<T>
+                : this.normalizeFailure<T>(499, 'Session changed');
         }
         const {
             params,

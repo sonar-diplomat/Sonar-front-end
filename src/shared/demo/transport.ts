@@ -38,10 +38,16 @@ export function createMockTransport(options: TransportOptions) {
     const method = (request.method ?? 'GET').toUpperCase();
     let path = request.url;
     const uploadedIds: number[] = [];
+    const checkSession = () => {
+      if (request.session && (request.session.id !== (state.session?.sessionId ?? null) || !request.session.isCurrent())) {
+        throw new MockError(499, 'Session changed', 'MOCK_SESSION_CHANGED');
+      }
+    };
     try {
       if (request.signal?.aborted) throw new MockError(499, 'Mock request aborted', 'MOCK_ABORTED');
       if (options.scenario === 'error') throw new MockError(503, 'Explicit demo error scenario', 'MOCK_SCENARIO_ERROR');
       reloadLatest();
+      checkSession();
       const url = new URL(request.url, 'https://mock.invalid/api/');
       path = url.pathname.replace(/^\/+/, '').replace(/^api\//i, '').replace(/\/+$/, '');
       const params = url.searchParams;
@@ -55,13 +61,21 @@ export function createMockTransport(options: TransportOptions) {
       if (!found.public) context.user();
       const data = await found.run(context);
       if (request.signal?.aborted) throw new MockError(499, 'Mock request aborted', 'MOCK_ABORTED');
+      checkSession();
       if (found.mutates && options.storage && persistence.status.persistent && JSON.stringify(persistence.load(initial, state)) !== baseline) {
         reloadLatest();
         throw new MockError(409, 'Demo data changed in another tab. Retry this action with the refreshed data.', 'MOCK_CONFLICT_RETRY');
       }
-      if (found.mutates && JSON.stringify(draft) !== JSON.stringify(state)) { draft.revision++; validateState(draft); state = draft; persistence.save(state); events.push({ name: 'state.changed', payload: { revision: state.revision, method, path } }); }
+      const sessionChanged = found.mutates && draft.session?.sessionId !== state.session?.sessionId;
+      if (found.mutates && JSON.stringify(draft) !== JSON.stringify(state)) {
+        draft.revision++;
+        validateState(draft);
+        state = draft;
+        persistence.save(state);
+        events.push({ name: 'state.changed', payload: { revision: state.revision, method, path, sessionMutation: sessionChanged ? request.sessionMutation : undefined } });
+      }
       for (const event of events) emit(clone(event));
-      return { success: true, status: 200, message: 'Local demo operation completed', ...(data === undefined ? {} : { data: clone(data) }) };
+      return { success: true, status: 200, message: 'Local demo operation completed', ...(data === undefined ? {} : { data: clone(data) }), ...(sessionChanged ? { sessionChanged: true } : {}) };
     } catch (error) {
       if (options.deleteBlob) await Promise.allSettled(uploadedIds.map(mediaId => options.deleteBlob!(mediaId)));
       const e = error instanceof MockError ? error : new MockError(500, error instanceof Error ? error.message : 'Unexpected mock error', 'MOCK_INTERNAL');

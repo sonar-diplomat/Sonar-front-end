@@ -1,5 +1,8 @@
 import { useCallback,useLayoutEffect,useRef,useState } from 'react';
 
+import { store } from '@shared/store';
+import { useAppSelector } from '@shared/store/hooks';
+
 interface Request<T> {
   abort(): void;
   unwrap(): Promise<T>;
@@ -11,11 +14,13 @@ interface Page<T> {
 }
 interface Generation<T> {
   key: string;
+  sessionVersion: number;
   page: Page<T> | null;
   request: Request<T> | null;
 }
 interface View<T> {
   key: string;
+  sessionVersion: number;
   loading: 'initial' | 'more' | null;
   error?: unknown;
   page: Page<T> | null;
@@ -26,21 +31,24 @@ export function useSearchPagination<T>(
   requestPage: (offset: number) => Request<T>,
   mergePage: (previous: T | null, page: T, offset: number) => Page<T>,
 ) {
+  const sessionVersion = useAppSelector(state => state.auth.sessionVersion);
   const current = useRef<Generation<T> | null>(null);
   const [view, setView] = useState<View<T> | null>(null);
 
   const load = useCallback(async (generation: Generation<T>, offset: number) => {
-    if (current.current !== generation || generation.request) return;
+    const isCurrent = () => current.current === generation && store.getState().auth.sessionVersion === generation.sessionVersion;
+    if (!isCurrent() || generation.request) return;
+    const scope = { key: generation.key, sessionVersion: generation.sessionVersion };
     const request = requestPage(offset);
     generation.request = request;
-    setView({ key: generation.key, page: generation.page, loading: offset === 0 ? 'initial' : 'more' });
+    setView({ ...scope, page: generation.page, loading: offset === 0 ? 'initial' : 'more' });
     try {
       const result = await request.unwrap();
-      if (current.current !== generation) return;
+      if (!isCurrent()) return;
       generation.page = mergePage(offset === 0 ? null : generation.page?.data ?? null, result, offset);
-      setView({ key: generation.key, page: generation.page, loading: null });
+      setView({ ...scope, page: generation.page, loading: null });
     } catch (error) {
-      if (current.current === generation) setView({ key: generation.key, page: generation.page, loading: null, error });
+      if (isCurrent()) setView({ ...scope, page: generation.page, loading: null, error });
     } finally {
       generation.request = null;
     }
@@ -49,7 +57,7 @@ export function useSearchPagination<T>(
   useLayoutEffect(() => {
     setView(null);
     if (key === null) return;
-    const generation: Generation<T> = { key, page: null, request: null };
+    const generation: Generation<T> = { key, sessionVersion, page: null, request: null };
     current.current = generation;
     // Start after Strict Mode's setup/cleanup probe so it cannot abort the first RTK query.
     const timer = setTimeout(() => { void load(generation, 0); }, 0);
@@ -58,7 +66,7 @@ export function useSearchPagination<T>(
       current.current = null;
       generation.request?.abort();
     };
-  }, [key, load]);
+  }, [key, load, sessionVersion]);
 
   const loadMore = useCallback(() => {
     const generation = current.current;
@@ -70,7 +78,7 @@ export function useSearchPagination<T>(
     if (generation && generation.key === key) void load(generation, 0);
   }, [key, load]);
 
-  const activeView = key !== null && view?.key === key ? view : null;
+  const activeView = key !== null && view?.key === key && view.sessionVersion === sessionVersion ? view : null;
   return {
     data: activeView?.page?.data ?? null,
     error: activeView?.error,
