@@ -73,6 +73,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                     backgroundColor: image ? 'transparent' : backgroundColor,
                 }}
                 role={hasAction ? 'button' : undefined}
+                aria-label={hasAction ? textContent?.title || collectionName || 'Open item' : undefined}
                 tabIndex={hasAction ? 0 : undefined}
                 onKeyDown={hasAction ? handleKeyDown : undefined}
                 draggable={isDraggable}

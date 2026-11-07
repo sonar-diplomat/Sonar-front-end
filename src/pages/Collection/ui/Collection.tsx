@@ -1,4 +1,4 @@
-import React,{ useMemo,useState } from 'react';
+import React,{ useEffect,useMemo,useRef,useState } from 'react';
 
 import { useNavigate,useParams } from 'react-router-dom';
 
@@ -45,6 +45,18 @@ const convertTrackDTOToTrack = (trackDTO: TrackDTO): Track => {
 
 export const Collection: React.FC<CollectionProps> = ({ type }) => {
     const { id } = useParams<{ id: string }>();
+    const parsedId = Number(id);
+    const collectionId = Number.isSafeInteger(parsedId) && parsedId > 0 ? parsedId : null;
+    return <CollectionPage key={`${type}:${id}`} type={type} collectionId={collectionId} />;
+};
+
+const CollectionPage: React.FC<CollectionProps & { collectionId: number | null }> = ({ type, collectionId }) => {
+    const active = useRef(true);
+    const operationPending = useRef(false);
+    useEffect(() => {
+        active.current = true;
+        return () => { active.current = false; };
+    }, []);
     const navigate = useNavigate();
     const currentUserId = useCurrentUserId();
     const dispatch = useAppDispatch();
@@ -54,8 +66,6 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [renamePlaylist, { isLoading: renaming }] = useUpdatePlaylistNameMutation();
     const [deletePlaylist, { isLoading: deleting }] = useDeletePlaylistMutation();
-    const parsedId = Number(id);
-    const collectionId = Number.isSafeInteger(parsedId) && parsedId > 0 ? parsedId : null;
 
     const [sortBy, setSortBy] = useState<'none' | 'title' | 'artist'>('none');
     const [actionMenuContext, setActionMenuContext] = useState<ActionMenuContext | null>(null);
@@ -69,22 +79,22 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
         return collectionContext.type === type && collectionContext.id === collectionId;
     }, [collectionId, collectionContext, type]);
 
-    const { data: playlistData, isLoading: playlistLoading, error: playlistError } = useGetPlaylistQuery(
+    const { currentData: playlistData, isLoading: playlistLoading, error: playlistError } = useGetPlaylistQuery(
         collectionId!,
         { skip: !collectionId || type !== 'playlist' }
     );
 
-    const { data: playlistTracksData, isLoading: playlistTracksLoading, error: playlistTracksError } = useGetPlaylistTracksQuery(
+    const { currentData: playlistTracksData, isLoading: playlistTracksLoading, error: playlistTracksError } = useGetPlaylistTracksQuery(
         collectionId!,
         { skip: !collectionId || type !== 'playlist' }
     );
 
-    const { data: albumData, isLoading: albumLoading, error: albumError } = useGetAlbumQuery(
+    const { currentData: albumData, isLoading: albumLoading, error: albumError } = useGetAlbumQuery(
         collectionId!,
         { skip: !collectionId || type !== 'album' }
     );
 
-    const { data: albumTracksData, isLoading: albumTracksLoading, error: albumTracksError } = useGetAlbumTracksQuery(
+    const { currentData: albumTracksData, isLoading: albumTracksLoading, error: albumTracksError } = useGetAlbumTracksQuery(
         collectionId!,
         { skip: !collectionId || type !== 'album' }
     );
@@ -230,19 +240,31 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
         });
     };
 
-    const canEdit = type === 'playlist' && playlistData?.creatorId === currentUserId && !isFavoritesPlaylist;
+    const canEdit = type === 'playlist' && playlistData?.id === collectionId && playlistData?.creatorId === currentUserId && !isFavoritesPlaylist;
     const handleEditClick = () => { setNewName(collectionData.title); setConfirmDelete(false); setEditOpen(true); };
     const saveName = async (event: React.FormEvent) => {
         event.preventDefault();
-        if (!collectionId || !canEdit) return;
+        if (!collectionId || !canEdit || operationPending.current) return;
         if (!newName.trim()) { showError('Enter a playlist name'); return; }
-        try { await renamePlaylist({ playlistId: collectionId, newName: newName.trim() }).unwrap(); dispatch(markDirty()); setEditOpen(false); showSuccess('Playlist renamed'); }
-        catch { showError('Unable to rename playlist'); }
+        const playlistId = collectionId;
+        operationPending.current = true;
+        try {
+            await renamePlaylist({ playlistId, newName: newName.trim() }).unwrap();
+            dispatch(markDirty());
+            if (active.current) { setEditOpen(false); showSuccess('Playlist renamed'); }
+        } catch { if (active.current) showError('Unable to rename playlist'); }
+        finally { operationPending.current = false; }
     };
     const removePlaylist = async () => {
-        if (!collectionId || !canEdit) return;
-        try { await deletePlaylist(collectionId).unwrap(); dispatch(markDirty()); setEditOpen(false); await navigate('/library'); }
-        catch { showError('Unable to delete playlist'); }
+        if (!collectionId || !canEdit || operationPending.current) return;
+        const playlistId = collectionId;
+        operationPending.current = true;
+        try {
+            await deletePlaylist(playlistId).unwrap();
+            dispatch(markDirty());
+            if (active.current) { setEditOpen(false); await navigate('/library'); }
+        } catch { if (active.current) showError('Unable to delete playlist'); }
+        finally { operationPending.current = false; }
     };
 
     const handleSortClick = () => {
@@ -302,7 +324,7 @@ export const Collection: React.FC<CollectionProps> = ({ type }) => {
                 <form onSubmit={event => void saveName(event)} style={{ display: 'grid', gap: 16 }}>
                     <Input label="Playlist name" value={newName} maxLength={200} required onChange={event => setNewName(event.target.value)} />
                     <Button type="submit" disabled={renaming || deleting}>Save playlist</Button>
-                    {confirmDelete ? <><p>Delete this playlist? This removes the playlist and its track list.</p><Button type="button" disabled={deleting} onClick={() => void removePlaylist()}>Confirm delete playlist</Button></> : <Button type="button" theme="dark" onClick={() => setConfirmDelete(true)}>Delete playlist</Button>}
+                    {confirmDelete ? <><p>Delete this playlist? This removes the playlist and its track list.</p><Button type="button" disabled={renaming || deleting} onClick={() => void removePlaylist()}>Confirm delete playlist</Button></> : <Button type="button" theme="dark" disabled={renaming || deleting} onClick={() => setConfirmDelete(true)}>Delete playlist</Button>}
                     <Button type="button" theme="dark" onClick={() => setEditOpen(false)}>Cancel</Button>
                 </form>
             </Modal>

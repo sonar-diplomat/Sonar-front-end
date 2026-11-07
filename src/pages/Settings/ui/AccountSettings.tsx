@@ -1,4 +1,4 @@
-import React,{ useEffect,useState } from 'react';
+import React,{ useEffect,useRef,useState } from 'react';
 
 import { useLocation,useNavigate } from 'react-router-dom';
 
@@ -61,6 +61,7 @@ export const AccountSettings: React.FC = () => {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   // Form fields
@@ -369,17 +370,17 @@ export const AccountSettings: React.FC = () => {
                   <LoadingImage src={avatarPreview} alt="Avatar preview" />
                 </div>
               )}
-              <label className={styles.fileInputLabel}>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarFileChange}
-                  className={styles.fileInput}
-                />
-                <span className={styles.fileInputButton}>
-                  {avatarPreview ? 'Change Avatar' : 'Choose Avatar'}
-                </span>
-              </label>
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/*"
+                aria-label="Avatar image"
+                onChange={handleAvatarFileChange}
+                className={styles.fileInput}
+              />
+              <button type="button" className={styles.fileInputButton} onClick={() => avatarInputRef.current?.click()}>
+                {avatarPreview ? 'Change Avatar' : 'Choose Avatar'}
+              </button>
               {selectedAvatarFile && (
                 <p className={styles.fileName}>{selectedAvatarFile.name}</p>
               )}
