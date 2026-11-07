@@ -15,6 +15,7 @@ export const AudioPlayerController = () => {
         if (!audio) return;
         let generation = 0;
         let sourceKey = '';
+        let sourcePreparationFailed = false;
         let seekRevision = -1;
         let blobUrl: string | undefined;
         let request: AbortController | undefined;
@@ -88,8 +89,9 @@ export const AudioPlayerController = () => {
             audio.setAttribute('data-volume', String(audio.volume));
             audio.muted = player.isMuted;
             const key = player.currentTrack ? `${player.currentTrack.id}:${player.playbackRevision}` : 'empty';
-            if (key !== sourceKey) {
+            if (key !== sourceKey || (becomingPlaying && sourcePreparationFailed)) {
                 sourceKey = key;
+                sourcePreparationFailed = false;
                 initialPosition = player.currentTime;
                 metadataLoaded = false;
                 generation++;
@@ -117,8 +119,11 @@ export const AudioPlayerController = () => {
                         audio.load();
                         tryPlay();
                     }).catch(() => {
-                        if (!disposed && expected === generation) fail('The audio stream is unavailable. Try another song.');
+                        if (disposed || expected !== generation) return;
+                        sourcePreparationFailed = true;
+                        fail('The audio stream is unavailable. Press Play to try again or choose another song.');
                     });
+                    status('loading');
                 }
             }
             if (seekRevision !== player.seekRevision) {

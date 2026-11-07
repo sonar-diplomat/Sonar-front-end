@@ -32,12 +32,32 @@ export const DemoPlayerSync = () => {
                 const stored = raw ? JSON.parse(raw) : null;
                 if (stored?.schemaVersion === 1 && stored?.seedVersion === 1 && Array.isArray(stored.state?.ids)) {
                     const data = stored.state;
-                    const ids: number[] = data.ids.filter((id: unknown) => typeof id === 'number' && Number.isInteger(id) && id > 0).slice(0, 500);
+                    const occurrences: { id: number; index: number }[] = data.ids.slice(0, 500).flatMap(
+                        (id: unknown, index: number) => typeof id === 'number' && Number.isInteger(id) && id > 0 ? [{ id, index }] : [],
+                    );
+                    const ids = occurrences.map(({ id }) => id);
                     const responses = await Promise.all([...new Set(ids)].map(id => apiClient.get<TrackDTO>(API_ENDPOINTS.track.byId(id))));
                     const tracks = new Map(responses.filter(result => result.success && result.data).map(result => [result.data!.id, result.data!]));
                     if (active && store.getState().player.playbackRevision === initialRevision) {
-                        const queue = ids.map(id => tracks.get(id)).filter((track): track is TrackDTO => !!track);
-                        store.dispatch(restoreQueue({ queue, customQueue: [], queueIndex: Number.isInteger(data.index) ? data.index : 0, collectionContext: data.context && ['album', 'playlist', 'blend'].includes(data.context.type) && Number.isInteger(data.context.id) ? data.context : null, currentTime: Number(data.time) || 0 }));
+                        const queue = occurrences.flatMap(({ id, index }) => {
+                            const track = tracks.get(id);
+                            return track ? [{ track, index }] : [];
+                        });
+                        const savedIndex = Number.isInteger(data.index) ? data.index : -1;
+                        const activeIndex = queue.findIndex(({ index }) => index === savedIndex);
+                        let queueIndex = activeIndex;
+                        if (queueIndex < 0) {
+                            // Prefer the next surviving occurrence, then the last preceding one.
+                            queueIndex = queue.findIndex(({ index }) => index > savedIndex);
+                            if (queueIndex < 0) queueIndex = queue.length - 1;
+                        }
+                        store.dispatch(restoreQueue({
+                            queue: queue.map(({ track }) => track),
+                            customQueue: [],
+                            queueIndex,
+                            collectionContext: data.context && ['album', 'playlist', 'blend'].includes(data.context.type) && Number.isInteger(data.context.id) ? data.context : null,
+                            currentTime: activeIndex >= 0 ? Number(data.time) || 0 : 0,
+                        }));
                         store.dispatch(setVolume(typeof data.volume === 'number' ? data.volume : 1));
                         if (data.muted === true) store.dispatch(toggleMute());
                         if (['off', 'one', 'all'].includes(data.repeat)) store.dispatch(setRepeatMode(data.repeat));

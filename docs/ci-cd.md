@@ -18,7 +18,7 @@ All checkouts set `lfs: false` and skip smudging. The server job has no LFS pull
 
 `.github/actions/setup/action.yml` pins Node through `.nvmrc`, installs Task 3.50.0 from a fixed setup-action commit with platform-specific SHA-256, and installs locked npm dependencies. `ci:tools` separately verifies the actionlint 1.7.12 archive. `ci:check` performs YAML, typecheck, lint, seed/media metadata and demo/profile/media tests. A failure is not waived because the Vite bundler can emit files.
 
-`.github/workflows/pages.yml` is the intended executable path. A `.disabled` suffix means the proposal is not registered and cannot run; it must be accepted and activated through the repository's normal review process before expecting any trigger to work. The deployment design is:
+`.github/workflows/pages.yml` is active on the default branch. Its deployment triggers and gates are as follows.
 
 - `push` to `dev`: run reusable full CI; package for Pages only after all jobs succeed and the verified-probe variable is set.
 - `workflow_dispatch`, `mode=probe`: YAML/media tests, targeted track 1 download, standalone package/HTTP checks, then one-MP3 publication. This experiment does not certify the full application or seed.
@@ -38,9 +38,9 @@ The probe and full package contain extracted ordinary MP3 files. They never rely
 6. Only after this succeeds, import/register the remaining distinct tracks, validate their metadata/seed/credits, review LFS quota and set repository variable **`PAGES_MEDIA_PROBE_VERIFIED`** to the string **`true`**. This variable gates full Pages packaging; it is not a substitute for verification.
 7. Run full checks/build/package/browser acceptance, then publish from `dev` or a permitted manual ref. Recheck the actual application URL, deep hash routes, reload, playback/seek, queue and persisted state.
 
-Pages Source has been observed as GitHub Actions. Environment/ref rules, default-branch registration and actual external MP3 proof remain independent checks. An enabled Source or successful local preview does not prove a published deployment.
+Pages Source is configured for GitHub Actions. Verify the environment and execution ref, default-branch registration and published MP3 delivery independently of the local package.
 
-The `github-pages` environment permits exactly the branch names `master`, `feat/mock-demo-github-pages` and `dev`; other environment rules are unchanged. The default-branch registration [PR #122](https://github.com/sonar-diplomat/Sonar-front-end/pull/122) remains pending: the active default-branch ruleset requires two approving reviews and approval of the latest push. The `dev` ruleset requires one approving review and approval of the latest push. Ordinary merge and Pages dispatch are blocked until their respective requirements are met; the workflow is not yet found on the default branch. No protection rules are disabled by the demo implementation.
+The `github-pages` environment permits the branches `master`, `feat/mock-demo-github-pages` and `dev`. The default-branch registration merged on 2026-10-24. The `master` ruleset requires two approving reviews, approval of the latest push and resolution of review threads. The `dev` ruleset requires one approving review and approval of the latest push. See [PR #122](https://github.com/sonar-diplomat/Sonar-front-end/pull/122).
 
 ## Variables, credentials and artifacts
 
@@ -85,6 +85,6 @@ Final local Docker verification on 2026-10-23 passed with 601 context files, a n
 
 An earlier isolated Linux quality snapshot passed Task/actionlint, typecheck/lint and the demo/player/profile/media suites. All six current media/importer tests, scoped script lint and Task/actionlint were additionally rerun successfully on Windows and isolated Linux after the maintenance changes. One-file package/GET/HEAD/hash/MIME/206 range checks passed on both platforms; local Chromium playback/seek was observed separately.
 
-The [remote CI run for source commit `c896a48`](https://github.com/sonar-diplomat/Sonar-front-end/actions/runs/40012693139) passed YAML, typecheck, lint and all 47 tests on both Windows and Ubuntu, then failed the mandatory metadata gate at missing audio 2. Its downstream jobs were skipped. The full CI result remains failing until the catalogue is complete.
+An earlier run for source commit `c896a48` passed YAML, typecheck, lint and all 47 tests on Windows and Ubuntu, then failed the metadata gate because audio 2 was missing. The run skipped downstream jobs. The completed catalog subsequently passed full CI. See [the earlier run](https://github.com/sonar-diplomat/Sonar-front-end/actions/runs/40012693139) and [the passing PR #126 run](https://github.com/sonar-diplomat/Sonar-front-end/actions/runs/40410894217).
 
-The full twelve-track manifest, synchronized seed, `.pages/` package and local media HTTP checks now pass. Published acceptance remains partial: the actual external probe, Pages workflow execution and full deployed browser acceptance still require observed results. Do not describe a local package or the standalone probe as full deployed application acceptance.
+The full twelve-track manifest, synchronized seed, `.pages/` package and local media HTTP checks pass. The verified-probe variable is set to `true`. A full deployment from `dev` commit `143cb2f` succeeded and its published media passed byte, hash and seek-range checks. Browser playback and interactions still need separate acceptance on the deployment under review. See [the deployment run](https://github.com/sonar-diplomat/Sonar-front-end/actions/runs/40350863972) and [the media verification record](media-storage.md#verification-status).
