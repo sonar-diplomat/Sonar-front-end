@@ -1,4 +1,4 @@
-import React,{ useState } from 'react';
+import React,{ useId,useState } from 'react';
 
 import { isDemoMode } from '@shared/config/data-source';
 import { Button,CalendarIcon,LoadingImage,RightArrow } from '@shared/ui';
@@ -37,6 +37,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({
     const [content, setContent] = useState('');
     const [scheduledDate, setScheduledDate] = useState<string | undefined>();
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+    const helpId = useId();
 
     const handleSubmit = () => {
         onSubmit?.({ topic, content, scheduledDate });
@@ -102,11 +103,12 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({
                     icon={<CalendarIcon />}
                     onClick={handleOpenDatePicker}
                     disabled={isDemoMode}
+                    aria-describedby={helpId}
                 >
                     {scheduledDate ? `Posting at ${scheduledDate}` : 'Schedule'}
                 </Button>
 
-                <p>Text posts support links. File attachments are unavailable.{isDemoMode && ' Scheduled publishing is unavailable in demo; posts appear immediately.'}</p>
+                <p id={helpId} className={styles.helpText}>Text posts support links. File attachments are unavailable.{isDemoMode && ' Scheduled publishing is unavailable in demo; posts appear immediately.'}</p>
             </div>
 
             <Button
