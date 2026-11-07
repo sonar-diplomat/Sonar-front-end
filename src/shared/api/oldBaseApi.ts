@@ -70,6 +70,17 @@ class ApiClient {
         attempt = 1,
         authRetried = false
     ): Promise<NormalizedApiResponse<T>> {
+        const version = authManager.getSessionVersion();
+        const result = await this.executeRequest<T>(endpoint, cfg, attempt, authRetried);
+        return isDemoMode || version === authManager.getSessionVersion() ? result : this.normalizeFailure<T>(499, 'Session changed');
+    }
+
+    private async executeRequest<T>(
+        endpoint: string,
+        cfg: RequestConfig,
+        attempt: number,
+        authRetried: boolean
+    ): Promise<NormalizedApiResponse<T>> {
         if (isDemoMode) {
             const { dispatchMock } = await import('@demo-dispatcher');
             return await dispatchMock({ url: endpoint, method: cfg.method, params: cfg.params, body: cfg.body, signal: cfg.signal ?? undefined }) as NormalizedApiResponse<T>;
@@ -87,9 +98,11 @@ class ApiClient {
 
 
         const headers = this.makeHeaders(withAuth, bodyType, fetchCfg.headers);
+        const version = authManager.getSessionVersion();
 
         try {
             const resp = await requestFetch(url, { ...fetchCfg, headers }, timeoutMs);
+            if (version !== authManager.getSessionVersion()) return this.normalizeFailure<T>(499, 'Session changed');
 
             const status = resp.status;
             const ct = resp.headers.get('content-type') || '';
@@ -98,6 +111,7 @@ class ApiClient {
             // Handle 401 with single onUnauthorized replay
             if (status === 401 && this.opts.onUnauthorized && withAuth && !authRetried) {
                 await this.opts.onUnauthorized();
+                if (version !== authManager.getSessionVersion()) return this.normalizeFailure<T>(499, 'Session changed');
                 return this.request<T>(endpoint, cfg, attempt, true);
             }
 
@@ -141,6 +155,7 @@ class ApiClient {
             if (attempt <= (cfg.retries ?? this.opts.retries)) {
                 const delay = cfg.retryDelayMs ?? this.opts.retryDelayMs!;
                 await new Promise((r) => setTimeout(r, delay(attempt)));
+                if (version !== authManager.getSessionVersion()) return this.normalizeFailure<T>(499, 'Session changed');
                 return this.request<T>(endpoint, cfg, attempt + 1, authRetried);
             }
             const msg =
@@ -200,6 +215,10 @@ class ApiClient {
         } = cfg;
 
         const url = this.buildURL(endpoint, params);
+        const version = authManager.getSessionVersion();
+        const checkSession = () => {
+            if (version !== authManager.getSessionVersion()) throw new DOMException('Session changed', 'AbortError');
+        };
 
 
 
@@ -218,18 +237,22 @@ class ApiClient {
                 headers,
                 signal: cfg.signal,
             }, timeoutMs);
+            checkSession();
 
             if (resp.status === 401 && this.opts.onUnauthorized && withAuth && !authRetried) {
                 await this.opts.onUnauthorized();
+                checkSession();
                 return this.download(endpoint, cfg, attempt, true);
             }
 
             return resp;
         } catch (err) {
+            checkSession();
             if (cfg.signal?.aborted) throw err;
             if (attempt <= (cfg.retries ?? this.opts.retries!)) {
                 const delay = cfg.retryDelayMs ?? this.opts.retryDelayMs!;
                 await new Promise((r) => setTimeout(r, delay(attempt)));
+                checkSession();
                 return this.download(endpoint, cfg, attempt + 1, authRetried);
             }
             // On final failure, rethrow to let caller handle a missing Response instance

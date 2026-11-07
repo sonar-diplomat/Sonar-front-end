@@ -21,6 +21,8 @@ const users = {
     existing: { id: 4, userName: 'Existing member', publicIdentifier: 'existing' },
 };
 const requests = [];
+const memberAttempts = [];
+const rejectedMembers = new Set();
 let server, api, CreateGroupChatModal, AddMembersModal;
 const driverKey = '__sonarMemberSearchTest';
 
@@ -29,6 +31,12 @@ before(async () => {
         const identifier = /^User\/profile\/(.+)$/.exec(args.url)?.[1];
         if (identifier) return new Promise(resolve => requests.push({ identifier, resolve }));
         if (args.url === 'Chat') return { data: [] };
+        const memberId = /^Chat\/10\/add\/(\d+)$/.exec(args.url)?.[1];
+        if (memberId) {
+            const id = Number(memberId);
+            memberAttempts.push(id);
+            return rejectedMembers.has(id) ? { error: { status: 403, data: { message: 'Add denied' } } } : { data: null };
+        }
         throw new Error(`Unexpected test request: ${args.url}`);
     };
     server = await createServer({
@@ -71,7 +79,8 @@ async function mount(kind) {
     const host = dom.window.document.createElement('div'); dom.window.document.body.append(host);
     const root = createRoot(host);
     const Component = kind === 'create' ? CreateGroupChatModal : AddMembersModal;
-    const view = isOpen => React.createElement(Provider, { store }, React.createElement(Component, { isOpen, onClose: () => root.render(view(false)), chatId: 10, existingUserIds: [1, 4] }));
+    let successCount = 0;
+    const view = isOpen => React.createElement(Provider, { store }, React.createElement(Component, { isOpen, onClose: () => root.render(view(false)), onSuccess: () => { successCount++; }, chatId: 10, existingUserIds: [1, 4] }));
     const render = async isOpen => flush(() => root.render(view(isOpen)));
     await render(true);
     const input = () => host.querySelector('input[aria-label="Search by public identifier"]');
@@ -91,7 +100,31 @@ async function mount(kind) {
         await flush(() => request.resolve(fail || !users[identifier] ? { error: { status: 404, data: { message: 'Not found' } } } : { data: users[identifier] }));
     };
     const close = async () => { await flush(() => root.unmount()); store.dispatch(api.util.resetApiState()); host.remove(); };
-    return { host, input, button, click, search, complete, render, close };
+    return { host, input, button, click, search, complete, render, close, successes: () => successCount };
+}
+
+for (const failed of [[2, 3], [3]]) {
+    test(`add: ${failed.length === 2 ? 'total' : 'partial'} rejection retains only retryable selections`, async () => {
+        memberAttempts.length = 0;
+        failed.forEach(id => rejectedMembers.add(id));
+        const ui = await mount('add');
+        try {
+            for (const identifier of ['alpha', 'beta']) {
+                await ui.search(identifier); await ui.complete(identifier); await ui.click('Add');
+            }
+            await ui.click('Add members');
+            assert.equal(ui.successes(), 0);
+            assert(ui.input());
+            assert.match(ui.host.querySelector('[role="alert"]').textContent, new RegExp(`Added ${2 - failed.length}\\. Failed to add ${failed.length}\\.`));
+            assert.equal(Boolean(ui.button('Remove Member A')), failed.includes(2));
+            assert(ui.button('Remove Member B'));
+            rejectedMembers.clear();
+            await ui.click('Add members');
+            assert.deepEqual(memberAttempts, [2, 3, ...failed]);
+            assert.equal(ui.successes(), 1);
+            assert.equal(ui.input(), null);
+        } finally { rejectedMembers.clear(); await ui.close(); }
+    });
 }
 
 for (const kind of ['create', 'add']) {

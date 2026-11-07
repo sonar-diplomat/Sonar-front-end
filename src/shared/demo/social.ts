@@ -1,5 +1,5 @@
 import type { DemoMessage } from './database.ts';
-import { byId,cursorPage,features,id,need,offsetPage,owner,playlistView,record,removeId,route,text,trackView,upload,type Context,type Route } from './operations.ts';
+import { byId,cursorPage,features,id,integer,need,offsetPage,owner,playlistView,record,removeId,route,text,trackView,upload,type Context,type Route } from './operations.ts';
 
 function profile(c: Context, userId: number) { const u = byId(c.s.users, userId, 'User'); return { ...u, followersCount: c.s.follows.filter(f => f.followingId === u.id).length, followingCount: c.s.follows.filter(f => f.followerId === u.id).length, publicPlaylists: c.s.playlists.filter(p => p.creatorId === u.id && p.visibilityStateId === 1).map(p => playlistView(c, p)) }; }
 function artist(c: Context) { const a = byId(c.s.artists, id(c), 'Artist'); return { ...a, user: byId(c.s.users, a.userId, 'User') }; }
@@ -7,6 +7,29 @@ function author(c: Context) { const a = byId(c.s.artists, id(c), 'Artist'); owne
 function postOwner(c: Context) { const p = byId(c.s.posts, id(c), 'Post'); owner(c, byId(c.s.artists, p.artistId).userId); return p; }
 function chat(c: Context) { const found = byId(c.s.chats, id(c), 'Chat'); need(found.userIds.includes(c.user()), 'You are not a member of this chat', 403); return found; }
 function admin(c: Context) { const found = chat(c); need(found.adminIds.includes(c.user()) || found.creatorId === c.user(), 'Only a chat admin can perform this action', 403); return found; }
+function createChat(c: Context) {
+  const body = record(c.body), creatorId = c.user(), isGroup = body.isGroup === true;
+  const userIds = [creatorId];
+  if (!isGroup) {
+    need(body.userId != null, 'Personal chat requires another user', 403);
+    const recipientId = integer(body.userId);
+    need(recipientId !== creatorId, 'Cannot create personal chat with yourself');
+    byId(c.s.users, recipientId, 'User');
+    const duplicate = c.s.chats.some(v => !v.isGroup && v.userIds.length === 2 && v.userIds.includes(creatorId) && v.userIds.includes(recipientId));
+    need(!duplicate, 'Personal chat between these users already exists');
+    const privacy = c.s.settings[recipientId]?.userPrivacy;
+    need(privacy, 'Recipient privacy settings not found');
+    const mode = privacy?.whichCanMessageId;
+    need(mode !== 3, 'This user does not accept messages', 403);
+    if (mode === 2) {
+      const follows = (from: number, to: number) => c.s.follows.some(v => v.followerId === from && v.followingId === to);
+      need(follows(creatorId, recipientId) && follows(recipientId, creatorId), 'You can only message users who follow you back', 403);
+    }
+    userIds.push(recipientId);
+  }
+  const name = text(body.name);
+  c.s.chats.push({ id: c.s.nextId++, name, isGroup, coverId: Number(body.coverId) || 401, creatorId, userIds, adminIds: [creatorId] });
+}
 function messageView(c: Context, m: DemoMessage) { const u = byId(c.s.users, m.senderId); return { ...m, senderName: u.userName, senderAvatarImageId: u.avatarImageId, senderPublicIdentifier: u.publicIdentifier }; }
 function ownMessage(c: Context) { const m = byId(c.s.messages, id(c), 'Message'), found = byId(c.s.chats, m.chatId); need(found.userIds.includes(c.user()), 'Chat access denied', 403); owner(c, m.senderId); return m; }
 function readMessages(c: Context, all: boolean) { const found = chat(c); const ids = all ? c.s.messages.filter(m => m.chatId === found.id).map(m => m.id) : (Array.isArray(c.body) ? c.body.map(Number) : []); need(all || ids.length > 0, 'Message IDs are required'); ids.forEach(messageId => need(c.s.messages.some(m => m.id === messageId && m.chatId === found.id), 'Message is not in this chat', 404)); const changed = ids.filter(messageId => !byId(c.s.messages, messageId).readBy?.some(r => r.userId === c.user())); changed.forEach(messageId => { const m = byId(c.s.messages, messageId); m.readBy ??= []; m.readBy.push({ messageId, userId: c.user(), readAt: c.now }); }); if (changed.length) c.events.push({ name: 'message.read', payload: { chatId: found.id, userId: c.user(), messageIds: changed, readAtUtc: c.now } }); }
@@ -43,11 +66,17 @@ export const socialRoutes: Route[] = [
   route('GET', 'Chat/:id/info', c => ({ ...chat(c), users: chat(c).userIds.map(v => profile(c, v)) })),
   route('GET', 'Chat/:id/messages', c => { const found = chat(c); const messages = c.s.messages.filter(m => m.chatId === found.id).sort((a, b) => b.id - a.id).map(m => messageView(c, m)); return cursorPage(c, messages, m => String(m.id)); }),
   route('GET', 'Chat/message/:id', c => { const m = byId(c.s.messages, id(c), 'Message'); need(byId(c.s.chats, m.chatId).userIds.includes(c.user()), 'Chat access denied', 403); return messageView(c, m); }),
-  route('POST', 'Chat', c => { const b = record(c.body), me = c.user(); const target = b.userId === undefined ? undefined : byId(c.s.users, Number(b.userId)); const userIds = [...new Set([me, ...(target ? [target.id] : [])])]; need(b.isGroup === true || target, 'Direct chat requires another user'); if (b.isGroup !== true) { const existing = c.s.chats.find(v => !v.isGroup && v.userIds.length === userIds.length && userIds.every(u => v.userIds.includes(u))); if (existing) return; } const found = { id: c.s.nextId++, name: text(b.name ?? target?.userName), isGroup: b.isGroup === true, coverId: Number(b.coverId) || 401, creatorId: me, userIds, adminIds: [me] }; c.s.chats.push(found); }),
+  route('POST', 'Chat', createChat),
   route('POST', 'Chat/:id/send', c => { const found = chat(c), b = record(c.body); const content = text(b.textContent, 'Message', 10000); const replyMessageId = b.replyMessageId == null ? undefined : Number(b.replyMessageId); if (replyMessageId) need(c.s.messages.some(m => m.id === replyMessageId && m.chatId === found.id), 'Reply must refer to a message in this chat'); const m: DemoMessage = { id: c.s.nextId++, chatId: found.id, senderId: c.user(), textContent: content, replyMessageId, createdAt: c.now, readBy: [] }; c.s.messages.push(m); const view = messageView(c, m); c.events.push({ name: 'message.created', payload: { ...view, createdAtUtc: m.createdAt, replyMessageId: m.replyMessageId ?? null } }); return view; }),
   route('PUT', 'Chat/message/:id', c => { const m = ownMessage(c); m.textContent = text(record(c.body).textContent, 'Message', 10000); c.events.push({ name: 'message.updated', payload: { chatId: m.chatId, messageId: m.id, senderId: m.senderId, textContent: m.textContent, updatedAtUtc: c.now } }); }),
   route('DELETE', 'Chat/message/:id', c => { const m = ownMessage(c); c.s.messages = removeId(c.s.messages, m.id); c.s.messages.forEach(v => { if (v.replyMessageId === m.id) v.replyMessageId = undefined; }); c.events.push({ name: 'message.deleted', payload: { chatId: m.chatId, messageId: m.id, initiatorId: c.user() } }); }),
-  route('DELETE', 'Chat/:id', c => { const found = admin(c); c.s.chats = removeId(c.s.chats, found.id); c.s.messages = c.s.messages.filter(m => m.chatId !== found.id); c.events.push({ name: 'chat.deleted', payload: { chatId: found.id, initiatorId: c.user() } }); }),
+  route('DELETE', 'Chat/:id', c => {
+    const found = chat(c);
+    need(!found.isGroup || found.creatorId === c.user(), 'Only the chat creator can delete the chat', 403);
+    c.s.chats = removeId(c.s.chats, found.id);
+    c.s.messages = c.s.messages.filter(m => m.chatId !== found.id);
+    c.events.push({ name: 'chat.deleted', payload: { chatId: found.id, initiatorId: c.user() } });
+  }),
   route('PUT', 'Chat/:id/name', c => { const found = admin(c); found.name = text(c.p.get('newName')); c.events.push({ name: 'chat.name.updated', payload: { chatId: found.id, name: found.name } }); }),
   route('PUT', 'Chat/:id/cover', async c => { const found = admin(c); found.coverId = await upload(c); c.events.push({ name: 'chat.cover.updated', payload: { chatId: found.id, coverId: found.coverId } }); }),
   route('POST', 'Chat/:id/add/:userId', c => { const found = admin(c), userId = byId(c.s.users, id(c, 'userId')).id; if (!found.userIds.includes(userId)) { found.userIds.push(userId); c.events.push({ name: 'chat.user.added', payload: { chatId: found.id, userId } }); } }),

@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 
+import type { TwoFactorChallengeDTO } from '@features/auth';
 import { useLoginMutation } from '@shared/api';
 import { authManager } from '@shared/lib';
 import { useAccess } from '@shared/store/features/access/useAccess';
-import { logout as logoutAction,setCredentials,setLoading } from '@shared/store/features/auth/authSlice';
+import { setCredentials,setLoading } from '@shared/store/features/auth/authSlice';
 import { useClientSettings } from '@shared/store/features/clientSettings/useClientSettings';
-import { useUserState } from '@shared/store/features/userState/useUserState';
 import { useAppDispatch,useAppSelector } from '@shared/store/hooks';
 
 import { decodeJWT } from './jwt-utils';
@@ -18,20 +18,21 @@ export const useAuth = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated, accessToken, sessionId, isLoading: authLoading } = useAppSelector((state) => state.auth);
   const [loginMutation, { isLoading: loginLoading }] = useLoginMutation();
-  const { loadSettings, clear: clearSettings } = useClientSettings();
-  const { loadUserAccessFeatures, loadAllAccessFeatures, clear: clearAccess } = useAccess();
-  const { clear: clearUserState } = useUserState();
+  const { loadSettings } = useClientSettings();
+  const { loadUserAccessFeatures, loadAllAccessFeatures } = useAccess();
   
   const login = useCallback(async (
     userIdentifier: string,
     password: string,
     deviceName: string,
     _rememberMe: boolean = false
-  ): Promise<boolean> => {
+  ): Promise<boolean | TwoFactorChallengeDTO> => {
     void _rememberMe;
     dispatch(setLoading(true));
+    const request = loginMutation({ userIdentifier, password, deviceName });
     try {
-      const data = await loginMutation({ userIdentifier, password, deviceName }).unwrap();
+      const data = await request.unwrap();
+      if (data && 'requiresTwoFactor' in data) return data;
       
       if (data) {
         dispatch(setCredentials(data));
@@ -74,20 +75,14 @@ export const useAuth = () => {
       console.error('Login failed:', error);
       return false;
     } finally {
+      request.reset();
       dispatch(setLoading(false));
     }
   }, [loginMutation, dispatch, loadSettings, loadAllAccessFeatures, loadUserAccessFeatures]);
   
   const logout = useCallback(() => {
-    // Очищаем все слайсы
-    clearSettings();
-    clearAccess();
-    clearUserState();
-    
-    // Очищаем auth
-    dispatch(logoutAction());
     void authManager.logout();
-  }, [dispatch, clearSettings, clearAccess, clearUserState]);
+  }, []);
 
   const refreshToken = useCallback(async (): Promise<string | null> => {
     return await authManager.refreshAccessToken();
