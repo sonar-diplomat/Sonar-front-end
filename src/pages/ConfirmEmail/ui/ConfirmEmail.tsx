@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useMatch, useSearchParams } from 'react-router-dom';
 
 import { useConfirmEmailMutation, useConfirmEmailChangeMutation } from '@features/auth/api/rtkApi';
 import { isDemoMode } from '@shared/config/data-source';
@@ -8,10 +8,9 @@ import { isDemoMode } from '@shared/config/data-source';
 import styles from './ConfirmEmail.module.css';
 export const ConfirmEmail = () => {
     const [params] = useSearchParams();
-    const location = useLocation();
     const email = params.get('email');
     const token = params.get('token');
-    const changing = location.pathname === '/confirm-email-change';
+    const changing = useMatch('/confirm-email-change') !== null;
     const userId = changing ? params.get('userId') || '' : '';
     return <ConfirmationAttempt key={JSON.stringify([changing, email, token, userId])} email={email} token={token} userId={userId} changing={changing} />;
 };

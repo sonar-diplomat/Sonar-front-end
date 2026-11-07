@@ -185,6 +185,34 @@ test('UI-01: incomplete links, same-link rerenders and operation changes use the
     assert.equal(ui.status(), 'Email confirmed.');
 });
 
+for (const variant of ['confirm-email-change/', 'CONFIRM-EMAIL-CHANGE', 'CONFIRM-EMAIL-CHANGE/']) {
+    test('UI-01: route variant ' + variant + ' changes the operation for the same token', async t => {
+        const ui = await mount(t, confirmRoutes(), confirmation('A'), confirmationResponse);
+        await ui.finish(ui.requests[0], accepted);
+        assert.equal(ui.status(), 'Email confirmed.');
+
+        await ui.navigate(confirmation('A', variant) + '&userId=1');
+        assert.equal(ui.status(), 'Confirming…');
+        assert.equal(ui.requests.length, 2);
+        assert.equal(ui.requests[1].args.url, 'Auth/confirm-email-change');
+        assert.deepEqual(ui.requests[1].args.body, { email: 'fixture@example.test', token: 'A', userId: '1' });
+        await ui.finish(ui.requests[1], failed);
+        assert.match(ui.status(), /Unable to confirm/);
+
+        await ui.navigate(confirmation('A', 'confirm-email-change') + '&userId=1');
+        assert.equal(ui.requests.length, 2);
+        assert.match(ui.status(), /Unable to confirm/);
+
+        await ui.navigate(confirmation('A', 'CONFIRM-EMAIL/'));
+        assert.equal(ui.status(), 'Confirming…');
+        assert.equal(ui.requests.length, 3);
+        assert.equal(ui.requests[2].args.url, 'Auth/confirm-email');
+        assert.deepEqual(ui.requests[2].args.params, { email: 'fixture@example.test', token: 'A' });
+        await ui.finish(ui.requests[2], accepted);
+        assert.equal(ui.status(), 'Email confirmed.');
+    });
+}
+
 for (const oldSucceeds of [true, false]) {
     test('UI-01: late ' + (oldSucceeds ? 'success' : 'error') + ' cannot change the current token result', async t => {
         const ui = await mount(t, confirmRoutes(), confirmation('A'), confirmationResponse);
