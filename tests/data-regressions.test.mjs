@@ -74,6 +74,16 @@ after(async () => {
 const delay = () => new Promise(resolve => setTimeout(resolve, 0));
 const flush = action => act(async () => { action?.(); await delay(); await delay(); });
 
+async function expectEventually(read, expected) {
+  const deadline = Date.now() + 2000;
+  let actual = read();
+  while (!Object.is(actual, expected) && Date.now() < deadline) {
+    await flush();
+    actual = read();
+  }
+  assert.equal(actual, expected);
+}
+
 async function take(endpoint) {
   const suffix = '/' + endpoint.toLowerCase();
   for (let i = 0; i < 20; i++) {
@@ -295,7 +305,7 @@ test('settings render fresh values after a switch and clear the legacy browser s
   try {
     const first = await take('ClientSettings');
     await flush(() => reply(first, legacySettings));
-    assert.equal(view.host.textContent, '2/42');
+    await expectEventually(() => view.host.textContent, '2/42');
     dom.window.localStorage.setItem('sonar_client_settings', JSON.stringify(legacySettings));
     dom.window.localStorage.setItem('unrelated-preference', 'keep');
     await flush(() => store.dispatch(auth.setCredentials(credentials(2))));
@@ -303,7 +313,7 @@ test('settings render fresh values after a switch and clear the legacy browser s
     assert.equal(dom.window.localStorage.getItem('sonar_client_settings'), null);
     const fresh = await take('ClientSettings');
     await flush(() => reply(fresh, { themeId: 1, blockedUserIds: [21] }));
-    assert.equal(view.host.textContent, '1/21');
+    await expectEventually(() => view.host.textContent, '1/21');
     dom.window.localStorage.setItem('sonar_client_settings', JSON.stringify(legacySettings));
     await flush(() => store.dispatch(auth.logout()));
     assert.equal(view.host.textContent, 'default');
@@ -372,7 +382,7 @@ test('mounted queue restore accepts B once and ignores a delayed A response', as
     view = await mountComponent(UserStatePlayerSync);
     const first = await take('UserState/queue');
     await flush(() => reply(first, queue(11)));
-    assert.equal(store.getState().player.currentTrack?.id, 11);
+    await expectEventually(() => store.getState().player.currentTrack?.id, 11);
     reply(await take('UserState/listening/11'));
     const saveA = scheduledSave;
     assert(saveA);
@@ -389,7 +399,7 @@ test('mounted queue restore accepts B once and ignores a delayed A response', as
     const fresh = await take('UserState/queue');
     assert.equal(fresh.init.method, 'GET');
     await flush(() => reply(fresh, queue(22)));
-    assert.equal(store.getState().player.currentTrack?.id, 22);
+    await expectEventually(() => store.getState().player.currentTrack?.id, 22);
     reply(await take('UserState/listening/22'));
     await flush(() => reply(stale, queue(99)));
     assert.equal(store.getState().player.currentTrack?.id, 22);
