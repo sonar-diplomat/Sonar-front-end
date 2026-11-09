@@ -59,3 +59,90 @@ Baseline: the Pages deployment from `dev` commit `4f7909d`.
 The media-complete compiled preview was checked at 1280 × 720, 740 × 844 and 320 × 740. Checks covered both themes, all three dialogs, member search, Tab/Shift+Tab containment, Escape/focus return, Library filters and nested-folder navigation. Search and section headings share their left edge; no document-level horizontal overflow was observed. About showed the same timestamp as `.pages/build-profile.json`. Real MP3 playback advanced while navigating to Library and was paused after the check. The final-build browser session had no console errors or warnings.
 
 Validation: 47 automated tests, TypeScript, ESLint, YAML and seed checks; API build/isolation audit; demo compilation, media verification, Pages packaging and all 26 HTTP GET/HEAD/hash/MIME checks plus MP3 ranges. The PR pipeline additionally checks Windows/Linux and the actual Docker container before merge.
+
+## Five confirmed frontend defects
+
+Baseline: `dev` commit `143cb2f`. Acceptance used a fresh, media-complete `.pages/` package with the `/Sonar-front-end/` base, rather than an older preview or a development server.
+
+| Defect | Implementation | Verified result |
+| --- | --- | --- |
+| P1: same-name group member targeting | `POST Chat` has a success-only response without a created ID. Keep the RTK result `void`, align mock with that contract, compare fresh chat IDs before/after creation and require one matching new group owned by the current user. Reject missing/ambiguous identity before any member additions. Surface member-add failures without reporting success. | Two groups named identically received different IDs and separate selected members in the packaged demo. The first group remained unchanged. Eight transport/orchestration regressions cover duplicate names, failed snapshots/creation, absent or ambiguous IDs, invalid metadata and partial member-add failures. |
+| P2: confirmation contrast | The shared `ConfirmEmail` component uses theme background, text and underlined link colors, with a visible keyboard outline. Layout and spacing live in its CSS module. | Both confirmation routes render readable incomplete/error states at every tested size/theme. Deterministic component fixtures also covered incomplete/loading/success/error in both themes at 320 px. |
+| P2: post editor contrast and mobile layout | Theme colors apply to entered text regardless of focus. Fields can shrink inside the card, textarea text is at least 16 px, focus outlines do not change dimensions, and actions wrap. Schedule keeps a 140 px minimum width and can display a date without clipping. | Entered title/body remained readable after blur, without horizontal movement at 320 px. Both themes and profiles passed form-level checks. The packaged mock post published with the keyboard and survived reload. Mock scheduling stayed disabled with its explanatory text. |
+| P2: stale member searches | Both dialogs read `currentData` for the active submitted identifier, hide pending/cleared results, clear the submitted identifier on edits/Add, and unmount their local dialog state on close. A changed target chat also resets Add Members. | A → Add → B → Add → remove A → close/reopen passed in both dialogs. Ten real React/RTK Query regressions exercise that sequence, delayed A success/error after B, cached old results during a new search, a late response after reopening, self/selected/existing-member guards and error reset. |
+| P2: folder input name | The existing folder input explicitly exposes `aria-label="Folder name"`. Validation and submission are unchanged. | Accessibility tree reports `Folder name`. Tab reaches the input and Create folder; whitespace-only input disables creation, and Enter with a valid name creates the folder. |
+
+### Packaged browser acceptance
+
+Checked dark and light themes at 320 × 740, 740 × 844 and 1280 × 720. The matrix contained 36 page checks and 12 dialog checks across the affected folder, confirmation, post and chat flows. No document-level horizontal overflow, out-of-container fields or clipped action labels were detected. Entered values and focus transitions remained usable. Both dialogs retained Tab/Shift+Tab containment, Escape closure, focus return and clean reopening. No application console warnings or errors were captured.
+
+The folder accessibility/validation/keyboard flow, separate membership of the two same-name groups and local post publication/reload were verified against this same package. Confirmation error cases were opened as fresh direct links. Loading/success rendering was checked through controlled component states rather than live email delivery.
+
+### Automated and artifact verification
+
+- `task ci:check` passed: TypeScript, ESLint, Task/actionlint YAML validation, seed relations and 65 tests (55 domain/player/dialog, 4 profile and 6 media/importer tests).
+- `task build:release` passed, including the API isolation audit: 370 rendered modules and 99 output files without demo runtime or binary media.
+- `task build:demo` passed.
+- `task pages:package` verified 12 MP3s and 14 images and produced an 86,204,334-byte package.
+- `task pages:smoke` passed all 26 GET/HEAD/hash/MIME checks and MP3 seek-range checks.
+- Regression sources are `src/shared/demo/group-chat.test.ts` and `tests/chat-member-dialogs.test.mjs`. The latter mounts the production dialogs with React and RTK Query in jsdom and controls response completion order. It checks behavior rather than duplicating CSS declarations and runs through the existing CI test command.
+
+### Acceptance limits and publication
+
+Responsive checks used a desktop browser; physical iOS/Android devices and other browser engines were not certified. The real API server, outbound email and server-side scheduled publication were not exercised. The existing one-attempt confirmation guard is unchanged: changing between token URLs in an already-mounted confirmation component can retain the previous attempt, so direct-entry confirmation cases used fresh loads.
+
+This package is locally accepted and is not a Pages deployment. Feature-branch and PR checks do not publish Pages. The `dev` ruleset requires one approving review and approval of the latest push before merge; the existing `dev` Pages workflow performs publication after its checks and environment requirements are satisfied. PR CI results and any later publication must be reported separately from local package acceptance.
+
+## Playback recovery and delivery — 2026-11-07
+
+This follow-up builds on PR #126 head `3efbfbc`, integrated into the temporary audit branch at `697cec6`. The baseline passed 57 repository demo, player and dialog tests, six independent error and retry cases, and typecheck. Its push and PR workflows each passed all six jobs. See [the baseline PR](https://github.com/sonar-diplomat/Sonar-front-end/pull/126).
+
+| Finding | Change | Regression coverage |
+| --- | --- | --- |
+| BUILD-01 · API stream retry | After a network, HTTP or response-body failure, Play requests the same track again. A track switch or unmount aborts a pending request. Late results cannot set the source or replace playback status. | The production controller is mounted with a controlled transport and media element. Cases cover repeated failures, successful retry, a late body or error after a switch, and a response after unmount. |
+| BUILD-02 · Demo queue restore | Restore matches the original queue position before filtering, including duplicate occurrences. If the selected item is unavailable, restore picks the next surviving occurrence or the last preceding one and starts at zero while paused. | The production restore component reads a stored queue through a controlled track lookup. Cases cover intact duplicates, missing or invalid earlier items, a missing active item and an empty result. |
+| BUILD-03 · Publication status | The catalog, deployment and default-branch workflow records reflect the verified publication. | The published profile, manifest and media delivery were checked separately from the packaged candidate. See [media verification](media-storage.md#verification-status). |
+
+`tests/audio-regressions.test.mjs` adds 14 component regressions to `test:demo`. Before the fixes, the retry checks observed one request where Play should have made a second. The restore checks detected shifted queue positions and a saved 37-second position carried over to a replacement track or an empty queue.
+
+Local `task ci:check` passed 81 tests, including 71 demo, player and dialog tests, four profile tests and six media tests. TypeScript, ESLint, workflow YAML and seed validation passed. The ordered API release, demo build, Pages package and HTTP smoke passed. The API audit found 370 rendered modules and 99 output files with no demo runtime or media. The 86,204,580-byte Pages package contained 12 MP3s and 14 images, and all 26 files passed local status, MIME and hash checks. MP3 ranges returned the expected bytes. The Linux engine was unavailable for the local container check on this revision. The CI container result is a separate release check.
+
+The public artifact tested on 2026-11-07 came from `dev` commit `143cb2f`. Published media matched the manifest hashes and sizes and supported MP3 seek ranges. The host returned `audio/mp3` while local preview returned `audio/mpeg`. Browser and audible playback acceptance for the revised player remains separate from these HTTP and component tests. The live API, native builds and physical devices remain outside this verification. The locked Capacitor Android and iOS versions require a patched native build and device checks before native release. See [the public deployment run](https://github.com/sonar-diplomat/Sonar-front-end/actions/runs/40350863972) and [the Capacitor advisory](https://github.com/ionic-team/capacitor/security/advisories/GHSA-rvm3-566m-v7fv).
+
+## Site map by URL
+
+The [Pages demo](https://sonar-diplomat.github.io/Sonar-front-end/) uses `/Sonar-front-end/#` before each route below. For example, `#/album/101` opens the first demo album. The API profile uses the same route paths without `#` under its configured base. The router defines the route tree in [routes.tsx](../src/app/router/routes.tsx).
+
+| Route | Screen and navigation |
+| --- | --- |
+| `/` | Entry redirect. The demo opens `/home`. The API profile opens `/hello` on first visit and `/entry` on later visits. |
+| `/hello`, `/entry`, `/terms` | Welcome screens, sign-in and registration choices, and terms of service. |
+| `/register`, `/login` | Create an account or sign in. The API profile handles the second factor on the sign-in page when the server issues a challenge. |
+| `/password-recovery`, `/assign-new-password`, `/reset-password` | Request a reset, then set a new password. Both reset URLs use the same page with `email` and `token` query parameters. |
+| `/confirm-email`, `/confirm-email-change` | Confirm an address or an address change. Both read `email` and `token`. The change route also reads `userId`. The demo uses local tokens. |
+| `/home`, `/search` | Music catalog and search. Open a result for the related track, album, artist, playlist or profile. |
+| `/library`, `/library/create`, `/library/create/playlist`, `/library/create/folder` | Library, creation chooser, playlist form and folder form. Nested folders open inside Library. |
+| `/album/:id`, `/playlist/:id`, `/track/:id` | Collection and track details, playback and item actions. Demo examples are `/album/101`, `/playlist/201` and `/track/1`. |
+| `/user/:identifier` | User profile, follows and public collections. Demo examples are `/user/demo` and `/user/river-listener`. |
+| `/artist/:id`, `/artist/:id/posts`, `/artist/:id/posts/create` | Artist music, posts and the owner's post editor. Artist `1` belongs to the default demo account. Mock posts publish immediately. |
+| `/chats`, `/chats/:chatId`, `/chats/:chatId/info` | Inbox with Create chat, conversation, and conversation information. A group administrator can add members from its information page. The seed group is `/chats/2/info`. |
+| `/settings`, `/settings/account`, `/settings/sessions`, `/settings/privacy`, `/settings/blocked-accounts` | Settings menu, account and security, active sessions, privacy controls and blocked users. |
+| `/settings/appearance`, `/settings/playback`, `/settings/about` | Language and theme, player preferences, and build information. About shows the artifact's build timestamp. |
+| `/premium`, `/report` | Plans and activation history, or content reporting. Demo activation and reports stay in the browser. Report links can prefill a target, for example `/report?type=track&entityId=1`. |
+| `/test`, `/test/api` | Diagnostics menu and read-only shared transport requests. |
+| Any unknown route | Not Found screen with a link back to the catalog. |
+
+## Combined audit validation
+
+The frontend package used the local integration of PRs #126 and #127 and the reviewed UI and data revisions `cd1d94f` and `1215a6d`. The matching backend integration is `62b3a3c`. The earlier confirmation follow-up about stale results applies to the original five-defect package. In the combined candidate, each confirmation operation and its parameters own a separate result.
+
+| Check | Result |
+| --- | --- |
+| `task ci:check` | Pass. 107 demo, UI, data, dialog and playback tests, four profile tests and six media tests. TypeScript, ESLint, Task/workflow YAML and seed validation passed. |
+| `task build:release` | Pass. 373 rendered modules and 99 output files. The API bundle excluded the demo runtime and binary media. |
+| `task build:demo`, `task pages:package`, `task pages:smoke` | Pass. The 86,210,382-byte package contained 12 MP3 files and 14 images. All 26 files passed GET, HEAD, MIME and hash checks. MP3 seek ranges passed. |
+| Packaged browser matrix | Pass in Chrome at 320 × 740, 740 × 844 and 1280 × 720 in both themes. Both confirmation routes passed incomplete and invalid-link checks. Entered post text remained readable after blur, and the disabled Schedule button retained its width and explanatory text. The accessibility tree reported `Folder name`, whitespace blocked creation, and Tab and Enter reached and submitted the valid form. |
+| Packaged chat and playback | Both member dialogs passed selection, removal, reopen, focus containment and Escape with focus return at all six theme and viewport combinations. Two groups created with the same name had different IDs and distinct memberships. The first MP3 advanced across navigation from Track to Library. The browser runs recorded no application warnings, errors or external requests. |
+| Local backend and HTTP integration | Twenty backend Auth/2FA tests and eight paired HTTP scenarios passed. Coverage includes challenge-only login, rejection of invalid and reused challenges, successful verification and late response isolation. The ASP.NET test host used test dependencies for passwords, sessions, database and mail. The jsdom harness emitted React `act` warnings. |
+
+The local Linux Docker engine was unavailable. The browser matrix used desktop Chrome and the mock build. API behavior was checked on the test host, and confirmation loading and success were covered by component fixtures. The live [Pages build profile](https://sonar-diplomat.github.io/Sonar-front-end/build-profile.json) still reported `2026-10-26T15:37:40.125Z` during verification. GitHub CI for the complete integration and acceptance of the updated Pages build remain pending.

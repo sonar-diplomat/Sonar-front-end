@@ -16,9 +16,17 @@ export interface LoginResponseDTO {
     sessionId: number;
 }
 
+export interface TwoFactorChallengeDTO {
+    requiresTwoFactor: true;
+    challengeToken: string;
+    expiresAt: string;
+}
+
+export type LoginResultDTO = LoginResponseDTO | TwoFactorChallengeDTO;
+
 export interface Verify2FaDTO {
-    Email: string;
-    Code: string;
+    challengeToken: string;
+    code: string;
 }
 
 export interface RefreshTokenResponse {
@@ -45,11 +53,6 @@ export interface ActiveSessionDTO {
     ipAddress?: string;
     createdAt: string;
     lastActive: string;
-}
-
-export interface Verify2FaResponseDTO {
-    newAccessToken: string;
-    refreshToken: string;
 }
 
 export interface ForgotPasswordDTO {

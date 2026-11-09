@@ -8,6 +8,7 @@ import rawSeed from '../../../demo/data/seed.json' with { type: 'json' };
 import { normalizeSubscriptionPack } from '../../entities/Subscription/api/normalizeSubscription.ts';
 import { normalizeQueue } from '../../entities/UserState/api/normalizeQueue.ts';
 
+import { digestPassword } from './accounts.ts';
 import { clone, STORAGE_KEY, validateSeed, type DemoSeed, type MockRequest, type LocalEvent } from './database.ts';
 import type { DemoStorage } from './persistence.ts';
 import { createMockTransport, mockRouteInventory } from './transport.ts';
@@ -21,6 +22,94 @@ class MemoryStorage implements DemoStorage {
 const seed = rawSeed as DemoSeed;
 function make(options: Partial<Parameters<typeof createMockTransport>[0]> = {}) { return createMockTransport({ seed, storage: new MemoryStorage(), now: () => '2026-02-01T00:00:00.000Z', baseUrl: '/Sonar-front-end/', origin: 'https://demo.example.test', ...options }); }
 async function success<T>(transport: ReturnType<typeof make>, request: MockRequest): Promise<T> { const result = await transport.dispatch(request); assert.equal(result.success, true, `${request.method ?? 'GET'} ${request.url}: ${result.message} ${result.details}`); return result.data as T; }
+
+test('personal chat enforces recipient privacy and duplicate rules without mutating on failure', async () => {
+  const local = clone(seed);
+  local.state.chats = [];
+  local.state.messages = [];
+  local.state.follows = [];
+  local.state.settings[2].userPrivacy!.whichCanMessageId = 3;
+  local.state.settings[3].userPrivacy!.whichCanMessageId = 2;
+  const transport = make({ seed: local });
+  const create = (userId?: number, isGroup = false) => transport.dispatch({
+    url: 'Chat', method: 'POST', body: { name: 'Test chat', coverId: 401, userId, isGroup },
+  });
+  const before = transport.getSnapshot();
+  assert.equal((await create()).status, 403);
+  assert.equal((await create(1)).status, 400);
+  assert.equal((await create(2)).status, 403);
+  assert.equal((await create(3)).status, 403);
+  assert.deepEqual(transport.getSnapshot(), before);
+
+  local.state.follows = [
+    { followerId: 1, followingId: 3, followedAt: '2026-02-01T00:00:00Z' },
+    { followerId: 3, followingId: 1, followedAt: '2026-02-01T00:00:00Z' },
+  ];
+  const friends = make({ seed: local });
+  const personal = { url: 'Chat', method: 'POST', body: { name: 'Friends', coverId: 401, userId: 3, isGroup: false } };
+  assert.equal((await friends.dispatch(personal)).status, 200);
+  assert.equal((await friends.dispatch(personal)).status, 400);
+  assert.deepEqual(friends.getSnapshot().chats[0].userIds, [1, 3]);
+  assert.equal((await create(2, true)).status, 200);
+  assert.deepEqual(transport.getSnapshot().chats[0].userIds, [1]);
+});
+
+test('either personal participant can delete, while only the creator can delete a group', async () => {
+  for (const creatorId of [1, 2]) {
+    const local = clone(seed);
+    local.state.chats = [
+      { id: 1, name: 'Personal', coverId: 401, creatorId, userIds: [1, 2], adminIds: [creatorId], isGroup: false },
+      { id: 2, name: 'Group', coverId: 402, creatorId: 2, userIds: [1, 2], adminIds: [1], isGroup: true },
+    ];
+    local.state.messages = [];
+    const transport = make({ seed: local });
+    assert.equal((await transport.dispatch({ url: 'Chat/1', method: 'DELETE' })).status, 200);
+    assert.equal((await transport.dispatch({ url: 'Chat/2', method: 'DELETE' })).status, 403);
+    assert.deepEqual(transport.getSnapshot().chats.map(chat => chat.id), [2]);
+  }
+});
+
+test('hidden tracks are omitted from collection payloads, counts and cursor pages', async () => {
+  const local = clone(seed);
+  const hidden = local.state.tracks.find(track => track.artistIds.every(id => local.state.artists.find(artist => artist.id === id)?.userId !== 1))!;
+  hidden.visibilityStateId = 3;
+  const playlist = local.state.playlists[1];
+  if (!playlist.trackIds.includes(hidden.id)) playlist.trackIds.unshift(hidden.id);
+  const transport = make({ seed: local });
+  type Projection = { id: number; trackCount: number; trackIds: number[]; tracks: { id: number }[] };
+  const tracksPath = `Album/${hidden.albumId}/tracks`;
+  assert.equal((await transport.dispatch({ url: `Track/${hidden.id}` })).status, 403);
+  assert(!(await success<{ id: number }[]>(transport, { url: tracksPath })).some(track => track.id === hidden.id));
+  const listedAlbum = (await success<Projection[]>(transport, { url: 'Album' })).find(album => album.id === hidden.albumId)!;
+  const projectedPlaylist = await success<Projection>(transport, { url: `Playlist/${playlist.id}` });
+  for (const projection of [listedAlbum, projectedPlaylist]) {
+    assert(!projection.trackIds.includes(hidden.id));
+    assert(!projection.tracks.some(track => track.id === hidden.id));
+    assert.equal(projection.trackCount, projection.tracks.length);
+  }
+  const page = await success<{ items: { id: number }[] }>(transport, { url: `Playlist/${playlist.id}/tracks?limit=1` });
+  assert.deepEqual(page.items.map(track => track.id), playlist.trackIds.filter(id => id !== hidden.id).slice(0, 1));
+  await success(transport, { url: 'Demo/session', method: 'DELETE' });
+  assert.equal((await transport.dispatch({ url: `Track/${hidden.id}` })).status, 403);
+  local.state.artists.find(artist => artist.id === hidden.artistIds[0])!.userId = 1;
+  const owner = make({ seed: local });
+  assert((await success<{ id: number }[]>(owner, { url: tracksPath })).some(track => track.id === hidden.id));
+});
+
+test('mock 2FA fails closed without issuing credentials or a simulated challenge', async () => {
+  const local = clone(seed);
+  local.state.session = null;
+  const user = local.state.users[0];
+  user.enabled2FA = true;
+  local.state.passwordDigests[user.id] = await digestPassword('demo-only-credential');
+  const transport = make({ seed: local });
+  const login = await transport.dispatch({ url: 'Auth/login', method: 'POST', params: { userIdentifier: user.login, password: 'demo-only-credential' } });
+  assert.equal(login.status, 400);
+  assert.match(login.message, /unavailable for local demo/);
+  const verify = await transport.dispatch({ url: 'Auth/verify-2fa', method: 'POST', body: { challengeToken: 'synthetic', code: '123456' } });
+  assert.equal(verify.status, 400);
+  assert.equal(transport.getSnapshot().session, null);
+});
 
 test('seed IDs and all normalized relationships are valid and isolated from visitor changes', () => {
   validateSeed(seed); assert.equal(seed.state.artists.length, 4); assert.equal(seed.state.tracks.length, 12); assert.equal(seed.state.albums.length, 3); assert.equal(seed.state.playlists.length, 4); assert.equal(seed.state.folders.length, 2);

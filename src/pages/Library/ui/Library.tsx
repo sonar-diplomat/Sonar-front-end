@@ -1,6 +1,6 @@
 import React,{ useCallback,useEffect,useMemo,useRef,useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useSearchParams } from 'react-router-dom';
 
 import { useMoveCollectionToFolderMutation,useMoveFolderMutation } from '@entities/Library/api/rtkApi';
 import type { FolderDTO } from '@entities/Library/model/types';
@@ -21,7 +21,17 @@ import styles from './Library.module.css';
 export const Library: React.FC<LibraryProps> = () => {
     const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState<Category>('All');
-    const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);
+    const [params, setParams] = useSearchParams();
+    const folderId = Number(params.get('folder'));
+    const currentFolderId = Number.isSafeInteger(folderId) && folderId > 0 ? folderId : null;
+    const setCurrentFolderId = useCallback((id: number | null) => {
+        setParams(previous => {
+            const next = new URLSearchParams(previous);
+            if (id === null) next.delete('folder');
+            else next.set('folder', String(id));
+            return next;
+        });
+    }, [setParams]);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [isDraggingOverTopZone, setIsDraggingOverTopZone] = useState(false);
     const isDraggingRef = useRef(false);
@@ -30,7 +40,9 @@ export const Library: React.FC<LibraryProps> = () => {
     const { folders: foldersData, isLoading: foldersLoading, refetchFolders, isDirty } = useFolders();
 
     // Загрузка данных для конкретной папки (когда currentFolderId !== null)
-    const { folder: folderData, isLoading: folderLoading, error: folderError, refetch: refetchFolder } = useFolder(currentFolderId);
+    const { folder: loadedFolder, isLoading: loadingFolder, error: folderError, refetch: refetchFolder } = useFolder(currentFolderId);
+    const folderData = loadedFolder?.id === currentFolderId ? loadedFolder : null;
+    const folderLoading = loadingFolder || (currentFolderId !== null && !folderData && !folderError);
 
     // API мутации для drag-and-drop
     const [moveCollectionToFolder] = useMoveCollectionToFolderMutation();
@@ -252,7 +264,7 @@ export const Library: React.FC<LibraryProps> = () => {
 
     const handleFolderClick = useCallback((folder: Folder) => {
         setCurrentFolderId(Number(folder.id));
-    }, []);
+    }, [setCurrentFolderId]);
 
     const handleBack = useCallback(() => {
         // Переходим к родительской папке, если она есть и не является Root, иначе в корень
@@ -277,7 +289,7 @@ export const Library: React.FC<LibraryProps> = () => {
             // Если нет родительской папки, переходим в корень
             setCurrentFolderId(null);
         }
-    }, [folderData, foldersData]);
+    }, [folderData, foldersData, setCurrentFolderId]);
 
     const handlePlaylistClick = useCallback((playlist: Playlist) => {
         navigate(`/${playlist.type === 'Album' ? 'album' : 'playlist'}/${playlist.id}`);

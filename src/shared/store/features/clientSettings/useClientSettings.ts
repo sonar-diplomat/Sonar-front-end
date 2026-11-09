@@ -1,6 +1,7 @@
 import { useCallback,useEffect } from 'react';
 
-import { useGetClientSettingsQuery,usePatchClientSettingsMutation } from '@shared/api';
+import { clientSettingsApi,useGetClientSettingsQuery,usePatchClientSettingsMutation } from '@entities/ClientSettings/api/rtkApi';
+import { store } from '@shared/store';
 import { useAppDispatch,useAppSelector } from '@shared/store/hooks';
 
 import { clearSettings,setSettings } from './clientSettingsSlice';
@@ -13,45 +14,48 @@ import { clearSettings,setSettings } from './clientSettingsSlice';
 export const useClientSettings = () => {
   const dispatch = useAppDispatch();
   const { settings } = useAppSelector((state) => state.clientSettings);
+  const { isAuthenticated, sessionVersion } = useAppSelector(state => state.auth);
   
   // Используем RTK Query для загрузки настроек
-  const { data: settingsData, isLoading, error: queryError, refetch } = useGetClientSettingsQuery();
+  const { currentData: settingsData, isLoading, error: queryError } = useGetClientSettingsQuery(undefined, { skip: !isAuthenticated });
   const [patchMutation, { isLoading: isPatching, error: patchError }] = usePatchClientSettingsMutation();
 
   // Синхронизируем данные из RTK Query в Redux store
   useEffect(() => {
-    if (settingsData) {
+    if (settingsData && isAuthenticated && store.getState().auth.sessionVersion === sessionVersion) {
       dispatch(setSettings(settingsData));
     }
-  }, [settingsData, dispatch]);
+  }, [settingsData, isAuthenticated, sessionVersion, dispatch]);
 
   /**
    * Загружает настройки с сервера
    */
   const loadSettings = useCallback(async () => {
-    const result = await refetch();
-    if (result.data) {
-      return result.data;
-    }
-    return null;
-  }, [refetch]);
+    const owner = store.getState().auth;
+    if (!owner.isAuthenticated) return null;
+    const result = await dispatch(clientSettingsApi.endpoints.getClientSettings.initiate(undefined, { subscribe: false, forceRefetch: true }));
+    return owner.sessionVersion === store.getState().auth.sessionVersion ? result.data ?? null : null;
+  }, [dispatch]);
 
   /**
    * Обновляет настройки частично
    */
   const patchSettings = useCallback(async (updates: Record<string, unknown>) => {
+    const owner = store.getState().auth;
+    if (!owner.isAuthenticated || owner.sessionVersion !== sessionVersion) return null;
     try {
       const result = await patchMutation(updates).unwrap();
-      if (result) {
+      if (result && owner.sessionVersion === store.getState().auth.sessionVersion) {
         dispatch(setSettings(result));
         return result;
       }
       return null;
     } catch (err) {
+      if (owner.sessionVersion !== store.getState().auth.sessionVersion) return null;
       console.error('Failed to update settings:', err);
       throw err;
     }
-  }, [patchMutation, dispatch]);
+  }, [patchMutation, dispatch, sessionVersion]);
 
   /**
    * Очищает настройки (вызывается при logout)

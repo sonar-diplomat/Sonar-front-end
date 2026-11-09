@@ -55,11 +55,29 @@ export function bootstrapDemo(): Promise<void> {
         return;
       }
       if (event.name !== 'state.changed') return;
-      const path = (event.payload as { path: string }).path.toLowerCase();
-      synchronize(path.startsWith('userstate/'));
-      if (path === 'userstate/current-position' || path.startsWith('userstate/status') || path === 'userstate/session') return;
-      if (path === 'userstate/queue') store.dispatch(rtkApi.util.invalidateTags(['Queue']));
-      else { store.dispatch({ type: 'search/clearCache' }); store.dispatch(rtkApi.util.invalidateTags(['DemoState'])); }
+      const { path: requestPath, sessionMutation } = event.payload as { path: string; sessionMutation?: string };
+      const path = requestPath.toLowerCase();
+      const publish = () => {
+        synchronize(path.startsWith('userstate/'));
+        if (path === 'userstate/current-position' || path.startsWith('userstate/status') || path === 'userstate/session') return;
+        if (path === 'userstate/queue') store.dispatch(rtkApi.util.invalidateTags(['Queue']));
+        else { store.dispatch({ type: 'search/clearCache' }); store.dispatch(rtkApi.util.invalidateTags(['DemoState'])); }
+      };
+      if (sessionMutation) {
+        // A session reset aborts RTK mutations. Let the endpoint that committed
+        // this session settle before publishing it. Queued requests remain
+        // bound to the session under which they started.
+        const pending = store.dispatch(rtkApi.util.getRunningMutationsThunk())
+          .filter(mutation => mutation.arg.endpointName === sessionMutation);
+        if (pending.length) {
+          const committedSession = transport.getSnapshot().session?.sessionId;
+          void Promise.all(pending).then(() => {
+            if (transport.getSnapshot().session?.sessionId === committedSession) publish();
+          });
+          return;
+        }
+      }
+      publish();
     });
     window.addEventListener('storage', event => { if (event.key === STORAGE_KEY || event.key === null) void transport.synchronize(); });
     synchronize();
@@ -75,7 +93,7 @@ export async function resetDemoState(): Promise<void> {
   window.dispatchEvent(new Event('sonar-demo:reset'));
 }
 export async function enterDemoSession(): Promise<void> { await bootstrapDemo(); const result = await dispatchMock({ url: 'Demo/session', method: 'POST' }); if (!result.success) throw new Error(result.message); }
-export async function leaveDemoSession(): Promise<void> { await dispatchMock({ url: 'Demo/session', method: 'DELETE' }); store.dispatch(rtkApi.util.resetApiState()); }
+export async function leaveDemoSession(): Promise<void> { await dispatchMock({ url: 'Demo/session', method: 'DELETE' }); }
 export function getDemoOutbox() { return getDemoTransport().getSnapshot().outbox; }
 export function getDemoStatus() { return { ...getDemoTransport().getStatus(), binaryWarning }; }
 

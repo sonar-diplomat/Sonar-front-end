@@ -12,10 +12,10 @@ SearchResultDTO,
 TrackSearchItemDTO,
 UserSearchItemDTO,
 } from '@entities/Search';
-import { useLazySearchQuery } from '@shared/api';
 import { useDebounce } from '@shared/lib/hooks/useDebounce';
 import { getImageUrlById } from '@shared/lib/image-utils';
 import { usePlayer } from '@shared/store/features/player';
+import { useCatalogSearch } from '@shared/store/features/search/useCatalogSearch';
 import { Button,ItemCard,LoadingPlaceholder } from '@shared/ui';
 import { asUiApiError } from '@shared/ui/api-error';
 import type { Category } from '@widgets/ChipsBar';
@@ -62,99 +62,12 @@ export const Search: React.FC = () => {
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const PAGE_SIZE = 20;
-  const [fetchSearch] = useLazySearchQuery();
-
-  const [searchData, setSearchData] = useState<SearchResultDTO | null>(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
-  const [offset, setOffset] = useState(0);
-
-  const shouldSearch = debouncedSearchQuery.trim().length > 0;
-  const requestKey = useRef('');
-  requestKey.current = debouncedSearchQuery + ':' + selectedCategory;
-
-  const getBackendCategory = (category: Category): SearchCategory | undefined =>
-    category === 'All' ? undefined : (category as SearchCategory);
-
-  // reset on new query/category
-  useEffect(() => {
-    setSearchData(null);
-    setHasMore(false);
-    setOffset(0);
-    setSearchError(null);
-  }, [debouncedSearchQuery, selectedCategory]);
-
-  const loadPage = useCallback(
-    async (nextOffset: number) => {
-      if (!shouldSearch) return;
-      const expectedKey = requestKey.current;
-      if (nextOffset === 0) {
-        setIsSearchLoading(true);
-        setSearchError(null);
-      } else {
-        setIsLoadingMore(true);
-      }
-      try {
-        const res = await fetchSearch({
-          query: debouncedSearchQuery,
-          category: getBackendCategory(selectedCategory),
-          limit: PAGE_SIZE,
-          offset: nextOffset,
-        }).unwrap();
-
-        if (expectedKey !== requestKey.current) return;
-        setSearchData((prev) => {
-          const prevTracks = prev?.tracks?.items ?? [];
-          const prevAlbums = prev?.albums?.items ?? [];
-          const prevPlaylists = prev?.playlists?.items ?? [];
-          const prevArtists = prev?.artists?.items ?? [];
-          const prevUsers = prev?.users?.items ?? [];
-
-          const mergedTracks = nextOffset === 0 ? res.tracks?.items ?? [] : [...prevTracks, ...(res.tracks?.items ?? [])];
-          const mergedAlbums = nextOffset === 0 ? res.albums?.items ?? [] : [...prevAlbums, ...(res.albums?.items ?? [])];
-          const mergedPlaylists = nextOffset === 0 ? res.playlists?.items ?? [] : [...prevPlaylists, ...(res.playlists?.items ?? [])];
-          const mergedArtists = nextOffset === 0 ? res.artists?.items ?? [] : [...prevArtists, ...(res.artists?.items ?? [])];
-          const mergedUsers = nextOffset === 0 ? res.users?.items ?? [] : [...prevUsers, ...(res.users?.items ?? [])];
-
-          const mergedCount =
-            mergedTracks.length + mergedAlbums.length + mergedPlaylists.length + mergedArtists.length + mergedUsers.length;
-          const totalResults =
-            res.totalResults ??
-            mergedTracks.length + mergedAlbums.length + mergedPlaylists.length + mergedArtists.length + mergedUsers.length;
-
-          setHasMore(mergedCount < totalResults);
-          setOffset(nextOffset + PAGE_SIZE);
-
-          return {
-            query: res.query,
-            totalResults,
-            tracks: res.tracks ? { total: res.tracks.total, items: mergedTracks } : prev?.tracks,
-            albums: res.albums ? { total: res.albums.total, items: mergedAlbums } : prev?.albums,
-            playlists: res.playlists ? { total: res.playlists.total, items: mergedPlaylists } : prev?.playlists,
-            artists: res.artists ? { total: res.artists.total, items: mergedArtists } : prev?.artists,
-            users: res.users ? { total: res.users.total, items: mergedUsers } : prev?.users,
-          };
-        });
-      } catch (caught: unknown) { const e = asUiApiError(caught);
-        if (expectedKey !== requestKey.current) return;
-        setSearchError(e?.data?.message || e?.message || 'Search failed');
-        setHasMore(false);
-      } finally {
-        if (expectedKey === requestKey.current) setIsSearchLoading(false);
-        if (expectedKey === requestKey.current) setIsLoadingMore(false);
-      }
-    },
-    [shouldSearch, fetchSearch, debouncedSearchQuery, selectedCategory, PAGE_SIZE]
-  );
-
-  // initial load
-  useEffect(() => {
-    if (!shouldSearch) return;
-    void loadPage(0);
-  }, [shouldSearch, loadPage]);
+  const query = debouncedSearchQuery.trim();
+  const shouldSearch = query.length > 0;
+  const category = selectedCategory === 'All' ? undefined : selectedCategory as SearchCategory;
+  const { data: searchData, error, hasMore, isLoading: isSearchLoading, isLoadingMore, loadMore, retry } = useCatalogSearch(query, category);
+  const apiError = asUiApiError(error);
+  const searchError = error ? apiError?.data?.message || apiError?.message || 'Search failed' : null;
 
   // infinite scroll через IntersectionObserver
   useEffect(() => {
@@ -174,7 +87,7 @@ export const Search: React.FC = () => {
         if (!entry.isIntersecting) return;
 
         if (hasMore && !isLoadingMore && !isSearchLoading) {
-          void loadPage(offset);
+          loadMore();
         }
       },
       {
@@ -189,7 +102,7 @@ export const Search: React.FC = () => {
     return () => {
       observer.disconnect();
     };
-  }, [hasMore, isLoadingMore, isSearchLoading, loadPage, offset]);
+  }, [hasMore, isLoadingMore, isSearchLoading, loadMore]);
 
   const tracksData =
     (selectedCategory === 'Tracks' || selectedCategory === 'All') && searchData?.tracks
@@ -217,7 +130,7 @@ export const Search: React.FC = () => {
 
     switch (selectedCategory) {
       case 'All':
-        return searchData && searchData.query === debouncedSearchQuery ? searchData : null;
+        return searchData && searchData.query === query ? searchData : null;
       case 'Tracks':
         return tracksData ? { query: debouncedSearchQuery, totalResults: tracksData.total, tracks: tracksData } : null;
       case 'Albums':
@@ -441,7 +354,7 @@ export const Search: React.FC = () => {
         searchPlaceholder="Search for tracks, albums, playlists, artists..."
       />
       {isLoading && shouldSearch && <LoadingPlaceholder variant="spinner" fullWidth />}
-      {searchError && <div role="alert" className={styles.error}>{searchError}<Button onClick={() => void loadPage(0)}>Try again</Button></div>}
+      {searchError && <div role="alert" className={styles.error}>{searchError}<Button onClick={retry}>Try again</Button></div>}
       {!shouldSearch && (
         <div className={styles.emptyState}>
           Enter a search query to find tracks, albums, playlists, artists, and users

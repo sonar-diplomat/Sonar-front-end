@@ -26,6 +26,11 @@ type CustomFetchBaseQueryError = FetchBaseQueryError & {
   };
 };
 
+const sessionChanged = () => ({ error: {
+  status: 499,
+  data: { success: false, status: 499, message: 'Session changed', errors: ['Session changed'] },
+} as CustomFetchBaseQueryError });
+
 import { toSearchParams } from './params-utils';
 import { requestFetch } from './requestFetch';
 
@@ -39,14 +44,21 @@ const isMediaEndpoint = (endpoint: string): boolean => {
 /**
  * Кастомный baseQuery с поддержкой специфики API
  */
-export const rtkBaseQuery: BaseQueryFn<
+const executeQuery: BaseQueryFn<
   CustomFetchArgs,
   unknown,
   CustomFetchBaseQueryError
 > = async (args, api) => {
   if (isDemoMode) {
+    const version = authManager.getSessionVersion();
+    const session = { id: authManager.getSessionId(), isCurrent: () => authManager.getSessionVersion() === version };
     const { dispatchMock } = await import('@demo-dispatcher');
-    const result = await dispatchMock({ url: args.url, method: args.method, params: args.params, body: args.body, signal: args.signal ? AbortSignal.any([args.signal, api.signal]) : api.signal });
+    const result = await dispatchMock({
+      url: args.url, method: args.method, params: args.params, body: args.body,
+      signal: args.signal ? AbortSignal.any([args.signal, api.signal]) : api.signal,
+      session, sessionMutation: api.type === 'mutation' ? api.endpoint : undefined,
+    });
+    if (!result.sessionChanged && !session.isCurrent()) return sessionChanged();
     return result.success
       ? { data: result.data ?? null, meta: result }
       : { error: { status: result.status, data: result } as CustomFetchBaseQueryError };
@@ -64,6 +76,7 @@ export const rtkBaseQuery: BaseQueryFn<
     signal: requestSignal,
     ...rest
   } = args as CustomFetchArgs;
+  const sessionVersion = authManager.getSessionVersion();
 
   // Построение URL с параметрами
   // Используем MEDIA_BASE_URL для blob и stream endpoints
@@ -138,6 +151,7 @@ export const rtkBaseQuery: BaseQueryFn<
       const delay = 300 * Math.pow(2, attempt - 1);
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
+    if (sessionVersion !== authManager.getSessionVersion()) return sessionChanged();
 
     try {
       // Обработка body в зависимости от bodyType
@@ -175,7 +189,6 @@ export const rtkBaseQuery: BaseQueryFn<
           url: fullUrl,
           method,
           hasAuth: !!finalHeaders['Authorization'],
-          authHeader: finalHeaders['Authorization'] ? `${finalHeaders['Authorization'].substring(0, 20)}...` : 'none',
         });
       }
 
@@ -186,6 +199,7 @@ export const rtkBaseQuery: BaseQueryFn<
         signal: requestSignal ? AbortSignal.any([requestSignal, api.signal]) : api.signal,
         ...rest,
       }, timeoutMs);
+      if (sessionVersion !== authManager.getSessionVersion()) return sessionChanged();
 
       const status = response.status;
       const contentType = response.headers.get('content-type') || '';
@@ -275,16 +289,9 @@ export const rtkBaseQuery: BaseQueryFn<
         };
       }
 
-      // Успешный ответ - извлекаем data и обрабатываем "empty list"
-      let data = normalized.data;
-      
-      // Обработка "empty list" для пустых коллекций
-      if (data === 'empty list') {
-        data = [];
-      }
-
       return {
-        data,
+        // RTK uses null for a successful response without a payload.
+        data: normalized.data ?? null,
         meta: {
           success: normalized.success,
           status: normalized.status,
@@ -326,5 +333,13 @@ export const rtkBaseQuery: BaseQueryFn<
       },
     } as CustomFetchBaseQueryError,
   };
+};
+
+export const rtkBaseQuery: typeof executeQuery = async (args, api, extraOptions) => {
+  if (isDemoMode) return executeQuery(args, api, extraOptions);
+  const version = authManager.getSessionVersion();
+  const result = await executeQuery(args, api, extraOptions);
+  if (version !== authManager.getSessionVersion()) return sessionChanged();
+  return result;
 };
 

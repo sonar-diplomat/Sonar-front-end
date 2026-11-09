@@ -7,11 +7,11 @@ ConfirmEmailChangeDTO,
 ConfirmPasswordChangeDTO,
 ForgotPasswordDTO,
 LoginResponseDTO,
+LoginResultDTO,
 RefreshTokenResponse,
 ResetPasswordDTO,
 UserRegisterDTO,
 Verify2FaDTO,
-Verify2FaResponseDTO,
 } from '../model/types';
 
 /**
@@ -37,7 +37,7 @@ export const authApi = rtkApi.injectEndpoints({
       }),
     }),
 
-    login: builder.mutation<LoginResponseDTO, { userIdentifier: string; password: string; deviceName: string }>({
+    login: builder.mutation<LoginResultDTO, { userIdentifier: string; password: string; deviceName: string }>({
       query: ({ userIdentifier, password, deviceName }) => ({
         url: API_ENDPOINTS.auth.login,
         method: 'POST',
@@ -47,13 +47,13 @@ export const authApi = rtkApi.injectEndpoints({
       }),
     }),
 
-    verify2FA: builder.mutation<Verify2FaResponseDTO, { dto: Verify2FaDTO; deviceName: string }>({
+    verify2FA: builder.mutation<LoginResponseDTO, { dto: Verify2FaDTO; deviceName: string }>({
       query: ({ dto, deviceName }) => ({
         url: API_ENDPOINTS.auth.verify2FA,
         method: 'POST',
         body: dto,
         headers: { 'X-Device-Name': deviceName },
-        withAuth: true,
+        withAuth: false,
       }),
     }),
 
@@ -61,8 +61,7 @@ export const authApi = rtkApi.injectEndpoints({
       query: (token) => ({
         url: API_ENDPOINTS.auth.refreshToken,
         method: 'POST',
-        body: `"${token}"`,
-        bodyType: 'raw',
+        body: token,
         withAuth: false,
       }),
     }),
@@ -72,9 +71,9 @@ export const authApi = rtkApi.injectEndpoints({
         url: API_ENDPOINTS.auth.getMailChangeToken,
         method: 'POST',
         body: email,
-        bodyType: 'raw',
         withAuth: true,
       }),
+      transformResponse: (): void => undefined,
     }),
 
     confirmEmailChange: builder.mutation<void, ConfirmEmailChangeDTO>({

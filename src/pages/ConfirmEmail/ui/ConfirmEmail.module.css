@@ -1,11 +1,44 @@
 .container {
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  gap: 20px;
+  min-height: 0;
+  width: 100%;
   padding: 16px;
-  background-color: #000;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.container h1 {
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.container p {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.container a {
+  color: var(--text-primary);
+  line-height: 1.5;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.container a:hover {
+  color: var(--text-secondary);
+}
+
+.container a:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 4px;
 }
 
 @media (min-width: 426px) {

@@ -17,8 +17,8 @@ export const TwoFactorVerification: React.FC<TwoFactorVerificationProps> = ({
       title="Verify code"
       description={
         <>
-          Enter the 6-digit code you received via email at{' '}
-          <span className={styles.email}>{email}</span> to verify your account.
+          Enter the 6-digit code emailed to the account for{' '}
+          <span className={styles.email}>{email}</span>.
         </>
       }
       buttonText={isSubmitting ? "Signing in..." : "Sign in"}

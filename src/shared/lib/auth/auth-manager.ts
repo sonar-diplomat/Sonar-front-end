@@ -11,7 +11,9 @@ import { authApiRefreshToken } from './auth-api-utils';
  * Управляет токенами, сессиями и автоматическим refresh
  */
 class AuthManager {
-  private refreshPromise: Promise<string | null> | null = null;
+  private refreshPromise: { version: number; promise: Promise<string | null> } | null = null;
+
+  getSessionVersion(): number { return store.getState().auth.sessionVersion; }
 
   /**
    * Получает текущий access token из Redux store
@@ -67,11 +69,12 @@ class AuthManager {
   async refreshAccessToken(): Promise<string | null> {
     if (isDemoMode) return null;
     // Если уже идет refresh, возвращаем существующий промис
-    if (this.refreshPromise) {
+    const version = this.getSessionVersion();
+    if (this.refreshPromise?.version === version) {
       if (import.meta.env.DEV) {
         console.log('[authManager] refreshAccessToken: Already in progress, waiting...');
       }
-      return this.refreshPromise;
+      return this.refreshPromise.promise;
     }
 
     const refreshToken = this.getRefreshToken();
@@ -88,10 +91,11 @@ class AuthManager {
       console.log('[authManager] refreshAccessToken: Starting token refresh...');
     }
 
-    this.refreshPromise = (async () => {
+    const promise = (async () => {
       try {
         // Отправляем refresh token как raw string в body (согласно API)
         const res = await authApiRefreshToken(refreshToken);
+        if (this.getSessionVersion() !== version || this.getRefreshToken() !== refreshToken) return null;
 
         if (res.success && res.data) {
           // Обновляем токены в Redux store
@@ -117,6 +121,7 @@ class AuthManager {
           return null;
         }
       } catch (error) {
+        if (this.getSessionVersion() !== version || this.getRefreshToken() !== refreshToken) return null;
         console.error('[authManager] refreshAccessToken: Token refresh error:', error);
         if (import.meta.env.DEV) {
           console.warn('[authManager] refreshAccessToken: ⚠️ Требуется новый логин - ошибка при обновлении токена');
@@ -125,11 +130,12 @@ class AuthManager {
         this.redirectToLogin();
         return null;
       } finally {
-        this.refreshPromise = null;
+        if (this.refreshPromise?.version === version) this.refreshPromise = null;
       }
     })();
 
-    return this.refreshPromise;
+    this.refreshPromise = { version, promise };
+    return promise;
   }
 
   /**
@@ -137,6 +143,9 @@ class AuthManager {
    * Очищает токены и может вызвать API для ревокации сессии на сервере
    */
   async logout(): Promise<void> {
+    // Invalidate in-flight work before awaiting demo storage or Hub teardown.
+    this.refreshPromise = null;
+    store.dispatch(logout());
     if (isDemoMode) {
       const { leaveDemoSession } = await import('@demo-runtime');
       await leaveDemoSession();
@@ -152,7 +161,6 @@ class AuthManager {
       console.error('[authManager] Error disconnecting SignalR:', error);
     }
     
-    store.dispatch(logout());
     // Опционально: можно вызвать API для ревокации сессии на сервере
     // Но обычно это делается через отдельный вызов revokeSession или revokeAllSessions
   }

@@ -1,11 +1,12 @@
 import { useEffect,useRef } from 'react';
 
 import { useSaveQueueMutation } from '@entities/UserState/api/rtkApi';
+import { store } from '@shared/store';
 import { usePlayer } from '@shared/store/features/player';
 import { useAppSelector } from '@shared/store/hooks';
 
 export const useQueuePersistence = () => {
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, sessionVersion } = useAppSelector((state) => state.auth);
   const { queue } = usePlayer();
   const [saveQueueApi] = useSaveQueueMutation();
 
@@ -29,12 +30,14 @@ export const useQueuePersistence = () => {
     }
 
     saveTimeoutRef.current = setTimeout(() => {
+      const owner = store.getState().auth;
+      if (!owner.isAuthenticated || owner.sessionVersion !== sessionVersion) return;
       if (queueIds.length > 0) {
         saveQueueApi(queueIds)
           .unwrap()
           .then(() => {})
           .catch((error) => {
-            console.error('[useQueuePersistence] Failed to save queue to backend:', error);
+            if (store.getState().auth.sessionVersion === sessionVersion) console.error('[useQueuePersistence] Failed to save queue to backend:', error);
           });
       }
 
@@ -46,6 +49,6 @@ export const useQueuePersistence = () => {
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [queue, saveQueueApi, isAuthenticated]);
+  }, [queue, saveQueueApi, isAuthenticated, sessionVersion]);
 };
 

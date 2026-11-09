@@ -95,13 +95,13 @@
 }
 
 
-.fileInputLabel {
-    display: inline-block;
-    cursor: pointer;
-}
-
 .fileInput {
     display: none;
+}
+
+.fileInputButton:focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 2px;
 }
 
 .fileInputButton {
@@ -112,6 +112,8 @@
     background-color: var(--button-bg-light);
     color: var(--button-text-light);
     border-radius: 16px;
+    border: 0;
+    font-family: inherit;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
