@@ -26,9 +26,16 @@ export const accountRoutes: Route[] = [
     c.s.queues[userId] = { trackIds: [], currentTrackId: null, collectionId: null, position: '00:00:00', statusId: 1 };
     return receipt(c, 'confirm-email', address);
   }, true),
-  route('POST', 'Auth/login', async c => { const identifier = text(c.p.get('userIdentifier'), 'Login').toLowerCase(), password = text(c.p.get('password'), 'Password', 200); const user = c.s.users.find(u => [u.email, u.login, u.publicIdentifier].some(v => v.toLowerCase() === identifier)); need(user && c.s.passwordDigests[user.id] === await digestPassword(password), 'Local login or password is incorrect', 401); need(user!.emailConfirmed, 'Complete local email confirmation first', 403); return session(c, user!.id); }, true),
+  route('POST', 'Auth/login', async c => {
+    const identifier = text(c.p.get('userIdentifier'), 'Login').toLowerCase(), password = text(c.p.get('password'), 'Password', 200);
+    const user = c.s.users.find(u => [u.email, u.login, u.publicIdentifier].some(v => v.toLowerCase() === identifier));
+    need(user && c.s.passwordDigests[user.id] === await digestPassword(password), 'Local login or password is incorrect', 401);
+    need(user!.emailConfirmed, 'Complete local email confirmation first', 403);
+    need(!user!.enabled2FA, 'Two-factor authentication is unavailable for local demo accounts');
+    return session(c, user!.id);
+  }, true),
   route('POST', 'Auth/refresh-token', () => ({ newAccessToken: '', refreshToken: '' }), true),
-  route('POST', 'Auth/verify-2fa', () => { need(false, 'Two-factor authentication is disabled for local demo accounts'); }),
+  route('POST', 'Auth/verify-2fa', () => { need(false, 'Two-factor authentication is unavailable for local demo accounts'); }, true, false),
   route('GET', 'Auth/sessions', c => c.s.sessions.filter(s => s.userId === c.user())),
   route('POST', 'Auth/sessions/:id/revoke', c => { const found = byId(c.s.sessions, id(c), 'Session'); need(found.userId === c.user(), 'Cannot revoke another user session', 403); c.s.sessions = c.s.sessions.filter(v => v.id !== found.id); if (c.s.session?.sessionId === found.id) c.s.session = null; }),
   route('POST', 'Auth/sessions/revoke-all', c => { const me = c.user(); c.s.sessions = c.s.sessions.filter(v => v.userId !== me); c.s.session = null; }),

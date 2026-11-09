@@ -24,7 +24,7 @@ useRevokeAllSessionsMutation,
 useRevokeSessionMutation,
 useVerify2FAMutation,
 } from '@shared/api'
-import { setCredentials,updateTokens } from '@shared/store/features/auth/authSlice'
+import { updateTokens } from '@shared/store/features/auth/authSlice'
 import { useAppDispatch } from '@shared/store/hooks'
 
 export const useRegister = () => {
@@ -52,16 +52,23 @@ export const useRegister = () => {
     }), [result.isLoading, result.error, mutate])
 }
 
+async function readAuthAttempt<T>(request: { unwrap(): Promise<T>; abort(): void; reset(): void }, signal?: AbortSignal): Promise<T> {
+    const abort = () => request.abort()
+    if (signal?.aborted) abort()
+    else signal?.addEventListener('abort', abort, { once: true })
+    try {
+        return await request.unwrap()
+    } finally {
+        signal?.removeEventListener('abort', abort)
+        request.reset()
+    }
+}
+
 export const useLogin = () => {
-    const dispatch = useAppDispatch()
     const [trigger, result] = useLoginMutation()
-    const mutate = useCallback(async (userIdentifier: string, password: string, deviceName: string) => {
+    const mutate = useCallback(async (userIdentifier: string, password: string, deviceName: string, signal?: AbortSignal) => {
         try {
-            const data = await trigger({ userIdentifier, password, deviceName }).unwrap()
-            // Обновляем Redux state и localStorage
-            if (data) {
-                dispatch(setCredentials(data))
-            }
+            const data = await readAuthAttempt(trigger({ userIdentifier, password, deviceName }), signal)
             return { success: true, data }
         } catch (caught: unknown) {
             const error = authError(caught)
@@ -74,29 +81,19 @@ export const useLogin = () => {
                 details: error?.data?.details,
             }
         }
-    }, [trigger, dispatch])
+    }, [trigger])
     return useMemo(() => ({
         loading: result.isLoading,
-        data: result.data,
         error: result.error ? authError(result.error)?.data?.message || authError(result.error)?.message : undefined,
         mutate,
-    }), [result.isLoading, result.data, result.error, mutate])
+    }), [result.isLoading, result.error, mutate])
 }
 
 export const useVerify2FA = () => {
-    const dispatch = useAppDispatch()
     const [trigger, result] = useVerify2FAMutation()
-    const mutate = useCallback(async (dto: Verify2FaDTO, deviceName: string) => {
+    const mutate = useCallback(async (dto: Verify2FaDTO, deviceName: string, signal?: AbortSignal) => {
         try {
-            const data = await trigger({ dto, deviceName }).unwrap()
-            // Обновляем Redux state и localStorage
-            // Verify2FA возвращает RefreshTokenResponse (только токены, без sessionId)
-            if (data) {
-                dispatch(updateTokens({
-                    accessToken: data.newAccessToken,
-                    refreshToken: data.refreshToken,
-                }))
-            }
+            const data = await readAuthAttempt(trigger({ dto, deviceName }), signal)
             return { success: true, data }
         } catch (caught: unknown) {
             const error = authError(caught)
@@ -109,13 +106,12 @@ export const useVerify2FA = () => {
                 details: error?.data?.details,
             }
         }
-    }, [trigger, dispatch])
+    }, [trigger])
     return useMemo(() => ({
         loading: result.isLoading,
-        data: result.data,
         error: result.error ? authError(result.error)?.data?.message || authError(result.error)?.message : undefined,
         mutate,
-    }), [result.isLoading, result.data, result.error, mutate])
+    }), [result.isLoading, result.error, mutate])
 }
 
 export const useRefreshToken = () => {

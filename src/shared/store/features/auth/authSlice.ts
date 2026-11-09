@@ -4,6 +4,7 @@ import type { LoginResponseDTO } from '@features/auth';
 import { isDemoMode } from '@shared/config/data-source';
 
 interface AuthState {
+  sessionVersion: number;
   demoUserId: number | null;
   accessToken: string | null;
   refreshToken: string | null;
@@ -39,6 +40,7 @@ const loadTokensFromStorage = (): Partial<AuthState> => {
 };
 
 const initialState: AuthState = {
+  sessionVersion: 0,
   demoUserId: null,
   ...loadTokensFromStorage(),
   isLoading: false,
@@ -50,6 +52,7 @@ const authSlice = createSlice({
   reducers: {
     setDemoSession: (state, action: PayloadAction<{ userId: number; sessionId: number } | null>) => {
       if (!isDemoMode) return;
+      if (state.demoUserId !== (action.payload?.userId ?? null) || state.sessionId !== (action.payload?.sessionId ?? null)) state.sessionVersion++;
       state.demoUserId = action.payload?.userId ?? null;
       state.sessionId = action.payload?.sessionId ?? null;
       state.isAuthenticated = action.payload !== null;
@@ -59,13 +62,16 @@ const authSlice = createSlice({
     },
     setCredentials: (state, action: PayloadAction<LoginResponseDTO>) => {
       if (isDemoMode) {
-        state.demoUserId = action.payload.demoUserId ?? 1;
+        const userId = action.payload.demoUserId ?? 1;
+        if (state.demoUserId !== userId || state.sessionId !== action.payload.sessionId) state.sessionVersion++;
+        state.demoUserId = userId;
         state.sessionId = action.payload.sessionId;
         state.isAuthenticated = true;
         state.accessToken = null;
         state.refreshToken = null;
         return;
       }
+      state.sessionVersion++;
       const { accessToken, refreshToken, sessionId } = action.payload;
       
       state.accessToken = accessToken;
@@ -110,6 +116,7 @@ const authSlice = createSlice({
     },
     
     logout: (state) => {
+      state.sessionVersion++;
       state.accessToken = null;
       state.refreshToken = null;
       state.sessionId = null;

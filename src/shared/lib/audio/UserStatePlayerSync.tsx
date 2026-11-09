@@ -3,6 +3,7 @@ import React,{ lazy, Suspense, useEffect,useState } from 'react';
 import { useGetQueueQuery } from '@entities/UserState/api/rtkApi';
 import { isDemoMode } from '@shared/config/data-source';
 import { usePlaybackSync,useQueuePersistence } from '@shared/lib';
+import { store } from '@shared/store';
 import { usePlayer } from '@shared/store/features/player';
 import { useAppSelector } from '@shared/store/hooks';
 
@@ -12,8 +13,12 @@ import { useAppSelector } from '@shared/store/hooks';
  * Автоматически загружает и запускает трек когда изменяется currentTrackId
  */
 const DemoSync = isDemoMode ? lazy(() => import('@shared/lib/audio/DemoPlayerSync').then(module => ({ default: module.DemoPlayerSync }))) : null;
-export const UserStatePlayerSync = () => { usePlaybackSync(); return DemoSync ? <Suspense fallback={null}><DemoSync /></Suspense> : <ApiPlayerSync />; };
-const ApiPlayerSync = () => {
+export const UserStatePlayerSync = () => {
+  usePlaybackSync();
+  const sessionVersion = useAppSelector(state => state.auth.sessionVersion);
+  return DemoSync ? <Suspense fallback={null}><DemoSync /></Suspense> : <ApiPlayerSync key={sessionVersion} sessionVersion={sessionVersion} />;
+};
+const ApiPlayerSync = ({ sessionVersion }: { sessionVersion: number }) => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { restoreQueue, pause } = usePlayer();
   const [hasRestoredQueue, setHasRestoredQueue] = useState(false);
@@ -21,12 +26,12 @@ const ApiPlayerSync = () => {
   useQueuePersistence();
 
 
-  const { data: queueData, isLoading, isError, error } = useGetQueueQuery(undefined, {
+  const { currentData: queueData, isLoading, isError, error } = useGetQueueQuery(undefined, {
     skip: !isAuthenticated,
   });
 
   useEffect(() => {
-    if (!isAuthenticated || (!queueData && !isError)) return;
+    if (!isAuthenticated || store.getState().auth.sessionVersion !== sessionVersion || (!queueData && !isError)) return;
     if (hasRestoredQueue) {
       return;
     }
@@ -118,7 +123,7 @@ const ApiPlayerSync = () => {
     } else {
       setHasRestoredQueue(true);
     }
-  }, [queueData, isLoading, isError, hasRestoredQueue, restoreQueue, pause]);
+  }, [queueData, isLoading, isError, hasRestoredQueue, restoreQueue, pause, isAuthenticated, sessionVersion]);
 
   return null;
 };

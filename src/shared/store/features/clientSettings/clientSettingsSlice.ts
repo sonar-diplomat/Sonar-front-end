@@ -9,22 +9,18 @@ interface ClientSettingsState {
   error: string | null;
 }
 
-// Загружаем настройки из localStorage при инициализации
-const loadSettingsFromStorage = (): Settings | null => {
-  if (isDemoMode) return null;
+// Older versions stored a whole account snapshot without an owner identifier.
+export function clearLegacyClientSettings(): void {
+  if (isDemoMode) return;
   try {
-    const stored = localStorage.getItem('sonar_client_settings');
-    if (stored) {
-      return JSON.parse(stored) as Settings;
-    }
+    if (typeof localStorage !== 'undefined') localStorage.removeItem('sonar_client_settings');
   } catch (error) {
-    console.error('Failed to load settings from localStorage:', error);
+    console.error('Failed to clear legacy settings from localStorage:', error);
   }
-  return null;
-};
+}
 
 const initialState: ClientSettingsState = {
-  settings: loadSettingsFromStorage(),
+  settings: null,
   isLoading: false,
   error: null,
 };
@@ -36,28 +32,12 @@ const clientSettingsSlice = createSlice({
     setSettings: (state, action: PayloadAction<Settings>) => {
       state.settings = action.payload;
       state.error = null;
-      if (isDemoMode) return;
-      
-      // Сохраняем в localStorage
-      try {
-        localStorage.setItem('sonar_client_settings', JSON.stringify(action.payload));
-      } catch (error) {
-        console.error('Failed to save settings to localStorage:', error);
-      }
     },
     
     updateSettings: (state, action: PayloadAction<Partial<Settings>>) => {
       if (state.settings) {
         state.settings = { ...state.settings, ...action.payload };
         state.error = null;
-        if (isDemoMode) return;
-        
-        // Сохраняем обновленные настройки в localStorage
-        try {
-          localStorage.setItem('sonar_client_settings', JSON.stringify(state.settings));
-        } catch (error) {
-          console.error('Failed to update settings in localStorage:', error);
-        }
       }
     },
     
@@ -69,18 +49,7 @@ const clientSettingsSlice = createSlice({
       state.error = action.payload;
     },
     
-    clearSettings: (state) => {
-      state.settings = null;
-      state.error = null;
-      if (isDemoMode) return;
-      
-      // Очищаем localStorage
-      try {
-        localStorage.removeItem('sonar_client_settings');
-      } catch (error) {
-        console.error('Failed to clear settings from localStorage:', error);
-      }
-    },
+    clearSettings: () => initialState,
   },
 });
 

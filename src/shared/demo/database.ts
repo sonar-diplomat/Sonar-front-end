@@ -56,8 +56,18 @@ export interface DemoState {
   recentCollections: { userId: number; collectionId: number; collectionType: number; lastPlayedAtUtc: string }[];
 }
 export interface DemoSeed { schemaVersion: number; currentUserId: number; state: DemoState }
-export interface MockRequest { url: string; method?: string; params?: Record<string, unknown>; body?: unknown; signal?: AbortSignal }
-export interface MockResult<T = unknown> { success: boolean; status: number; message: string; data?: T; errors?: string[]; details?: string[] }
+export interface MockRequest {
+  url: string;
+  method?: string;
+  params?: Record<string, unknown>;
+  body?: unknown;
+  signal?: AbortSignal;
+  // Adapter requests retain their owner while waiting for the transport lock.
+  session?: { id: number | null; isCurrent(): boolean };
+  // RTK mutation endpoint to let settle before publishing a committed session.
+  sessionMutation?: string;
+}
+export interface MockResult<T = unknown> { success: boolean; status: number; message: string; data?: T; errors?: string[]; details?: string[]; sessionChanged?: boolean }
 export type DemoScenario = 'default' | 'empty' | 'error';
 export type LocalEvent = { name: string; payload: unknown };
 export const clone = <T>(value: T): T => structuredClone(value);

@@ -55,7 +55,7 @@ export const normalizeResponse = <T>(
     };
 
     if ('data' in raw) {
-        if (isEmptyListMarker(raw.data)) return base;
+        if (isEmptyListMarker(raw.data)) return { ...base, data: [] as T };
         return { ...base, data: raw.data as T };
     }
     return base;

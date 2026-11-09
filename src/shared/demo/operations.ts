@@ -46,13 +46,34 @@ export function trackView(c: Context, track: DemoTrack) {
   return { ...track, durationInSeconds: durationSeconds(track.duration), albumName: album.name, isFavorite: favorites(c.s, c.s.session?.userId ?? 0)?.trackIds.includes(track.id) ?? false,
     artists: track.artistIds.map(artistId => { const a = byId(c.s.artists, artistId, 'Artist'); const u = byId(c.s.users, a.userId, 'User'); return { id: a.id, artistId: a.id, artistName: a.artistName, pseudonym: a.artistName, user: { firstName: u.firstName, lastName: u.lastName } }; }) };
 }
-export function playlistView(c: Context, p: DemoPlaylist) { return { ...p, creator: { id: p.creatorId }, creatorName: byId(c.s.users, p.creatorId).userName, trackCount: p.trackIds.length, tracks: p.trackIds.map(t => trackView(c, byId(c.s.tracks, t))), contributorNames: (p.contributors ?? []).map(u => byId(c.s.users, u.id).userName), isFavorite: c.s.folders.some(f => f.ownerId === c.s.session?.userId && f.collectionIds.includes(p.id)) }; }
-export function albumView(c: Context, albumId: number) { const album = byId(c.s.albums, albumId, 'Album'); return { ...album, albumArtists: album.artistIds.map(artistId=>({id:artistId,artistId,albumId:album.id,pseudonym:byId(c.s.artists,artistId).artistName})), trackCount: album.trackIds.length, tracks: album.trackIds.map(t => trackView(c, byId(c.s.tracks, t))), authors: album.artistIds.map(a => ({ artistId: a, pseudonym: byId(c.s.artists, a).artistName })) }; }
+export function canView(c: Context, status: number, ownerId?: number): boolean {
+  return status === 1 || (ownerId != null && ownerId === c.s.session?.userId);
+}
+export function canViewRelease(c: Context, release: { visibilityStateId: number; artistIds: number[] }): boolean {
+  return release.visibilityStateId === 1 || c.s.artists.some(a => release.artistIds.includes(a.id) && a.userId === c.s.session?.userId);
+}
+export function collectionTracks(c: Context, trackIds: number[]) {
+  return trackIds.map(trackId => byId(c.s.tracks, trackId)).filter(track => canViewRelease(c, track)).map(track => trackView(c, track));
+}
+export function playlistView(c: Context, p: DemoPlaylist) {
+  const tracks = collectionTracks(c, p.trackIds);
+  return { ...p, creator: { id: p.creatorId }, creatorName: byId(c.s.users, p.creatorId).userName,
+    trackCount: tracks.length, trackIds: tracks.map(t => t.id), tracks,
+    contributorNames: (p.contributors ?? []).map(u => byId(c.s.users, u.id).userName),
+    isFavorite: c.s.folders.some(f => f.ownerId === c.s.session?.userId && f.collectionIds.includes(p.id)) };
+}
+export function albumView(c: Context, albumId: number) {
+  const album = byId(c.s.albums, albumId, 'Album');
+  const tracks = collectionTracks(c, album.trackIds);
+  const authors = album.artistIds.map(artistId => ({ artistId, pseudonym: byId(c.s.artists, artistId).artistName }));
+  return { ...album, albumArtists: authors.map(a => ({ ...a, id: a.artistId, albumId })),
+    trackCount: tracks.length, trackIds: tracks.map(t => t.id), tracks, authors };
+}
 export function folderView(c: Context, f: DemoFolder) { const children = c.s.folders.filter(v => v.parentFolderId === f.id); return { ...f, parentFolderName: c.s.folders.find(v => v.id === f.parentFolderId)?.name, subFolders: children.map(v => ({ id: v.id, name: v.name, isProtected: v.isProtected, subFolderCount: c.s.folders.filter(w => w.parentFolderId === v.id).length, collectionCount: v.collectionIds.length })), collections: f.collectionIds.map(collectionId => { const collection = c.s.albums.find(v => v.id === collectionId) ?? byId(c.s.playlists, collectionId, 'Collection'); return { id: collection.id, name: collection.name, coverId: collection.coverId, type: c.s.albums.some(v => v.id === collectionId) ? 'Album' : 'Playlist' }; }) }; }
 export function collection(c: Context, collectionId: number) { return c.s.albums.find(a => a.id === collectionId) ?? byId(c.s.playlists, collectionId, 'Collection'); }
 export function root(c: Context): DemoFolder { const userId = c.user(); const folder = c.s.folders.find(f => f.ownerId === userId && f.parentFolderId == null); need(folder, 'Root folder is missing', 409); return folder!; }
 export function playlistOwner(c: Context): DemoPlaylist { const p = byId(c.s.playlists, id(c), 'Playlist'); need(p.creatorId === c.user() || p.contributors?.some(u => u.id === c.user()), 'Playlist is read only for this user', 403); return p; }
-export function visible(c: Context, status: number, ownerId?: number): void { need(status === 1 || ownerId === c.s.session?.userId, 'This entity is private', 403); }
+export function visible(c: Context, status: number, ownerId?: number): void { need(canView(c, status, ownerId), 'This entity is private', 403); }
 export function pageBounds(c: Context, defaultLimit = 20): { limit: number; offset: number } { const limit = c.p.has('limit') ? integer(c.p.get('limit'), 'Limit') : c.p.has('take') ? integer(c.p.get('take'), 'Take') : defaultLimit; need(limit <= 100, 'Limit must be at most 100'); const offset = Number(c.p.get('offset') ?? 0); need(Number.isSafeInteger(offset) && offset >= 0, 'Offset must be a nonnegative integer'); return { limit, offset }; }
 export function offsetPage<T>(c: Context, rows: T[]) { const { limit, offset } = pageBounds(c); return { total: rows.length, items: rows.slice(offset, offset + limit) }; }
 export function cursorPage<T>(c: Context, rows: T[], key: (row: T) => string) { const { limit } = pageBounds(c); const cursor = c.p.get('after') ?? c.p.get('cursor'); let offset = 0; if (cursor) { const index = rows.findIndex(row => key(row) === cursor); need(index >= 0, 'Invalid or expired cursor'); offset = index + 1; } const items = rows.slice(offset, offset + limit); const hasMore = offset + items.length < rows.length; const next = hasMore && items.length ? key(items[items.length - 1]) : null; return { items, after: next, next, nextCursor: next, limit, hasMore }; }

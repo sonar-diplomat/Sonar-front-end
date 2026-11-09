@@ -1,4 +1,4 @@
-import React,{ useState } from 'react';
+import React,{ useRef,useState } from 'react';
 
 import { useAddUserToChatMutation } from '@entities/Chat/api/rtkApi';
 import { useGetUserProfileByIdentifierQuery } from '@entities/User/api/rtkApi';
@@ -35,6 +35,9 @@ const AddMembersDialog: React.FC<AddMembersModalProps> = ({
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedUsers, setSelectedUsers] = useState<SelectedUser[]>([]);
     const [searchIdentifier, setSearchIdentifier] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submissionResult, setSubmissionResult] = useState<{ added: number; failed: number } | null>(null);
+    const submitting = useRef(false);
 
     const { currentData, isFetching: isSearching, isError } = useGetUserProfileByIdentifierQuery(
         searchIdentifier ?? '',
@@ -46,7 +49,7 @@ const AddMembersDialog: React.FC<AddMembersModalProps> = ({
     const searchedUser = searchIdentifier && !isSearching && !isError ? currentData : undefined;
     const searchError = !!searchIdentifier && !isSearching && isError;
 
-    const [addUserToChat, { isLoading: isAdding }] = useAddUserToChatMutation();
+    const [addUserToChat] = useAddUserToChatMutation();
 
     const handleSearch = () => {
         if (searchQuery.trim().length > 0) {
@@ -55,6 +58,7 @@ const AddMembersDialog: React.FC<AddMembersModalProps> = ({
     };
 
     const handleAddUser = () => {
+        if (submitting.current) return;
         if (searchedUser && !selectedUsers.some(u => u.id === searchedUser.id)) {
             if (searchedUser.id === currentUserId) {
                 return;
@@ -73,14 +77,16 @@ const AddMembersDialog: React.FC<AddMembersModalProps> = ({
     };
 
     const handleRemoveUser = (userId: number) => {
+        if (submitting.current) return;
         setSelectedUsers(selectedUsers.filter(u => u.id !== userId));
     };
 
     const handleAddMembers = async () => {
-        if (selectedUsers.length === 0) {
-            return;
-        }
-
+        if (submitting.current || selectedUsers.length === 0) return;
+        submitting.current = true;
+        setIsSubmitting(true);
+        setSubmissionResult(null);
+        const failed: SelectedUser[] = [];
         try {
             for (const user of selectedUsers) {
                 try {
@@ -88,26 +94,32 @@ const AddMembersDialog: React.FC<AddMembersModalProps> = ({
                         chatId,
                         userId: user.id,
                     }).unwrap();
-                } catch (error) {
-                    console.error(`Failed to add user ${user.id} to chat:`, error);
+                } catch {
+                    failed.push(user);
                 }
             }
-
+        } finally {
+            submitting.current = false;
+            setIsSubmitting(false);
+        }
+        if (failed.length) {
+            setSelectedUsers(failed);
+            setSubmissionResult({ added: selectedUsers.length - failed.length, failed: failed.length });
+        } else {
             onSuccess?.();
             handleClose();
-        } catch (error) {
-            console.error('Failed to add members:', error);
         }
     };
 
     const handleClose = () => {
+        if (submitting.current) return;
         setSearchQuery('');
         setSelectedUsers([]);
         setSearchIdentifier(null);
         onClose();
     };
 
-    const canAdd = selectedUsers.length > 0 && !isAdding;
+    const canAdd = selectedUsers.length > 0 && !isSubmitting;
 
     return (
         <Modal isOpen={isOpen} onClose={handleClose} ariaLabel="Add members">
@@ -121,6 +133,7 @@ const AddMembersDialog: React.FC<AddMembersModalProps> = ({
                         icon={<LeftArrow />}
                         aria-label="Cancel adding members"
                         onClick={handleClose}
+                        disabled={isSubmitting}
                         className={styles.backButton}
                     />
                     <h2 className={styles.title}>Add members</h2>
@@ -151,7 +164,7 @@ const AddMembersDialog: React.FC<AddMembersModalProps> = ({
                                 icon={<SearchIcon />}
                                 aria-label="Search members"
                                 onClick={handleSearch}
-                                disabled={!searchQuery.trim() || isSearching}
+                                disabled={!searchQuery.trim() || isSearching || isSubmitting}
                                 className={styles.searchButton}
                             />
                         </div>
@@ -174,6 +187,7 @@ const AddMembersDialog: React.FC<AddMembersModalProps> = ({
                                     size="small"
                                     icon={<PlusIcon />}
                                     onClick={handleAddUser}
+                                    disabled={isSubmitting}
                                 >
                                     Add
                                 </Button>
@@ -215,6 +229,7 @@ const AddMembersDialog: React.FC<AddMembersModalProps> = ({
                                             icon={<ClearIcon />}
                                             aria-label={`Remove ${user.userName}`}
                                             onClick={() => handleRemoveUser(user.id)}
+                                            disabled={isSubmitting}
                                         />
                                     </div>
                                 ))}
@@ -223,6 +238,11 @@ const AddMembersDialog: React.FC<AddMembersModalProps> = ({
                     </div>
                 </div>
 
+                {submissionResult && (
+                    <p className={styles.errorMessage} role="alert">
+                        Added {submissionResult.added}. Failed to add {submissionResult.failed}. You can retry the remaining selections.
+                    </p>
+                )}
                 <div className={styles.footer}>
                     <Button
                         variant="filled"
@@ -231,7 +251,7 @@ const AddMembersDialog: React.FC<AddMembersModalProps> = ({
                         shape="cr-16"
                         onClick={handleAddMembers}
                         disabled={!canAdd}
-                        loading={isAdding}
+                        loading={isSubmitting}
                         fullWidth
                     >
                         Add members
