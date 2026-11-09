@@ -108,3 +108,41 @@ This follow-up builds on PR #126 head `3efbfbc`, integrated into the temporary a
 Local `task ci:check` passed 81 tests, including 71 demo, player and dialog tests, four profile tests and six media tests. TypeScript, ESLint, workflow YAML and seed validation passed. The ordered API release, demo build, Pages package and HTTP smoke passed. The API audit found 370 rendered modules and 99 output files with no demo runtime or media. The 86,204,580-byte Pages package contained 12 MP3s and 14 images, and all 26 files passed local status, MIME and hash checks. MP3 ranges returned the expected bytes. The Linux engine was unavailable for the local container check on this revision. The CI container result is a separate release check.
 
 The public artifact tested on 2026-11-07 came from `dev` commit `143cb2f`. Published media matched the manifest hashes and sizes and supported MP3 seek ranges. The host returned `audio/mp3` while local preview returned `audio/mpeg`. Browser and audible playback acceptance for the revised player remains separate from these HTTP and component tests. The live API, native builds and physical devices remain outside this verification. The locked Capacitor Android and iOS versions require a patched native build and device checks before native release. See [the public deployment run](https://github.com/sonar-diplomat/Sonar-front-end/actions/runs/40350863972) and [the Capacitor advisory](https://github.com/ionic-team/capacitor/security/advisories/GHSA-rvm3-566m-v7fv).
+
+## Site map by URL
+
+The [Pages demo](https://sonar-diplomat.github.io/Sonar-front-end/) uses `/Sonar-front-end/#` before each route below. For example, `#/album/101` opens the first demo album. The API profile uses the same route paths without `#` under its configured base. The router defines the route tree in [routes.tsx](../src/app/router/routes.tsx).
+
+| Route | Screen and navigation |
+| --- | --- |
+| `/` | Entry redirect. The demo opens `/home`. The API profile opens `/hello` on first visit and `/entry` on later visits. |
+| `/hello`, `/entry`, `/terms` | Welcome screens, sign-in and registration choices, and terms of service. |
+| `/register`, `/login` | Create an account or sign in. The API profile handles the second factor on the sign-in page when the server issues a challenge. |
+| `/password-recovery`, `/assign-new-password`, `/reset-password` | Request a reset, then set a new password. Both reset URLs use the same page with `email` and `token` query parameters. |
+| `/confirm-email`, `/confirm-email-change` | Confirm an address or an address change. Both read `email` and `token`. The change route also reads `userId`. The demo uses local tokens. |
+| `/home`, `/search` | Music catalog and search. Open a result for the related track, album, artist, playlist or profile. |
+| `/library`, `/library/create`, `/library/create/playlist`, `/library/create/folder` | Library, creation chooser, playlist form and folder form. Nested folders open inside Library. |
+| `/album/:id`, `/playlist/:id`, `/track/:id` | Collection and track details, playback and item actions. Demo examples are `/album/101`, `/playlist/201` and `/track/1`. |
+| `/user/:identifier` | User profile, follows and public collections. Demo examples are `/user/demo` and `/user/river-listener`. |
+| `/artist/:id`, `/artist/:id/posts`, `/artist/:id/posts/create` | Artist music, posts and the owner's post editor. Artist `1` belongs to the default demo account. Mock posts publish immediately. |
+| `/chats`, `/chats/:chatId`, `/chats/:chatId/info` | Inbox with Create chat, conversation, and conversation information. A group administrator can add members from its information page. The seed group is `/chats/2/info`. |
+| `/settings`, `/settings/account`, `/settings/sessions`, `/settings/privacy`, `/settings/blocked-accounts` | Settings menu, account and security, active sessions, privacy controls and blocked users. |
+| `/settings/appearance`, `/settings/playback`, `/settings/about` | Language and theme, player preferences, and build information. About shows the artifact's build timestamp. |
+| `/premium`, `/report` | Plans and activation history, or content reporting. Demo activation and reports stay in the browser. Report links can prefill a target, for example `/report?type=track&entityId=1`. |
+| `/test`, `/test/api` | Diagnostics menu and read-only shared transport requests. |
+| Any unknown route | Not Found screen with a link back to the catalog. |
+
+## Combined audit validation
+
+The frontend package used the local integration of PRs #126 and #127 and the reviewed UI and data revisions `cd1d94f` and `1215a6d`. The matching backend integration is `62b3a3c`. The earlier confirmation follow-up about stale results applies to the original five-defect package. In the combined candidate, each confirmation operation and its parameters own a separate result.
+
+| Check | Result |
+| --- | --- |
+| `task ci:check` | Pass. 107 demo, UI, data, dialog and playback tests, four profile tests and six media tests. TypeScript, ESLint, Task/workflow YAML and seed validation passed. |
+| `task build:release` | Pass. 373 rendered modules and 99 output files. The API bundle excluded the demo runtime and binary media. |
+| `task build:demo`, `task pages:package`, `task pages:smoke` | Pass. The 86,210,382-byte package contained 12 MP3 files and 14 images. All 26 files passed GET, HEAD, MIME and hash checks. MP3 seek ranges passed. |
+| Packaged browser matrix | Pass in Chrome at 320 × 740, 740 × 844 and 1280 × 720 in both themes. Both confirmation routes passed incomplete and invalid-link checks. Entered post text remained readable after blur, and the disabled Schedule button retained its width and explanatory text. The accessibility tree reported `Folder name`, whitespace blocked creation, and Tab and Enter reached and submitted the valid form. |
+| Packaged chat and playback | Both member dialogs passed selection, removal, reopen, focus containment and Escape with focus return at all six theme and viewport combinations. Two groups created with the same name had different IDs and distinct memberships. The first MP3 advanced across navigation from Track to Library. The browser runs recorded no application warnings, errors or external requests. |
+| Local backend and HTTP integration | Twenty backend Auth/2FA tests and eight paired HTTP scenarios passed. Coverage includes challenge-only login, rejection of invalid and reused challenges, successful verification and late response isolation. The ASP.NET test host used test dependencies for passwords, sessions, database and mail. The jsdom harness emitted React `act` warnings. |
+
+The local Linux Docker engine was unavailable. The browser matrix used desktop Chrome and the mock build. API behavior was checked on the test host, and confirmation loading and success were covered by component fixtures. The live [Pages build profile](https://sonar-diplomat.github.io/Sonar-front-end/build-profile.json) still reported `2026-10-26T15:37:40.125Z` during verification. GitHub CI for the complete integration and acceptance of the updated Pages build remain pending.
